@@ -8,6 +8,10 @@
 // The slide timings are chosen per screen so the curve never dips under the copy, checked against the vehicles' extents
 // in every frame (assets/marvel-v4/opening-film/desktop-frame.json). Nothing is recomputed from per-frame data while it
 // plays, and the film clock is interpolated between decoded frames, so the motion has no steps.
+// While the film PLAYS, the glide is handed to the browser's compositor as one Web Animation of `translate` built from
+// the same curve (owner 10-25: "stutters while gliding", every browser): the compositor runs it at the display's
+// refresh rate whatever the page's script is busy with, so a late script frame can no longer hitch it. Scrubbing,
+// pausing and the hold fall back to setting the position directly.
 const GAP=36, FPS=30, SLIDE_IN=1.8, SLIDE_OUT=2.7, IN_LATEST=1.15, IN_EARLIEST=.5, CLEAR_FROM=1.9, OUT_EARLIEST=7.05;
 const ease=x=>{x=Math.max(0,Math.min(1,x));return x*x*x*(x*(x*6-15)+10);};   // smootherstep: zero speed and acceleration at both ends
 export async function installHeroFrame(){
@@ -49,7 +53,7 @@ export async function installHeroFrame(){
   while(inStart>IN_EARLIEST&&!holds(inStart,99,CLEAR_FROM,inStart+SLIDE_IN))inStart-=.05;
   let outStart=OUT_EARLIEST;
   while(outStart<10-SLIDE_OUT&&!holds(inStart,outStart,outStart,10))outStart+=.05;
-  plan={rig,trailer,inStart,outStart,at:t=>shiftAt(t,inStart,outStart)};
+  plan={rig,trailer,inStart,outStart,at:t=>shiftAt(t,inStart,outStart)};   // a new object: a running glide is rebuilt for it
   root.dataset.heroFrame=`rig ${Math.round(rig)} trailer ${Math.round(trailer)} right ${inStart.toFixed(2)}-${(inStart+SLIDE_IN).toFixed(2)}s back ${outStart.toFixed(2)}-${(outStart+SLIDE_OUT).toFixed(2)}s`;
  }
  // The film clock between decoded frames: currentTime advances in steps, so while playing it is extrapolated from the
@@ -68,11 +72,39 @@ export async function installHeroFrame(){
   return est;
  }
  function update(){
-  if(!plan){set(null);return;}
-  if(host.closest('.pin')?.classList.contains('is-comparing')){set(null);return;}   // the hold: the stylesheet glides it home
+  if(!plan){stopGlide();set(null);return;}
+  if(host.closest('.pin')?.classList.contains('is-comparing')){stopGlide();set(null);return;}   // the hold: the stylesheet glides it home
   const p=parseFloat(track.dataset.sceneProgress||'0');
-  if(p>=.25-1e-4){set(plan.trailer);return;}                          // the delivery: hold the trailer's place
-  set(plan.at(Math.min(10,Math.max(0,filmTime(p)))));
+  if(p>=.25-1e-4){stopGlide();set(plan.trailer);return;}              // the delivery: hold the trailer's place
+  const v=document.querySelector('video.opening-film');
+  const t=Math.min(10,Math.max(0,filmTime(p)));
+  if(v&&!v.paused&&!v.ended&&!v.seeking&&v.readyState>=2&&typeof host.animate==='function'){glide(v,t);return;}
+  stopGlide();set(plan.at(t));
+ }
+ // The compositor glide: from film time t to the film's end at the film's playback rate. Rebuilt only when the film
+ // starts, jumps, changes rate, or the plan changes; otherwise checked against the decoder every half second.
+ let anim=null,animFrom=0,animRate=1,animWall=0,animPlan=null,checkedAt=0;
+ function glide(v,t){
+  const now=performance.now(),rate=v.playbackRate||1;
+  if(anim&&animPlan===plan&&animRate===rate){
+   if(now-checkedAt<500)return;
+   checkedAt=now;
+   const expected=animFrom+(now-animWall)/1000*rate;
+   if(Math.abs(expected-v.currentTime)<.12)return;                    // in step with the film
+  }
+  const from=v.currentTime,span=10-from;if(span<=.02){stopGlide();set(plan.at(10));return;}
+  const steps=Math.max(2,Math.min(400,Math.ceil(span*40)));
+  const frames=[];for(let i=0;i<=steps;i++){const ft=from+span*i/steps;frames.push({translate:Math.max(0,Math.round(plan.at(ft)*100)/100)+'px 0',offset:i/steps});}
+  stopGlide(false);
+  set(plan.at(from));                                                  // the resting value under the animation
+  anim=host.animate(frames,{duration:span/rate*1000,easing:'linear',fill:'none'});
+  anim.onfinish=()=>{if(anim){anim=null;set(plan.at(10));}};
+  animFrom=from;animRate=rate;animWall=now;animPlan=plan;checkedAt=now;
+ }
+ function stopGlide(capture=true){
+  if(!anim)return;
+  if(capture){const v=document.querySelector('video.opening-film');if(v)set(plan?plan.at(Math.min(10,Math.max(0,v.currentTime))):0);}
+  anim.cancel();anim=null;
  }
  build();
  (function loop(){if(document.body.dataset.activeScene==='top'&&!document.hidden)update();requestAnimationFrame(loop);})();
