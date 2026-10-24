@@ -2,7 +2,7 @@ import {fieldProgress} from './neighborhood-timing.js?v=2';
 import {loadFilmSources} from './film-sources.js?v=3';
 await loadFilmSources();
 const {installDisplayFramework}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework.js?v=10':'./display-framework.js?v=4');
-import {installScenePlayback} from './scene-playback.js?v=10';
+import {installScenePlayback} from './scene-playback.js?v=11';
 import { createStage } from './atlas-stage.js?v=9';
 import {setupGrassEconomics} from './grass-economics.js?v=2';
 import {createAmbientSpace} from './ambient-space.js?v=4';
@@ -146,7 +146,7 @@ function requestUpdate(){if(!scrollFrame)scrollFrame=requestAnimationFrame(updat
 addEventListener('scroll',requestUpdate,{passive:true});addEventListener('resize',requestUpdate);update();
 installDisplayFramework({stage,refresh:update});
 // One scroll per thing (owner 10-24): forward input steps beat to beat, playing each chapter's film; back scrolls freely.
-if(manualPlayback&&official&&playback)import('./beat-scroll.js?v=4').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
+if(manualPlayback&&official&&playback)import('./beat-scroll.js?v=7').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
 async function loadTrailer(state,canvas,single=false){
  if(!state)return;
  if(official){

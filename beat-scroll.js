@@ -16,7 +16,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  const params=new URLSearchParams(location.search);
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  if(params.has('freescroll')||params.has('edit'))return null;
- const body=document.body;
+ const body=document.body;body.dataset.beatScroll='1';
  let playing=null,gliding=null,cooldownUntil=0,lastWheel=0,glideFrame=0,touchY=null,touchDone=false,token=0;
  const sections=()=>[...document.querySelectorAll('main > section')];
  function tourStarts(){
@@ -48,7 +48,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  }
  const current=()=>{const y=scrollY+4,all=chapters();let at=null;for(const c of all){if(c.y<=y)at=c;}return at;};
  const next=()=>chapters().find(c=>c.y>scrollY+4)||null;
- function stopPlaying(){if(playing){playing=null;playback.pause({capture:true});}}
+ function stopPlaying(){playing=null;playback.pause({capture:true});}   // ours or the page's own load-time autoplay
  function stopGlide(){if(gliding){gliding=null;cancelAnimationFrame(glideFrame);glideFrame=0;}}
  function settle(){delete body.dataset.beatStep;cooldownUntil=performance.now()+COOLDOWN_MS;}
  function play(chapter){
@@ -77,9 +77,14 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
    requestAnimationFrame(()=>{if(mine!==token)return;if(!play(chapter))settle();});
   });
  }
- function forward(){
+ // Steps start on the next task, after every listener of the gesture has run: the hero's own wheel/key/touch
+ // listener (platform.js) pauses the opening film on each gesture, and it would land right after our play().
+ // A film is "playing" whether this module started it or the page's own load-time autoplay did.
+ const busy=()=>!!playing||['playing','loading'].includes(body.dataset.animationPlayback||'');
+ function later(skip){setTimeout(()=>forward(skip),0);}
+ function forward(skip=false){
   if(gliding)return;                                   // already moving: one move per scroll
-  if(playing){const n=next();if(n)glide(n);return;}    // skip ahead while a film plays
+  if(skip||playing){const n=next();if(n)glide(n);return;}   // skip ahead while a film plays
   const here=current();
   if(here&&here.film&&play(here))return;               // the thing in front of them plays
   const n=next();if(n)glide(n);
@@ -93,7 +98,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(!next()&&!(current()?.film&&!playing))return;                  // past the last chapter: ordinary scrolling
   event.preventDefault();
   if(gliding||now<cooldownUntil||gap<GESTURE_GAP_MS)return;        // one gesture, one move
-  forward();
+  later(busy());
  },{passive:false});
  addEventListener('touchstart',event=>{touchY=event.touches[0].clientY;touchDone=false;},{passive:true});
  addEventListener('touchmove',event=>{
@@ -102,7 +107,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(dy<-8){back();touchY=null;return;}                            // swipe down: ordinary scrolling
   if(!next()&&!(current()?.film&&!playing))return;
   event.preventDefault();
-  if(dy>SWIPE_PX&&!touchDone){touchDone=true;if(!gliding&&performance.now()>=cooldownUntil)forward();}
+  if(dy>SWIPE_PX&&!touchDone){touchDone=true;if(!gliding&&performance.now()>=cooldownUntil)later(busy());}
  },{passive:false});
  addEventListener('touchend',()=>{touchY=null;},{passive:true});
  addEventListener('keydown',event=>{
@@ -113,7 +118,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(!next()&&!(current()?.film&&!playing))return;
   event.preventDefault();
   if(gliding||performance.now()<cooldownUntil)return;
-  forward();
+  later(busy());
  });
  document.addEventListener('stage:navigate',e=>{if(!e.detail?.beat)back();});   // a nav link or chapter click takes over
  addEventListener('resize',back);

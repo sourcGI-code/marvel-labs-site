@@ -111,11 +111,14 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  buttons.forEach(button=>button.addEventListener('click',()=>toggle(button.classList.contains('hero-play')?{end:.25}:{})));
  // During a beat step the stepper owns input: its own back-scroll cancels; forward ticks are swallowed by it.
  const interrupt=()=>{if(document.body.dataset.beatStep)return;completedOwner=null;if(mode!=='paused')pause();};
- addEventListener('wheel',interrupt,{passive:true});
- addEventListener('touchstart',event=>{if(!event.target.closest('.motion-button,#ve-motion'))interrupt();},{passive:true});
+ // With beat scrolling installed (body[data-beat-scroll]) the stepper owns wheel, touch and keys: a forward gesture
+ // skips to the next chapter, a backward one stops the film. Other interrupts (navigation, tab hidden) stay here.
+ const inputInterrupt=()=>{if(document.body.dataset.beatScroll)return;interrupt();};
+ addEventListener('wheel',inputInterrupt,{passive:true});
+ addEventListener('touchstart',event=>{if(!event.target.closest('.motion-button,#ve-motion'))inputInterrupt();},{passive:true});
  addEventListener('keydown',event=>{
   if(event.target.closest('input,textarea,select,[contenteditable="true"],button'))return;
-  if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End','Space'].includes(event.code))interrupt();
+  if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End','Space'].includes(event.code))inputInterrupt();
  });
  addEventListener('pointerdown',event=>{if(event.clientX>=document.documentElement.clientWidth)interrupt();});
  document.addEventListener('stage:navigate',interrupt);
