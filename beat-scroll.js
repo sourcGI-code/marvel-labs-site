@@ -1,6 +1,6 @@
 // One scroll per thing (owner 10-24, "like USAvionix"; 2nd pass after "fast and slow and inconsistent"):
 //   * every forward wheel tick, swipe up or ArrowDown/PageDown/Space answers the same way: the SAME short glide
-//     (GLIDE_MS) to the next chapter, and that chapter's film then plays by itself to the chapter's end
+//     (GLIDE_MS, 2.4 s) to the next chapter, and that chapter's film then plays by itself to the chapter's end
 //     (scene-playback.js playTo); nothing is locked, the page just waits at the end for the next scroll;
 //   * a forward scroll while a film is playing skips ahead: the same short glide to the next chapter, which plays;
 //   * a forward scroll at the start of a chapter that has not played yet plays it (no glide needed);
@@ -11,7 +11,7 @@
 import {DELIVERY_END} from './intro-timing.js?v=1';
 import {displays} from './original-display-framework.js?v=10';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
-const GLIDE_MS=1100, COOLDOWN_MS=350, GESTURE_GAP_MS=90, SWIPE_PX=28;
+const GLIDE_MS=2400, COOLDOWN_MS=350, GESTURE_GAP_MS=90, SWIPE_PX=28;   // 2.4 s: owner 10-24, the 1.1 s move "displays it too fast"
 export function installBeatScroll({stage,tracks,playback,getActive,readProgress}){
  const params=new URLSearchParams(location.search);
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -68,7 +68,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   stopPlaying();stopGlide();
   const from=scrollY,dy=chapter.y-from;const mine=++token;gliding=chapter;body.dataset.beatStep='1';
   document.dispatchEvent(new CustomEvent('stage:navigate',{detail:{hash:'#'+chapter.section.id,beat:true}}));
-  const t0=performance.now(),ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+  const t0=performance.now(),ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;   // soft in and out
   glideFrame=requestAnimationFrame(function frame(now){
    if(mine!==token)return;
    const k=Math.min(1,(now-t0)/GLIDE_MS);scrollTo(0,from+dy*ease(k));

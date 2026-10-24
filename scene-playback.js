@@ -1,5 +1,6 @@
 // The opening can autoplay once; scrolling then owns the timeline. During playback,
 // decoded media time drives that same timeline, including captions and navigation.
+const OPENING_RATE=.7;
 export function installScenePlayback({getActive,readProgress,writeProgress,setPaused,reduced}){
  const buttons=[...document.querySelectorAll('.motion-button')];
  let owner=null,segment=null,mode='paused',generation=0,frame=0,abort=null,error='',lastUI='',completedOwner=null;
@@ -68,6 +69,9 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
    await waitForMedia(next.video,progress*next.duration,signal);
    if(token!==generation)return;
    next.video.dataset.timelinePlaying='true';
+   // The arrival plays slower than real time (owner 10-24: "the arrival film itself" is too fast); its progress
+   // is read from the decoded time, so captions and the hand-off stay in step.
+   next.video.playbackRate=(owner.track.id==='top'&&next.end<=.25+1e-6)?OPENING_RATE:1;
    await next.video.play();
    if(token!==generation){if(segment?.video!==next.video)next.video.pause();return;}
    mode='playing';markBlocked(false);sync();frame=requestAnimationFrame(tick);
