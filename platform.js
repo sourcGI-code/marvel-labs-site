@@ -2,7 +2,7 @@ import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
 import {createRecordedScene} from './recorded-scene.js?v=16';
 import {createOpeningFilm,filmPose,filmDuration} from './opening-film.js?v=26';
 import {loadFilmSources} from './film-sources.js?v=3';
-import {createArrivalReveal} from './arrival-reveal.js?v=4';
+import {createArrivalReveal} from './arrival-reveal.js?v=5';
 import {createScrollMotion} from './scroll-motion.js';
 import {setAnimatedTitle,revealDetails} from './editorial-motion.js?v=5';
 const clamp=v=>Math.max(0,Math.min(1,v));
@@ -13,7 +13,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
  const host=canvas.parentElement,reduced=matchMedia('(prefers-reduced-motion: reduce)');
  const arrivalReveal=createArrivalReveal({reduced});
  const livePreview=document.body.dataset.sceneSource!=='accepted-films'&&false /* live authoring is local-only */;
- let recorded,deliveryVisible=false;
+ let recorded,deliveryVisible=false,lastMix='';
  let p=readProgress(),active=isActive(),frame=0,auto=false,autoStarted=false,available=true,playRequest=0,state={},lastCopy='',previousP=p;
  let opening,cargo,livePromise,liveReady=false,liveError=false,prepareTimer=0,liveMode='',openedOnce=false;
  const motion=createScrollMotion(p);
@@ -89,7 +89,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
   if(active&&(p>=.12||reduced.matches||film.failed))ensureLive();
   $('platform-status').hidden=!liveError&&(p<.25||liveReady);
   if(!liveError&&!liveReady&&p>=.25)$('platform-status').textContent='Loading the trailer film';
-  document.body.style.setProperty('--opening-mix',`${!livePreview?100:film.ready&&!reduced.matches?filmOpacity*100:0}%`);
+  const mix=`${!livePreview?100:film.ready&&!reduced.matches?filmOpacity*100:0}%`;if(mix!==lastMix){lastMix=mix;document.body.style.setProperty('--opening-mix',mix);}
   host.closest('.pin').classList.toggle('is-comparing',continuation&&t>=13/18);
   host.closest('.pin').classList.toggle('is-focused',continuation&&t>=.50);
   host.closest('.pin').classList.toggle('is-opening',!continuation);

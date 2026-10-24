@@ -8,7 +8,7 @@
 // The slide timings are chosen per screen so the curve never dips under the copy, checked against the vehicles' extents
 // in every frame (assets/marvel-v4/opening-film/desktop-frame.json). Nothing is recomputed from per-frame data while it
 // plays, and the film clock is interpolated between decoded frames, so the motion has no steps.
-const GAP=36, FPS=30, SLIDE_IN=1.3, SLIDE_OUT=2.0, IN_START=1.15, CLEAR_FROM=1.9, OUT_EARLIEST=7.05;
+const GAP=36, FPS=30, SLIDE_IN=1.8, SLIDE_OUT=2.7, IN_LATEST=1.15, IN_EARLIEST=.5, CLEAR_FROM=1.9, OUT_EARLIEST=7.05;
 const ease=x=>{x=Math.max(0,Math.min(1,x));return x*x*x*(x*(x*6-15)+10);};   // smootherstep: zero speed and acceleration at both ends
 export async function installHeroFrame(){
  const root=document.documentElement,host=document.getElementById('hero-visual'),story=document.getElementById('platform-story'),track=document.getElementById('top');
@@ -16,7 +16,9 @@ export async function installHeroFrame(){
  let data=null;
  try{const r=await fetch(new URL('assets/marvel-v4/opening-film/desktop-frame.json',import.meta.url));if(r.ok)data=(await r.json()).frames;}catch{}
  let plan=null,last=NaN;
- function set(px){px=Math.max(0,Math.round(px*100)/100);if(px!==last){last=px;root.style.setProperty('--hero-shift',px+'px');}}
+ // Written on the film element itself (not a page-wide variable: that restyled the whole page every frame and dropped
+ // frames mid-slide), and only when it changes. '' hands the element back to the stylesheet (the delivery hold).
+ function set(px){const v=px===null?'':Math.max(0,Math.round(px*100)/100)+'px 0';if(v!==last){last=v;host.style.translate=v;}}
  function build(){
   if(innerWidth<=760||!data){plan=null;return;}
   // Layout sizes and the pin's box: unaffected by the shift itself.
@@ -35,18 +37,20 @@ export async function installHeroFrame(){
   const end=data[last];let needEnd=0;for(let i=Math.round(9*FPS);i<=last;i++)needEnd=Math.max(needEnd,clear(i));
   const trailer=Math.max(innerWidth/2-x((end.l+end.r)/2,10),needEnd,0);
   // The slide back starts as early as it can without the curve ever dipping under the copy.
-  const shiftAt=(t,outStart)=>{
-   if(t<IN_START)return 0;
-   if(t<outStart)return rig*ease((t-IN_START)/SLIDE_IN);
+  const shiftAt=(t,inStart,outStart)=>{
+   if(t<inStart)return 0;
+   if(t<outStart)return rig*ease((t-inStart)/SLIDE_IN);
    return rig+(trailer-rig)*ease((t-outStart)/SLIDE_OUT);
   };
+  const holds=(inStart,outStart,from,to)=>{for(let i=Math.round(from*FPS);i<=Math.min(last,Math.round(to*FPS));i++)if(shiftAt(i/FPS,inStart,outStart)<clear(i)-1)return false;return true;};
+  // The slide right starts as late as it can (the pickup drives in centred) while being clear of the copy from the end
+  // of the camera's whip; the slide back starts as early as it can without ever dipping under the copy.
+  let inStart=IN_LATEST;
+  while(inStart>IN_EARLIEST&&!holds(inStart,99,CLEAR_FROM,inStart+SLIDE_IN))inStart-=.05;
   let outStart=OUT_EARLIEST;
-  for(;outStart<10-SLIDE_OUT;outStart+=.05){
-   let ok=true;for(let i=Math.round(outStart*FPS);i<=last;i++)if(shiftAt(i/FPS,outStart)<clear(i)-1){ok=false;break;}
-   if(ok)break;
-  }
-  plan={rig,trailer,outStart,at:t=>shiftAt(t,outStart)};
-  root.dataset.heroFrame=`rig ${Math.round(rig)} trailer ${Math.round(trailer)} back at ${outStart.toFixed(2)}s`;
+  while(outStart<10-SLIDE_OUT&&!holds(inStart,outStart,outStart,10))outStart+=.05;
+  plan={rig,trailer,inStart,outStart,at:t=>shiftAt(t,inStart,outStart)};
+  root.dataset.heroFrame=`rig ${Math.round(rig)} trailer ${Math.round(trailer)} right ${inStart.toFixed(2)}-${(inStart+SLIDE_IN).toFixed(2)}s back ${outStart.toFixed(2)}-${(outStart+SLIDE_OUT).toFixed(2)}s`;
  }
  // The film clock between decoded frames: currentTime advances in steps, so while playing it is extrapolated from the
  // last change with the wall clock and the playback rate (never more than 0.12 s ahead of the decoder).
@@ -64,7 +68,8 @@ export async function installHeroFrame(){
   return est;
  }
  function update(){
-  if(!plan){set(0);return;}
+  if(!plan){set(null);return;}
+  if(host.closest('.pin')?.classList.contains('is-comparing')){set(null);return;}   // the hold: the stylesheet glides it home
   const p=parseFloat(track.dataset.sceneProgress||'0');
   if(p>=.25-1e-4){set(plan.trailer);return;}                          // the delivery: hold the trailer's place
   set(plan.at(Math.min(10,Math.max(0,filmTime(p)))));

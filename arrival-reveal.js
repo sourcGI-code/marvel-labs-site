@@ -7,7 +7,7 @@ export function createArrivalReveal({reduced}){
  const host=document.getElementById('hero-visual');
  const editing=new URLSearchParams(location.search).has('edit');
  const overlays=[...document.querySelectorAll('.masthead,#mobile-menu,#platform-story,.hero-base,#capacity-labels,#capacity-summary,#platform-status')];
- let quiet=null;
+ let quiet=null,lastScale='';
  function show(value){
   if(value===quiet)return;
   quiet=value;root.classList.toggle('arrival-quiet',value);
@@ -28,7 +28,9 @@ export function createArrivalReveal({reduced}){
    const fill=Math.max(aspect/filmAspect,filmAspect/aspect);
    const t=Math.max(0,Math.min(1,(seconds-framingSettleTime)/(10-framingSettleTime)));
    const settle=t*t*(3-2*t);
-   root.style.setProperty('--arrival-film-scale',String(editing||reduced.matches?1:1+(fill-1)*(1-settle)));
+   // On the film's own container and only when it changes: a page-wide variable restyled the whole page every frame.
+   const scale=String(editing||reduced.matches?1:Math.round((1+(fill-1)*(1-settle))*10000)/10000);
+   if(scale!==lastScale){lastScale=scale;(host||root).style.setProperty('--arrival-film-scale',scale);}
   },
   clear(){show(false);},
   get quiet(){return quiet;}
