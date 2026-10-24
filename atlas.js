@@ -146,7 +146,7 @@ function requestUpdate(){if(!scrollFrame)scrollFrame=requestAnimationFrame(updat
 addEventListener('scroll',requestUpdate,{passive:true});addEventListener('resize',requestUpdate);update();
 installDisplayFramework({stage,refresh:update});
 // One scroll per thing (owner 10-24): forward input steps beat to beat, playing each chapter's film; back scrolls freely.
-if(manualPlayback&&official&&playback)import('./beat-scroll.js?v=1').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
+if(manualPlayback&&official&&playback)import('./beat-scroll.js?v=3').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
 async function loadTrailer(state,canvas,single=false){
  if(!state)return;
  if(official){

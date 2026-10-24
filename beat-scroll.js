@@ -1,123 +1,123 @@
-// One scroll per thing (owner 10-24, "like USAvionix"): a forward wheel tick, a swipe up or ArrowDown/PageDown/Space
-// takes the page to the NEXT BEAT and no further. Where the chapter has a film, the film plays natively to the beat
-// (scene-playback.js playTo) so the page moves at the film's own pace; elsewhere the page glides. Further forward
-// input is swallowed until the beat is reached, plus a short cooldown for trackpad inertia. Scrolling back is
-// ordinary scrolling (and cancels a step in progress). Beats, in page order:
-//   the arrival (hero, the opening film's end), the delivery hold (the second film's end), each tour chapter's
-//   settled moment (the framework's own display table) plus the operator beats, the numbers, the contact.
-// Off with ?freescroll=1, ?edit=1, or reduced motion.
+// One scroll per thing (owner 10-24, "like USAvionix"; 2nd pass after "fast and slow and inconsistent"):
+//   * every forward wheel tick, swipe up or ArrowDown/PageDown/Space answers the same way: the SAME short glide
+//     (GLIDE_MS) to the next chapter, and that chapter's film then plays by itself to the chapter's end
+//     (scene-playback.js playTo); nothing is locked, the page just waits at the end for the next scroll;
+//   * a forward scroll while a film is playing skips ahead: the same short glide to the next chapter, which plays;
+//   * a forward scroll at the start of a chapter that has not played yet plays it (no glide needed);
+//   * scrolling back is ordinary scrolling, and stops whatever was playing.
+// Chapters: the hero arrival (0-.25) and delivery (.25-DELIVERY_END), the tour's arrival / whole workflow / operator
+// story, the numbers, the contact. Off with ?freescroll=1, ?edit=1
+// or reduced motion.
 import {DELIVERY_END} from './intro-timing.js?v=1';
 import {displays} from './original-display-framework.js?v=10';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
-const COOLDOWN_MS=550, GESTURE_GAP_MS=90, SWIPE_PX=28;
+const GLIDE_MS=1100, COOLDOWN_MS=350, GESTURE_GAP_MS=90, SWIPE_PX=28;
 export function installBeatScroll({stage,tracks,playback,getActive,readProgress}){
  const params=new URLSearchParams(location.search);
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  if(params.has('freescroll')||params.has('edit'))return null;
  const body=document.body;
- let stepping=null,cooldownUntil=0,lastWheel=0,glideFrame=0,touchY=null,touchDone=false;
+ let playing=null,gliding=null,cooldownUntil=0,lastWheel=0,glideFrame=0,touchY=null,touchDone=false,token=0;
  const sections=()=>[...document.querySelectorAll('main > section')];
- function operatorBeats(){
-  if(body.dataset.operatorSequence!=='true')return [];
-  const last=Number(body.dataset.fieldTimelineFrames)-1,start=Number(body.dataset.operatorStartFrame);
-  if(!(last>0)||!(start>0))return [];
-  // Tail-local seconds of the three operator beats (30 fps): carrying the clippings, the carton out, the closing line.
-  return [169,491,595].map(f=>Math.min(1,(start+f)/last));
+ function tourStarts(){
+  // The tour as three things (owner 10-24: "I want the understand the job to be one scroll so it shows the entire
+  // workflow from equipment to work all in one scroll"): the arrival at the job, the whole workflow (equipment,
+  // vision, RTK, quote, work) and the operator story (grass in, product out, imagine). The fractions are where the
+  // captions switch on the installed films: the desktop film (2302 frames, operator in the second half) and the
+  // phone film (1381 frames, no operator, so its workflow runs to the end).
+  if(body.dataset.operatorSequence==='true')return [0,.185,.73];
+  if(body.dataset.neighborhood!=='true')return [0,.097];
+  const table=displays.filter(d=>d.section==='inside').map(d=>d.start).filter(p=>p>=0&&p<1);
+  return [...new Set([0,...table])].sort((a,b)=>a-b);
  }
- function beatsFor(section){
+ function chaptersFor(section){
   const id=section.id;
-  if(id==='top')return [.25,DELIVERY_END];
-  if(id==='inside'){
-   const table=displays.filter(d=>d.section==='inside'&&d.id!=='operator').map(d=>d.at);
-   return [...new Set([...table,...operatorBeats()])].filter(p=>p>0&&p<=1).sort((a,b)=>a-b);
-  }
+  if(id==='top')return [{start:0,end:.25,film:true},{start:.25,end:DELIVERY_END,film:true}];
+  if(id==='inside'){const s=tourStarts();return s.map((p,i)=>({start:p,end:i+1<s.length?s[i+1]:1,film:true}));}
   const d=displays.find(x=>x.section===id);
-  return [d?d.at:.15];
+  return [{start:d?d.at:.15,end:1,film:false}];
  }
  function positionOf(section,index,p){
   const slot=stage.slot(section),vh=innerHeight,inset=index?vh*HANDOFF:0;
   return slot.offsetTop+inset+Math.max(0,Math.min(1,p))*(slot.offsetHeight-inset-vh*HANDOFF);
  }
- function beats(){
+ function chapters(){
   const out=[];
-  sections().forEach((section,index)=>{for(const p of beatsFor(section))out.push({section,index,p,y:positionOf(section,index,p)});});
+  sections().forEach((section,index)=>{for(const c of chaptersFor(section))out.push({...c,section,index,y:positionOf(section,index,c.start),yEnd:positionOf(section,index,c.end)});});
   return out.sort((a,b)=>a.y-b.y);
  }
- function nextBeat(){const y=scrollY+4;return beats().find(b=>b.y>y)||null;}
- function glide(y){
-  return new Promise(resolve=>{
-   const from=scrollY,dy=y-from;if(Math.abs(dy)<2){resolve();return;}
-   const duration=Math.min(2200,Math.max(650,500+Math.abs(dy)/10)),t0=performance.now();
-   const ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
-   cancelAnimationFrame(glideFrame);
-   glideFrame=requestAnimationFrame(function frame(now){
-    const k=Math.min(1,(now-t0)/duration);scrollTo(0,from+dy*ease(k));
-    if(k<1&&stepping)glideFrame=requestAnimationFrame(frame);else{glideFrame=0;resolve();}
-   });
-  });
- }
- function waitPaused(timeoutMs){
-  return new Promise(resolve=>{
-   let seen=false;const timer=setTimeout(done,timeoutMs);
-   function done(){clearTimeout(timer);document.removeEventListener('motion:playback',on);resolve();}
-   function on(e){const m=e.detail?.mode;if(m==='playing'||m==='loading')seen=true;if(m==='paused'&&(seen||e.detail?.error))done();}
-   document.addEventListener('motion:playback',on);
-  });
- }
- async function step(){
-  const target=nextBeat();if(!target)return false;
-  stepping=target;body.dataset.beatStep='1';
-  document.dispatchEvent(new CustomEvent('beat:step',{detail:{section:target.section.id,p:target.p}}));
-  try{
-   const active=getActive();
-   const same=active&&active.track===target.section;
-   if(same&&active.view?.preparePlayback&&!reduced.matches&&readProgress(active)<target.p-1e-3&&playback.playTo(target.p)){
-    const seconds=Math.max(3,(target.p-readProgress(active))*90);     // generous: the tour film is 77 s end to end
-    await waitPaused(seconds*1000+4000);
-    if(stepping===target&&Math.abs(scrollY-target.y)>3)await glide(target.y);
-   }else if(stepping===target)await glide(target.y);
-  }finally{
-   if(stepping===target){stepping=null;delete body.dataset.beatStep;cooldownUntil=performance.now()+COOLDOWN_MS;
-    document.dispatchEvent(new CustomEvent('beat:arrived',{detail:{section:target.section.id,p:target.p}}));}
-  }
+ const current=()=>{const y=scrollY+4,all=chapters();let at=null;for(const c of all){if(c.y<=y)at=c;}return at;};
+ const next=()=>chapters().find(c=>c.y>scrollY+4)||null;
+ function stopPlaying(){if(playing){playing=null;playback.pause({capture:true});}}
+ function stopGlide(){if(gliding){gliding=null;cancelAnimationFrame(glideFrame);glideFrame=0;}}
+ function settle(){delete body.dataset.beatStep;cooldownUntil=performance.now()+COOLDOWN_MS;}
+ function play(chapter){
+  // The chapter's film plays by itself to the chapter's end; the page waits there.
+  if(!chapter.film||reduced.matches)return false;
+  const active=getActive();
+  if(!active||active.track!==chapter.section||readProgress(active)>=chapter.end-.004)return false;
+  if(!playback.playTo(chapter.end))return false;
+  playing=chapter;body.dataset.beatStep='1';
+  const mine=++token;
+  const onPlayback=e=>{if(mine!==token)return;const m=e.detail?.mode;if(m==='paused'){document.removeEventListener('motion:playback',onPlayback);if(playing===chapter){playing=null;settle();}}};
+  document.addEventListener('motion:playback',onPlayback);
   return true;
  }
- function cancel(){
-  if(!stepping)return;stepping=null;delete body.dataset.beatStep;cancelAnimationFrame(glideFrame);glideFrame=0;
-  playback.pause({capture:true});cooldownUntil=0;
+ function glide(chapter){
+  // The same short move for every chapter change, then the chapter plays.
+  stopPlaying();stopGlide();
+  const from=scrollY,dy=chapter.y-from;const mine=++token;gliding=chapter;body.dataset.beatStep='1';
+  document.dispatchEvent(new CustomEvent('stage:navigate',{detail:{hash:'#'+chapter.section.id,beat:true}}));
+  const t0=performance.now(),ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+  glideFrame=requestAnimationFrame(function frame(now){
+   if(mine!==token)return;
+   const k=Math.min(1,(now-t0)/GLIDE_MS);scrollTo(0,from+dy*ease(k));
+   if(k<1){glideFrame=requestAnimationFrame(frame);return;}
+   gliding=null;glideFrame=0;
+   requestAnimationFrame(()=>{if(mine!==token)return;if(!play(chapter))settle();});
+  });
  }
+ function forward(){
+  if(gliding)return;                                   // already moving: one move per scroll
+  if(playing){const n=next();if(n)glide(n);return;}    // skip ahead while a film plays
+  const here=current();
+  if(here&&here.film&&play(here))return;               // the thing in front of them plays
+  const n=next();if(n)glide(n);
+ }
+ function back(){stopPlaying();stopGlide();delete body.dataset.beatStep;cooldownUntil=0;}
  const inField=target=>!!target.closest?.('input,textarea,select,[contenteditable="true"],dialog[open]');
  addEventListener('wheel',event=>{
   if(reduced.matches||event.ctrlKey)return;
   const now=performance.now(),gap=now-lastWheel;lastWheel=now;
-  if(!(event.deltaY>0)){if(stepping)cancel();return;}           // back (or sideways): ordinary scrolling
-  if(stepping||now<cooldownUntil){event.preventDefault();return;}  // one tick is one beat: swallow the rest
-  if(gap<GESTURE_GAP_MS)return;                                   // the tail of a gesture already handled
-  if(!nextBeat())return;                                          // past the last beat: ordinary scrolling
-  event.preventDefault();step();
+  if(!(event.deltaY>0)){back();return;}                            // back (or sideways): ordinary scrolling
+  if(!next()&&!(current()?.film&&!playing))return;                  // past the last chapter: ordinary scrolling
+  event.preventDefault();
+  if(gliding||now<cooldownUntil||gap<GESTURE_GAP_MS)return;        // one gesture, one move
+  forward();
  },{passive:false});
  addEventListener('touchstart',event=>{touchY=event.touches[0].clientY;touchDone=false;},{passive:true});
  addEventListener('touchmove',event=>{
   if(touchY===null||reduced.matches||inField(event.target))return;
-  const dy=touchY-event.touches[0].clientY;                       // positive: finger moves up = forward
-  if(dy<-8){if(stepping)cancel();touchY=null;return;}             // swipe down: ordinary scrolling
-  if(stepping||performance.now()<cooldownUntil){event.preventDefault();return;}
-  if(dy>SWIPE_PX&&!touchDone){touchDone=true;if(nextBeat()){event.preventDefault();step();}}
-  else if(dy>0&&nextBeat())event.preventDefault();               // hold the page still until the swipe commits
+  const dy=touchY-event.touches[0].clientY;                        // positive: finger moves up = forward
+  if(dy<-8){back();touchY=null;return;}                            // swipe down: ordinary scrolling
+  if(!next()&&!(current()?.film&&!playing))return;
+  event.preventDefault();
+  if(dy>SWIPE_PX&&!touchDone){touchDone=true;if(!gliding&&performance.now()>=cooldownUntil)forward();}
  },{passive:false});
  addEventListener('touchend',()=>{touchY=null;},{passive:true});
  addEventListener('keydown',event=>{
   if(reduced.matches||inField(event.target)||event.altKey||event.metaKey||event.ctrlKey)return;
-  if(['ArrowUp','PageUp','Home'].includes(event.code)){if(stepping)cancel();return;}
+  if(['ArrowUp','PageUp','Home'].includes(event.code)){back();return;}
   if(!['ArrowDown','PageDown','Space'].includes(event.code))return;
   if(event.code==='Space'&&event.target.closest('button,a'))return;
-  if(stepping||performance.now()<cooldownUntil){event.preventDefault();return;}
-  if(!nextBeat())return;
-  event.preventDefault();step();
+  if(!next()&&!(current()?.film&&!playing))return;
+  event.preventDefault();
+  if(gliding||performance.now()<cooldownUntil)return;
+  forward();
  });
- document.addEventListener('stage:navigate',cancel);     // a nav link or chapter click takes over
- addEventListener('resize',()=>{if(stepping)cancel();});
- const api={step,cancel,beats,next:nextBeat,get stepping(){return stepping;}};
+ document.addEventListener('stage:navigate',e=>{if(!e.detail?.beat)back();});   // a nav link or chapter click takes over
+ addEventListener('resize',back);
+ const api={forward,back,chapters,next,current,get playing(){return playing;},get gliding(){return gliding;}};
  window.__beats=api;
  return api;
 }
