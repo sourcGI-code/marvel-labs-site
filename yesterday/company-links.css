@@ -1,0 +1,14 @@
+/* Keep the shared company link readable alongside the trailer navigation. */
+.offer-v2 .masthead .desktop-nav { gap: clamp(14px, 1.5vw, 25px); }
+.offer-v2 .masthead .desktop-nav a { white-space: nowrap; }
+@media (max-width: 1100px) {
+  .offer-v2 .masthead .desktop-nav,
+  .offer-v2 .masthead .contact-link { display: none; }
+  .offer-v2 .masthead .menu-button {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    font-size: 12px;
+  }
+  .offer-v2 .masthead .menu-button span { color: var(--accent); font-size: 24px; }
+}

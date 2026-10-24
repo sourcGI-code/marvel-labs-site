@@ -1,0 +1,126 @@
+/* One charcoal setting from the first trailer to the final invitation.
+   Transparent models and native-scroll handoffs carry the story between scenes. */
+:root{--scene:#0a0c0d;--body-copy:#abb8be;--quiet-copy:#8e9da4;--soft-line:#f2f3f218}
+html,body{background:var(--scene)}
+main>section,section.comparison-story,.comparison-pin,.platform-overview,.factories,
+.trailer-explorer,.cad-workspace,#biomass,#process,.possibilities,.contact,
+#explore-dialog,#invest-dialog{background:var(--scene);color:var(--paper);color-scheme:dark}
+.comparison-pin::before{display:none}
+.cad-viewport,.cad-fallback,.biomass-sample,.process-art,.cad-inspector{background:transparent}
+.section-light{color:var(--paper);color-scheme:dark}
+.section-kicker,.section-light .section-kicker,.contact .section-kicker{border:0;color:var(--quiet-copy);padding-bottom:0}
+.section-kicker>span:last-child{opacity:.8}
+.comparison-header,.comparison-footer,.biomass-library-top,.biomass-library-bottom,
+.journey-chapters,.cad-lower-controls,.footer-top{border:0}
+.comparison-divider{opacity:.45}
+.comparison-progress,.journey-progress{background:transparent;height:1px}
+.comparison-progress{left:3.2vw;right:auto;width:min(160px,35vw);opacity:.55}
+.journey-progress{right:auto;width:120px}
+.journey-progress>span{background:var(--accent);opacity:.55}
+
+/* Open typography replaces the panel edges. Spacing supplies the hierarchy. */
+section.platform-overview{padding-top:clamp(80px,13svh,160px);padding-bottom:clamp(90px,15svh,190px)}
+.platform-summary{padding-left:0;border:0}
+.platform-overview em,.factory-heading em,.explorer-heading em,.intro-layout em,
+.process-layout em,.product-copy em,.contact em{color:var(--accent)}
+.overview-story>p:not(.eyebrow),.platform-summary p,.explorer-heading>p,
+.intro-body>p:nth-child(2),.factory-heading>p,.size-study p,.process-intro,
+.product-copy>p,.contact-layout>div>p{color:var(--body-copy)}
+.intro-body>p:first-child{color:var(--paper)}
+.journey-skip{color:var(--quiet-copy);border-color:var(--soft-line)}
+.explorer-heading .eyebrow,.cad-inspector .eyebrow,.biomass-selection li[aria-current=step] small,
+#specimen-code,.biomass-library-bottom a,.model-download,#explore-close,
+.process-controls li[aria-current=step]>span,.dark-link{color:var(--accent)}
+.cad-inspector,.biomass-selection h3,.biomass-selection li[aria-current=step],
+#biomass-name,.process-controls li[aria-current=step],.study-notes h4{color:var(--paper)}
+.cad-inspector #part-description,.cad-inspector dd,#biomass-summary,#process-detail p,
+.study-notes,.study-notes dd,.study-notes p{color:var(--body-copy)}
+.cad-titlebar,.journey-caption,.inspector-topline,.cad-inspector dt,.cad-spec-note,
+.trailer-spec-strip>div>span,.trailer-spec-strip p,.biomass-library-top,.biomass-library-bottom,
+.biomass-selection small,.biomass-selection li:not([aria-current]),
+#biomass-description .specimen-label,#biomass-output,.specimen-note,
+.process-art-label,.process-art-index,.process-footnote,.process-controls li,
+.process-controls li>span,.study-notes dt,.study-notes-grid .eyebrow,.immersive-note{color:var(--quiet-copy)}
+.journey-figure{color:#f2f3f209}
+.cad-inspector dl>div,.study-notes,.study-notes dl>div{border-color:var(--soft-line)}
+.cad-inspector dl>div{border:0;padding:10px 0}
+.journey-chapters li{color:var(--quiet-copy)}
+.journey-chapters li[aria-current=step]{color:var(--accent)}
+.journey-chapters li:before{width:3px;height:3px}
+.journey-chapters li[aria-current=step]:after{background:var(--accent)}
+.cad-lower-controls .motion-toggle{color:var(--body-copy)}
+.cad-lower-controls .motion-toggle span{color:var(--accent)}
+.enter-trailer{background:transparent;border:1px solid #4dd8e855;color:var(--accent)}
+.enter-trailer:hover{background:var(--accent);color:var(--ink)}
+.trailer-spec-strip{padding-top:45px;padding-bottom:25px}
+.study-notes{margin-top:25px;border-bottom:0}
+.biomass-selection li[aria-current=step]{transform:translateX(12px)}
+.biomass-library-top,.biomass-library-bottom{letter-spacing:.11em}
+.biomass-static-label{color:var(--paper)}
+.process-controls li{border:0;padding:14px 0}
+#process-detail{border:0;padding-top:20px}
+.process-art:before{display:none}
+.size-study{border:0;padding-top:0}
+.size-study dl>div{border:0;padding:13px 0}
+.size-study dt{color:var(--quiet-copy)}
+.size-study h3{font-size:clamp(32px,3.5vw,58px)}
+.product-index>div{border-color:var(--soft-line)}
+.product-main{margin-left:calc(var(--gutter)*-1);overflow:hidden}
+.product-main>img{mask-image:linear-gradient(180deg,transparent,#000 12%,#000 88%,transparent);aspect-ratio:1/1.15}
+.product-main figcaption{padding-left:var(--gutter);padding-right:15px}
+.contact{padding-top:clamp(90px,16svh,200px)!important}
+.contact-email{color:var(--accent);border-color:#4dd8e855}
+.contact h2 em{font:inherit}
+.contact form label{color:var(--paper)}
+.contact form input,.contact form textarea,.contact form select{color:var(--paper);border-color:#f2f3f238}
+.contact form select option{background:var(--scene);color:var(--paper)}
+.form-note,#form-status{color:var(--body-copy)}
+.submit-button{background:transparent;border:1px solid #4dd8e855;border-radius:40px;color:var(--accent)}
+.submit-button:hover{background:var(--accent);color:var(--ink)}
+.footer-brand{color:var(--paper)}
+.footer-bottom{color:var(--quiet-copy)}
+#explore-dialog .explore-dialog-header{background:#0a0c0df2;border:0;color:var(--body-copy)}
+#explore-dialog .explore-motion,#explore-finish{border-color:#f2f3f238;color:var(--paper)}
+#invest-dialog{border-color:var(--soft-line)}
+#invest-dialog>p,#invest-dialog .invest-evidence p,#invest-dialog .invest-evidence span{color:var(--body-copy)}
+#invest-dialog>.eyebrow,#invest-dialog .invest-membership{color:var(--accent)!important}
+#invest-dialog .invest-evidence>div{border-color:var(--soft-line)}
+#invest-dialog .invest-contact{color:var(--ink);background:var(--accent);border-radius:32px}
+#invest-dialog .invest-contact:hover{background:#b6f2f6}
+:focus-visible,.section-light :focus-visible,.trailer-explorer :focus-visible,
+#explore-dialog :focus-visible,#invest-dialog :focus-visible,.contact :focus-visible{outline-color:var(--accent)}
+
+/* A scene only recedes when it leaves the viewport. Chapter reading time is unchanged.
+   Never transform a sticky ancestor: the browser owns the full scroll geometry. */
+.flow-stage{opacity:var(--flow-opacity,1)}
+.flow-stage .comparison-visual,.flow-stage .cad-viewport,
+.flow-stage .biomass-sample,.flow-stage .process-display{translate:0 var(--flow-lift,0px)}
+.flow-copy{opacity:var(--flow-opacity,1);translate:0 var(--flow-lift,0px)}
+.flow-stage:focus-within,.flow-copy:focus-within{opacity:1}
+.js-reveal .reveal,.js-reveal .reveal.visible{opacity:1;transform:none;transition:none}
+.motion-paused .flow-stage,.motion-paused .flow-copy{opacity:1;translate:none}
+.motion-paused .comparison-scroll b{animation:none}
+.motion-paused .flow-stage .comparison-visual,.motion-paused .flow-stage .cad-viewport,
+.motion-paused .flow-stage .biomass-sample,.motion-paused .flow-stage .process-display{translate:none}
+@media(min-width:761px){
+ .intro-layout{padding-top:100px;padding-bottom:110px}
+ .explorer-heading{padding-top:80px;padding-bottom:25px}
+ .platform-summary{max-width:400px;justify-self:end}
+ .factory-heading{padding-top:85px}
+ .size-comparison{gap:12vw;margin-bottom:45px}
+ .product-layout{gap:8%;padding-top:70px;padding-bottom:35px}
+}
+@media(max-width:760px){
+ .platform-summary{padding-top:25px;border:0}
+ .biomass-selection li[aria-current=step]{transform:translateY(-2px)}
+ .trailer-spec-strip{padding-top:25px;padding-bottom:10px}
+ .size-study h3{font-size:clamp(25px,6vw,36px)}
+ .product-main{margin-left:calc(var(--gutter)*-1);margin-right:calc(var(--gutter)*-1)}
+ .product-main figcaption{padding-right:var(--gutter)}
+ .process-controls li{padding:0}
+ .contact{padding-top:90px!important}
+}
+@media(prefers-reduced-motion:reduce){
+ .flow-stage,.flow-copy{opacity:1!important;translate:none!important}
+ .flow-stage .comparison-visual,.flow-stage .cad-viewport,.flow-stage .biomass-sample,.flow-stage .process-display{translate:none}
+}

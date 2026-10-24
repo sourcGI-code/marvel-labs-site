@@ -1,0 +1,51 @@
+/* Marvel Labs live palette, verified at marvellabs.com on 2026-10-15.
+   Cyan marks active states; its darker companion stays readable on white. */
+:focus-visible{outline-color:var(--accent)}
+.section-light :focus-visible,.trailer-explorer :focus-visible,#explore-dialog :focus-visible,#invest-dialog :focus-visible{outline-color:var(--accent-ink)}
+.site-header{background:#0a0c0dee}
+.platform-overview,.factories{background:var(--band)}
+.stage-masthead,.stage-title h1,.stage-story-copy,.stage-location{color:var(--paper)}
+.stage-shade{background:linear-gradient(180deg,#0a0c0d8c,transparent 35%,transparent 66%,#0a0c0de8),linear-gradient(90deg,#0a0c0d55,transparent 66%)}
+.stage-brand,.stage-story-copy>span,.stage-chapters li[aria-current],.stage-location>span:first-child{color:var(--accent)}
+.stage-chapters li::after,.stage-progress span{background:var(--accent)}
+.stage-contact{border-color:#4dd8e845;background:#4dd8e808}
+.stage-contact:hover{background:#4dd8e81c;border-color:var(--accent)}
+.stage-selector [role=tab][aria-selected=true]{color:var(--accent);border-color:var(--accent)}
+.stage-bottom #stage-motion{border-color:#4dd8e840;color:var(--accent)}
+.annotation-point{border-color:var(--accent);box-shadow:0 0 0 5px #4dd8e812}
+.annotation-leader{background:linear-gradient(90deg,#4dd8e888,#4dd8e833)}
+.annotation-copy{background:#0a0c0dc7;border-left-color:#4dd8e847}
+.annotation-copy>span{color:var(--accent)}
+.overview-invest{color:var(--accent);border-color:#4dd8e850}
+.cta-membership>span:first-child{border-color:#4dd8e850}
+.platform-overview .hero-platform-detail{border-color:#4dd8e829}
+.trailer-explorer,.cad-workspace,#explore-dialog{background:var(--paper);color:var(--ink)}
+.cad-viewport{background:radial-gradient(ellipse at 50% 55%,#fff 0%,var(--paper) 72%)}
+#explore-dialog .explore-dialog-header{background:#f2f3f2f0}
+.explorer-heading .eyebrow,.cad-inspector .eyebrow,.journey-chapters li[aria-current=step],#explore-close,.model-download{color:var(--accent-ink)}
+.journey-progress>span,.journey-chapters li[aria-current=step]:after{background:var(--accent-ink)}
+.enter-trailer,#invest-dialog .invest-contact{background:var(--ink);color:var(--accent)}
+.enter-trailer:hover,#invest-dialog .invest-contact:hover{background:var(--accent);color:var(--ink)}
+#biomass{background:#f7f9fa}
+.biomass-selection li[aria-current=step],.biomass-selection li[aria-current=step] small,#specimen-code,.biomass-library-bottom a{color:var(--accent-ink)}
+.biomass-selection li:not([aria-current]){color:#606c73}
+.specimen-dial{border-color:#c9dadd}
+.specimen-dial:before{background:repeating-conic-gradient(from -90deg,#9ab4bc 0deg .25deg,transparent .25deg 5deg)}
+.specimen-dial:after{background:conic-gradient(from 0deg,var(--accent-ink) calc(var(--material-progress)*360deg),transparent 0deg)}
+#process{background:var(--paper)}
+.process-art{background:radial-gradient(ellipse at center,#e0e9eb,transparent 70%)}
+.process-controls li{color:#606c73}
+.process-controls li[aria-current=step],.process-controls li[aria-current=step]>span{color:var(--accent-ink)}
+.journey-chapters li{color:#606c73}
+.cad-inspector dt,.cad-spec-note,#biomass-output,.specimen-note,.biomass-selection small,.process-footnote,.study-notes dt{color:#647078}
+.field-layout .eyebrow,.field-photo figcaption,.dark-link{color:var(--accent-ink)}
+.field-photo figcaption .status-dot{background:var(--accent-ink)}
+.dark-link:hover .circle-arrow{background:var(--accent-ink);color:var(--paper)}
+.contact{background:var(--accent);color:var(--ink)}
+.contact .section-kicker,.contact-layout>div>p,form input,form textarea,form select,.form-note,#form-status{color:#163b43}
+.contact .section-kicker,.contact-email,form input,form textarea,form select{border-color:#0a0c0d45}
+.contact :focus-visible{outline-color:var(--ink)}
+.submit-button{background:var(--ink);color:var(--paper)}
+.submit-button:hover{background:#19353d}
+#invest-dialog{background:var(--paper);color:var(--ink);color-scheme:light}
+#invest-dialog>.eyebrow,.invest-membership{color:var(--accent-ink)!important}

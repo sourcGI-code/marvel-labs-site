@@ -1,0 +1,9 @@
+/* Copy is real page text, including headings layered over the recorded films. */
+.hero-heading { pointer-events: auto; }
+h1,h2,h3,h4,h5,h6,p,small,dt,dd,li,.eyebrow,.motion-word,.motion-word-inner {
+  -webkit-user-select: text;
+  user-select: text;
+}
+body[data-page-editor] :is(h1,h2,h3,h4,h5,h6,p,small,.eyebrow) {
+  pointer-events: auto;
+}

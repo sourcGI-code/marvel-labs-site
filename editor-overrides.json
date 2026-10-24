@@ -1,0 +1,57 @@
+{
+  "version": 1,
+  "entries": {
+    "text-9baa197c": {
+      "page": "/",
+      "selector": "#hero-title",
+      "source": "Set it down.\nSee the whole fleet.",
+      "styles": {
+        "color": "#ffffff"
+      }
+    },
+    "text-89ece354": {
+      "page": "/",
+      "selector": "#platform-story > div:nth-of-type(1) > a:nth-of-type(1)",
+      "source": "Find your trailer \u2197",
+      "styles": {},
+      "text": "Reserve your trailer \u2197"
+    },
+    "text-847621d7": {
+      "page": "/",
+      "selector": "#platform-story > small:nth-of-type(1)",
+      "source": "IN DEVELOPMENT FOR LANDSCAPING CREWS",
+      "styles": {},
+      "text": "IN PRODUCTION FOR LANDSCAPING CREWS"
+    },
+    "text-6c6164fb": {
+      "page": "/",
+      "selector": "#platform-tag",
+      "source": "THE AUTONOMOUS MICROFACTORY TRAILER",
+      "styles": {},
+      "text": "THE UN-MANED MICROFACTORY "
+    },
+    "text-d813578d": {
+      "page": "/",
+      "selector": "#platform-tag",
+      "source": "A SECOND ARRIVAL / 16 FT",
+      "styles": {},
+      "text": "A SECOND ARRIVAL "
+    },
+    "text-29cf52c2": {
+      "page": "/",
+      "selector": "#hero-title",
+      "source": "Your next trailer.\nA factory inside.",
+      "styles": {},
+      "text": "Your next trailer.\nA factory inside."
+    }
+  },
+  "design": {
+    "studio": {
+      "finish": "charcoal",
+      "rotation": -22,
+      "x": 1,
+      "z": 0,
+      "zoom": 0.89
+    }
+  }
+}

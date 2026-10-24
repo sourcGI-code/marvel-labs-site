@@ -1,0 +1,82 @@
+/* Invisible native scroll distance drives a fixed, full-screen presentation. */
+html.immersive{scrollbar-width:none;overscroll-behavior-y:none}
+html.immersive::-webkit-scrollbar{display:none}
+.immersive body{overscroll-behavior-y:none}
+.scene-slot,.scene-tail{pointer-events:none;width:1px}
+.immersive .stage-scene{position:fixed!important;inset:0!important;width:100%;height:100svh!important;min-height:0!important;margin:0;overflow:clip;visibility:hidden;opacity:0;z-index:2;pointer-events:none}
+.immersive .stage-scene:not([inert]){pointer-events:auto}
+/* Child video/overlay visibility must never escape an offscreen scene. */
+.immersive .stage-scene[data-stage-active="false"],.immersive .stage-scene[data-stage-active="false"] *{visibility:hidden!important}
+.immersive .stage-scene>.pin{position:absolute;inset:0;height:100%;min-height:0}
+.immersive .masthead{position:fixed;background:var(--bg);height:90px}
+.immersive .stage-scene .reveal{opacity:1;transform:none;transition:none}
+.immersive .section-pad{padding:120px var(--gutter) 85px}
+.immersive .material-pin,.immersive .tour-pin{padding-top:110px}
+.immersive .story-grid{margin-top:clamp(24px,6svh,65px);gap:8vw}
+.immersive .story h2{font-size:clamp(44px,8svh,108px)}
+.immersive .inside-intro{display:flex;flex-direction:column;justify-content:center}
+.immersive .inside-intro h2{font-size:clamp(48px,12svh,140px)}
+.immersive .object-grid{margin-top:35px;gap:6vw;height:calc(100svh - 255px)}
+.immersive .object-photo{height:100%;min-height:0;display:flex;flex-direction:column}
+.immersive .object-photo img{height:calc(100% - 32px);object-fit:contain;object-position:left center;aspect-ratio:auto}
+.immersive .object-copy{max-height:100%;overflow:auto;scrollbar-width:thin}
+.immersive .object-copy h2{font-size:clamp(36px,6svh,72px);margin-bottom:24px}
+.immersive .object-copy>p{font-size:14px;margin-bottom:14px}
+.immersive .product-lines{margin:18px 0}
+.immersive .product-lines>div{padding:12px 0}
+.immersive .object-copy .fine-print{margin-top:15px}
+.immersive .contact-grid{margin-top:35px;max-height:calc(100svh - 245px);overflow:auto;scrollbar-width:thin}
+.immersive .contact h2{font-size:clamp(42px,7svh,100px)}
+.immersive .contact input,.immersive .contact select,.immersive .contact textarea{margin-bottom:20px;padding-bottom:12px}
+.immersive .site-footer{display:flex;flex-direction:column;justify-content:center;padding:100px var(--gutter)}
+.immersive .standalone .site-footer .line-link{max-width:500px;width:100%;align-self:center}
+.immersive .section-bottom{bottom:65px}
+.stage-continue{display:none}
+.immersive .scene-host canvas{transition:none}
+.immersive .motion-paused .stage-scene{transition:none}
+@media(max-width:760px){
+ .immersive .masthead{height:80px}
+ .immersive .section-pad{padding:110px var(--gutter) 80px}
+ .immersive .material-pin,.immersive .tour-pin{padding-top:90px}
+ .immersive .material-heading{top:18%;font-size:32px}
+ .immersive .material-list{top:32%}
+ .immersive .material-visual{top:27%}
+ .immersive .story-grid{gap:25px;margin-top:28px}
+ .immersive .story h2{font-size:clamp(36px,7svh,60px)}
+ .immersive .story-copy>p:first-child{font-size:19px}
+ .immersive .story-copy>p+p{font-size:13px;margin-top:18px}
+ .immersive .story-copy .line-link{margin-top:20px}
+ .immersive .inside-intro h2{font-size:clamp(40px,10vw,80px)}
+ .immersive .objects .section-top .mono{font-size:7px}
+ .immersive .object-grid{display:block;margin:0;height:auto}
+ .immersive .object-photo{position:absolute;inset:150px var(--gutter) 110px;height:auto;margin:0}
+ .immersive .object-photo img{width:100%;object-position:center}
+ .immersive .object-photo figcaption{padding:15px 0 0}
+ .immersive .object-copy{position:absolute;inset:155px var(--gutter) 90px;max-height:none}
+ .immersive .object-copy h2{font-size:clamp(34px,6svh,48px)}
+ .immersive .contact-grid{display:block;margin:0;overflow:visible;max-height:none}
+ .immersive .contact-grid>div,.immersive #inquiry-form{position:absolute;inset:165px var(--gutter) 90px;overflow:auto}
+ .immersive .contact-grid>div{display:flex;flex-direction:column;justify-content:center}
+ .immersive .contact h2{font-size:clamp(42px,7svh,62px)}
+ .immersive #inquiry-form{padding-top:0}
+ .immersive #inquiry-form textarea{min-height:90px}
+ .immersive .stage-continue{display:flex;margin-top:35px}
+ .immersive .objects .object-photo,.immersive .objects .object-copy,.immersive .contact-grid>div,.immersive #inquiry-form{transition:transform .65s cubic-bezier(.16,1,.3,1);opacity:1;visibility:inherit}
+ .immersive .objects:not(.scene-detail) .object-copy,.immersive .objects.scene-detail .object-photo,.immersive .contact:not(.scene-detail) #inquiry-form,.immersive .contact.scene-detail .contact-grid>div{opacity:1;visibility:hidden;pointer-events:none;transform:translateY(48px)}
+ .immersive .site-footer{padding:100px var(--gutter)}
+ .immersive .tour-copy{top:20%}
+ .immersive .tour-visual{top:39%}
+ .immersive .section-bottom{bottom:60px}
+}
+/* Keep long content reachable at high zoom and on short landscape screens. */
+@media(max-height:680px){
+ .immersive .story{overflow:auto;padding-top:105px}
+ .immersive .story h2{font-size:40px}
+ .immersive .story-copy>p:first-child{font-size:17px}
+ .immersive .story-copy>p+p{font-size:12px}
+ .immersive .contact-grid>div{justify-content:flex-start}
+}
+@media(prefers-reduced-motion:reduce){.immersive .stage-scene *{transition:none!important}}
+
+/* Sections travel together with the scroll; text never cross-fades. */
+.immersive [data-experience=official] .stage-scene{background:var(--bg);will-change:transform}

@@ -1,0 +1,102 @@
+/* Popout surfaces for the company pages: same radius + elevation scale as /popout.css,
+   tuned to this page's orange/graphite palette. Loaded after styles.css. */
+:root{
+ --r-pill:999px;--r-sheet:40px;--r-xl:30px;--r-lg:22px;--r-md:16px;
+ --pop-ease:cubic-bezier(.16,1,.3,1);
+ --pop-edge:#ffffff17;--pop-edge-strong:#ffffff2b;
+ --pop-shadow:inset 0 1px 0 #ffffff0f,0 1px 2px #0000004d,0 22px 44px -22px #000000b3;
+ --pop-shadow-lift:inset 0 1px 0 #ffffff14,0 2px 6px #00000059,0 38px 70px -26px #000000cc;
+ --pop-shadow-light:0 1px 2px #11171d14,0 22px 44px -26px #11171d4d
+}
+
+/* Floating glass header */
+.site-header{top:14px;left:14px;right:14px;width:auto;height:68px;padding-inline:28px 10px;border:1px solid var(--pop-edge);border-radius:var(--r-pill);background:#080a0e99;-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:var(--pop-shadow)}
+.sources-page .site-header{margin:14px 14px 0;top:0;left:0;right:0}
+.desktop-nav a{padding:9px 14px;border-radius:var(--r-pill);transition:color .2s,background .2s}
+.desktop-nav a:hover{background:#ffffff0d}
+.header-cta{display:inline-flex;align-items:center;white-space:nowrap;padding:6px 6px 6px 18px;border:1px solid var(--pop-edge);border-bottom:1px solid var(--pop-edge);border-radius:var(--r-pill);background:#ffffff0a}
+.header-cta span{display:grid;place-items:center;width:34px;height:34px;margin-left:14px;border-radius:50%;background:var(--orange);color:#080a0e;font-size:16px}
+.mobile-nav{top:90px;left:14px;right:14px;padding:10px;border:1px solid var(--pop-edge);border-radius:var(--r-xl);background:#10151bf2;-webkit-backdrop-filter:blur(20px);backdrop-filter:blur(20px);box-shadow:var(--pop-shadow-lift)}
+.mobile-nav a{padding:14px 16px;border-bottom:0;border-radius:var(--r-md)}
+.mobile-nav a:hover{background:#ffffff0d}
+.menu-toggle{border-radius:var(--r-pill)}
+
+/* Pill buttons with a round arrow chip */
+.button{gap:24px;min-height:56px;padding:8px 8px 8px 24px;border-radius:var(--r-pill);box-shadow:var(--pop-shadow);transition:transform .45s var(--pop-ease),box-shadow .45s var(--pop-ease),background .25s}
+.button:hover{transform:translateY(-2px);box-shadow:var(--pop-shadow-lift)}
+.button span{display:grid;place-items:center;flex-shrink:0;width:40px;height:40px;border-radius:50%;font-size:18px;transition:transform .45s var(--pop-ease)}
+.button:hover span{transform:rotate(45deg)}
+.button-orange span{background:#080a0e;color:var(--orange)}
+.button-dark span{background:var(--orange);color:#080a0e}
+
+/* Section sheets float on the page */
+.platform,.applications,.contact{margin-inline:14px;border-radius:var(--r-sheet)}
+.platform{border:1px solid var(--pop-edge)}
+.manufacturing-line{margin:14px;border:1px solid var(--pop-edge);border-radius:var(--r-pill)}
+
+/* Platform tabs become a segmented control; the panel is one rounded card */
+.process-tabs{gap:6px;padding:6px;border:1px solid var(--pop-edge);border-radius:var(--r-lg);background:#0b1016}
+.process-tabs button,.process-tabs button:first-child{padding:16px 20px;border-radius:calc(var(--r-lg) - 6px);transition:background .25s,color .25s}
+.process-tabs button+button{border-left:0}
+.process-tabs button:hover{background:#ffffff08}
+.process-tabs button[aria-selected=true]{background:#18212b;box-shadow:var(--pop-shadow)}
+.process-tabs button[aria-selected=true]:after{content:none}
+.process-panel{overflow:hidden;border:1px solid var(--pop-edge);border-radius:var(--r-xl);box-shadow:var(--pop-shadow)}
+.process-image .image-label{padding:6px 12px;border-radius:var(--r-pill);background:#080a0eb3;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+
+/* Idea: three layers as cards */
+.three-layers{gap:14px;border-top:0}
+.three-layers>div,.three-layers>div+div{padding:26px 28px 30px;border:1px solid var(--pop-edge);border-radius:var(--r-lg);background:linear-gradient(180deg,#121820,#0d1217);box-shadow:var(--pop-shadow);transition:transform .55s var(--pop-ease),box-shadow .55s var(--pop-ease)}
+.three-layers>div:hover{transform:translateY(-4px);box-shadow:var(--pop-shadow-lift)}
+
+/* Materials */
+.materials-feature>img,.company-layout figure>img{border-radius:var(--r-xl)}
+.material-list span{padding:7px 14px;border-radius:var(--r-pill);background:#ffffff08}
+
+/* Portfolio: pill filters, rounded tiles */
+.portfolio-controls{border:0;padding:6px 6px 6px 6px}
+.filters{gap:8px;padding:6px;border:1px solid #11171d1f;border-radius:var(--r-pill);background:#f5f4ef}
+.filters button{padding:10px 18px;border-radius:var(--r-pill);transition:background .25s,color .25s}
+.filters button:hover{background:#11171d0d}
+.filters button.active{background:#11171d;color:#f0f1eb}
+.filters button.active:after{content:none}
+.filters button.active span{color:#a9b3ae}
+.project-image{border-radius:var(--r-lg);box-shadow:var(--pop-shadow-light);transition:transform .55s var(--pop-ease),box-shadow .55s var(--pop-ease)}
+.project:hover .project-image{transform:translateY(-4px);box-shadow:0 2px 6px #11171d1f,0 34px 60px -28px #11171d73}
+.project-open{border-radius:50%}
+
+/* Deployment */
+.deployment-image{border-radius:var(--r-lg);box-shadow:var(--pop-shadow)}
+.deployment-image>span{padding:5px 11px;border-radius:var(--r-pill)}
+.roadmap{padding:18px 28px;border:1px solid var(--pop-edge);border-radius:var(--r-pill);background:#0d1217}
+
+/* FAQ as stacked cards */
+.faq-list{display:grid;gap:10px}
+.faq-list details,.faq-list details:last-child{padding-inline:24px;border:1px solid var(--pop-edge);border-radius:var(--r-lg);background:#0d1217;transition:border-color .25s,background .25s}
+.faq-list details[open]{border-color:var(--pop-edge-strong);background:#10161d}
+
+/* Contact sheet */
+.contact{box-shadow:0 30px 80px -40px #ff5a1f80}
+.contact-bottom{border-top-color:#11141726}
+
+/* Product dialog */
+dialog{border-radius:var(--r-xl);border-color:var(--pop-edge-strong);box-shadow:var(--pop-shadow-lift)}
+
+@media(prefers-reduced-motion:reduce){
+ .button,.button span,.three-layers>div,.project-image{transition:none}
+ .button:hover,.three-layers>div:hover,.project:hover .project-image{transform:none}
+}
+@media(max-width:760px){
+ .site-header{top:10px;left:10px;right:10px;height:60px;padding-inline:18px 8px}
+ .sources-page .site-header{margin:10px 10px 0}
+ .header-cta{padding:4px 4px 4px 14px}
+ .header-cta span{width:30px;height:30px;margin-left:10px;font-size:14px}
+ .platform,.applications,.contact{margin-inline:8px;border-radius:var(--r-xl)}
+ .manufacturing-line{margin:10px 8px;border-radius:var(--r-lg)}
+ .process-tabs{border-radius:var(--r-md)}
+ .process-tabs button,.process-tabs button:first-child{padding:12px 14px}
+ .three-layers{gap:10px}
+ .filters{border-radius:var(--r-lg)}
+ .roadmap{border-radius:var(--r-lg);padding:16px 18px}
+ .faq-list details,.faq-list details:last-child{padding-inline:18px}
+}

@@ -1,0 +1,388 @@
+{
+  "retrieved": "2026-10-21",
+  "licenseURL": "https://polyhaven.com/license",
+  "assets": [
+    {
+      "asset": "Industrial Workshop Foundry",
+      "creator": "Dimitrios Savva; Jarod Guest",
+      "page": "https://polyhaven.com/a/industrial_workshop_foundry",
+      "license": "CC0-1.0",
+      "kind": "Photographed HDR environment",
+      "files": [
+        "industrial-workshop-2k.hdr"
+      ],
+      "sha256": {
+        "industrial-workshop-2k.hdr": "e202851c21d46df24526d7641da4bea3db94cb2bf9b6cf09dcba4f80ea8e3c58"
+      }
+    },
+    {
+      "asset": "Rubber Tiles",
+      "creator": "Amal Kumar",
+      "page": "https://polyhaven.com/a/rubber_tiles",
+      "license": "CC0-1.0",
+      "kind": "Photo-based PBR surface",
+      "physicalRepeatMetres": 2,
+      "files": [
+        "rubber-color.jpg",
+        "rubber-roughness.jpg",
+        "rubber-normal.jpg"
+      ],
+      "sha256": {
+        "rubber-color.jpg": "a14ed9c9b8235a71ce2d7d0d5d0d949a07b8e895d2b78cb3589a6c755bd95215",
+        "rubber-roughness.jpg": "5679ff2440d15093bd60df56460199f3b31cdee14bb7bf1983be3af8b8fa60c2",
+        "rubber-normal.jpg": "27b1e34b797cf4f8ccbfa8fba1736b0ec6d9e0e14522c095b68fe16d483f2aa5"
+      }
+    },
+    {
+      "asset": "Clean Asphalt",
+      "creator": "Dimitrios Savva",
+      "page": "https://polyhaven.com/a/clean_asphalt",
+      "license": "CC0-1.0",
+      "kind": "Photo-based PBR surface",
+      "physicalRepeatMetres": 2.1,
+      "files": [
+        "asphalt-color.jpg",
+        "asphalt-roughness.jpg",
+        "asphalt-normal.jpg"
+      ],
+      "sha256": {
+        "asphalt-color.jpg": "9d58f263b695c268e391aa39ea2f6b30ab9f36d279715cc78593a4d43368039c",
+        "asphalt-roughness.jpg": "3b5afbcee7e27fa8908b0e191dd7eda5d4239bbfe68f9ce0b84e4f55f708d2e7",
+        "asphalt-normal.jpg": "ee6e217a75851a73ab0ce54501e787b63707e0cf8dfd7293989adf7d3e325162"
+      }
+    },
+    {
+      "asset": "Shrub 02",
+      "creator": "Rico Cilliers",
+      "page": "https://polyhaven.com/a/shrub_02",
+      "license": "CC0-1.0",
+      "kind": "Photo-scanned 3D model (glTF, 1k textures)",
+      "retrieved": "2026-10-23",
+      "usedBy": "scripts/neighborhood-environment-v2.py (neighborhood street environment)",
+      "files": [
+        "shrub_02.bin",
+        "shrub_02_1k.gltf",
+        "textures/shrub_02_arm_1k.jpg",
+        "textures/shrub_02_diff_1k.jpg",
+        "textures/shrub_02_nor_gl_1k.jpg"
+      ],
+      "sha256": {
+        "shrub_02_1k.gltf": "99de0a70fe88ad414615cc8d8e020617c8512e2abfe08b911b153a6fcc40d93e",
+        "textures/shrub_02_arm_1k.jpg": "7186bf604d5c02f873aef6de2346cc06b6fa48f47d054edbef36d2c3772c0890",
+        "textures/shrub_02_nor_gl_1k.jpg": "54c24e433365d5410223b7ebd2b33042b80831f80976e10768114db5ef6911d7",
+        "shrub_02.bin": "5c1b79da1cfdbac90599542ccd1f75ba433a3a4d356b1ea03655adb39b0e2c96",
+        "textures/shrub_02_diff_1k.jpg": "9956eff294034d70516d867e9668428a23d782feb3d4c34061dce5e44bacd5a8"
+      }
+    },
+    {
+      "asset": "Periwinkle Plant",
+      "creator": "Amal Kumar",
+      "page": "https://polyhaven.com/a/periwinkle_plant",
+      "license": "CC0-1.0",
+      "kind": "Photo-scanned 3D model (glTF, 1k textures)",
+      "retrieved": "2026-10-23",
+      "usedBy": "scripts/neighborhood-environment-v2.py (neighborhood street environment)",
+      "files": [
+        "periwinkle_plant.bin",
+        "periwinkle_plant_1k.gltf",
+        "textures/periwinkle_plant_arm_1k.jpg",
+        "textures/periwinkle_plant_diff_1k.jpg",
+        "textures/periwinkle_plant_nor_gl_1k.jpg"
+      ],
+      "sha256": {
+        "periwinkle_plant_1k.gltf": "df781eea76123fc6eee97e6e8d466743e3a5fb08e1a2c3f5025a57e090d2cc55",
+        "textures/periwinkle_plant_nor_gl_1k.jpg": "36d2464e7500f741500228b955c1fb0f26d954e869bd26f93dd25c0fafc5087d",
+        "textures/periwinkle_plant_diff_1k.jpg": "32d61084e6c07fa3ca8e03b35b347a12717f971efc90e8fe1185931ee2298c56",
+        "textures/periwinkle_plant_arm_1k.jpg": "d964e2e1118c2ca88c137b45590f48d83d3471fef48e913cbd57bf7122bbe4a3",
+        "periwinkle_plant.bin": "f039855d84d59f764838285c2b041a5cf255d103afc856e219a62482826d9655"
+      }
+    },
+    {
+      "asset": "Shrub 03",
+      "creator": "Rico Cilliers",
+      "page": "https://polyhaven.com/a/shrub_03",
+      "license": "CC0-1.0",
+      "kind": "Photo-scanned 3D model (glTF, 1k textures)",
+      "retrieved": "2026-10-23",
+      "usedBy": "scripts/neighborhood-environment-v2.py (neighborhood street environment)",
+      "files": [
+        "shrub_03.bin",
+        "shrub_03_1k.gltf",
+        "textures/shrub_03_arm_1k.jpg",
+        "textures/shrub_03_diff_1k.jpg",
+        "textures/shrub_03_nor_gl_1k.jpg"
+      ],
+      "sha256": {
+        "shrub_03_1k.gltf": "b76d7c14bc027e834e82d3f984c32b5d060e62908aa90ff9420a637ca253a8ea",
+        "shrub_03.bin": "bf4df21e6d2a2bc5f00b4c9142f776171fe7da00cf960001825748067af542b6",
+        "textures/shrub_03_arm_1k.jpg": "3e2b16812a623037138eedace958210c5f3443a827bbe69663045bba5612f815",
+        "textures/shrub_03_diff_1k.jpg": "3cadc7aba46d3aabbd7d6d2b1d04aa32e2a7da0bc87c2d38ef3cb1ee42cb03ec",
+        "textures/shrub_03_nor_gl_1k.jpg": "ff856bacfce859b8a7555dd9a3b92fbd36b2e775d486be71df485afb4235d6c9"
+      }
+    },
+    {
+      "asset": "Flower Gazania",
+      "creator": "James Ray Cock; Jenelle van Heerden",
+      "page": "https://polyhaven.com/a/flower_gazania",
+      "license": "CC0-1.0",
+      "kind": "Photo-scanned 3D model (glTF, 1k textures)",
+      "retrieved": "2026-10-23",
+      "usedBy": "scripts/neighborhood-environment-v2.py (neighborhood street environment)",
+      "files": [
+        "flower_gazania.bin",
+        "flower_gazania_1k.gltf",
+        "textures/flower_gazania_arm_1k.jpg",
+        "textures/flower_gazania_diff_1k.jpg",
+        "textures/flower_gazania_nor_gl_1k.jpg"
+      ],
+      "sha256": {
+        "flower_gazania_1k.gltf": "73c7f4094f2ad78ddfbe6373f8372ddb736a5d9fc6485db08ae32301edc95a24",
+        "flower_gazania.bin": "a3864c51fce2dacb01629a0c364730e5988ac5a7a937acc0e2635c946d786797",
+        "textures/flower_gazania_nor_gl_1k.jpg": "802d0f9234ccd778c537b3b5ea3714f219d73a80ab794ea77271ab47dbbc9789",
+        "textures/flower_gazania_diff_1k.jpg": "9d3022ebe7bfe0493a3e46aad87ea4746ea51df8c8b3e19294f1bb718a3147bb",
+        "textures/flower_gazania_arm_1k.jpg": "80800dca73ad66b8c51b089db771b7a15c9e57dfd959e0da5cde434b3d8151b4"
+      }
+    },
+    {
+      "asset": "Street Lamp 02",
+      "creator": "Josh Dean",
+      "page": "https://polyhaven.com/a/street_lamp_02",
+      "license": "CC0-1.0",
+      "kind": "Photo-scanned 3D model (glTF, 1k textures)",
+      "retrieved": "2026-10-23",
+      "usedBy": "scripts/neighborhood-environment-v2.py (neighborhood street environment)",
+      "files": [
+        "street_lamp_02.bin",
+        "street_lamp_02_1k.gltf",
+        "textures/street_lamp_02_arm_1k.jpg",
+        "textures/street_lamp_02_diff_1k.jpg",
+        "textures/street_lamp_02_nor_gl_1k.jpg"
+      ],
+      "sha256": {
+        "street_lamp_02_1k.gltf": "3a8a42486c5dc4538a8b44aeeef502c64a1c9d0d42fa5610e37886c355337ff8",
+        "textures/street_lamp_02_diff_1k.jpg": "19882567313dd43fef60f9fa41a4c55f81a957f9fee539e931fc36a32e386b6c",
+        "textures/street_lamp_02_arm_1k.jpg": "a1e2d654e7d5d48a1fdfbf720840192d171df54e5ea5f055145d0472d617eede",
+        "street_lamp_02.bin": "e544c04855dcf728ff2724f691f6784690b8ba3ac323a9a332e56b271ffe1d7c",
+        "textures/street_lamp_02_nor_gl_1k.jpg": "fdd9fb26ca853020ed156fdd84e90ce3f9a68bf94edf71c0ffe72add67e316c6"
+      }
+    },
+    {
+      "asset": "Fire Hydrant",
+      "creator": "Gon\u00e7alo Fel\u00edcio",
+      "page": "https://polyhaven.com/a/fire_hydrant",
+      "license": "CC0-1.0",
+      "kind": "Photo-scanned 3D model (glTF, 1k textures)",
+      "retrieved": "2026-10-23",
+      "usedBy": "scripts/neighborhood-environment-v2.py (neighborhood street environment)",
+      "files": [
+        "fire_hydrant.bin",
+        "fire_hydrant_1k.gltf",
+        "textures/fire_hydrant_aged_arm_1k.jpg",
+        "textures/fire_hydrant_aged_diff_1k.jpg",
+        "textures/fire_hydrant_aged_nor_gl_1k.jpg",
+        "textures/fire_hydrant_arm_1k.jpg",
+        "textures/fire_hydrant_diff_1k.jpg",
+        "textures/fire_hydrant_nor_gl_1k.jpg"
+      ],
+      "sha256": {
+        "fire_hydrant_1k.gltf": "aaca81b2904e6e5f1fb10a854c7b9a921232624387d1f8757b5c6bdaedcd9eb0",
+        "fire_hydrant.bin": "a3c7ed023bc4aff190902764326e7f83ae1a108f6bac2a1b637c38a8e03eb516",
+        "textures/fire_hydrant_nor_gl_1k.jpg": "f6786775276c7b48f0582fdd7c43984b63b15b7a8e0ea0e2f2af8cdab98c06d7",
+        "textures/fire_hydrant_aged_diff_1k.jpg": "3198cabcaf5107e59109bd07dfe8e4c87b3f0533173d10fafdaf86f8024a291e",
+        "textures/fire_hydrant_aged_arm_1k.jpg": "9c46b014735a4e8df5a80e4c030ddb321c9aeaa715ad4ea3eb60e6f0909c9d0a",
+        "textures/fire_hydrant_aged_nor_gl_1k.jpg": "6fadc78fd5d696bf594ff021aaf93a0c6aced761830f9aa6971c51b17c869c35",
+        "textures/fire_hydrant_diff_1k.jpg": "a3d0b8b6fcd8a39c8d5067f8ef95e3290053131887398f89baf57c1f8d24ab45",
+        "textures/fire_hydrant_arm_1k.jpg": "d15bf8fc6389ae48a1060a38057c2093469e62f585c8033d300b80af81d40f9d"
+      }
+    },
+    {
+      "asset": "Tree Small 02",
+      "creator": "Rico Cilliers",
+      "page": "https://polyhaven.com/a/tree_small_02",
+      "license": "CC0-1.0",
+      "kind": "Photo-scanned 3D model (glTF, 1k textures)",
+      "retrieved": "2026-10-23",
+      "usedBy": "scripts/neighborhood-environment-v2.py (neighborhood street environment)",
+      "files": [
+        "textures/tree_small_02_arm_1k.jpg",
+        "textures/tree_small_02_branch_arm_1k.jpg",
+        "textures/tree_small_02_branch_diff_1k.jpg",
+        "textures/tree_small_02_branch_nor_gl_1k.jpg",
+        "textures/tree_small_02_diff_1k.jpg",
+        "textures/tree_small_02_leaves_arm_1k.jpg",
+        "textures/tree_small_02_leaves_diff_1k.jpg",
+        "textures/tree_small_02_leaves_nor_gl_1k.jpg",
+        "textures/tree_small_02_nor_gl_1k.jpg",
+        "tree_small_02.bin",
+        "tree_small_02_1k.gltf"
+      ],
+      "sha256": {
+        "tree_small_02_1k.gltf": "3062a709614c05b80fdc1e56583998bc3cb1027b0d52f956c8ecfb882ff8ca6d",
+        "textures/tree_small_02_branch_nor_gl_1k.jpg": "a2efae9e7fede259601188cd5cb7e561fc502bd87e04d862a9532b2d8e647a62",
+        "textures/tree_small_02_branch_diff_1k.jpg": "a71b768e330c0c6cca097e30314f6b4e842ef724a1370f6aab14b4434eec64cb",
+        "textures/tree_small_02_branch_arm_1k.jpg": "8968b46d76c67da09ebbf4eed04b8123c9e0ddf5b55d123968b35b32aa76d27a",
+        "textures/tree_small_02_leaves_nor_gl_1k.jpg": "8c72e04fb23e16ae1df79c01385a638473d1dd4dede3d51e83d70153c129f09b",
+        "textures/tree_small_02_leaves_diff_1k.jpg": "261e7d7a5ac7d2e16ea8823ff8510be8f3f615999724232994039ad2885e5c36",
+        "textures/tree_small_02_leaves_arm_1k.jpg": "71f81374daf5a8f3e6eb2c694264a1769fdb0bea508178e4105618eecea83c3e",
+        "textures/tree_small_02_nor_gl_1k.jpg": "9c83be074c950ea1b94c732c0c0291b53b9ba357f932d378bafe3ca3b4418871",
+        "textures/tree_small_02_diff_1k.jpg": "4e0093f407b3a1120a36de49a48ebe5a465a9a9b77e361c7a3e66866e115e404",
+        "textures/tree_small_02_arm_1k.jpg": "891c5a1bb124292984b01558e9f2b0302d27d2fa3ccf9dfc6c34f9ea4ca24e6c",
+        "tree_small_02.bin": "8da6c3c389ad8748286d1b7488cd827f75ebdad9d8f59ef7dfb0916df5edc634"
+      }
+    },
+    {
+      "asset": "Denim Fabric 03",
+      "creator": "colormass; Rico Cilliers",
+      "page": "https://polyhaven.com/a/denim_fabric_03",
+      "license": "CC0-1.0",
+      "kind": "Photo-based PBR surface",
+      "physicalRepeatMetres": 0.271,
+      "files": [
+        "denim_fabric_03_diff_1k.jpg",
+        "denim_fabric_03_nor_gl_1k.jpg",
+        "denim_fabric_03_rough_1k.jpg"
+      ],
+      "sha256": {
+        "denim_fabric_03_diff_1k.jpg": "4a1d34077a5c999f590a31a056be5f70edac19f254b6d970e41942b335788575",
+        "denim_fabric_03_nor_gl_1k.jpg": "9b72b5f97f71d4256acb7ee21e532d7fe8af93c49aabf196cc6692b63bd67c09",
+        "denim_fabric_03_rough_1k.jpg": "1c92a2278fb834849ae2c16379a6f5a0e6c616c237654791a93bbdc86c7b1d43"
+      },
+      "use": "Operator v2: work shirt (twill)",
+      "localDir": "render-work/realism/claude-operator-v2/textures"
+    },
+    {
+      "asset": "Denim Fabric 05",
+      "creator": "colormass; Rico Cilliers",
+      "page": "https://polyhaven.com/a/denim_fabric_05",
+      "license": "CC0-1.0",
+      "kind": "Photo-based PBR surface",
+      "physicalRepeatMetres": 0.27,
+      "files": [
+        "denim_fabric_05_diff_1k.jpg",
+        "denim_fabric_05_nor_gl_1k.jpg",
+        "denim_fabric_05_rough_1k.jpg"
+      ],
+      "sha256": {
+        "denim_fabric_05_diff_1k.jpg": "38a33838172801f4be45fa107278f15b32eb84ca671eb923cb6de462bb687f9d",
+        "denim_fabric_05_nor_gl_1k.jpg": "7ee9ec3f1ed43665c446df0cb25f0bf66c20a22376d872384104a027c5c3e01e",
+        "denim_fabric_05_rough_1k.jpg": "a84887be5e1492676f338e30cf3f2894419a76f850bf00f7fd02ff44a7f3bb66"
+      },
+      "use": "Operator v2: work pants (canvas/duck twill)",
+      "localDir": "render-work/realism/claude-operator-v2/textures"
+    },
+    {
+      "asset": "Waffle Pique Cotton",
+      "creator": "colormass; Rico Cilliers",
+      "page": "https://polyhaven.com/a/waffle_pique_cotton",
+      "license": "CC0-1.0",
+      "kind": "Photo-based PBR surface",
+      "physicalRepeatMetres": 0.281,
+      "files": [
+        "waffle_pique_cotton_diff_1k.jpg",
+        "waffle_pique_cotton_nor_gl_1k.jpg",
+        "waffle_pique_cotton_rough_1k.jpg"
+      ],
+      "sha256": {
+        "waffle_pique_cotton_diff_1k.jpg": "aefa6db3ee7f619f6ffa84ce7093af958faa15d457cb694e7dc540e0524561a8",
+        "waffle_pique_cotton_nor_gl_1k.jpg": "d8aa0eef91fa7468d1f9a582301db6c17081a12bee9be42719de352e1a87efae",
+        "waffle_pique_cotton_rough_1k.jpg": "e7c5d225ddfbfcc386cea0cd5f16605f1af8ff3b84c7289344c6f11c5a9b3186"
+      },
+      "use": "Operator v2: hi-vis vest knit",
+      "localDir": "render-work/realism/claude-operator-v2/textures"
+    },
+    {
+      "asset": "Denim Fabric 06",
+      "creator": "Greg Zaal; Rico Cilliers",
+      "page": "https://polyhaven.com/a/denim_fabric_06",
+      "license": "CC0-1.0",
+      "kind": "Photo-based PBR surface",
+      "physicalRepeatMetres": 0.254,
+      "files": [
+        "denim_fabric_06_diff_1k.jpg",
+        "denim_fabric_06_nor_gl_1k.jpg",
+        "denim_fabric_06_rough_1k.jpg"
+      ],
+      "sha256": {
+        "denim_fabric_06_diff_1k.jpg": "9da7f6672e71a87135d5b4b6bdf4471ee9d250f88ae78ce51f36cd0a6ed5d78d",
+        "denim_fabric_06_nor_gl_1k.jpg": "f94bbaa53003762c96624cabebb1a3fd334780c8c96548e9c14990f1e6920df2",
+        "denim_fabric_06_rough_1k.jpg": "4309d3acc80fb097652e1b2f5d6bd63f16351e215c3ce55490776ae0bd8380cb"
+      },
+      "use": "Operator v2: cap twill",
+      "localDir": "render-work/realism/claude-operator-v2/textures"
+    },
+    {
+      "asset": "Brown Leather",
+      "creator": "Rob Tuytel",
+      "page": "https://polyhaven.com/a/brown_leather",
+      "license": "CC0-1.0",
+      "kind": "Photo-based PBR surface",
+      "physicalRepeatMetres": 0.4,
+      "files": [
+        "brown_leather_diff_1k.jpg",
+        "brown_leather_nor_gl_1k.jpg",
+        "brown_leather_rough_1k.jpg"
+      ],
+      "sha256": {
+        "brown_leather_diff_1k.jpg": "7e9e1d6566d1fd91d4ceb4966c4820361e85d53a7a828b6bab3b2a093a876cd1",
+        "brown_leather_nor_gl_1k.jpg": "506a0b7650c2dea285e247f26ed2d0d6ec38fc10dd584359f0d203e9c082236d",
+        "brown_leather_rough_1k.jpg": "f9739ef2da2e3d17b9ec253f5042f61b10dc10f3ae28f6cf6491650d3d1b0ca3"
+      },
+      "use": "Operator v2: work boots leather",
+      "localDir": "render-work/realism/claude-operator-v2/textures"
+    },
+    {
+      "asset": "Fabric Leather 01",
+      "creator": "Rob Tuytel",
+      "page": "https://polyhaven.com/a/fabric_leather_01",
+      "license": "CC0-1.0",
+      "kind": "Photo-based PBR surface",
+      "physicalRepeatMetres": 0.4,
+      "files": [
+        "fabric_leather_01_diff_1k.jpg",
+        "fabric_leather_01_nor_gl_1k.jpg",
+        "fabric_leather_01_rough_1k.jpg"
+      ],
+      "sha256": {
+        "fabric_leather_01_diff_1k.jpg": "19d8935e5f9ece35b422290b1a0333cc438fabab88990d8217ee37408bc33c64",
+        "fabric_leather_01_nor_gl_1k.jpg": "a6ce4658c551d6c1576b9e0253791322ac02fc1ccf5c836d7e7e8d168ea30e51",
+        "fabric_leather_01_rough_1k.jpg": "e86b189a48f0de9ea7e6abb6a0a45220ee199b1228335952e1e130a16778d1e4"
+      },
+      "use": "Operator v2: work gloves leather",
+      "localDir": "render-work/realism/claude-operator-v2/textures"
+    },
+    {
+      "asset": "Hessian 380",
+      "creator": "colormass; Rico Cilliers",
+      "page": "https://polyhaven.com/a/hessian_380",
+      "license": "CC0-1.0",
+      "kind": "Photo-based PBR surface",
+      "physicalRepeatMetres": 0.274,
+      "files": [
+        "hessian_380_diff_1k.jpg",
+        "hessian_380_nor_gl_1k.jpg",
+        "hessian_380_rough_1k.jpg"
+      ],
+      "sha256": {
+        "hessian_380_diff_1k.jpg": "5727302df3a9c845e6320ff186ac13fc7d0f1ffcd6fda71667e808e09379fe6f",
+        "hessian_380_nor_gl_1k.jpg": "3994fd74148cb413892edd08155976497b3e7e15a403a182f07325a6b1e7be1a",
+        "hessian_380_rough_1k.jpg": "a828755c5ddc9af0697eeed46427c5145df1dea5f1e2839f643156a285282fed"
+      },
+      "use": "Operator v2: grass bag woven fabric",
+      "localDir": "render-work/realism/claude-operator-v2/textures"
+    },
+    {
+      "asset": "Operator skin, eyes, brows, hair (unchanged maps; shader upgraded only)",
+      "creator": "MPFB / MakeHuman system assets via the BlenderKit \"Rigged Caucasian Character\" (Mohammed Hossain)",
+      "page": "https://www.blendkit.com/asset-gallery-detail/b4d306c5-1a3e-41f1-8e43-bb8081ff3e9c/",
+      "license": "BlenderKit Royalty Free (see render-work/realism/operator-sequence-v1/LICENSE-AND-SOURCE.txt); rendered media only",
+      "kind": "Packed textures inside Marvel-Operator-Workwear.blend",
+      "files": [
+        "young_lightskinned_male_diffuse.png",
+        "brown_eye.png",
+        "eyebrow009.png",
+        "short04_diffuse.png"
+      ],
+      "note": "v2 adds subsurface scattering and a procedural pore bump; no new image files"
+    }
+  ]
+}

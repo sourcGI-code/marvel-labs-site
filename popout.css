@@ -1,0 +1,690 @@
+/* Popout surfaces: one radius + elevation scale, loaded last on every page.
+   Content sits on raised, rounded cards; actions are pills; chrome floats as glass.
+   Remove the <link> to popout.css to return to the flat layout. */
+
+/* Tokens recompute wherever a scope redefines --bg/--ink (palettes, opening, tour). */
+:root,[data-experience=official] :is(.masthead,.platform-pin,.official-tour){
+ --r-pill:999px;--r-xl:30px;--r-lg:22px;--r-md:16px;--r-sm:12px;
+ --pop-ease:cubic-bezier(.16,1,.3,1);
+ --pop-surface:color-mix(in srgb,var(--ink) 4%,var(--bg));
+ --pop-surface-2:color-mix(in srgb,var(--ink) 7.5%,var(--bg));
+ --pop-tint:color-mix(in srgb,var(--ink) 4%,transparent);
+ --pop-edge:color-mix(in srgb,var(--ink) 10%,transparent);
+ --pop-edge-strong:color-mix(in srgb,var(--ink) 18%,transparent);
+ --pop-glass:color-mix(in srgb,var(--bg) 66%,transparent);
+ --pop-accent-soft:color-mix(in srgb,var(--accent) 14%,transparent);
+ --pop-shadow:inset 0 1px 0 color-mix(in srgb,var(--ink) 7%,transparent),0 1px 2px #0000004d,0 22px 44px -22px #000000b3;
+ --pop-shadow-lift:inset 0 1px 0 color-mix(in srgb,var(--ink) 9%,transparent),0 2px 6px #00000059,0 38px 70px -26px #000000cc;
+ --pop-card:linear-gradient(180deg,var(--pop-surface-2),var(--pop-surface))
+}
+/* Light palette; the tour keeps its forced dark scope, so it keeps the dark shadows. */
+:root[data-palette=ivory],:root[data-palette=ivory] [data-experience=official] :is(.masthead,.platform-pin){
+ --pop-shadow:inset 0 1px 0 #ffffff99,0 1px 2px #1d352c14,0 22px 44px -24px #1d352c40;
+ --pop-shadow-lift:inset 0 1px 0 #ffffffb3,0 2px 6px #1d352c1f,0 38px 70px -28px #1d352c59;
+ --pop-surface:color-mix(in srgb,#fff 45%,var(--bg));--pop-surface-2:color-mix(in srgb,#fff 70%,var(--bg))
+}
+
+/* ---------- Floating glass navigation ---------- */
+.immersive .masthead,.offer-v2[data-active-scene]:not([data-active-scene=top]):not([data-active-scene=inside]) .masthead{
+ top:14px;left:max(12px,calc(var(--gutter) - 22px));right:max(12px,calc(var(--gutter) - 22px));width:auto;height:66px;
+ padding:0 12px 0 26px;border-radius:var(--r-pill);border:1px solid var(--pop-edge);
+ background:var(--pop-glass);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:var(--pop-shadow)
+}
+.immersive .masthead,.pricing-page .masthead{gap:10px}
+.immersive .masthead .desktop-nav,.pricing-page .masthead .desktop-nav{flex:1;justify-content:center}
+.immersive .masthead .desktop-nav{gap:4px}
+.immersive .masthead .desktop-nav a{padding:9px 14px;border-radius:var(--r-pill);transition:color .3s,background .3s}
+.immersive .masthead .desktop-nav a:is(:hover,:focus-visible){background:var(--pop-tint);color:var(--ink)}
+[data-experience=official] .masthead .desktop-nav a:after{content:none}
+.immersive .masthead .contact-link{gap:14px;padding:5px 5px 5px 18px;border-radius:var(--r-pill);background:var(--pop-tint);border:1px solid var(--pop-edge)}
+.immersive .masthead .contact-link span{width:36px;height:36px;border:0;background:var(--accent);color:var(--bg);font-size:17px}
+.immersive .masthead .motion-button{width:38px;height:38px;background:var(--pop-tint);border-color:var(--pop-edge)}
+#mobile-menu{inset:86px 12px auto;padding:10px;border-radius:var(--r-xl);border:1px solid var(--pop-edge);background:color-mix(in srgb,var(--bg) 82%,transparent);-webkit-backdrop-filter:blur(22px);backdrop-filter:blur(22px);box-shadow:var(--pop-shadow-lift)}
+#mobile-menu a{padding:14px 18px;border-radius:var(--r-md);font-size:20px}
+#mobile-menu a:is(:hover,:focus-visible){background:var(--pop-tint)}
+
+/* Pricing pages: same pill, sticky in the document flow. */
+.pricing-page .masthead{
+ position:sticky;top:14px;margin:14px max(12px,calc(var(--gutter) - 22px)) 0;width:auto;height:66px;padding:0 12px 0 26px;
+ border:1px solid var(--pop-edge);border-radius:var(--r-pill);background:var(--pop-glass);
+ -webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:var(--pop-shadow)
+}
+.pricing-page .masthead .desktop-nav{gap:4px}
+.pricing-page .masthead .desktop-nav a{padding:9px 14px;border-radius:var(--r-pill);transition:color .3s,background .3s}
+.pricing-page .masthead .desktop-nav a:is(:hover,:focus-visible){background:var(--pop-tint);color:var(--ink)}
+.pricing-page .masthead .contact-link{gap:14px;padding:5px 5px 5px 18px;border-radius:var(--r-pill);background:var(--pop-tint);border:1px solid var(--pop-edge)}
+.pricing-page .masthead .contact-link span{width:36px;height:36px;border:0;background:var(--accent);color:var(--bg);font-size:17px}
+
+/* ---------- Pill actions ---------- */
+.offer-button,.offer-v2 .offer-button{
+ gap:18px;min-height:54px;padding:8px 8px 8px 24px;border:1px solid var(--pop-edge-strong);border-radius:var(--r-pill);
+ background:var(--pop-surface-2);color:var(--ink);box-shadow:var(--pop-shadow);
+ transition:transform .45s var(--pop-ease),box-shadow .45s var(--pop-ease),background .25s,border-color .25s
+}
+.offer-button span{display:grid;place-items:center;flex-shrink:0;width:38px;height:38px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:17px;transition:transform .45s var(--pop-ease)}
+.offer-button:is(:hover,:focus-visible){transform:translateY(-2px);background:color-mix(in srgb,var(--accent) 12%,var(--pop-surface-2));border-color:color-mix(in srgb,var(--accent) 55%,transparent);color:var(--ink);box-shadow:var(--pop-shadow-lift)}
+.offer-button:is(:hover,:focus-visible) span{color:var(--bg);transform:rotate(45deg)}
+.plan-option-buy .offer-button,.product-request .offer-button{background:var(--accent);border-color:var(--accent);color:var(--bg)}
+.plan-option-buy .offer-button span,.product-request .offer-button span{background:var(--bg);color:var(--accent)}
+.plan-option-buy .offer-button:is(:hover,:focus-visible),.product-request .offer-button:is(:hover,:focus-visible){background:color-mix(in srgb,var(--accent) 85%,var(--ink));border-color:transparent;color:var(--bg)}
+.plan-option-buy .offer-button:is(:hover,:focus-visible) span,.product-request .offer-button:is(:hover,:focus-visible) span{color:var(--accent)}
+.offer-text-link{border-bottom-color:var(--pop-edge-strong)}
+
+.form-submit,.offer-v2 .trailer-contact .form-submit{padding:8px 8px 8px 24px;min-height:56px;border:0;background:var(--accent);color:var(--bg);box-shadow:var(--pop-shadow);transition:transform .45s var(--pop-ease),box-shadow .45s var(--pop-ease),background .25s}
+.form-submit span{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--bg);color:var(--accent);font-size:18px;transition:transform .45s var(--pop-ease)}
+.form-submit:hover,.form-submit:focus-visible{transform:translateY(-2px);background:color-mix(in srgb,var(--accent) 85%,var(--ink));color:var(--bg);box-shadow:var(--pop-shadow-lift)}
+.form-submit:hover span,.form-submit:focus-visible span{color:var(--accent);transform:rotate(45deg)}
+[data-experience=official] .form-submit:after{content:none}
+
+/* Every raised card lifts the same way. */
+:is(.size-option,.founding-benefits>li,.plan-option,.product-specs>div){transition:transform .55s var(--pop-ease),box-shadow .55s var(--pop-ease),border-color .3s}
+:is(.size-option,.founding-benefits>li,.plan-option,.product-specs>div):hover{transform:translateY(-4px);box-shadow:var(--pop-shadow-lift);border-color:color-mix(in srgb,var(--accent) 34%,transparent)}
+
+/* ---------- 01 Sizes ---------- */
+.offer-preview-label{padding:7px 14px;border:1px solid color-mix(in srgb,var(--accent) 40%,transparent);border-radius:var(--r-pill);background:var(--pop-accent-soft)}
+.size-options{gap:clamp(14px,1.6vw,24px)}
+.size-option{padding:24px 26px 26px;border:1px solid var(--pop-edge);border-radius:var(--r-xl);background:var(--pop-card);box-shadow:var(--pop-shadow)}
+.size-option h3{font-size:clamp(46px,4.6vw,66px)}
+.size-specs{gap:10px;margin:20px 0}
+.size-specs div{padding:13px 16px;border:1px solid var(--pop-edge);border-radius:var(--r-md);background:var(--pop-tint)}
+.size-specs dd{font-size:clamp(22px,2.2vw,30px)}
+.size-plan-summary{margin:14px 2px 16px}
+
+/* ---------- 02 Numbers ---------- */
+.daily-pitch>div:last-child{padding:28px 30px 30px;border:1px solid var(--pop-edge);border-radius:var(--r-xl);background:var(--pop-card);box-shadow:var(--pop-shadow)}
+.daily-numbers{gap:12px;padding:0;border:0}
+.daily-number{padding:22px 24px;border:1px solid var(--pop-edge);border-radius:var(--r-lg);background:var(--pop-tint)}
+.daily-number:last-child{background:color-mix(in srgb,var(--accent) 9%,transparent);border-color:color-mix(in srgb,var(--accent) 32%,transparent)}
+.daily-number strong{font-size:clamp(60px,6.6vw,104px)}
+.daily-number span{margin-top:12px;font-size:16px}
+.daily-equation{margin-top:12px;padding:14px 20px;border:1px solid var(--pop-edge);border-radius:var(--r-md);background:var(--pop-tint)}
+.daily-pitch .offer-actions{gap:12px}
+
+/* ---------- 03 Tour overlays ---------- */
+[data-experience=official] .official-tour .section-top .quiet-link{padding:9px 16px;border:1px solid var(--pop-edge);border-radius:var(--r-pill);background:var(--pop-glass);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);color:var(--ink)}
+#workflow-demo,[data-experience=official] #workflow-demo,#vision-summary,.route-quote-card{border:1px solid var(--pop-edge);border-radius:var(--r-lg);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);box-shadow:var(--pop-shadow)}
+#field-callout{padding:9px 13px;border:1px solid var(--pop-edge);border-radius:var(--r-sm);-webkit-backdrop-filter:blur(12px);backdrop-filter:blur(12px);box-shadow:var(--pop-shadow)}
+.vision-label{padding:5px 9px 5px 7px;border:1px solid color-mix(in srgb,currentColor 35%,transparent);border-radius:9px;-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px)}
+.route-quote-history span{border-radius:var(--r-pill)}
+@media(min-width:761px){
+ /* The copy floats on glass in every chapter, including the bright interior shots. */
+ [data-experience=official] .official-tour .tour-copy{padding:22px 24px 24px;margin-left:-24px;border:1px solid var(--pop-edge);border-radius:var(--r-lg);background:color-mix(in srgb,var(--bg) 72%,transparent);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);box-shadow:var(--pop-shadow)}
+ [data-experience=official] .official-tour .tour-copy{width:min(29%,380px)}
+ [data-experience=official] .official-tour[data-interior=false] .tour-copy{padding:22px 24px 24px;margin-left:-24px;width:330px}
+ [data-experience=official] .official-tour .field-modes{bottom:118px}
+ #vision-summary{padding:18px 22px;margin-left:-24px;width:330px;background:color-mix(in srgb,var(--bg) 78%,transparent)}
+ [data-experience=official] .official-tour .tour-chapters{bottom:62px;gap:4px;padding:5px;border:1px solid var(--pop-edge);border-radius:var(--r-pill);background:var(--pop-glass);-webkit-backdrop-filter:blur(16px) saturate(1.3);backdrop-filter:blur(16px) saturate(1.3);box-shadow:var(--pop-shadow)}
+ [data-experience=official] .official-tour .tour-chapters li{flex:1;text-align:center;border-radius:var(--r-pill);transition:color .35s,background .35s}
+ [data-experience=official] .official-tour .tour-chapters li button{width:100%;padding:8px 6px}
+ [data-experience=official] .official-tour .tour-chapters li[aria-current]{translate:none;background:var(--pop-accent-soft);color:var(--accent)}
+ [data-experience=official] .official-tour .tour-chapters li:not([aria-current]):hover{background:var(--pop-tint);color:var(--ink)}
+ [data-experience=official] .official-tour .tour-chapters li:after{content:none}
+ [data-experience=official] .official-tour .tour-progress{bottom:42px;left:calc(var(--gutter) + 26px);right:calc(var(--gutter) + 26px);height:2px;border-radius:2px;overflow:hidden}
+}
+
+/* ---------- 04 Founding ---------- */
+.founding-benefits{display:grid;gap:12px}
+.founding-benefits>li{grid-template-columns:44px 1fr;padding:22px 26px 24px;border:1px solid var(--pop-edge);border-radius:var(--r-lg);background:var(--pop-card);box-shadow:var(--pop-shadow)}
+.founding-benefits>li>span{display:grid;place-items:center;width:36px;height:36px;padding:0;border-radius:50%;background:var(--pop-accent-soft)}
+.founding-benefits p{margin-top:6px}
+
+/* ---------- 05 Contact + forms ---------- */
+.contact #inquiry-form,.product-request form{padding:28px 30px 26px;border:1px solid var(--pop-edge);border-radius:var(--r-xl);background:var(--pop-card);box-shadow:var(--pop-shadow)}
+.contact label,.product-request label{display:block;margin:0 0 7px 4px}
+.contact :is(input,select,textarea),.immersive .contact :is(input,select,textarea),.immersive .trailer-contact :is(input,select,textarea),.product-request :is(input,select,textarea){
+ width:100%;margin:0 0 16px;padding:11px 16px;border:1px solid var(--pop-edge);border-radius:var(--r-sm);
+ background-color:var(--pop-tint);color:var(--ink);transition:border-color .25s,box-shadow .25s,background-color .25s
+}
+.contact :is(input,select,textarea):hover,.product-request :is(input,select,textarea):hover{border-color:var(--pop-edge-strong)}
+.contact :is(input,select,textarea):focus,.product-request :is(input,select,textarea):focus{outline:none;border-color:color-mix(in srgb,var(--accent) 70%,transparent);background-color:color-mix(in srgb,var(--ink) 6%,transparent);box-shadow:0 0 0 4px color-mix(in srgb,var(--accent) 16%,transparent)}
+.contact select,.product-request select{appearance:none;-webkit-appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none' stroke='%23a4adb0' stroke-width='1.6'%3E%3Cpath d='M1 1.5l5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 18px center}
+.contact select option,.product-request select option{background:var(--bg)}
+.contact textarea,.product-request textarea{resize:vertical}
+.inquiry-next{display:grid;gap:8px}
+.inquiry-next li{display:flex;align-items:center;padding:12px 16px;border:1px solid var(--pop-edge);border-radius:var(--r-md);background:var(--pop-tint)}
+.trailer-contact .email-link,.email-link{display:inline-flex;align-items:center;gap:10px;width:fit-content;padding:11px 20px;border:1px solid var(--pop-edge-strong);border-radius:var(--r-pill);background:var(--pop-tint);font-size:16px;transition:border-color .25s,background .25s}
+.email-link:is(:hover,:focus-visible){border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:var(--pop-accent-soft)}
+
+/* ---------- Footer ---------- */
+/* The card hugs the centred wordmark + meta row (wordmark is 12.7vw at 1.2 line-height). */
+.immersive .site-footer{padding-inline:calc(var(--gutter) + 26px)}
+.immersive .site-footer:before{content:'';position:absolute;z-index:-1;inset:calc(50% - 7.62vw - 101px) max(12px,calc(var(--gutter) - 26px));border:1px solid var(--pop-edge);border-radius:40px;background:radial-gradient(110% 80% at 88% 0%,color-mix(in srgb,var(--accent) 11%,transparent),transparent 60%),var(--pop-card);box-shadow:var(--pop-shadow);pointer-events:none}
+.site-footer .footer-meta a{padding:7px 14px;margin:-7px 0;border:1px solid var(--pop-edge);border-radius:var(--r-pill);transition:border-color .25s,background .25s}
+.site-footer .footer-meta a:is(:hover,:focus-visible){border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:var(--pop-accent-soft)}
+.pricing-page .site-footer{margin:0 max(12px,calc(var(--gutter) - 26px)) 22px;padding:40px 26px;border:1px solid var(--pop-edge);border-radius:var(--r-xl);background:var(--pop-card);box-shadow:var(--pop-shadow)}
+
+/* ---------- Trailer pricing pages ---------- */
+.product-section{border-bottom:0}
+.product-size-switch{display:inline-flex;gap:4px;padding:5px;border:1px solid var(--pop-edge);border-radius:var(--r-pill);background:var(--pop-surface)}
+.product-size-switch a{min-height:42px;padding:10px 20px;border:0;border-radius:var(--r-pill);transition:background .25s,color .25s}
+.product-size-switch a:not([aria-current]):hover{background:var(--pop-tint)}
+.product-size-switch a[aria-current]{background:var(--accent);color:var(--bg)}
+.dimension-body{border-color:var(--pop-edge-strong);border-radius:var(--r-lg);box-shadow:var(--pop-shadow)}
+.dimension-factory{border-radius:calc(var(--r-lg) - 1px) 0 0 calc(var(--r-lg) - 1px)}
+.dimension-body:after{border-radius:0 6px 6px 0}
+.product-specs{gap:12px;padding-top:0;border-top:0}
+.product-specs>div{padding:20px 22px;border:1px solid var(--pop-edge);border-radius:var(--r-lg);background:var(--pop-card);box-shadow:var(--pop-shadow)}
+.plan-options{gap:clamp(14px,1.6vw,24px)}
+.plan-option{border-radius:var(--r-xl);background:var(--pop-card);box-shadow:var(--pop-shadow)}
+.plan-option-buy{border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:radial-gradient(90% 60% at 0% 0%,color-mix(in srgb,var(--accent) 10%,transparent),transparent 70%),var(--pop-card)}
+.plan-share{padding:18px 22px;border:1px solid var(--pop-edge);border-radius:var(--r-lg);background:var(--pop-tint)}
+.included-grid>div{padding:28px 30px;border:1px solid var(--pop-edge);border-radius:var(--r-xl);background:var(--pop-card);box-shadow:var(--pop-shadow)}
+.included-grid li:first-child{border-top:0}
+
+/* Scroll containers clip card shadows at their edge; give the shadow room without moving the layout. */
+@media(min-width:761px){.immersive .contact-grid{padding:0 28px 56px;margin-inline:-28px;margin-bottom:-56px;max-height:calc(100svh - 189px)}}
+/* Shorter laptop screens: the size cards must fit without an inner scroll. */
+@media(min-width:761px) and (max-height:860px){
+ .size-option{padding:18px 22px 20px}
+ .size-option h3{font-size:clamp(42px,4vw,54px)}
+ .size-specs{margin:14px 0}
+ .size-specs div{padding:9px 14px}
+ .size-specs dd{font-size:clamp(20px,1.9vw,26px)}
+ .size-plan-summary{margin:10px 2px 12px}
+ .size-option .offer-button{min-height:48px;padding-block:5px}
+ .size-option .offer-button span{width:34px;height:34px}
+ .size-compare-note{margin-top:12px}
+ .offer-v2 #sizes .offer-title-row{margin-top:16px}
+ .daily-pitch>div:last-child{padding:22px 24px 24px}
+ .daily-number{padding:16px 20px}
+ .founding-benefits>li{padding:16px 22px 18px}
+}
+
+/* ---------- Reduced motion ---------- */
+@media(prefers-reduced-motion:reduce){
+ .offer-button,.offer-button span,.form-submit,.form-submit span,:is(.size-option,.founding-benefits>li,.plan-option,.product-specs>div){transition:none}
+ :is(.size-option,.founding-benefits>li,.plan-option,.product-specs>div):hover,.offer-button:is(:hover,:focus-visible),.form-submit:hover{transform:none}
+}
+
+/* ---------- Phones ---------- */
+@media(max-width:760px){
+ .immersive .masthead,.offer-v2[data-active-scene]:not([data-active-scene=top]):not([data-active-scene=inside]) .masthead,.pricing-page .masthead{top:10px;left:10px;right:10px;height:60px;padding:0 8px 0 18px}
+ .pricing-page .masthead{margin:10px 10px 0}
+ .immersive .masthead .menu-button,.pricing-page .masthead .menu-button{padding:8px 14px;border-radius:var(--r-pill);background:var(--pop-tint);border:1px solid var(--pop-edge)}
+ #mobile-menu{inset:78px 10px auto}
+ .offer-button,.offer-v2 .offer-button{min-height:48px;padding:6px 6px 6px 18px;gap:12px}
+ .offer-button span{width:34px;height:34px;font-size:15px}
+ .size-option,.daily-pitch>div:last-child,.contact #inquiry-form,.product-request form,.plan-option,.included-grid>div{padding:20px 18px;border-radius:var(--r-lg)}
+ .daily-pitch>div:last-child{margin-top:24px}
+ .daily-number{padding:16px}
+ .founding-benefits>li{grid-template-columns:34px 1fr;padding:16px 18px}
+ .founding-benefits>li>span{width:28px;height:28px}
+ .immersive .contact #inquiry-form{padding:18px 16px}
+ .immersive .site-footer{padding-inline:calc(var(--gutter) + 12px)}
+ .immersive .site-footer:before{inset:calc(50% - 7.2vw - 97px) 10px;border-radius:var(--r-xl)}
+ .pricing-page .site-footer{margin:0 10px 14px;padding:28px 18px}
+ [data-experience=official] .official-tour .tour-chapters li{padding:2px 8px;border-radius:var(--r-pill)}
+ [data-experience=official] .official-tour .tour-chapters li[aria-current]{background:var(--pop-accent-soft)}
+ [data-experience=official] .official-tour .tour-chapters li:after{content:none}
+}
+
+/* ---------- "A smaller footprint. Delivered." side cards (markup + layout in delivery-route.css) ---------- */
+[data-experience=official] .platform-pin .delivery-size{top:31%;width:250px;padding:20px 22px 16px;border:1px solid var(--pop-edge);border-radius:var(--r-lg);background:color-mix(in srgb,var(--bg) 58%,transparent);-webkit-backdrop-filter:blur(18px) saturate(1.3);backdrop-filter:blur(18px) saturate(1.3);box-shadow:var(--pop-shadow)}
+[data-experience=official] .platform-pin .delivery-size .eyebrow{font-size:10px;letter-spacing:.14em;color:var(--accent);margin:0 0 10px}
+[data-experience=official] .platform-pin .delivery-size h3{font-size:58px;font-weight:400;letter-spacing:-.06em;line-height:1;margin:0 0 14px}
+/* The title motion wraps every word in spans; only the direct unit span ("ft") is small. */
+[data-experience=official] .platform-pin .delivery-size h3 span{font-size:inherit;letter-spacing:inherit;color:inherit}
+[data-experience=official] .platform-pin .delivery-size h3>span:not(.motion-word){font-size:18px;letter-spacing:0;color:var(--muted)}
+[data-experience=official] .platform-pin .delivery-size dl{margin:0 0 14px;display:grid;gap:6px}
+[data-experience=official] .platform-pin .delivery-size dl div{margin:0;padding:8px 12px;border-radius:var(--r-sm);background:var(--pop-tint);font-size:13px;align-items:baseline}
+[data-experience=official] .platform-pin .delivery-size dd{font-size:15px}
+[data-experience=official] .platform-pin .delivery-size a{min-height:46px;padding:5px 5px 5px 18px;border:1px solid var(--pop-edge-strong);border-radius:var(--r-pill);background:var(--pop-tint);font-size:13px;transition:border-color .25s,background .25s}
+[data-experience=official] .platform-pin .delivery-size a span{display:grid;place-items:center;width:34px;height:34px;border-radius:50%;background:var(--accent);color:var(--bg);font-size:15px;transition:transform .45s var(--pop-ease)}
+[data-experience=official] .platform-pin .delivery-size a:is(:hover,:focus-visible){color:var(--ink);border-color:color-mix(in srgb,var(--accent) 55%,transparent);background:var(--pop-accent-soft)}
+[data-experience=official] .platform-pin .delivery-size a:is(:hover,:focus-visible) span{transform:rotate(45deg)}
+[data-experience=official] .platform-pin .delivery-loadout .eyebrow{font-size:10px}
+[data-experience=official] .platform-pin .delivery-loadout h2{font-size:clamp(22px,2vw,30px)}
+[data-experience=official] .platform-pin .delivery-loadout-text{font-size:13px}
+[data-experience=official] .platform-pin .delivery-terms{left:50%;right:auto;transform:translateX(-50%);width:max-content;max-width:calc(100% - 2 * var(--gutter));padding:10px 20px;border:1px solid var(--pop-edge);border-radius:var(--r-pill);background:color-mix(in srgb,var(--bg) 58%,transparent);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px);font-size:12px}
+[data-experience=official] .platform-pin .delivery-terms span{font-size:10px}
+/* Short laptop screens: keep the loadout line clear of the two-line headline. */
+@media(min-width:761px){[data-experience=official] .platform-pin .delivery-loadout{top:max(31%,calc(15% + 150px))}}
+@media(max-width:1000px) and (min-width:761px){[data-experience=official] .platform-pin .delivery-size{width:200px;padding:16px}[data-experience=official] .platform-pin .delivery-size h3{font-size:44px}}
+@media(max-width:760px){
+ [data-experience=official] .platform-pin .delivery-size{top:270px;width:calc(50% - 26px);padding:12px 12px 10px;border-radius:var(--r-md)}
+ [data-experience=official] .platform-pin .delivery-size .eyebrow{font-size:7px;margin-bottom:6px}
+ [data-experience=official] .platform-pin .delivery-size h3{font-size:34px;margin-bottom:6px}
+ [data-experience=official] .platform-pin .delivery-size h3>span:not(.motion-word){font-size:12px}
+ [data-experience=official] .platform-pin .delivery-size dl{gap:0;margin-bottom:6px}
+ [data-experience=official] .platform-pin .delivery-size dl div{padding:3px 0;background:none;border-radius:0;font-size:10px}
+ [data-experience=official] .platform-pin .delivery-size dd{font-size:11px}
+ [data-experience=official] .platform-pin .delivery-size a{min-height:36px;padding:3px 3px 3px 12px;font-size:10px}
+ [data-experience=official] .platform-pin .delivery-size a span{width:28px;height:28px;font-size:12px}
+ [data-experience=official] .platform-pin .delivery-terms{width:auto;left:16px;right:16px;transform:none;max-width:none;border-radius:var(--r-md);padding:8px 12px;font-size:9px}
+ [data-experience=official] .platform-pin .delivery-terms span{font-size:8px}
+}
+
+/* ---------- Intro copy stays off the vehicles (desktop) ----------
+   The arrival drives through the middle band of the frame. The headline keeps the empty dark
+   area at the top; the paragraph + buttons drop to the bottom-left, above the chapter meter. */
+@media(min-width:761px){
+ [data-experience=official] .platform-pin:not(.is-comparing) .hero-heading{display:flex;flex-direction:column;align-items:flex-start;top:15%;bottom:calc(7.5% + 52px)}
+ [data-experience=official] .platform-pin:not(.is-comparing) #hero-description{margin-top:auto}
+ [data-experience=official] .platform-pin:not(.is-comparing) .offer-actions{margin-top:18px}
+}
+
+/* ---------- QA pass 14:58 ---------- */
+/* Short laptop screens: the intro's bottom block sits lower and wider so it clears the trailer's drive-in corner. */
+@media(min-width:761px) and (max-height:820px){
+ [data-experience=official] .platform-pin:not(.is-comparing) .hero-heading{bottom:calc(7.5% + 34px)}
+ [data-experience=official] .platform-pin:not(.is-comparing) #hero-description{max-width:390px;font-size:12.5px;line-height:1.6}
+ [data-experience=official] .platform-pin:not(.is-comparing) .offer-actions{margin-top:12px}
+ [data-experience=official] .platform-pin:not(.is-comparing) .offer-stage-label{margin-top:10px}
+}
+/* Route fun fact: readable on any frame (it sits over bright driveway footage). */
+.route-fact{padding:14px 18px 12px;border:1px solid var(--pop-edge);border-left:2px solid var(--accent);border-radius:var(--r-md);background:color-mix(in srgb,#0a0e10 70%,transparent);-webkit-backdrop-filter:blur(14px) saturate(1.2);backdrop-filter:blur(14px) saturate(1.2);box-shadow:var(--pop-shadow)}
+.route-fact span{font-size:9px;color:var(--accent)}
+.route-fact p{font-size:13px}
+.route-fact a{font-size:10px;color:#c8d3d6;text-decoration:underline;text-underline-offset:3px}
+/* Phones: these sections already scroll inside themselves; keep the popout cards from adding much height. */
+@media(max-width:760px){
+ .daily-pitch>div:last-child{padding:14px;margin-top:18px}
+ .daily-numbers{gap:8px}
+ .daily-number{padding:12px 14px}
+ .daily-number strong{font-size:50px}
+ .daily-number span{font-size:12px;margin-top:6px}
+ .daily-equation{margin-top:8px;padding:9px 14px;font-size:14px}
+ .daily-pitch .offer-actions{margin-top:14px}
+ .founding-benefits{gap:8px;margin-top:22px}
+ .founding-benefits>li{padding:12px 14px 14px}
+ .offer-v2 .founding-benefits h3{font-size:21px}
+ .offer-v2 .founding-benefits p{font-size:13px;line-height:1.55}
+ .route-fact{padding:10px 12px}
+ .route-fact p{font-size:11px}
+}
+
+/* ---------- Pricing inside each size card; illustrative earnings in the bottom strip ---------- */
+[data-experience=official] .platform-pin .delivery-price{margin:0 0 12px;padding:10px 12px;border:1px solid color-mix(in srgb,var(--accent) 30%,transparent);border-radius:var(--r-sm);background:var(--pop-accent-soft)}
+[data-experience=official] .platform-pin .delivery-price p{margin:0;font-size:12.5px;line-height:1.5;color:var(--muted)}
+[data-experience=official] .platform-pin .delivery-price strong{font-weight:400;color:var(--ink)}
+[data-experience=official] .platform-pin .delivery-price small{display:block;margin-top:6px;font-size:9.5px;line-height:1.4;color:var(--muted)}
+[data-experience=official] .platform-pin .delivery-terms.delivery-earnings{display:block;left:50%;right:auto;bottom:calc(7.5% + 34px);transform:translateX(-50%);width:min(760px,calc(100% - 2 * var(--gutter) - 540px));max-width:none;padding:12px 20px 10px;border-radius:var(--r-lg);text-align:left;font-size:inherit;box-shadow:var(--pop-shadow)}
+[data-experience=official] .platform-pin .delivery-earnings-row{display:grid;grid-template-columns:auto auto 1fr;gap:20px;align-items:center}
+[data-experience=official] .platform-pin .delivery-earnings-num{display:flex;align-items:center;gap:10px}
+[data-experience=official] .platform-pin .delivery-earnings-num strong{font-size:34px;font-weight:400;line-height:1;letter-spacing:-.05em;color:var(--ink)}
+[data-experience=official] .platform-pin .delivery-earnings-num:nth-child(2) strong{color:var(--accent)}
+[data-experience=official] .platform-pin .delivery-earnings-num span{display:block;max-width:128px;margin:0;font-size:10.5px;line-height:1.35;color:var(--muted)}
+[data-experience=official] .platform-pin .delivery-equation{margin:0;font-size:11.5px;line-height:1.4;text-align:right;color:var(--ink)}
+[data-experience=official] .platform-pin .delivery-equation b{font-weight:400;color:var(--accent)}
+[data-experience=official] .platform-pin .delivery-earnings-note{margin:9px 0 0;padding-top:7px;border-top:1px solid var(--pop-edge);font-size:9.5px;line-height:1.45;color:var(--muted)}
+@media(min-width:761px) and (max-height:820px){
+ [data-experience=official] .platform-pin .delivery-terms.delivery-earnings{bottom:calc(7.5% + 22px);padding:9px 16px 8px}
+ [data-experience=official] .platform-pin .delivery-earnings-num strong{font-size:26px}
+ [data-experience=official] .platform-pin .delivery-earnings-note{margin-top:6px;padding-top:5px;font-size:9px}
+ [data-experience=official] .platform-pin .delivery-size{top:29%;padding-block:14px 12px}
+ [data-experience=official] .platform-pin .delivery-size h3{font-size:46px;margin-bottom:10px}
+ [data-experience=official] .platform-pin .delivery-size dl{gap:4px;margin-bottom:10px}
+ [data-experience=official] .platform-pin .delivery-size dl div{padding:6px 12px}
+}
+@media(max-width:760px){
+ [data-experience=official] .platform-pin .delivery-price{margin-bottom:8px;padding:6px 7px}
+ [data-experience=official] .platform-pin .delivery-price p{font-size:9px;line-height:1.4}
+ [data-experience=official] .platform-pin .delivery-price small{font-size:7px;margin-top:3px}
+ [data-experience=official] .platform-pin .delivery-terms.delivery-earnings{left:16px;right:16px;bottom:calc(7% + 26px);transform:none;width:auto;padding:9px 12px 8px;border-radius:var(--r-md)}
+ [data-experience=official] .platform-pin .delivery-earnings-row{grid-template-columns:1fr 1fr;gap:6px 12px}
+ [data-experience=official] .platform-pin .delivery-earnings-num strong{font-size:22px}
+ [data-experience=official] .platform-pin .delivery-earnings-num span{font-size:8px}
+ [data-experience=official] .platform-pin .delivery-equation{grid-column:1/-1;text-align:left;font-size:9px}
+ [data-experience=official] .platform-pin .delivery-earnings-note{font-size:7px;margin-top:5px;padding-top:4px}
+}
+/* Price box: Buy | Free as two columns */
+[data-experience=official] .platform-pin .delivery-price-plans{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+[data-experience=official] .platform-pin .delivery-price-plans p{display:flex;flex-direction:column;gap:2px}
+[data-experience=official] .platform-pin .delivery-price-plans span{font:9px/1.3 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+[data-experience=official] .platform-pin .delivery-price-plans strong{font-size:15px;line-height:1.2;letter-spacing:-.02em;color:var(--ink);white-space:nowrap}
+[data-experience=official] .platform-pin .delivery-price-plans em{font-style:normal;font-size:10.5px;line-height:1.3;color:var(--muted)}
+[data-experience=official] .platform-pin .delivery-price small{margin-top:8px;padding-top:7px;border-top:1px solid color-mix(in srgb,var(--accent) 22%,transparent)}
+@media(min-width:761px){
+ [data-experience=official] .platform-pin .delivery-terms.delivery-earnings{bottom:calc(7.5% + 22px)}
+ [data-experience=official] .platform-pin .delivery-earnings-num strong{font-size:30px}
+}
+@media(min-width:761px) and (max-height:820px){[data-experience=official] .platform-pin .delivery-loadout-text{display:none}}
+@media(max-width:760px){
+ [data-experience=official] .platform-pin .delivery-price-plans{gap:5px}
+ [data-experience=official] .platform-pin .delivery-price-plans span{font-size:7px}
+ [data-experience=official] .platform-pin .delivery-price-plans strong{font-size:11px}
+ [data-experience=official] .platform-pin .delivery-price-plans em{font-size:8px}
+ [data-experience=official] .platform-pin .delivery-price small{margin-top:5px;padding-top:4px}
+}
+
+/* ---------- Roomier size cards (owner: box 1.5x bigger, same text size) ---------- */
+@media(min-width:1101px){
+ [data-experience=official] .platform-pin .delivery-size{top:27%;width:min(380px,27vw);padding:26px 28px 24px}
+ [data-experience=official] .platform-pin .delivery-size .eyebrow{margin-bottom:12px}
+ [data-experience=official] .platform-pin .delivery-size h3{margin-bottom:18px}
+ [data-experience=official] .platform-pin .delivery-size dl{grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px}
+ [data-experience=official] .platform-pin .delivery-size dl div{flex-direction:column-reverse;align-items:flex-start;justify-content:flex-end;gap:4px;padding:12px 14px;border:1px solid var(--pop-edge)}
+ [data-experience=official] .platform-pin .delivery-size dd{font-size:20px;letter-spacing:-.02em}
+ [data-experience=official] .platform-pin .delivery-size dt{font-size:11.5px}
+ [data-experience=official] .platform-pin .delivery-price{margin-bottom:16px;padding:14px 16px}
+ [data-experience=official] .platform-pin .delivery-price-plans{gap:14px}
+ [data-experience=official] .platform-pin .delivery-price-plans p{gap:4px}
+ [data-experience=official] .platform-pin .delivery-price small{margin-top:12px;padding-top:10px}
+ [data-experience=official] .platform-pin .delivery-size a{min-height:50px}
+}
+@media(min-width:1101px) and (max-height:820px){
+ [data-experience=official] .platform-pin .delivery-size{top:26%;padding:18px 22px 16px}
+ [data-experience=official] .platform-pin .delivery-size h3{font-size:46px;margin-bottom:12px}
+ [data-experience=official] .platform-pin .delivery-size dl{margin-bottom:12px}
+ [data-experience=official] .platform-pin .delivery-size dl div{padding:9px 12px}
+ [data-experience=official] .platform-pin .delivery-price{margin-bottom:12px;padding:11px 14px}
+ [data-experience=official] .platform-pin .delivery-price small{margin-top:8px;padding-top:7px}
+ [data-experience=official] .platform-pin .delivery-size a{min-height:44px}
+}
+
+/* ---------- Tap to play (phones that refused autoplay: iOS Low Power Mode, data saver) ----------
+   scene-playback.js sets body[data-autoplay-blocked] and writes the glyph (▷ / … / Ⅱ) into the button;
+   the label is this stylesheet's. platform.js keeps .is-opening on the hero pin while p < .25. */
+.hero-play{position:absolute;right:var(--gutter);bottom:7.5%;z-index:6;display:none;align-items:center;gap:0;width:auto;height:46px;margin:0;padding:0 20px 0 17px;border:1px solid var(--pop-edge-strong);border-radius:var(--r-pill);background:var(--pop-glass);-webkit-backdrop-filter:blur(18px) saturate(1.4);backdrop-filter:blur(18px) saturate(1.4);box-shadow:var(--pop-shadow-lift);color:var(--bg);font-size:14px;font-weight:600;line-height:1;letter-spacing:0;text-transform:none;cursor:pointer;-webkit-tap-highlight-color:transparent;transition:transform .45s var(--pop-ease),box-shadow .45s var(--pop-ease)}
+.hero-play:before{content:'';position:absolute;z-index:-1;left:5px;top:5px;width:34px;height:34px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 6px var(--pop-accent-soft)}
+.hero-play:after{content:attr(data-label);position:relative;margin-left:21px;color:var(--ink);font-size:14px;font-weight:500;letter-spacing:.01em;white-space:nowrap}
+.hero-play:is(:hover,:focus-visible){transform:translateY(-2px);border-color:color-mix(in srgb,var(--accent) 55%,transparent)}
+.hero-play:disabled{display:none}
+body[data-animation-playback=loading] .hero-play:after{content:'Loading the arrival'}
+body[data-autoplay-blocked=true]:not([data-animation-playback=playing]) .platform-pin.is-opening:not([data-renderer=static]) .hero-play{display:inline-flex}
+@media(max-width:760px){
+ .hero-play{bottom:calc(7.5% - 2px);height:42px;padding:0 16px 0 16px;font-size:13px}
+ .hero-play:before{width:32px;height:32px;left:4px;top:4px;box-shadow:0 0 0 4px var(--pop-accent-soft)}
+ .hero-play:after{margin-left:19px;font-size:13px;content:'Tap to play'}
+ body[data-animation-playback=loading] .hero-play:after{content:'Loading…'}
+}
+@media(prefers-reduced-motion:reduce){.hero-play{display:none!important}}
+
+/* ---------- Phone pass 16:58 (390×844 / 360×740) ----------
+   Tour bottom: the 5 chapter buttons sat in a 4-column grid, so "Work" wrapped under the stages strip.
+   One row for the nav, the stages strip above it, and the chapter count inline with the kicker (the
+   kickers no longer carry numbers; the count was display:none on phones). */
+@media(max-width:760px){
+ [data-experience=official] .official-tour .tour-chapters{display:flex;flex-wrap:nowrap;justify-content:space-between;gap:2px;max-width:none;bottom:72px}
+ [data-experience=official] .official-tour .tour-chapters li{flex:0 1 auto;padding:3px 7px;font-size:9.5px}
+ [data-experience=official] .official-tour .field-modes{bottom:108px;gap:14px}
+ [data-experience=official] .official-tour .tour-count{display:inline-block;margin:0 10px 0 0;font-size:9px;vertical-align:baseline}
+ [data-experience=official] .official-tour #tour-kicker{display:inline-block;vertical-align:baseline}
+ /* "Find your trailer ↘" wrapped its arrow onto a second line and touched the kicker at 360 px. */
+ [data-experience=official] .official-tour .section-top .quiet-link{white-space:nowrap}
+}
+/* Narrow phones (≤400 px): "More follow-through." needs 3 lines at 39 px; 32 px keeps every title at 2 lines. */
+@media(max-width:400px){
+ [data-experience=official] .official-tour .tour-copy h2{font-size:32px}
+ [data-experience=official] .official-tour .section-top .quiet-link{padding:7px 12px;font-size:11px}
+ /* The camera-feed header (CAM 02 / LANDSCAPING SCOPE) sat at 27% = on the title's second line at 360×740. */
+ [data-experience=official] .official-tour .vision-feed{top:max(27%,250px)}
+}
+/* Short phones (e.g. 360×740): the quote panel starts at 43% and met the Quote chapter's paragraph; the panel
+   already carries the steps and scope there, so the paragraph yields. */
+@media(max-width:760px) and (max-height:780px){
+ [data-experience=official] .official-tour[data-field-chapter="3"] #tour-copy{display:none}
+}
+
+/* ---------- Film fit + phone layout (2026-10-23) ----------
+   recorded-scene.js writes object-fit:contain inline; cover has to win.
+   --hold-zoom scales only the delivery hold. 1 turns that push-in off.
+   1.6 is the largest scale that keeps both trailer bodies inside a 16:9 frame
+   (cargo still: subject center 50% 62%, about 39% of the frame wide). */
+:root{--hold-zoom:1.6}
+.opening-film,
+.arrival-poster img,
+.recorded-scene{
+ object-fit:cover!important;
+ object-position:center 62%
+}
+.official-tour .recorded-scene{object-position:center center}
+/* Cover already fills. The arrival scale was a contain-fill and would crop twice. */
+.platform-pin .opening-film,
+.platform-pin .arrival-poster{transform:none}
+/* Front-end agent 2 (21:30): the push-in itself moved from a CSS transform into dist/film-framing.js.
+   recorded-scene.js sizes and transforms the recorded films (cover + an eased, time-keyed zoom) and projects every
+   overlay through the same transform, so the zoom no longer jumps in when .is-comparing toggles and labels stay
+   aligned. --hold-zoom stays the ONE switch: recorded-scene.js reads it as the push-in's upper limit.
+   Set it to 1 when the cargo-v5 film (closer camera) is installed and the push-in is off. */
+
+@media(max-width:760px){
+ /* Delivery cards sit below the floating masthead, above the earnings strip and the badge. */
+ [data-experience=official] .platform-pin.is-comparing #platform-story{top:78px;left:16px;right:16px}
+ [data-experience=official] .platform-pin.is-comparing #hero-title{font-size:28px;line-height:1.05}
+ [data-experience=official] .platform-pin #sizes .delivery-loadout{top:158px;left:16px;right:16px}
+ [data-experience=official] .platform-pin #sizes .delivery-loadout h2{font-size:18px}
+ [data-experience=official] .platform-pin #sizes .delivery-size{
+  top:208px;width:calc(50% - 22px);max-height:calc(100svh - 208px - 168px);overflow:auto;padding:10px 10px 8px
+ }
+ [data-experience=official] .platform-pin #sizes .delivery-size-20{left:16px}
+ [data-experience=official] .platform-pin #sizes .delivery-size-16{right:16px}
+ [data-experience=official] .platform-pin #sizes .delivery-size .eyebrow{font-size:9px;margin-bottom:4px}
+ [data-experience=official] .platform-pin #sizes .delivery-size h3{font-size:32px;margin-bottom:4px}
+ [data-experience=official] .platform-pin #sizes .delivery-size h3>span:not(.motion-word){font-size:13px}
+ [data-experience=official] .platform-pin #sizes .delivery-size dl div{font-size:12px;padding:2px 0}
+ [data-experience=official] .platform-pin #sizes .delivery-size dd{font-size:13px}
+ [data-experience=official] .platform-pin #sizes .delivery-size a{min-height:34px;font-size:12px;padding:3px 3px 3px 10px}
+ [data-experience=official] .platform-pin #sizes .delivery-price{margin-bottom:6px;padding:6px}
+ [data-experience=official] .platform-pin #sizes .delivery-price-plans span{font-size:8px}
+ [data-experience=official] .platform-pin #sizes .delivery-price-plans strong{font-size:12px}
+ [data-experience=official] .platform-pin #sizes .delivery-price-plans em{font-size:10px;line-height:1.25}
+ [data-experience=official] .platform-pin #sizes .delivery-price small{font-size:9px;line-height:1.3}
+ [data-experience=official] .platform-pin .delivery-terms.delivery-earnings{
+  left:16px;right:16px;bottom:72px;padding:8px 10px
+ }
+ [data-experience=official] .platform-pin .delivery-earnings-num strong{font-size:22px}
+ [data-experience=official] .platform-pin .delivery-earnings-num span{font-size:11px;max-width:none}
+ [data-experience=official] .platform-pin .delivery-equation{font-size:12px}
+ [data-experience=official] .platform-pin .delivery-earnings-note{font-size:10px;line-height:1.35}
+
+ /* Tour: full-bleed film, labels big enough to read, clear of the Netlify badge. */
+ [data-experience=official] .official-tour .tour-visual{inset:0!important}
+ [data-experience=official] .official-tour .field-modes{
+  bottom:128px;left:16px;right:16px;gap:8px;font-size:11px;letter-spacing:.04em;line-height:1.35
+ }
+ [data-experience=official] .official-tour .tour-chapters{
+  bottom:76px;left:12px;right:12px;gap:4px;max-width:none
+ }
+ [data-experience=official] .official-tour .tour-chapters li{
+  flex:1 1 0;padding:6px 2px;font-size:13px;line-height:1.2;text-align:center
+ }
+ [data-experience=official] .official-tour .tour-chapters li button{font-size:13px;padding:4px 0}
+ [data-experience=official] .official-tour .tour-note{
+  bottom:18px;left:16px;right:auto;max-width:calc(100% - 196px);font-size:12px;line-height:1.35
+ }
+
+ /* Numbers and founding fit one phone screen, above the badge. */
+ html.immersive [data-experience=official] :is(#story,#founding).stage-scene{
+  padding:84px 18px 76px;overflow:hidden
+ }
+ html.immersive [data-experience=official] :is(#story,#founding) :is(h2){font-size:32px;line-height:1.08}
+ html.immersive [data-experience=official] #story .offer-section-top,
+ html.immersive [data-experience=official] #founding .offer-section-top{margin:0}
+ html.immersive [data-experience=official] #story .daily-pitch{gap:12px;margin-top:12px}
+ html.immersive [data-experience=official] #story .daily-pitch h2{font-size:32px}
+ html.immersive [data-experience=official] #story .offer-lead{font-size:14px;line-height:1.45;margin:8px 0 10px}
+ html.immersive [data-experience=official] #story .offer-text-link{font-size:13px;padding:4px 0}
+ html.immersive [data-experience=official] #story .daily-pitch>div:last-child{margin-top:8px;padding:12px}
+ html.immersive [data-experience=official] #story .daily-numbers{gap:8px}
+ html.immersive [data-experience=official] #story .daily-number{padding:8px 10px}
+ html.immersive [data-experience=official] #story .daily-number strong{font-size:36px}
+ html.immersive [data-experience=official] #story .daily-number span{font-size:12px;line-height:1.3;margin-top:4px}
+ html.immersive [data-experience=official] #story .daily-equation{margin-top:6px;padding:8px 10px;font-size:13px}
+ html.immersive [data-experience=official] #story .daily-assumptions{font-size:12px;line-height:1.4;margin-top:8px}
+ html.immersive [data-experience=official] #story .offer-actions{margin-top:10px;gap:8px}
+ html.immersive [data-experience=official] #story .offer-actions .offer-button{min-height:40px;font-size:13px;padding:6px 8px 6px 14px}
+ html.immersive [data-experience=official] #founding .founding-grid{margin-top:10px}
+ html.immersive [data-experience=official] #founding .offer-lead{font-size:14px;line-height:1.45;margin:8px 0 12px}
+ html.immersive [data-experience=official] #founding .offer-button{min-height:42px}
+ html.immersive [data-experience=official] #founding .offer-terms{font-size:12px;line-height:1.4;margin-top:8px}
+ html.immersive [data-experience=official] #founding .founding-benefits{gap:6px;margin-top:12px}
+ html.immersive [data-experience=official] #founding .founding-benefits>li{padding:8px 12px}
+ html.immersive [data-experience=official] #founding .founding-benefits h3{font-size:18px}
+ html.immersive [data-experience=official] #founding .founding-benefits p{font-size:13px;line-height:1.35;margin-top:2px}
+
+ /* Footer wordmark stays inside the screen; the card and meta sit above the badge. */
+ html.immersive [data-experience=official] .site-footer{padding:72px 16px 84px;box-sizing:border-box}
+ html.immersive [data-experience=official] .footer-wordmark{font-size:min(10vw,42px);letter-spacing:-.055em;line-height:1.05}
+ html.immersive [data-experience=official] .footer-wordmark span{font-size:.46em;flex:0 0 auto}
+ html.immersive [data-experience=official] .site-footer:before{inset:auto 10px 76px 10px;top:50%;height:auto;transform:translateY(-54%)}
+ html.immersive [data-experience=official] .footer-meta{font-size:11px;line-height:1.35;gap:10px 12px;margin-top:18px;padding-top:14px}
+}
+
+/* ---------- Front-end agent 2 pass (2026-10-23 21:30) ----------
+   Delivery hold, desktop: the trailers are framed into the gap between the size cards (film-framing.js,
+   window measured in platform.js). Give that gap height: the loadout line sits right under the headline,
+   its eyebrow and sentence yield on laptop heights, and the earnings strip shares the chapter meter's baseline
+   (the meter sits left of it, "scroll to continue" right of it, so nothing overlaps). */
+@media(min-width:761px){
+ [data-experience=official] .platform-pin .delivery-loadout{top:calc(15% + 48px + clamp(34px,3.4vw,52px) * 2.1)}
+ [data-experience=official] .platform-pin .delivery-terms.delivery-earnings{bottom:7.5%}
+}
+@media(min-width:761px) and (max-height:960px){
+ [data-experience=official] .platform-pin .delivery-loadout .eyebrow,
+ [data-experience=official] .platform-pin .delivery-loadout-text{display:none}
+}
+/* Short laptops (<=820 px tall, e.g. 1366x768): the whole loadout line yields; the trailers get that height. */
+@media(min-width:761px) and (max-height:820px){[data-experience=official] .platform-pin .delivery-loadout{display:none}}
+
+/* Delivery hold, phones: one flow instead of absolute offsets. Headline, then both size cards side by side,
+   the pricing note once, the trailers in the free row (the film is framed into it), the earnings strip last.
+   Nothing overlaps and nothing hides under the masthead. The film's trailers sit at ~55-70% of a phone frame,
+   so the cards stay compact (spec tiles in one row) to leave that band free. */
+.delivery-price-note{display:none}
+@media(max-width:760px){
+ [data-experience=official] .platform-pin.is-comparing #platform-story{top:80px;left:16px;right:16px}
+ [data-experience=official] .platform-pin.is-comparing #platform-tag{font-size:10px;letter-spacing:.12em;margin-bottom:8px}
+ [data-experience=official] .platform-pin.is-comparing #hero-title{font-size:30px;line-height:1.05}
+ [data-experience=official] .platform-pin.is-comparing .hero-base{visibility:hidden}
+ [data-experience=official] .platform-pin #sizes:not([hidden]){display:grid;grid-template-columns:1fr 1fr;grid-template-rows:auto auto minmax(0,1fr) auto;column-gap:10px;row-gap:8px;padding:176px 16px 14px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-loadout{display:none}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size{position:relative;inset:auto;grid-row:1;width:auto;max-height:none;overflow:visible;padding:11px 11px 10px;border-radius:var(--r-md)}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size-20{grid-column:1}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size-16{grid-column:2}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size .eyebrow{display:block;font-size:10px;letter-spacing:.04em;margin:0 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size h3{font-size:30px;margin:0 0 7px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size h3>span:not(.motion-word){font-size:13px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size dl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;margin:0 0 7px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size dl div{display:flex;flex-direction:column-reverse;justify-content:flex-end;align-items:flex-start;gap:2px;margin:0;padding:6px 5px 5px 6px;border:1px solid var(--pop-edge);border-radius:var(--r-sm);background:var(--pop-tint);font-size:10px;line-height:1.2}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size dt{font-size:10px;color:var(--muted)}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size dd{font-size:13px;line-height:1.15;white-space:nowrap}
+ /* "Trailer width" -> "Width": fits the tile on one line. */
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size .dt-extra{display:none}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size dt::first-letter{text-transform:uppercase}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-price{margin:0 0 7px;padding:7px 9px;border-radius:var(--r-sm)}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-price-plans{grid-template-columns:1fr;gap:5px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-price-plans p{display:grid;grid-template-columns:auto 1fr;column-gap:6px;row-gap:0;align-items:baseline}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-price-plans span{font-size:10px;letter-spacing:.1em}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-price-plans strong{font-size:13px;text-align:right}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-price-plans em{grid-column:1/-1;font-size:11px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-price small{display:none}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size a{min-height:36px;padding:3px 3px 3px 11px;font-size:12px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size a span{width:28px;height:28px;font-size:13px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-price-note{display:block;grid-column:1/-1;grid-row:2;margin:0;padding:0 4px;font-size:11px;line-height:1.4;text-align:center;color:var(--muted)}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-terms.delivery-earnings{position:relative;inset:auto;grid-column:1/-1;grid-row:4;width:auto;max-width:none;transform:none;padding:10px 12px 9px;border-radius:var(--r-md)}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-earnings-row{grid-template-columns:1fr 1fr;gap:6px 12px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-earnings-num{gap:8px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-earnings-num strong{font-size:24px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-earnings-num span{max-width:none;font-size:11px;line-height:1.3}
+ /* The note below states the same arithmetic ("$15 gross operator earnings per sale"). */
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-equation{display:none}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-earnings-note{margin-top:7px;padding-top:6px;font-size:10px;line-height:1.4}
+}
+/* Short phones (e.g. 360×740): card eyebrows yield so the trailers keep their band. */
+@media(max-width:760px) and (max-height:800px){
+ [data-experience=official] .platform-pin.is-comparing #platform-story{top:78px}
+ [data-experience=official] .platform-pin.is-comparing #platform-tag{margin-bottom:5px}
+ [data-experience=official] .platform-pin.is-comparing #hero-title{font-size:26px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]){padding-top:160px;row-gap:6px}
+ /* The "Explore" link becomes the cyan arrow at the card's top right (the label stays for assistive tech). */
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size a{position:absolute;top:7px;right:7px;width:34px;height:34px;min-height:0;padding:0;border:0;background:none;font-size:0;justify-content:center}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size{padding:9px 9px 8px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size .eyebrow{display:none}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size h3{font-size:26px;margin-bottom:5px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-size a span{width:30px;height:30px;font-size:14px}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-price{margin-bottom:0}
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-earnings-num strong{font-size:22px}
+ /* delivery-route.css hides every span in the strip below 740 px tall; the number labels must stay. */
+ [data-experience=official] .platform-pin #sizes:not([hidden]) .delivery-earnings-num span{display:block}
+}
+
+/* Tour, phones: the film gets the screen and every label is readable (mono labels >= 10px, body >= 12-13px).
+   The scrim only darkens behind the copy and the controls; secondary overlays (the 3-stage strip and the spec
+   line) step aside, and the vision chapters keep just the title so the labelled yard has the room. */
+@media(max-width:760px){
+ [data-experience=official] .official-tour:after{background:linear-gradient(180deg,var(--bg) 9%,color-mix(in srgb,var(--bg) 78%,transparent) 24%,color-mix(in srgb,var(--bg) 30%,transparent) 37%,transparent 46%,transparent 70%,color-mix(in srgb,var(--bg) 85%,transparent) 84%,var(--bg) 94%)}
+ #field-status{font-size:10px;letter-spacing:.08em}
+ [data-experience=official] .official-tour .tour-count{font-size:11px;margin-right:10px}
+ [data-experience=official] .official-tour #tour-kicker{font-size:10.5px;letter-spacing:.1em}
+ [data-experience=official] .official-tour .tour-copy>p:not(.eyebrow),
+ [data-experience=official] [data-vision=true] .tour-copy>p:not(.eyebrow){font-size:13px;line-height:1.5;max-width:340px;text-shadow:0 1px 14px var(--bg)}
+ [data-experience=official] .official-tour .tour-copy h2{text-shadow:0 2px 24px var(--bg)}
+ [data-experience=official] .official-tour .tour-copy dl,[data-experience=official] .official-tour .field-modes{display:none}
+ [data-experience=official] [data-vision=true] .tour-copy>p:not(.eyebrow){display:none}
+ [data-experience=official] [data-vision=true] .tour-copy h2{font-size:32px}
+ [data-experience=official] .official-tour .vision-feed{top:244px;font-size:10px;letter-spacing:.06em;padding-bottom:7px}
+ .vision-label{grid-template-columns:20px 1fr;padding:4px 7px 4px 6px;font-size:10px;line-height:1.3}
+ .vision-label b{font-size:10px}
+ .vision-label strong,.vision-label span{font-size:10px}
+ .vision-reference text{font-size:10px}
+ #vision-summary{bottom:104px;padding-top:12px}
+ #vision-summary .vision-current{font-size:12px;line-height:1.45;margin:0 0 4px}
+ #vision-summary dl{grid-template-columns:1fr;gap:0;margin:4px 0}
+ #vision-summary dl>div{align-items:baseline;padding:3px 0;font-size:12px}
+ #vision-summary dd{font-size:11px}
+ #vision-summary small{font-size:10.5px;line-height:1.4}
+ #field-callout{width:208px;padding:9px 12px}
+ #field-callout strong{font-size:10.5px}
+ #field-callout span{font-size:12px;line-height:1.4}
+ /* The quote panel sits above the chapter nav, so the yard stays visible between it and the copy. */
+ [data-experience=official] .official-tour[data-field-chapter] #workflow-demo{top:auto;bottom:100px;padding:10px 12px}
+ [data-experience=official] .official-tour[data-field-chapter] #workflow-demo h3{font-size:19px;margin:0 0 6px}
+ [data-experience=official] .official-tour[data-field-chapter] #workflow-demo ol{gap:4px 12px;margin:6px 0;font-size:12px}
+ [data-experience=official] .official-tour[data-field-chapter] #workflow-demo>p:last-child{font-size:10.5px;margin-top:6px}
+ #workflow-scope{grid-template-columns:1fr}
+ #workflow-scope>div{align-items:baseline;padding:2px 0;font-size:12px}
+ #workflow-scope dd{font-size:11px}
+ .route-quote-kicker{font-size:10px}
+ .route-quote-card small{font-size:10.5px}
+ .route-scope{font-size:12px}
+ .route-quote-history span{font-size:11px}
+ .route-fact span{font-size:10px}
+ .route-fact p{font-size:12.5px;line-height:1.45}
+ .route-fact a{font-size:11px}
+ [data-experience=official] .official-tour .tour-note{left:16px;right:16px;max-width:none;bottom:20px;font-size:11px;line-height:1.4}
+ [data-experience=official] .official-tour .tour-chapters{bottom:60px}
+ [data-experience=official] .official-tour .tour-progress{bottom:54px}
+}
+@media(max-width:760px) and (max-height:800px){
+ [data-experience=official] .official-tour .tour-copy>p:not(.eyebrow){font-size:12.5px}
+}
+
+/* Intro, phones: headline and story at the top, the trailer in the middle of the frame, the actions at the
+   bottom above the chapter meter (and clear of the tap-to-play pill), so there is no dead band between the
+   buttons and the trailer. Body copy at 13px, mono labels at 10px. */
+@media(max-width:760px){
+ [data-experience=official] .platform-pin:not(.is-comparing) .hero-heading{display:flex;flex-direction:column;align-items:flex-start;top:108px;bottom:calc(7.5% + 50px)}
+ [data-experience=official] .platform-pin:not(.is-comparing) .offer-actions{margin-top:auto}
+ [data-experience=official] .platform-pin .hero-heading .eyebrow{font-size:10px;letter-spacing:.1em}
+ [data-experience=official] .platform-pin #hero-description{font-size:13px;line-height:1.5;max-width:340px}
+ [data-experience=official] .platform-pin .offer-stage-label{font-size:10px;letter-spacing:.08em}
+ [data-experience=official] .hero-base .chapter-meter{font-size:10px}
+}
+@media(max-width:760px) and (max-height:800px){
+ [data-experience=official] .platform-pin:not(.is-comparing) .hero-heading{top:96px}
+ [data-experience=official] .platform-pin #hero-description{font-size:12.5px;line-height:1.45;margin-top:10px}
+}
+
+/* One edge treatment for every scene: each film fades into the page background over the same top and bottom
+   band, so the 1.5-screen upward slide between sections meets background-on-background (no hard film edge, no
+   bright first pixel row, no seam). Text-only sections already sit on the same --bg. */
+.immersive [data-experience=official] .scene-host:after{content:'';position:absolute;inset:-1px 0;z-index:1;pointer-events:none;background:linear-gradient(180deg,var(--bg) 0,transparent var(--edge-fade,9%),transparent calc(100% - var(--edge-fade,9%)),var(--bg) 100%)}
+
+/* One type floor across sections (owner: "everything needs to have the same"): mono labels 10px, fine print
+   10.5px, on every viewport. :is() with an id lifts these over the older per-section 6-9px rules. */
+:root{--t-mono:10px;--t-fine:10.5px}
+[data-experience=official] :is(#platform-tag,#tour-kicker,#field-status,#platform-invitation,#hero-count,#hero-step,#tour-count,#sizes .eyebrow,#story .offer-section-top>*,#founding .offer-section-top>*,#contact>.eyebrow,.official-tour .field-modes span,.official-tour .vision-feed,.route-quote-kicker,.delivery-price-plans span){font-size:var(--t-mono)}
+[data-experience=official] :is(#inside .tour-note,#sizes .delivery-price small,#sizes .delivery-earnings-note,#vision-summary small,#inquiry-form .fine-print,#founding .offer-terms,#contact .inquiry-next span){font-size:var(--t-fine)}
+[data-experience=official] :is(#route-fact>span,#tour-spec dt,#inside .route-quote-card small,#vision-summary>.eyebrow,#vision-summary dd){font-size:var(--t-mono)}
+@media(min-width:761px){[data-experience=official] #vision-summary .vision-current{font-size:var(--t-fine)}}
+.immersive [data-experience=official] .site-footer .footer-meta>*{font-size:var(--t-mono)}
+
+/* Status line reads as a glass pill like "Find your trailer" beside it (it sat bare on bright sky). */
+[data-experience=official] .official-tour #field-status{padding:7px 12px 7px 11px;border:1px solid var(--pop-edge);border-radius:var(--r-pill);background:var(--pop-glass);-webkit-backdrop-filter:blur(14px);backdrop-filter:blur(14px)}
+/* Footer, phones: a larger wordmark, and the card hugs it (it had ~120 px of empty glass above and below). */
+@media(max-width:760px){
+ html.immersive [data-experience=official] .footer-wordmark{font-size:min(12vw,52px)}
+ html.immersive [data-experience=official] .site-footer:before{top:calc(50% - 100px);bottom:auto;height:188px;transform:none}
+ html.immersive [data-experience=official] .site-footer{padding-inline:28px}
+}

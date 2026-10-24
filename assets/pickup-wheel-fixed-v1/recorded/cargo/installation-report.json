@@ -1,0 +1,23 @@
+{
+  "scene": "cargo",
+  "base": "assets/pickup-wheel-fixed-v1/recorded/cargo",
+  "previous": "assets/rack-free-v1/recorded/cargo",
+  "neighborhood": false,
+  "movies": [
+    {
+      "kind": "desktop",
+      "frames": 601,
+      "width": 1440,
+      "height": 900,
+      "bytes": 5719755
+    },
+    {
+      "kind": "mobile",
+      "frames": 601,
+      "width": 640,
+      "height": 1280,
+      "bytes": 3878857
+    }
+  ],
+  "installed": 1792780279.9121563
+}

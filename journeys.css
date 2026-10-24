@@ -1,0 +1,145 @@
+/* Scroll is the primary control. The page and modal retain native scrolling.
+   Each chapter gets two viewport heights of travel (at least 1,400px on phones). */
+:root{--chapter-scroll:max(1400px,200svh)}
+.trailer-explorer{background:#f2f3f2;padding-bottom:70px!important}
+.explorer-heading{padding-bottom:20px}
+.journey-skip{display:inline-block;font-size:10px;color:#647078;margin-bottom:30px;border-bottom:1px solid #c9d0d3;padding-bottom:5px}
+.trailer-journey{position:relative;--journey-top:78px;height:calc(100svh - var(--journey-top) + var(--chapter-scroll) * 7)}
+.cad-workspace{position:sticky;top:78px;height:calc(100svh - 78px);min-height:0;display:grid;grid-template-columns:minmax(0,1fr) minmax(230px,26%);grid-template-rows:minmax(0,1fr) 70px;border:0;background:#f2f3f2;overflow:hidden}
+.cad-viewport{height:100%;min-height:0;background:radial-gradient(ellipse at 50% 55%,#fff 0%,#f2f3f2 72%);overflow:hidden}
+.cad-fallback{background:transparent}.cad-fallback img{object-fit:contain}
+#trailer-canvas{cursor:default;touch-action:pan-y}
+.cad-titlebar{top:26px;left:0;right:20px;font-size:8px;line-height:1.6;color:#647078}
+.cad-titlebar>span:last-child{display:inline}
+.journey-figure{position:absolute;left:0;top:66px;font-size:clamp(40px,6vw,100px);letter-spacing:-.07em;font-weight:300;color:#28343a0c;pointer-events:none}
+.journey-caption{position:absolute;bottom:24px;left:0;right:28px;display:flex;justify-content:space-between;color:#647078;font-size:8px;letter-spacing:.08em;pointer-events:none}
+.cad-inspector{display:flex;flex-direction:column;justify-content:center;background:transparent;color:#0d1116;padding:60px 0 40px 24px}
+.inspector-topline{font-size:8px;color:#647078;margin-bottom:48px;gap:10px}
+.cad-inspector .eyebrow{font-size:8px;color:#647078;margin-bottom:16px}
+.cad-inspector h3{font-size:clamp(30px,3.1vw,50px);min-height:0;line-height:1.06;letter-spacing:-.045em}
+.cad-inspector #part-description{font-size:13px;color:#647078;min-height:0;margin-top:24px;line-height:1.7}
+.cad-inspector dl{margin:30px 0 0}
+.cad-inspector dl>div{border-color:#dde3e5;padding:12px 0}
+.cad-inspector dt{color:#8b969b;font-size:8px}
+.cad-inspector dd{color:#45535a;font-size:11px}
+.cad-spec-note{font-size:8px;color:#8b969b;margin-top:22px}
+.journey-chapters{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;margin:0;padding:0;list-style:none;border-top:1px solid #dde3e5;gap:10px}
+.journey-chapters li{font-size:11px;color:#a7b1b5;transition:color .3s;position:relative}
+.journey-chapters li[aria-current=step]{color:#28343a}
+.journey-chapters li:before{content:'';width:4px;height:4px;border-radius:50%;display:inline-block;margin:0 10px 2px 0;background:currentColor}
+.journey-progress{position:absolute;bottom:0;left:0;right:0;height:2px;background:#dde3e5}
+.journey-progress>span{display:block;width:100%;height:100%;background:#647078;transform:scaleX(var(--journey-progress,0));transform-origin:left}
+.cad-lower-controls{gap:25px;border-color:#dde3e5}.cad-lower-controls .enter-trailer{border-radius:100px;padding:15px 23px}.cad-lower-controls .model-download{margin-left:auto}
+#explore-dialog{background:#f2f3f2;color:#0d1116;overscroll-behavior:contain;scroll-behavior:auto}
+#explore-dialog .explore-dialog-header{position:sticky;top:0;z-index:10;height:64px;padding:0 30px;background:#f2f3f2f0;backdrop-filter:blur(12px);color:#45535a;border-color:#dde3e5;gap:20px}
+#explore-dialog .explore-motion{margin-left:auto;border:1px solid #c9d0d3;width:32px;height:32px;border-radius:50%;padding:0;font-size:12px;flex-shrink:0}
+#explore-close{border:0;padding:12px 0;color:#28343a}
+#immersive-mount{--journey-top:64px;padding:0 35px}
+#explore-dialog .cad-workspace{grid-template-columns:minmax(0,1fr) minmax(250px,25%);top:64px;height:calc(100svh - 64px);border:0}
+#explore-dialog .cad-viewport{height:100%;min-height:0}
+#explore-dialog .cad-inspector{padding:55px 25px 45px}
+.immersive-note{display:flex;align-items:center;justify-content:space-between;padding:30px 35px 55px;color:#647078;gap:20px}
+#explore-finish{padding:15px 24px;border:1px solid #a7b1b5;border-radius:100px;white-space:nowrap;font-size:11px}
+#biomass{background:#f7f9fa;padding-bottom:0}
+.biomass-journey{height:calc(100svh - 78px + var(--chapter-scroll) * 4);position:relative}
+.biomass-library{position:sticky;top:78px;height:calc(100svh - 78px);padding:0;gap:0;display:grid;grid-template-columns:25% 51% 24%;grid-template-rows:70px minmax(0,1fr) 65px;align-items:center;border:0;isolation:isolate;--material-progress:0}
+.biomass-library-top,.biomass-library-bottom{grid-column:1/-1;display:flex;align-items:center;justify-content:space-between;font-size:9px;letter-spacing:.09em;color:#647078;height:100%;gap:18px}
+.biomass-library-top{border-top:1px solid #dde3e5}
+.biomass-library-bottom{border-bottom:1px solid #dde3e5;font-size:8px}
+.biomass-library-bottom a{font-size:10px;letter-spacing:0;color:#45535a;padding:10px 0}
+.biomass-selection{position:relative;z-index:2}
+.biomass-selection h3{font-size:clamp(18px,2vw,31px);line-height:1.1;letter-spacing:-.035em;margin-bottom:42px;color:#28343a}
+.biomass-selection ol{list-style:none;margin:0;padding:0}
+.biomass-selection li{display:flex;align-items:baseline;gap:16px;font-size:clamp(26px,3.2vw,53px);font-weight:300;line-height:1.12;letter-spacing:-.055em;color:#c9d0d3;margin:14px 0;transition:color .45s,transform .6s;transform:translateX(0)}
+.biomass-selection li[aria-current=step]{color:#28343a;transform:translateX(9px)}
+.biomass-selection small{font-size:8px;letter-spacing:.04em;color:#a7b1b5}
+.biomass-selection li[aria-current=step] small{color:#647078}
+.biomass-sample{width:100%;height:100%;max-height:650px;min-height:0;background:none;overflow:visible;isolation:isolate;align-self:center}
+.biomass-sample canvas{position:absolute;inset:0;z-index:2;pointer-events:none}
+.specimen-dial{position:absolute;left:50%;top:50%;width:96%;aspect-ratio:1;transform:translate(-50%,-50%);border:1px solid #dde3e5;border-radius:50%;opacity:.8}
+.specimen-dial:before{content:'';position:absolute;inset:10px;border-radius:50%;background:repeating-conic-gradient(from -90deg,#a7b1b5 0deg .25deg,transparent .25deg 5deg);mask:radial-gradient(transparent 68%,#000 68% 70%,transparent 70%)}
+.specimen-dial:after{content:'';position:absolute;inset:-5px;border-radius:50%;background:conic-gradient(from 0deg,#647078 calc(var(--material-progress)*360deg),transparent 0deg);mask:radial-gradient(transparent 69.3%,#000 69.4% 70%,transparent 70.2%)}
+.specimen-note{left:50%;bottom:3%;transform:translateX(-50%);white-space:nowrap;font-size:8px;color:#8b969b}
+#biomass-description{padding:0 0 0 30px;min-height:0;position:relative;z-index:2}
+#biomass-description .specimen-label{position:static;font-size:8px;display:block;color:#647078}
+#specimen-code{display:block;margin:15px 0 28px;font-size:clamp(27px,3.1vw,50px);font-weight:300;letter-spacing:-.05em;color:#28343a}
+#biomass-name{font-size:15px;margin:0 0 16px;font-weight:400;color:#45535a}
+#biomass-summary{font-size:13px;color:#647078;line-height:1.75}
+#biomass-output{font-size:7px;line-height:1.9;color:#8b969b;letter-spacing:.09em;margin-top:25px}
+.biomass-static{z-index:3}
+.product-main,.field-photo{perspective:1000px;transform-style:preserve-3d}
+.product-main>img,.field-photo>img{transform:rotateY(calc(var(--photo-depth,0)*-5deg)) rotateX(calc(var(--photo-depth,0)*3deg)) scale(calc(1.025 + var(--photo-depth,0)*.025));transform-origin:center;backface-visibility:hidden}
+.factory-image{overflow:hidden}.factory-image>img{transform:translateY(calc(var(--photo-depth,0)*-22px)) scale(1.055)}
+@media(min-width:761px) and (max-height:720px){.cad-inspector{padding-top:30px}.inspector-topline{margin-bottom:22px}.cad-inspector h3{font-size:31px}.cad-inspector #part-description{font-size:11px;margin-top:16px}.cad-inspector dl{margin-top:17px}.cad-inspector dl>div{padding:7px 0}.biomass-selection h3{margin-bottom:22px}.biomass-selection li{font-size:32px;margin:10px 0}.specimen-dial{width:min(94%,55vh)}}
+@media(max-width:1000px) and (min-width:761px){.cad-workspace{grid-template-columns:minmax(0,1fr) 240px}.cad-inspector h3{font-size:31px}.cad-inspector #part-description{font-size:12px}.biomass-library{grid-template-columns:24% 49% 27%}#biomass-description{padding-left:20px}.biomass-selection li{font-size:29px}.biomass-selection li small{display:none}#biomass-summary{font-size:12px}.biomass-selection h3{font-size:23px}}
+@media(max-width:760px){
+  .trailer-explorer{padding-bottom:45px!important}.explorer-heading>p{max-width:420px}
+
+  .cad-workspace,#explore-dialog .cad-workspace{top:78px;height:calc(100svh - 78px);grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto 52px;overflow:hidden}
+  .cad-titlebar{top:18px;right:0;font-size:6px}.cad-titlebar>span:last-child{display:inline}.journey-figure{top:42px;font-size:48px}
+  .cad-viewport,#explore-dialog .cad-viewport{height:100%;min-height:0}
+  .journey-caption{bottom:12px;right:0;font-size:7px}
+  .cad-inspector,#explore-dialog .cad-inspector{padding:14px 0 18px}
+  .inspector-topline{display:none}.cad-inspector .eyebrow{font-size:7px;margin-bottom:9px}
+  .cad-inspector h3{font-size:29px;max-width:400px;line-height:1.05}
+  .cad-inspector #part-description{font-size:11px;margin-top:10px;line-height:1.6;min-height:70px;max-width:500px}
+  .cad-inspector dl{display:none}.cad-spec-note{margin-top:10px;font-size:7px}
+  .journey-chapters{gap:5px}.journey-chapters li{font-size:8px}.journey-chapters li:before{display:none}
+  .journey-chapters li[aria-current=step]:after{content:'';position:absolute;bottom:-11px;left:0;right:0;height:1px;background:#647078}
+  .cad-lower-controls{gap:15px}.cad-lower-controls .enter-trailer{font-size:10px;padding:12px 16px}.cad-lower-controls .motion-toggle{font-size:9px;min-width:90px}
+  #explore-dialog .explore-dialog-header{height:58px;font-size:6px;padding:0 19px;gap:12px}#explore-close{font-size:9px}
+  #explore-dialog .explore-motion{width:28px;height:28px}
+  #immersive-mount{--journey-top:58px;padding:0 20px}#explore-dialog .cad-workspace{top:58px;height:calc(100svh - 58px)}
+  .immersive-note{padding:24px 20px 45px;flex-direction:column;align-items:flex-start;font-size:10px}
+
+  .biomass-library{height:calc(100svh - 78px);grid-template-columns:1fr;grid-template-rows:45px auto minmax(0,1fr) auto 48px;align-items:stretch;gap:0}
+  .biomass-library-top{font-size:7px}.biomass-selection{padding-top:8px}.biomass-selection h3{font-size:18px;margin:0 0 12px}.biomass-selection h3 br{display:none}
+  .biomass-selection ol{display:flex;gap:15px;justify-content:space-between;align-items:flex-start}.biomass-selection li{font-size:clamp(17px,4.4vw,26px);margin:0;gap:6px;line-height:1.1;letter-spacing:-.04em;flex-direction:column;align-items:flex-start}.biomass-selection li[aria-current=step]{transform:translateY(-2px)}.biomass-selection small{font-size:6px}.biomass-selection li br{display:none}
+  .biomass-sample{width:100%;height:100%;align-self:stretch;max-height:none}.specimen-dial{width:min(84%,32svh)}.specimen-note{font-size:6px;bottom:4%}
+  #biomass-description{display:grid;grid-template-columns:90px 1fr;gap:7px 18px;padding:10px 0 14px;align-self:end;min-height:135px}
+  #biomass-description .specimen-label{grid-column:1;grid-row:1;font-size:6px}#specimen-code{grid-column:1;grid-row:2;font-size:29px;margin:0;line-height:1}
+  #biomass-name{display:none}#biomass-summary{grid-column:2;grid-row:1/3;font-size:11px;line-height:1.6}
+  #biomass-output{grid-column:2;font-size:6px;margin-top:5px;line-height:1.7}
+  .biomass-library-bottom{font-size:6px;gap:10px}.biomass-library-bottom a{font-size:8px}
+}
+@media(max-width:760px) and (max-height:700px){.cad-inspector h3{font-size:24px}.cad-inspector #part-description{font-size:10px;min-height:55px}.cad-inspector{padding-bottom:10px}.cad-spec-note{display:none}.biomass-selection h3{display:none}#biomass-description{min-height:115px}#biomass-summary{font-size:10px}}
+@media(prefers-reduced-motion:reduce){.biomass-selection li,.journey-chapters li{transition:none}.product-main>img,.field-photo>img,.factory-image>img{transform:none}}
+.motion-paused .product-main>img,.motion-paused .field-photo>img,.motion-paused .factory-image>img{transform:none}
+#process{background:#f2f3f2;padding-bottom:0}
+#process-journey{position:relative;height:calc(100svh - 78px + var(--chapter-scroll) * 4)}
+.process-layout{position:sticky;top:78px;min-height:0;height:calc(100svh - 78px);padding:45px 0;display:grid;grid-template-columns:1fr 1.1fr;gap:8%;align-items:center}
+.process-layout h2{font-size:clamp(36px,4.6vw,68px)}
+.process-intro{font-size:14px;max-width:360px}
+.process-controls{padding:0;margin:30px 0 0;list-style:none}
+.process-controls li{padding:16px 0;border-top:1px solid #c9d0d3;font-size:24px;font-weight:300;letter-spacing:-.02em;color:#a7b1b5;transition:color .3s,transform .3s}
+.process-controls li>span{font-size:8px;margin-right:25px;color:#8b969b}
+.process-controls li[aria-current=step]{color:#28343a;transform:translateX(6px)}
+.process-display{border:0;background:none;min-width:0}
+.process-art{position:relative;height:clamp(270px,47svh,510px);background:radial-gradient(ellipse at center,#dde3e5,transparent 70%);overflow:hidden}
+#process-canvas{position:absolute;inset:0;width:100%;height:100%;opacity:0;touch-action:pan-y}
+.process-art.world-ready #process-canvas{opacity:1}
+.process-art.world-ready>.process-orbit,.process-art.world-ready>.matter-core{display:none}
+.process-art-label{font-size:8px}.process-art-index{font-size:11px}
+#process-detail{border-top:1px solid #c9d0d3;padding:25px 0 0;min-height:145px}
+#process-detail h3{font-size:27px}#process-detail p{font-size:13px;margin-top:14px;color:#647078}
+.process-footnote{font-size:8px;padding:0;color:#8b969b;margin-top:20px}
+@media(max-width:760px){
+
+  .process-layout{padding:18px 0;grid-template-columns:1fr;grid-template-rows:auto minmax(0,1fr);gap:12px}
+  .process-layout h2{font-size:30px}.process-intro{display:none}.process-controls{display:flex;gap:10px;justify-content:space-between;margin-top:17px}
+  .process-controls li{border:0;padding:0;font-size:14px;line-height:1.2}.process-controls li>span{display:block;margin:0 0 5px;font-size:6px}.process-controls li[aria-current=step]{transform:none}
+  .process-display{height:100%;min-height:0;display:grid;grid-template-rows:minmax(0,1fr) auto auto}
+  .process-art{height:100%;min-height:0}.process-art-label{font-size:6px}.process-art-index{font-size:8px}
+  #process-detail{padding:17px 0 0;min-height:125px}#process-detail h3{font-size:23px}#process-detail p{font-size:11px;margin-top:11px}.process-footnote{font-size:6px;margin-top:9px}
+}
+@media(prefers-reduced-motion:reduce){.process-controls li{transition:none}}
+
+.process-art.world-ready:before{display:none}
+.study-notes{margin-top:35px;border-top:1px solid #c9d0d3;border-bottom:1px solid #c9d0d3;color:#45535a}
+.study-notes summary{cursor:pointer;list-style:none;display:flex;justify-content:space-between;align-items:center;font-size:12px;padding:20px 0;gap:20px}
+.study-notes summary::-webkit-details-marker{display:none}.study-notes summary span{font-size:20px}.study-notes[open] summary span{transform:rotate(45deg)}
+.study-notes summary:focus-visible{outline:2px solid #647078;outline-offset:5px}
+.study-notes-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:30px;padding:20px 0 35px}
+.study-notes-grid .eyebrow{font-size:8px;color:#8b969b}.study-notes h4{font-size:21px;font-weight:300;line-height:1.15;letter-spacing:-.03em;margin:18px 0 22px;color:#28343a}.study-notes dl>div{border-top:1px solid #dde3e5;padding:10px 0}.study-notes dt{font-size:8px;color:#8b969b}.study-notes dd{font-size:11px;margin:6px 0}.study-notes p{font-size:11px;margin-top:20px;line-height:1.7;color:#647078}
+@media(max-width:760px){.study-notes-grid{grid-template-columns:1fr 1fr;gap:25px}.study-notes h4{font-size:20px}.study-notes summary{font-size:11px}}
+@media(max-width:380px){.study-notes-grid{grid-template-columns:1fr}}

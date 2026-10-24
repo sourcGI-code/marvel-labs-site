@@ -1,0 +1,13 @@
+.route-quotes{position:absolute;inset:0;z-index:9;pointer-events:none;font-family:inherit}
+.route-quotes[hidden]{display:none}
+[data-experience=official] .official-tour[data-route=true] .tour-copy>p:not(.eyebrow),[data-experience=official] .official-tour[data-route=true] .tour-copy dl{display:none}
+.route-quote-card{pointer-events:auto;user-select:text;position:absolute;width:240px;padding:16px 18px;background:rgba(9,18,21,.91);border:1px solid rgba(146,231,239,.55);border-radius:9px;color:#f4f8f8;box-shadow:0 12px 36px #0003;backdrop-filter:blur(12px)}
+.route-quote-kicker{font-size:9px;letter-spacing:.16em;color:#98e3e9;display:block;margin-bottom:7px}
+.route-property{font-size:14px;display:block;font-weight:500}
+.route-price{font-size:38px;line-height:1.15;letter-spacing:-.04em;margin:6px 0}
+.route-scope{font-size:11px;line-height:1.5;margin:0 0 8px;color:#d0dcdc}
+.route-quote-card small{font-size:9px;line-height:1.5;color:#9facaf}
+.route-quote-card[data-selected=true]{border-color:#b5efbf}
+.route-quote-history{position:absolute;right:24px;bottom:35px;display:flex;gap:7px;flex-wrap:wrap;max-width:70%}
+.route-quote-history span{padding:7px 10px;border-radius:20px;background:#0d191de8;border:1px solid #7ea3a84d;color:#c9e6e7;font-size:10px}
+@media(max-width:760px){.route-quote-card{width:190px;padding:12px 14px}.route-price{font-size:30px}.route-property{font-size:12px}.route-scope{font-size:10px}.route-quote-history{bottom:22px;right:16px;max-width:90%}.route-quote-history span{font-size:9px}}

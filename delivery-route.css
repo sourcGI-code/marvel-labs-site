@@ -1,0 +1,58 @@
+/* Delivery, equipment and footprint share one continuous full-screen scene. */
+.delivery-specs[hidden],.route-fact[hidden]{display:none}
+.delivery-specs{position:absolute;inset:0;z-index:5;pointer-events:none;color:#f2f3f2}
+.delivery-specs a{pointer-events:auto;color:inherit;text-decoration:none}
+.delivery-loadout,.delivery-terms{pointer-events:auto;user-select:text}
+.delivery-loadout{position:absolute;top:31%;left:50%;width:460px;max-width:42%;transform:translateX(-50%);text-align:center}
+.delivery-loadout .eyebrow{font-size:8px;letter-spacing:.15em;color:#a4adb0;margin:0 0 9px}
+.delivery-loadout h2{font-size:clamp(18px,1.7vw,25px);line-height:1.15;font-weight:400;letter-spacing:-.025em;margin:0 0 8px}
+.delivery-loadout-text{font-size:10px;line-height:1.5;color:#a4adb0;max-width:320px;margin:auto}
+.delivery-size{position:absolute;top:35%;width:190px;pointer-events:auto;padding:16px 0;border-top:1px solid #d7eeee4d;background:linear-gradient(90deg,#0a0e1070,transparent)}
+.delivery-size-20{left:var(--gutter)}.delivery-size-16{right:var(--gutter)}
+.delivery-size .eyebrow{font-size:8px;letter-spacing:.12em;color:#a4adb0;margin:0 0 12px}
+.delivery-size h3{font-size:52px;font-weight:400;letter-spacing:-.06em;line-height:1;margin:0 0 17px}.delivery-size h3 span{font-size:15px;letter-spacing:0;color:#a4adb0}
+.delivery-size dl{margin:0 0 18px}.delivery-size dl div{display:flex;justify-content:space-between;gap:10px;margin:8px 0;font-size:11px}.delivery-size dt{color:#a4adb0}.delivery-size dd{margin:0;font-variant-numeric:tabular-nums}
+.delivery-size a{display:flex;align-items:center;justify-content:space-between;min-height:38px;font-size:11px;border-top:1px solid #d7eeee26;padding-top:8px}.delivery-size a:hover{color:#4dd8e8}.delivery-size a:focus-visible{outline:2px solid #4dd8e8;outline-offset:5px}
+.delivery-terms{position:absolute;bottom:12%;left:var(--gutter);right:var(--gutter);text-align:center;font-size:9px;line-height:1.5;color:#c8d3d6;margin:0}.delivery-terms span{display:block;font-size:8px;color:#a4adb0;margin-top:4px}
+[data-experience=official] .platform-pin.is-comparing #platform-story{left:50%;top:15%;width:620px;max-width:65%;text-align:center;transform:translateX(-50%)}
+[data-experience=official] .platform-pin.is-comparing #hero-title{font-size:clamp(34px,3.4vw,52px);line-height:1.05}
+.platform-pin.is-comparing #hero-description,.platform-pin.is-comparing #capacity-labels,.platform-pin.is-comparing #capacity-summary{display:none}
+.arrival-quiet .delivery-specs{visibility:hidden!important;pointer-events:none!important}
+.route-fact{position:absolute;z-index:8;left:var(--gutter);bottom:17%;max-width:270px;padding-left:14px;border-left:1px solid #4dd8e8;color:#eef4f4;pointer-events:none}
+.route-fact span{font:8px ui-monospace,monospace;letter-spacing:.12em;color:#a4d8df}.route-fact p{font-size:12px;line-height:1.6;margin:8px 0 0}
+.route-fact a{display:inline-block;margin-top:7px;font-size:8px;color:#a4adb0;pointer-events:auto;text-underline-offset:3px}
+[data-experience=official] .official-tour[data-route=true] .tour-copy{background:linear-gradient(90deg,#0a0e10c9,#0a0e104d);padding:18px;max-width:32%}
+@media(max-width:1000px) and (min-width:761px){.delivery-size{width:160px}.delivery-loadout{max-width:38%}.delivery-terms{bottom:13%;font-size:8px}}
+@media(max-width:760px){
+ [data-experience=official] .platform-pin.is-comparing #platform-story{top:100px;left:20px;right:20px;width:auto;max-width:none;transform:none;text-align:left}
+ [data-experience=official] .platform-pin.is-comparing #hero-title{font-size:31px}.platform-pin.is-comparing #platform-tag{font-size:7px;margin-bottom:10px}
+ .delivery-loadout{top:215px;left:20px;right:20px;width:auto;max-width:none;transform:none;text-align:left}.delivery-loadout .eyebrow{font-size:6px;margin-bottom:5px}.delivery-loadout h2{font-size:17px;margin-bottom:0}.delivery-loadout-text{display:none}
+ .delivery-size{top:278px;width:calc(50% - 29px);padding-top:9px;background:none}.delivery-size-20{left:20px}.delivery-size-16{right:20px}.delivery-size .eyebrow{font-size:6px;margin-bottom:6px}.delivery-size h3{font-size:33px;margin-bottom:8px}.delivery-size h3 span{font-size:11px}.delivery-size dl{margin-bottom:8px}.delivery-size dl div{font-size:9px;margin:5px 0}.delivery-size a{font-size:9px;min-height:32px;padding-top:4px}
+ .delivery-terms{left:20px;right:20px;bottom:12%;font-size:7px}.delivery-terms span{font-size:6px;max-width:310px;margin:3px auto 0}
+ .route-fact{left:20px;bottom:20%;max-width:210px;padding-left:10px}.route-fact p{font-size:10px;line-height:1.45}.route-fact span{font-size:7px}
+ [data-experience=official] .official-tour[data-route=true] .tour-copy{max-width:none;background:none;padding:0}
+}
+
+@media(max-height:740px) and (max-width:760px){.delivery-loadout{top:184px}.delivery-size{top:237px}.delivery-size .eyebrow{display:none}.delivery-size h3{font-size:28px}.delivery-size dl div{margin:4px 0}.delivery-terms span{display:none}}
+/* Keep both trailers unobstructed on phones; full specifications are one link away. */
+@media(max-width:760px){
+ [data-experience=official] .platform-pin #sizes .delivery-loadout{top:193px}
+ [data-experience=official] .platform-pin #sizes .delivery-size{top:246px}
+ [data-experience=official] .platform-pin #sizes .delivery-size dl div:nth-child(n+3){display:none}
+}
+
+@media(max-width:760px) and (max-height:740px){
+ [data-experience=official] .platform-pin.is-comparing #platform-story{top:86px}
+ [data-experience=official] .platform-pin.is-comparing #hero-title{font-size:26px}
+ [data-experience=official] .platform-pin #sizes .delivery-loadout{top:169px}
+ [data-experience=official] .platform-pin #sizes .delivery-loadout .eyebrow,
+ [data-experience=official] .platform-pin #sizes .delivery-size .eyebrow{display:none}
+ [data-experience=official] .platform-pin #sizes .delivery-loadout h2{font-size:16px}
+ [data-experience=official] .platform-pin #sizes .delivery-size{top:196px;padding:8px}
+ [data-experience=official] .platform-pin #sizes .delivery-size h3{font-size:24px;margin-bottom:4px}
+ [data-experience=official] .platform-pin #sizes .delivery-size dl div{padding:1px 0;font-size:9px}
+ [data-experience=official] .platform-pin #sizes .delivery-size dd{font-size:10px}
+ [data-experience=official] .platform-pin #sizes .delivery-size a{min-height:30px;padding-left:8px;font-size:9px}
+ [data-experience=official] .platform-pin #sizes .delivery-size a span{width:24px;height:24px}
+ [data-experience=official] .platform-pin #sizes .delivery-terms span{display:none}
+}
