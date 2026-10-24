@@ -11,7 +11,7 @@
 import {DELIVERY_END} from './intro-timing.js?v=1';
 import {displays} from './original-display-framework.js?v=10';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
-const GLIDE_MS=2400, COOLDOWN_MS=350, GESTURE_GAP_MS=90, SWIPE_PX=28, START_MS=700;   // 2.4 s: owner 10-24, the 1.1 s move "displays it too fast"
+const GLIDE_MS=2400, COOLDOWN_MS=350, GESTURE_GAP_MS=90, SWIPE_PX=28, START_MS=700, CUT_MS=380;   // 2.4 s: owner 10-24, the 1.1 s move "displays it too fast"
 export function installBeatScroll({stage,tracks,playback,getActive,readProgress}){
  const params=new URLSearchParams(location.search);
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -49,7 +49,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  const current=()=>{const y=scrollY+4,all=chapters();let at=null;for(const c of all){if(c.y<=y)at=c;}return at;};
  const next=()=>chapters().find(c=>c.y>scrollY+4)||null;
  function stopPlaying(){playing=null;playback.pause({capture:true});}   // ours or the page's own load-time autoplay
- function stopGlide(){if(gliding){gliding=null;cancelAnimationFrame(glideFrame);glideFrame=0;}}
+ function stopGlide(){if(gliding){gliding=null;cancelAnimationFrame(glideFrame);glideFrame=0;}if(veil)veil.style.opacity='0';}
  function settle(){delete body.dataset.beatStep;cooldownUntil=performance.now()+COOLDOWN_MS;}
  function play(chapter){
   // The chapter's film plays by itself to the chapter's end; the page waits there. If the film cannot start
@@ -104,9 +104,27 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  // A film is "playing" whether this module started it or the page's own load-time autoplay did.
  const busy=()=>!!playing||['playing','loading'].includes(body.dataset.animationPlayback||'');
  function later(skip){setTimeout(()=>forward(skip),0);}
+ // Skipping ahead through a film never fast-forwards it (owner 10-24: "too fast like holy shit"): the screen fades
+ // to black, the page jumps to the next chapter, the screen fades back, and that chapter plays.
+ let veil=null;
+ function cut(chapter){
+  stopPlaying();stopGlide();
+  if(!veil){veil=document.createElement('div');veil.id='beat-cut';veil.style.cssText='position:fixed;inset:0;background:#0a0c0d;opacity:0;pointer-events:none;z-index:9000;transition:opacity '+CUT_MS+'ms ease';document.body.append(veil);}
+  const mine=++token;gliding=chapter;body.dataset.beatStep='1';
+  requestAnimationFrame(()=>{veil.style.opacity='1';});
+  setTimeout(()=>{
+   if(mine!==token)return;
+   document.dispatchEvent(new CustomEvent('stage:navigate',{detail:{hash:'#'+chapter.section.id,beat:true}}));
+   scrollTo(0,chapter.y);
+   requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    if(mine!==token)return;veil.style.opacity='0';
+    setTimeout(()=>{if(mine!==token)return;gliding=null;if(!play(chapter))settle();},CUT_MS);
+   }));
+  },CUT_MS+40);
+ }
  function forward(skip=false){
   if(gliding)return;                                   // already moving: one move per scroll
-  if(skip||playing){const n=next();if(n)glide(n);return;}   // skip ahead while a film plays
+  if(skip||playing){const n=next();if(n)cut(n);return;}     // skip ahead while a film plays: a fade cut, no scrub
   const here=current();
   if(here&&here.film){
    const active=getActive(),at=active&&active.track===here.section?readProgress(active):1;
