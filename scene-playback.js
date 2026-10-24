@@ -4,6 +4,8 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  const buttons=[...document.querySelectorAll('.motion-button')];
  let owner=null,segment=null,mode='paused',generation=0,frame=0,abort=null,error='',lastUI='',completedOwner=null;
  let autoplayEnd=null,autoplayed=false,blockTimer=0;
+ // stopAt: beat-scroll.js plays the chapter's film to the next beat and no further (owner 10-24: one scroll per thing).
+ let stopAt=null;
  // Phones that refuse autoplay (iOS Low Power Mode, data saver, "never auto-play") keep the poster
  // and show the hero's tap-to-play pill: body[data-autoplay-blocked] drives that CSS.
  const touchFirst=matchMedia('(hover:none) and (pointer:coarse)');
@@ -35,7 +37,7 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
   generation++;abort?.abort();abort=null;cancelAnimationFrame(frame);frame=0;
   if(capture&&mode==='playing')position();
   if(segment){delete segment.video.dataset.timelinePlaying;segment.video.pause();}owner=null;segment=null;mode='paused';
-  autoplayEnd=null;setPaused(true);sync();
+  autoplayEnd=null;stopAt=null;setPaused(true);sync();
  }
  function waitForMedia(video,target,signal){
   return new Promise((resolve,reject)=>{
@@ -88,6 +90,10 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
   }
   const problem=segment.video.error?'Animation playback failed. Press Play to retry.':segment.video.paused?'Animation stopped. Press Play to resume.':'';
   if(problem){pause({capture:false});error=problem;sync();return;}
+  if(stopAt!==null){
+   const fraction=Math.min(.999999,clamp(segment.video.currentTime/segment.duration)),at=segment.start+(segment.end-segment.start)*fraction;
+   if(at>=stopAt-1e-4){const target=stopAt,nextOwner=owner;writeProgress(nextOwner,target);nextOwner.view.setPlaybackProgress?.(target);pause({capture:false});return;}
+  }
   position();frame=requestAnimationFrame(tick);
  }
  function toggle({end=null}={}){
@@ -99,7 +105,8 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  }
  // The hero pill stands in for the refused autoplay, so like autoplay it stops at the opening's end.
  buttons.forEach(button=>button.addEventListener('click',()=>toggle(button.classList.contains('hero-play')?{end:.25}:{})));
- const interrupt=()=>{completedOwner=null;if(mode!=='paused')pause();};
+ // During a beat step the stepper owns input: its own back-scroll cancels; forward ticks are swallowed by it.
+ const interrupt=()=>{if(document.body.dataset.beatStep)return;completedOwner=null;if(mode!=='paused')pause();};
  addEventListener('wheel',interrupt,{passive:true});
  addEventListener('touchstart',event=>{if(!event.target.closest('.motion-button,#ve-motion'))interrupt();},{passive:true});
  addEventListener('keydown',event=>{
@@ -110,7 +117,13 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  document.addEventListener('stage:navigate',interrupt);
  document.addEventListener('visibilitychange',()=>{if(document.hidden)interrupt();});
  addEventListener('resize',interrupt);reduced.addEventListener('change',()=>{interrupt();sync();});
- sync();return {pause,toggle,sync,autoplay(next,{end=.25}={}){
+ sync();return {pause,toggle,sync,playTo(target){
+  // Play the active chapter's film from where it is to `target` (a progress fraction), then pause there.
+  const next=getActive();if(!next?.view?.preparePlayback||reduced.matches)return false;
+  const at=readProgress(next);if(!(target>at+1e-4))return false;
+  if(mode!=='paused')pause({capture:false});
+  completedOwner=null;autoplayEnd=null;stopAt=target;begin(next,at);return true;
+ },autoplay(next,{end=.25}={}){
   if(autoplayed||mode!=='paused'||reduced.matches||!next?.view?.preparePlayback||getActive()!==next||readProgress(next)>.01)return false;
   autoplayed=true;autoplayEnd=end;begin(next,0);
   // A phone still not playing 3 s after the attempt gets the pill while the media keeps loading.
