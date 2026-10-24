@@ -29,7 +29,10 @@ function fitPortrait(pos,target,{x0,x1,height,fov,weight}){
  pos.copy(target).addScaledVector(horizontal,mix(start,high,weight));pos.y+=eyeHeight;
 }
 // Shared camera choreography for the live preview and offline Blender film.
-export function openingPose(p,take,{front,towOffset,mobile=false}){
+// calm (owner 10-24: "remove the shaking up and down when the truck goes by"): the lift keeps its path to the wide
+// view but drops the kick, the 1.2 m rise-and-fall and the pitch/roll ringing. The baked film uses it; the live preview
+// keeps the authored take unless asked.
+export function openingPose(p,take,{front,towOffset,mobile=false,calm=false}){
  p=clamp(p);
   const contact=impactPose,contactX=-12-front,startX=34;
   // Accelerate into the lens, then carry the momentum through contact before
@@ -65,12 +68,10 @@ export function openingPose(p,take,{front,towOffset,mobile=false}){
      pos.x=mix(initial.x,wideEye.x,ramp(t,.12,.60));
      pos.z=mix(initial.z,wideEye.z,1-Math.pow(1-clamp(t/.16),3));
     }
-    pos.x-=1.05*kick;
-    pos.y+=1.2*Math.sin(Math.PI*clamp(t/.50));
+    if(!calm){pos.x-=1.05*kick;pos.y+=1.2*Math.sin(Math.PI*clamp(t/.50));}
     target.lerp(wideTarget,escape);
-    pitch=-.18*Math.sin(24*t)*Math.exp(-6*t);
-    roll=.11*Math.sin(27*t)*Math.exp(-6*t);
-    fov=48+4*ramp(t,0,.28)+5*kick;
+    if(!calm){pitch=-.18*Math.sin(24*t)*Math.exp(-6*t);roll=.11*Math.sin(27*t)*Math.exp(-6*t);}
+    fov=48+4*ramp(t,0,.28)+(calm?0:5*kick);
    }
   }else{
    // The body passes through the original lens. A brief body occlusion

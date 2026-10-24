@@ -688,3 +688,51 @@ body[data-autoplay-blocked=true]:not([data-animation-playback=playing]) .platfor
  html.immersive [data-experience=official] .site-footer:before{top:calc(50% - 100px);bottom:auto;height:188px;transform:none}
  html.immersive [data-experience=official] .site-footer{padding-inline:28px}
 }
+
+/* ---------- Owner 10-24 (Page1_Website_edits.docx): "It needs to look like the old website" ---------- */
+/* Square buttons: every pill squares off through the token; buttons take the old site's outlined square with the
+   arrow in the accent colour, filled on hover. Cards keep their corners (only buttons were asked for). */
+:root{--r-pill:0}
+.offer-button,.offer-v2 .offer-button,.size-option .offer-button,.form-submit,
+html.immersive [data-experience=official] #story .offer-actions .offer-button{border-radius:0;background:transparent;border:1px solid var(--accent);color:var(--ink);min-height:45px;padding:12px 19px;gap:22px;justify-content:space-between;box-shadow:none}
+.offer-button span,.size-option .offer-button span,.form-submit span{width:auto;height:auto;border-radius:0;background:transparent;color:var(--accent);font-size:19px;transform:none}
+.plan-option-buy .offer-button,.product-request .offer-button{background:transparent;color:var(--ink);border-color:var(--accent)}
+.plan-option-buy .offer-button span,.product-request .offer-button span{background:transparent;color:var(--accent)}
+.offer-button:is(:hover,:focus-visible),.form-submit:is(:hover,:focus-visible),
+.plan-option-buy .offer-button:is(:hover,:focus-visible),.product-request .offer-button:is(:hover,:focus-visible){background:var(--accent);color:var(--bg);border-color:var(--accent);transform:none;box-shadow:none}
+.offer-button:is(:hover,:focus-visible) span,.form-submit:is(:hover,:focus-visible) span,
+.plan-option-buy .offer-button:is(:hover,:focus-visible) span{color:var(--bg);background:transparent;transform:none}
+.menu-button,.motion-button,.motion-button span{border-radius:0}
+/* The masthead as on the old site: plain, no pill behind it. */
+.masthead,.offer-v2 .masthead,[data-experience=official] .masthead{background:none;border:0;border-radius:0;box-shadow:none;backdrop-filter:none;-webkit-backdrop-filter:none}
+/* The hero copy sits compact under the headline again (the 10-23 pass had pushed it to the bottom of the screen). */
+[data-experience=official] .platform-pin:not(.is-comparing) #platform-story{bottom:auto;height:auto}
+[data-experience=official] .platform-pin:not(.is-comparing) #hero-description{margin-top:23px;max-width:330px;font-size:13px;line-height:1.65}
+[data-experience=official] .platform-pin:not(.is-comparing) .offer-actions{margin-top:24px}
+[data-experience=official] .platform-pin:not(.is-comparing) .offer-stage-label{margin-top:18px}
+
+/* Square everything that was a pill or an arrow disc, whatever defined its radius (owner 10-24: square buttons). */
+.immersive .masthead .contact-link,
+.immersive .masthead .desktop-nav a,
+.immersive .masthead .menu-button,.pricing-page .masthead .menu-button,
+.pricing-page .masthead .contact-link,
+.pricing-page .masthead .desktop-nav a,
+.product-size-switch,
+.product-size-switch a,
+.route-quote-history span,
+.site-footer .footer-meta a,
+.trailer-contact .email-link,.email-link,
+[data-experience=official] .official-tour .tour-chapters,
+[data-experience=official] .official-tour .tour-chapters li,
+[data-experience=official] .platform-pin .delivery-size a,
+[data-experience=official] .platform-pin .delivery-terms{border-radius:0!important}
+.form-submit span,
+.founding-benefits>li>span,
+.offer-button span,
+[data-experience=official] .platform-pin .delivery-size a span{border-radius:0!important;background:transparent!important;color:var(--accent)!important;width:auto!important;height:auto!important;font-size:17px!important}
+.masthead .desktop-nav a:is(:hover,:focus-visible){background:transparent!important;text-decoration:underline;text-underline-offset:6px}
+.immersive .masthead,.offer-v2[data-active-scene] .masthead,.pricing-page .masthead,html.immersive [data-experience=official] .masthead{background:none!important;border:0!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.immersive .masthead .menu-button,.pricing-page .masthead .menu-button,.menu-button{border:1px solid var(--accent)!important;background:transparent!important}
+[data-experience=official] .platform-pin .delivery-size a{border:1px solid var(--accent)!important;background:transparent!important}
+[data-experience=official] .platform-pin .delivery-size a:is(:hover,:focus-visible){background:var(--accent)!important;color:var(--bg)!important}
+[data-experience=official] .platform-pin .delivery-size a:is(:hover,:focus-visible) span{color:var(--bg)!important}

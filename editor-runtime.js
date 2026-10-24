@@ -2,7 +2,10 @@ import {applyDesign,applyFraming} from './page-design.js?v=1';
 // Saved text, formatting, and composition are shared by local previews.
 // The overrides file sits beside this module, so pages under /marvel/ (and hosts that serve the site from a subpath) resolve it from the module URL rather than the page URL.
 const local=['localhost','127.0.0.1','[::1]'].includes(location.hostname);
-const page=location.pathname.replace(/index\.html$/,'');
+// The page key is relative to where this module is served from, so saved edits apply when the site lives under a
+// subpath (GitHub Pages /marvel-labs-site/) as well as at a root.
+const siteRoot=new URL('.',import.meta.url).pathname;
+const page=('/'+(location.pathname.startsWith(siteRoot)?location.pathname.slice(siteRoot.length):location.pathname.replace(/^\//,''))).replace(/index\.html$/,'');
 const properties=['fontSize','fontWeight','fontStyle','fontFamily','color','textAlign','lineHeight','letterSpacing'];
 const records=new WeakMap();
 let documentData={version:1,entries:{}},revision='',observer,queued=false;
