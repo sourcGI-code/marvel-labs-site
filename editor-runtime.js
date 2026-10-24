@@ -1,5 +1,6 @@
 import {applyDesign,applyFraming} from './page-design.js?v=1';
 // Saved text, formatting, and composition are shared by local previews.
+// The overrides file sits beside this module, so pages under /marvel/ (and hosts that serve the site from a subpath) resolve it from the module URL rather than the page URL.
 const local=['localhost','127.0.0.1','[::1]'].includes(location.hostname);
 const page=location.pathname.replace(/index\.html$/,'');
 const properties=['fontSize','fontWeight','fontStyle','fontFamily','color','textAlign','lineHeight','letterSpacing'];
@@ -68,7 +69,7 @@ export async function save(){
 async function start(){
  const style=document.createElement('style');style.textContent=['color','font-weight','font-style','font-family'].map(p=>`[data-page-edit-${p}] *{${p}:inherit!important}`).join('');document.head.append(style);
  try{
-  const response=await fetch('editor-overrides.json',{cache:'no-cache'});
+  const response=await fetch(new URL('editor-overrides.json',import.meta.url),{cache:'no-cache'});
   if(response.ok){const raw=await response.text();documentData=JSON.parse(raw);revision=response.headers.get('ETag')||'';}
  }catch(error){console.warn('Saved page edits could not be loaded',error);}
  apply();applyDesign(documentData.design,page);
