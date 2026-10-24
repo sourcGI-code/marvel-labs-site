@@ -11,13 +11,13 @@
 import {DELIVERY_END} from './intro-timing.js?v=1';
 import {displays} from './original-display-framework.js?v=10';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
-const GLIDE_MS=2400, COOLDOWN_MS=350, GESTURE_GAP_MS=90, SWIPE_PX=28, START_MS=700, CUT_MS=380;   // 2.4 s: owner 10-24, the 1.1 s move "displays it too fast"
+const GLIDE_MS=2400, GESTURE_GAP_MS=260, ACTION_GAP_MS=900, SWIPE_PX=28, START_MS=700, CUT_MS=380, SCRUB_FALLBACK_S=14;   // 2.4 s: owner 10-24, the 1.1 s move "displays it too fast"
 export function installBeatScroll({stage,tracks,playback,getActive,readProgress}){
  const params=new URLSearchParams(location.search);
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  if(params.has('freescroll')||params.has('edit'))return null;
  const body=document.body;body.dataset.beatScroll='1';
- let playing=null,gliding=null,cooldownUntil=0,lastWheel=0,glideFrame=0,touchY=null,touchDone=false,token=0;
+ let playing=null,gliding=null,cooldownUntil=0,lastWheel=0,actionAt=-1e9,glideFrame=0,touchY=null,touchDone=false,token=0;
  const sections=()=>[...document.querySelectorAll('main > section')];
  function tourStarts(){
   // The tour as three things (owner 10-24: "I want the understand the job to be one scroll so it shows the entire
@@ -37,6 +37,16 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   const d=displays.find(x=>x.section===id);
   return [{start:d?d.at:.15,end:1,film:false}];
  }
+ function filmSeconds(chapter){
+  // How long the chapter's film runs between its start and end, from the page's own videos.
+  const id=chapter.section.id;let total=0;
+  if(id==='top'){
+   const opening=document.querySelector('video.opening-film'),cargo=chapter.section.querySelector('video.recorded-scene');
+   total=chapter.start<.25?((opening?.duration||10)/.7)/.25:(cargo?.duration||18)/(DELIVERY_END-.25);
+  }else{const v=chapter.section.querySelector('video.recorded-scene');total=v?.duration||SCRUB_FALLBACK_S/(chapter.end-chapter.start);}
+  if(!(total>0))total=SCRUB_FALLBACK_S/(chapter.end-chapter.start);
+  return total*(chapter.end-chapter.start);
+ }
  function positionOf(section,index,p){
   const slot=stage.slot(section),vh=innerHeight,inset=index?vh*HANDOFF:0;
   return slot.offsetTop+inset+Math.max(0,Math.min(1,p))*(slot.offsetHeight-inset-vh*HANDOFF);
@@ -50,7 +60,11 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  const next=()=>chapters().find(c=>c.y>scrollY+4)||null;
  function stopPlaying(){playing=null;playback.pause({capture:true});}   // ours or the page's own load-time autoplay
  function stopGlide(){if(gliding){gliding=null;cancelAnimationFrame(glideFrame);glideFrame=0;}if(veil)veil.style.opacity='0';}
- function settle(){delete body.dataset.beatStep;cooldownUntil=performance.now()+COOLDOWN_MS;}
+ function settle(){delete body.dataset.beatStep;cooldownUntil=performance.now()+ACTION_GAP_MS;}
+ // One hand motion is one action: a mouse wheel sends several notches, a trackpad flick a stream of events and then
+ // its inertia; all of it within GESTURE_GAP_MS of the previous event belongs to the same gesture. And no two actions
+ // within ACTION_GAP_MS, so a chapter that just started playing is not skipped by the tail of the same motion.
+ function fresh(now,gap){return gap>=GESTURE_GAP_MS&&now-actionAt>=ACTION_GAP_MS&&now>=cooldownUntil&&!gliding;}
  function play(chapter){
   // The chapter's film plays by itself to the chapter's end; the page waits there. If the film cannot start
   // promptly (still downloading on a slow connection, a phone that refuses to start video without a tap) or stops
@@ -61,7 +75,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(!playback.playTo(chapter.end))return false;
   playing=chapter;body.dataset.beatStep='1';
   const mine=++token;let started=false;
-  const fallback=()=>{if(mine!==token||playing!==chapter)return;playing=null;playback.pause({capture:false});glideTo(chapter.yEnd,chapter.section);};
+  const fallback=()=>{if(mine!==token||playing!==chapter)return;playing=null;playback.pause({capture:false});scrub(chapter);};
   const watchdog=setTimeout(()=>{if(!started)fallback();},START_MS);
   const onPlayback=e=>{
    if(mine!==token)return;const m=e.detail?.mode;
@@ -72,6 +86,21 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   };
   document.addEventListener('motion:playback',onPlayback);
   return true;
+ }
+ function scrub(chapter){
+  // The film cannot play here (a browser that refuses to start video, a film still downloading): move the page
+  // through the chapter at the film's own pace, so it reads as the film playing, never as a rush.
+  stopGlide();
+  const from=scrollY,to=chapter.yEnd,dy=to-from;if(Math.abs(dy)<2){settle();return;}
+  const remaining=Math.max(0,Math.min(1,(to-from)/Math.max(1,chapter.yEnd-chapter.y)));
+  const ms=Math.max(1500,filmSeconds(chapter)*remaining*1000);
+  const mine=++token;gliding=chapter;body.dataset.beatStep='1';const t0=performance.now();
+  glideFrame=requestAnimationFrame(function frame(now){
+   if(mine!==token)return;
+   const k=Math.min(1,(now-t0)/ms);scrollTo(0,from+dy*k);
+   if(k<1){glideFrame=requestAnimationFrame(frame);return;}
+   gliding=null;glideFrame=0;settle();
+  });
  }
  function glideTo(y,section){
   // The same move as a chapter change, to a position; used when a film cannot play.
@@ -128,11 +157,11 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   const here=current();
   if(here&&here.film){
    const active=getActive(),at=active&&active.track===here.section?readProgress(active):1;
-   if(at<here.end-.004){if(!play(here))glideTo(here.yEnd,here.section);return;}   // the thing in front of them plays, or scrubs by
+   if(at<here.end-.004){if(!play(here))scrub(here);return;}   // the thing in front of them plays, or scrubs at its pace
   }
   const n=next();if(n)glide(n);
  }
- function back(){stopPlaying();stopGlide();delete body.dataset.beatStep;cooldownUntil=0;}
+ function back(){stopPlaying();stopGlide();delete body.dataset.beatStep;cooldownUntil=0;actionAt=-1e9;}
  const inField=target=>!!target.closest?.('input,textarea,select,[contenteditable="true"],dialog[open]');
  addEventListener('wheel',event=>{
   if(reduced.matches||event.ctrlKey)return;
@@ -140,8 +169,8 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(!(event.deltaY>0)){back();return;}                            // back (or sideways): ordinary scrolling
   if(!next()&&!(current()?.film&&!playing))return;                  // past the last chapter: ordinary scrolling
   event.preventDefault();
-  if(gliding||now<cooldownUntil||gap<GESTURE_GAP_MS)return;        // one gesture, one move
-  later(busy());
+  if(!fresh(now,gap))return;                                       // the same hand motion, or too soon
+  actionAt=now;later(busy());
  },{passive:false});
  addEventListener('touchstart',event=>{touchY=event.touches[0].clientY;touchDone=false;},{passive:true});
  addEventListener('touchmove',event=>{
@@ -150,7 +179,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(dy<-8){back();touchY=null;return;}                            // swipe down: ordinary scrolling
   if(!next()&&!(current()?.film&&!playing))return;
   event.preventDefault();
-  if(dy>SWIPE_PX&&!touchDone){touchDone=true;if(!gliding&&performance.now()>=cooldownUntil)later(busy());}
+  if(dy>SWIPE_PX&&!touchDone){touchDone=true;const now=performance.now();if(!gliding&&now>=cooldownUntil&&now-actionAt>=ACTION_GAP_MS){actionAt=now;later(busy());}}
  },{passive:false});
  addEventListener('touchend',()=>{touchY=null;},{passive:true});
  addEventListener('keydown',event=>{
@@ -160,8 +189,8 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(event.code==='Space'&&event.target.closest('button,a'))return;
   if(!next()&&!(current()?.film&&!playing))return;
   event.preventDefault();
-  if(gliding||performance.now()<cooldownUntil)return;
-  later(busy());
+  const now=performance.now();if(gliding||now<cooldownUntil||now-actionAt<ACTION_GAP_MS||event.repeat)return;
+  actionAt=now;later(busy());
  });
  document.addEventListener('stage:navigate',e=>{if(!e.detail?.beat)back();});   // a nav link or chapter click takes over
  addEventListener('resize',back);
