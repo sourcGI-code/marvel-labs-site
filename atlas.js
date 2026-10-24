@@ -147,7 +147,7 @@ addEventListener('scroll',requestUpdate,{passive:true});addEventListener('resize
 installDisplayFramework({stage,refresh:update});
 if(official)import('./hero-frame.js?v=8').then(m=>m.installHeroFrame()).catch(e=>console.warn('Hero framing unavailable.',e.message));
 // One scroll per thing (owner 10-24): forward input steps beat to beat, playing each chapter's film; back scrolls freely.
-if(manualPlayback&&official&&playback)import('./beat-scroll.js?v=12').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
+if(manualPlayback&&official&&playback)import('./beat-scroll.js?v=14').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
 async function loadTrailer(state,canvas,single=false){
  if(!state)return;
  if(official){
@@ -163,7 +163,7 @@ async function loadTrailer(state,canvas,single=false){
      stage.seekProgress(state.track,at,{refresh:true});
     }
    }
-   const view=single?await (await import('./official-journey.js?v=50')).createOfficialJourney($(canvas),{readProgress:()=>stage.progress(state.track),paused}):await (await import('./platform.js?v=59')).createPlatform($(canvas),{readProgress:()=>stage.progress(state.track),writeProgress:p=>stage.seekProgress(state.track,p),isActive:()=>stage.visible(state.track),paused});
+   const view=single?await (await import('./official-journey.js?v=50')).createOfficialJourney($(canvas),{readProgress:()=>stage.progress(state.track),paused}):await (await import('./platform.js?v=60')).createPlatform($(canvas),{readProgress:()=>stage.progress(state.track),writeProgress:p=>stage.seekProgress(state.track,p),isActive:()=>stage.visible(state.track),paused});
    scenes.push(view);state.view=view;view.setActive(stage.visible(state.track));view.setProgress(stage.progress(state.track));view.setPalette();view.setPaused(paused);playback?.sync();
    if(!single&&!new URLSearchParams(location.search).has('edit'))playback?.autoplay(state,{end:.25});
   }catch(e){state.pin.dataset.renderer='static';const status=$('#platform-status');if(!single&&status){document.documentElement.classList.remove('arrival-quiet');document.querySelectorAll('.masthead,#mobile-menu,#platform-story,.hero-base,#capacity-labels,#capacity-summary,#platform-status').forEach(el=>el.inert=false);document.body.style.setProperty('--opening-mix','0%');status.hidden=false;status.textContent='The trailer preview is unavailable. Explore the layouts and pilot details below.';}console.warn('Showing the trailer still.',e.message);}

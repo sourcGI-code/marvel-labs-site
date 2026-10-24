@@ -137,13 +137,15 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
  async function start(){if(document.body.dataset.scrollOnly==='true'||auto||paused||reduced.matches||!active||p>=.25)return;openedOnce=true;auto=true;const current=++playRequest;film.seek(p/.25);request();const played=await film.play();if(current!==playRequest)return;if(!played)auto=false;else autoStarted=true;request();}
  function manual(){stop();request();}
  document.addEventListener('stage:navigate',manual);
- addEventListener('wheel',manual,{passive:true});addEventListener('touchstart',manual,{passive:true});
+ // With beat scrolling (body[data-beat-scroll]) the stepper owns wheel, touch and keys; navigation still stops it.
+ const input=()=>{if(!document.body.dataset.beatScroll)manual();};
+ addEventListener('wheel',input,{passive:true});addEventListener('touchstart',input,{passive:true});
  // iOS paints seeked frames only after a user gesture has played the element once (and Low Power Mode
  // loads nothing before that): unlock each film on the first touch so scroll-scrubbing shows frames.
  const unlocked=new WeakSet();
  function unlock(video){if(!video||unlocked.has(video)||video.dataset.timelinePlaying||!video.paused)return;unlocked.add(video);const played=video.play();video.pause();played?.catch?.(()=>{});}
  addEventListener('touchend',()=>{unlock(film.video);unlock(recorded?.video);request();},{passive:true});
- addEventListener('keydown',e=>{if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End','Space'].includes(e.code))manual();});
+ addEventListener('keydown',e=>{if(['ArrowDown','ArrowUp','PageDown','PageUp','Home','End','Space'].includes(e.code))input();});
  document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
  addEventListener('resize',()=>{windowKey='';opening?.resize(false);recorded?.resize();const resume=auto;if(film.resize()&&resume){stop();start();}request();});
  function palette(){const name=document.documentElement.dataset.palette;opening?.setPalette(name,false);cargo?.setPalette(colors[name]||colors.charcoal);request();}
