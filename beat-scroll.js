@@ -7,7 +7,12 @@
 //     same pace: nothing skips, nothing speeds up, and nobody is held at a part that has finished;
 //   * the momentum a trackpad or smooth mouse keeps sending after a flick is recognised (its deltas only fade) and
 //     ignored, so a hard flick counts the same as a gentle scroll;
-//   * scrolling back, the menu links, keys back and dragging the scrollbar are ordinary scrolling and stop/clear it.
+//   * scrolling back, the menu links, keys back and dragging the scrollbar are ordinary scrolling and stop/clear it;
+//     a backward wheel is eased into a steady glide (no 120 px jumps), so the film rewinds evenly.
+// The flywheel (owner 10-25: "react real time so if I scroll even a little bit it reacts and plays, but it needs to
+// account for the scroll speed then go to its own"): the part starts on the first event of a scroll; its film runs
+// faster for a faster scroll (up to MAX_BOOST times its pace, from the wheel speed) and eases back to its own pace with
+// time constant BOOST_TAU; scrolling on keeps it up, stopping lets it settle. A glide starts at the scroll's speed.
 // If a film cannot start promptly (slow connection, a device that refuses to start video) the page moves through the
 // chapter at the film's own pace instead. Chapters: the hero arrival (0-.25) and delivery (.25-DELIVERY_END), the
 // tour's arrival / whole workflow / operator story, the numbers, the contact. Off with ?freescroll=1, ?edit=1 or
@@ -16,6 +21,7 @@ import {DELIVERY_END} from './intro-timing.js?v=1';
 import {displays} from './original-display-framework.js?v=10';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
 const GLIDE_MS=2400, GESTURE_GAP_MS=260, REQUEST_GAP_MS=900, STREAM_MS=1800, SWIPE_PX=28, START_MS=1500, SCRUB_FALLBACK_S=14;
+const MAX_BOOST=2, BOOST_PER_PX_S=1/1800, BOOST_TAU=.6, BACK_EASE=.18;
 export function installBeatScroll({stage,tracks,playback,getActive,readProgress}){
  const params=new URLSearchParams(location.search);
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -23,6 +29,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  const body=document.body;body.dataset.beatScroll='1';
  let playing=null,gliding=null,scrubbing=false,queued=false,glideFrame=0,token=0;
  let lastWheel=0,requestAt=-1e9,touchY=null,touchDone=false;
+ let boost=1,boostWall=0,boostFrame=0,backTarget=null,backFrame=0;
  const sections=()=>[...document.querySelectorAll('main > section')];
  function tourStarts(){
   // The tour as three things (owner 10-24: "I want the understand the job to be one scroll so it shows the entire
@@ -72,6 +79,22 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(playing||['playing','loading'].includes(body.dataset.animationPlayback||'')){playing=null;playback.pause({capture:true});}
   delete body.dataset.beatStep;
  }
+ // The flywheel: the wheel's speed over the last 120 ms (px/s) -> a rate boost that decays toward 1 (the part's pace).
+ const speedLog=[];
+ function wheelSpeed(now){while(speedLog.length&&now-speedLog[0][0]>120)speedLog.shift();return speedLog.reduce((a,[,d])=>a+d,0)/.12;}
+ function pushBoost(now){
+  const target=Math.min(MAX_BOOST,1+wheelSpeed(now)*BOOST_PER_PX_S);
+  if(target>boost)boost=target;
+  if(!boostFrame){boostWall=now;boostFrame=requestAnimationFrame(decay);}
+  playback.setRate(boost);
+ }
+ function decay(now){
+  const dt=Math.max(0,(now-boostWall)/1000);boostWall=now;
+  boost=1+(boost-1)*Math.exp(-dt/BOOST_TAU);
+  if(boost<1.005)boost=1;
+  playback.setRate(boost);
+  boostFrame=boost>1?requestAnimationFrame(decay):0;
+ }
  // A part has finished: the queued part (if any) follows straight on.
  function done(){
   delete body.dataset.beatStep;
@@ -91,7 +114,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   const onPlayback=e=>{
    if(mine!==token){document.removeEventListener('motion:playback',onPlayback);clearTimeout(watchdog);return;}
    const m=e.detail?.mode;
-   if(m==='playing')started=true;
+   if(m==='playing'){started=true;playback.setRate(boost);}
    if(m==='paused'){clearTimeout(watchdog);document.removeEventListener('motion:playback',onPlayback);
     if(playing!==chapter)return;
     if(e.detail?.error||readProgress(active)<chapter.end-.02)fallback();else{playing=null;done();}}
@@ -116,10 +139,13 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   // Between sections: the same fixed, eased move every time, then the chapter plays.
   const from=scrollY,dy=chapter.y-from;const mine=++token;gliding=chapter;body.dataset.beatStep='1';
   document.dispatchEvent(new CustomEvent('stage:navigate',{detail:{hash:'#'+chapter.section.id,beat:true}}));
-  const t0=performance.now();
+  const t0=performance.now(),D=GLIDE_MS/1000;
+  // Start at the scroll's own speed (never above what a smooth stop allows), then ease to rest at the chapter.
+  const v0=Math.sign(dy)*Math.min(Math.abs(dy)*1.5/D,wheelSpeed(t0)),m0=v0*D/(dy||1);
+  const shape=k=>m0>0?(k*k*k-2*k*k+k)*m0+(-2*k*k*k+3*k*k):easeInOut(k);
   glideFrame=requestAnimationFrame(function frame(now){
    if(mine!==token)return;
-   const k=Math.min(1,(now-t0)/GLIDE_MS);scrollTo(0,from+dy*easeInOut(k));
+   const k=Math.min(1,(now-t0)/GLIDE_MS);scrollTo(0,from+dy*shape(k));
    if(k<1){glideFrame=requestAnimationFrame(frame);return;}
    gliding=null;glideFrame=0;
    requestAnimationFrame(()=>{if(mine!==token)return;if(!play(chapter))done();});
@@ -141,6 +167,18 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   setTimeout(()=>{if(busy()){if(next()||current()?.film)queued=true;}else go();},0);
  }
  function back(){queued=false;stopMotion();}
+ // Backward wheel: eased toward the wanted position each frame, so the page (and the film it scrubs) moves evenly.
+ function smoothBack(dy){
+  if(backTarget===null)backTarget=scrollY;
+  backTarget=Math.max(0,backTarget+dy);
+  if(!backFrame)backFrame=requestAnimationFrame(stepBack);
+ }
+ function stepBack(){
+  const y=scrollY,d=backTarget-y;
+  if(Math.abs(d)<.5){scrollTo(0,backTarget);backTarget=null;backFrame=0;return;}
+  scrollTo(0,y+d*BACK_EASE);backFrame=requestAnimationFrame(stepBack);
+ }
+ function cancelBack(){if(backFrame)cancelAnimationFrame(backFrame);backFrame=0;backTarget=null;}
  // Momentum: a trackpad or smooth mouse keeps sending events after a flick, each weaker than the last. A stream only
  // counts as a new request when it is NOT fading (a finger still scrolling), checked over the last 300 ms.
  const recent=[];
@@ -152,16 +190,20 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   let down=0;for(let i=1;i<d.length;i++)if(d[i]<=d[i-1]+.01)down++;
   return down/(d.length-1)>=.8&&d[d.length-1]<=d[0]*.97;
  }
+ const newGestureAt=(now,gap)=>gap>=GESTURE_GAP_MS;
  const inField=target=>!!target.closest?.('input,textarea,select,[contenteditable="true"],dialog[open]');
  const forwardAvailable=()=>!!next()||!!(current()?.film);
  addEventListener('wheel',event=>{
   if(reduced.matches||event.ctrlKey)return;
   const now=performance.now(),gap=now-lastWheel;lastWheel=now;
-  if(!(event.deltaY>0)){recent.length=0;back();return;}           // back (or sideways): ordinary scrolling
+  const px=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?innerHeight:1);
+  if(px<0){recent.length=0;speedLog.length=0;back();if(!event.deltaX||Math.abs(event.deltaY)>=Math.abs(event.deltaX)){event.preventDefault();smoothBack(px);}return;}
+  if(!(px>0))return;                                               // sideways: ordinary
   if(!forwardAvailable())return;                                   // past the last part: ordinary scrolling
-  event.preventDefault();
-  recent.push([now,Math.abs(event.deltaY)]);
-  const newGesture=gap>=GESTURE_GAP_MS;
+  event.preventDefault();cancelBack();
+  recent.push([now,Math.abs(px)]);speedLog.push([now,Math.abs(px)]);
+  if(!fading(now))pushBoost(now);                                  // real scrolling speeds the film; coasting momentum doesn't
+  const newGesture=newGestureAt(now,gap);
   const stillScrolling=!newGesture&&now-requestAt>=STREAM_MS&&!fading(now);
   if(!(newGesture||stillScrolling)||now-requestAt<REQUEST_GAP_MS)return;
   requestAt=now;request();
@@ -188,7 +230,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  });
  document.addEventListener('stage:navigate',e=>{if(!e.detail?.beat)back();});   // a nav link or chapter click takes over
  addEventListener('resize',back);
- const api={request,back,chapters,next,current,get playing(){return playing;},get gliding(){return gliding;},get queued(){return queued;},get scrubbing(){return scrubbing;}};
+ const api={get boost(){return boost;},request,back,chapters,next,current,get playing(){return playing;},get gliding(){return gliding;},get queued(){return queued;},get scrubbing(){return scrubbing;}};
  window.__beats=api;
  return api;
 }

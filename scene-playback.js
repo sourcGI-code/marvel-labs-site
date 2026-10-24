@@ -7,6 +7,9 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  let autoplayEnd=null,autoplayed=false,blockTimer=0;
  // stopAt: beat-scroll.js plays the chapter's film to the next beat and no further (owner 10-24: one scroll per thing).
  let stopAt=null;
+ // setRate: the stepper's flywheel (owner 10-25: react to the scroll at once, faster for a faster scroll, then settle
+ // to the part's own pace) multiplies the part's base rate (the arrival's OPENING_RATE, else 1).
+ let baseRate=1,rateBoost=1;
  // Phones that refuse autoplay (iOS Low Power Mode, data saver, "never auto-play") keep the poster
  // and show the hero's tap-to-play pill: body[data-autoplay-blocked] drives that CSS.
  const touchFirst=matchMedia('(hover:none) and (pointer:coarse)');
@@ -71,7 +74,8 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
    next.video.dataset.timelinePlaying='true';
    // The arrival plays slower than real time (owner 10-24: "the arrival film itself" is too fast); its progress
    // is read from the decoded time, so captions and the hand-off stay in step.
-   next.video.playbackRate=(owner.track.id==='top'&&next.end<=.25+1e-6)?OPENING_RATE:1;
+   baseRate=(owner.track.id==='top'&&next.end<=.25+1e-6)?OPENING_RATE:1;
+   next.video.playbackRate=Math.round(baseRate*rateBoost*100)/100;
    await next.video.play();
    if(token!==generation){if(segment?.video!==next.video)next.video.pause();return;}
    mode='playing';markBlocked(false);sync();frame=requestAnimationFrame(tick);
@@ -124,7 +128,10 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  document.addEventListener('stage:navigate',interrupt);
  document.addEventListener('visibilitychange',()=>{if(document.hidden)interrupt();});
  addEventListener('resize',interrupt);reduced.addEventListener('change',()=>{interrupt();sync();});
- sync();return {pause,toggle,sync,playTo(target){
+ sync();return {pause,toggle,sync,setRate(boost){
+  rateBoost=Math.max(.25,Math.min(3,boost||1));
+  if(segment&&mode==='playing'){const r=Math.round(baseRate*rateBoost*100)/100;if(Math.abs(segment.video.playbackRate-r)>=.02)segment.video.playbackRate=r;}
+ },playTo(target){
   // Play the active chapter's film from where it is to `target` (a progress fraction), then pause there.
   const next=getActive();if(!next?.view?.preparePlayback||reduced.matches)return false;
   const at=readProgress(next);if(!(target>at+1e-4))return false;

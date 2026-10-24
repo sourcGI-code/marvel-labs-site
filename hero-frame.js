@@ -86,10 +86,12 @@ export async function installHeroFrame(){
  let anim=null,animFrom=0,animRate=1,animWall=0,animPlan=null,checkedAt=0;
  function glide(v,t){
   const now=performance.now(),rate=v.playbackRate||1;
-  if(anim&&animPlan===plan&&animRate===rate){
+  if(anim&&animPlan===plan){
+   // The flywheel changes the film's rate continuously: follow it with the animation's own rate (no rebuild).
+   const want=rate/animRate;if(Math.abs((anim.playbackRate||1)-want)>.005)anim.updatePlaybackRate(want);
    if(now-checkedAt<500)return;
    checkedAt=now;
-   const expected=animFrom+(now-animWall)/1000*rate;
+   const expected=animFrom+(anim.currentTime||0)/1000*animRate;
    if(Math.abs(expected-v.currentTime)<.12)return;                    // in step with the film
   }
   const from=v.currentTime,span=10-from;if(span<=.02){stopGlide();set(plan.at(10));return;}
