@@ -1,26 +1,62 @@
-// Owner 10-24: "move it off to the right then have it centered". During the arrival the parked trailer is centred in
-// the open space to the RIGHT of the hero copy, on every screen: the copy block's right edge is measured, and the film
-// is shifted (CSS --hero-shift on #hero-visual) so the trailer's centre lands halfway between that edge and the right
-// of the screen. The trailer sits 2% of the film's width left of the frame centre (measured on the hold frame), and
-// the film is cover-fitted at 16:10. The delivery hold (.is-comparing) and phones keep the film centred (popout.css).
-const TRAILER_OFFSET=-.02, FILM_ASPECT=1.6, MIN_GAP=28;
-export function installHeroFrame(){
- const root=document.documentElement,host=document.getElementById('hero-visual'),story=document.getElementById('platform-story');
- if(!host||!story)return;
- function measure(){
-  if(innerWidth<=760){root.style.setProperty('--hero-shift','0px');return;}
-  const box=host.getBoundingClientRect(),w=box.width||innerWidth,h=box.height||innerHeight;
-  const film=Math.max(w,h*FILM_ASPECT);
-  const copyRight=story.getBoundingClientRect().right;
-  const trailerCentre=box.left+w/2+TRAILER_OFFSET*film;
-  const target=copyRight+(innerWidth-copyRight)/2;
-  // never push the trailer's left end into the copy, nor its right end off the screen
-  const half=.17*film,lo=copyRight+MIN_GAP+half,hi=innerWidth-MIN_GAP-half;
-  const centre=Math.min(hi,Math.max(lo,target));
-  root.style.setProperty('--hero-shift',Math.max(0,Math.round(centre-trailerCentre))+'px');
+// Owner 10-24: "the truck should drive in on the center, then when it displays the truck on the side and the trailer
+// it should be displayed more to the right, then the trailer should be on center when the truck leaves" (and no
+// letters may ever be blocked). The film's horizontal offset (--hero-shift, applied with the CSS translate property on
+// #hero-visual) follows the opening film's own clock:
+//   approach (to 1.45 s)       0: the pickup drives in centred;
+//   side view (1.45 s - 7.1 s) the rig (trailer + pickup) centred in the space right of the copy, never under it;
+//   pickup gone (7.1 s - 8.6 s) eases to the trailer centred on the screen, never under the copy;
+//   delivery (scroll past the arrival) holds that; the delivery hold (.is-comparing) and phones: no shift.
+// Vehicle extents per frame come from the installed film (assets/marvel-v4/opening-film/desktop-frame.json: l/r as
+// fractions of the film width, truck = pickup in frame). The film is cover-fitted at 16:10 and, during the arrival,
+// scaled by --arrival-film-scale about its centre.
+const GAP=36, APPROACH_END=1.45, SIDE_IN=2.1, TRUCK_GONE=7.1, SETTLE_END=8.6;
+const smooth=x=>{x=Math.max(0,Math.min(1,x));return x*x*(3-2*x);};
+export async function installHeroFrame(){
+ const root=document.documentElement,host=document.getElementById('hero-visual'),story=document.getElementById('platform-story'),track=document.getElementById('top');
+ if(!host||!story||!track)return;
+ let data=null;
+ try{const r=await fetch(new URL('assets/marvel-v4/opening-film/desktop-frame.json',import.meta.url));if(r.ok)data=(await r.json()).frames;}catch{}
+ let last='';
+ function set(px){const v=Math.max(0,Math.round(px))+'px';if(v!==last){last=v;root.style.setProperty('--hero-shift',v);}}
+ function frameAt(t){if(!data)return null;return data[Math.max(0,Math.min(data.length-1,Math.round(t*30)))];}
+ function geometry(){
+  // Layout sizes and the pin's box: unaffected by the shift itself (measuring the shifted box fed the shift back in).
+  const pin=host.parentElement.getBoundingClientRect(),cw=host.offsetWidth||innerWidth,ch=host.offsetHeight||innerHeight;
+  const scale=parseFloat(getComputedStyle(root).getPropertyValue('--arrival-film-scale'))||1;
+  return {cx:pin.left+host.offsetLeft+cw/2,film:Math.max(cw,ch*1.6),scale,copyRight:story.getBoundingClientRect().right};
  }
- measure();
- document.fonts?.ready?.then(measure);
- addEventListener('resize',measure);
- new ResizeObserver(measure).observe(story);
+ const x=(g,f,scale)=>g.cx+(f-.5)*g.film*scale;          // a film fraction -> screen x, before the shift
+ function clearance(g,l,scale){return g.copyRight+GAP-x(g,l,scale);}
+ // The rig's place for the whole side view: centred in the space right of the copy, at least clear of it.
+ function rigShift(g){
+  let L=1,R=0;for(let i=Math.round(SIDE_IN*30);i<=Math.round(6.9*30);i++){const f=data[i];if(f){L=Math.min(L,f.l);R=Math.max(R,Math.min(f.r,.78));}}
+  const centre=g.copyRight+(innerWidth-g.copyRight)/2-x(g,(L+R)/2,g.scale);
+  return Math.max(centre,clearance(g,L,g.scale));
+ }
+ // The trailer's place once the pickup has gone: centred on the screen, at least clear of the copy (final frame, scale 1).
+ function trailerShift(g){
+  const f=data[data.length-1];
+  return Math.max(innerWidth/2-x(g,(f.l+f.r)/2,1),clearance(g,f.l,1));
+ }
+ function shiftAt(t,g){
+  if(t<APPROACH_END)return 0;
+  const rig=rigShift(g),f=frameAt(t),clear=f?clearance(g,f.l,g.scale):0;
+  if(t<TRUCK_GONE){
+   const k=smooth((t-APPROACH_END)/(SIDE_IN-APPROACH_END));
+   return t>=1.9?Math.max(rig*k,clear):rig*k;          // the whip (1.45-1.9 s) is a blur: ease in, clearance after it
+  }
+  const k=smooth((t-TRUCK_GONE)/(SETTLE_END-TRUCK_GONE));
+  return Math.max(rig*(1-k)+trailerShift(g)*k,clear);
+ }
+ function update(){
+  if(innerWidth<=760||!data){set(0);return;}
+  const g=geometry(),p=parseFloat(track.dataset.sceneProgress||'0');
+  if(p>=.25-1e-4){set(trailerShift(g));return;}                     // the delivery: hold the trailer's place
+  const video=document.querySelector('video.opening-film');
+  const t=video&&video.readyState>=1&&!video.ended?video.currentTime:Math.min(10,p*40);
+  set(shiftAt(Math.min(10,Math.max(0,t)),g));
+ }
+ (function loop(){if(document.body.dataset.activeScene==='top'&&!document.hidden)update();requestAnimationFrame(loop);})();
+ addEventListener('resize',update);
+ document.fonts?.ready?.then(update);
 }
