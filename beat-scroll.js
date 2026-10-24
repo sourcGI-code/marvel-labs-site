@@ -11,7 +11,7 @@
 import {DELIVERY_END} from './intro-timing.js?v=1';
 import {displays} from './original-display-framework.js?v=10';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
-const GLIDE_MS=2400, COOLDOWN_MS=350, GESTURE_GAP_MS=90, SWIPE_PX=28;   // 2.4 s: owner 10-24, the 1.1 s move "displays it too fast"
+const GLIDE_MS=2400, COOLDOWN_MS=350, GESTURE_GAP_MS=90, SWIPE_PX=28, START_MS=700;   // 2.4 s: owner 10-24, the 1.1 s move "displays it too fast"
 export function installBeatScroll({stage,tracks,playback,getActive,readProgress}){
  const params=new URLSearchParams(location.search);
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -52,16 +52,38 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  function stopGlide(){if(gliding){gliding=null;cancelAnimationFrame(glideFrame);glideFrame=0;}}
  function settle(){delete body.dataset.beatStep;cooldownUntil=performance.now()+COOLDOWN_MS;}
  function play(chapter){
-  // The chapter's film plays by itself to the chapter's end; the page waits there.
-  if(!chapter.film||reduced.matches)return false;
+  // The chapter's film plays by itself to the chapter's end; the page waits there. If the film cannot start
+  // promptly (still downloading on a slow connection, a phone that refuses to start video without a tap) or stops
+  // with an error, the page glides to the chapter's end instead: a scroll must always move the page.
+  if(!chapter.film||reduced.matches||body.dataset.autoplayBlocked==='true')return false;
   const active=getActive();
   if(!active||active.track!==chapter.section||readProgress(active)>=chapter.end-.004)return false;
   if(!playback.playTo(chapter.end))return false;
   playing=chapter;body.dataset.beatStep='1';
-  const mine=++token;
-  const onPlayback=e=>{if(mine!==token)return;const m=e.detail?.mode;if(m==='paused'){document.removeEventListener('motion:playback',onPlayback);if(playing===chapter){playing=null;settle();}}};
+  const mine=++token;let started=false;
+  const fallback=()=>{if(mine!==token||playing!==chapter)return;playing=null;playback.pause({capture:false});glideTo(chapter.yEnd,chapter.section);};
+  const watchdog=setTimeout(()=>{if(!started)fallback();},START_MS);
+  const onPlayback=e=>{
+   if(mine!==token)return;const m=e.detail?.mode;
+   if(m==='playing')started=true;
+   if(m==='paused'){clearTimeout(watchdog);document.removeEventListener('motion:playback',onPlayback);
+    if(playing!==chapter)return;
+    if(e.detail?.error||readProgress(active)<chapter.end-.02)fallback();else{playing=null;settle();}}
+  };
   document.addEventListener('motion:playback',onPlayback);
   return true;
+ }
+ function glideTo(y,section){
+  // The same move as a chapter change, to a position; used when a film cannot play.
+  stopGlide();
+  const from=scrollY,dy=y-from;const mine=++token;gliding={y,section};body.dataset.beatStep='1';
+  const t0=performance.now(),ease=x=>x<.5?4*x*x*x:1-Math.pow(-2*x+2,3)/2;
+  glideFrame=requestAnimationFrame(function frame(now){
+   if(mine!==token)return;
+   const k=Math.min(1,(now-t0)/GLIDE_MS);scrollTo(0,from+dy*ease(k));
+   if(k<1){glideFrame=requestAnimationFrame(frame);return;}
+   gliding=null;glideFrame=0;settle();
+  });
  }
  function glide(chapter){
   // The same short move for every chapter change, then the chapter plays.
@@ -86,7 +108,10 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(gliding)return;                                   // already moving: one move per scroll
   if(skip||playing){const n=next();if(n)glide(n);return;}   // skip ahead while a film plays
   const here=current();
-  if(here&&here.film&&play(here))return;               // the thing in front of them plays
+  if(here&&here.film){
+   const active=getActive(),at=active&&active.track===here.section?readProgress(active):1;
+   if(at<here.end-.004){if(!play(here))glideTo(here.yEnd,here.section);return;}   // the thing in front of them plays, or scrubs by
+  }
   const n=next();if(n)glide(n);
  }
  function back(){stopPlaying();stopGlide();delete body.dataset.beatStep;cooldownUntil=0;}
