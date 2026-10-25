@@ -1,7 +1,7 @@
 {
   "scene": "field",
   "base": "assets/town-env-v3/recorded/field",
-  "previous": "assets/town-operator-v4/recorded/field",
+  "previous": "assets/town-env-v3/recorded/field",
   "neighborhood": true,
   "desktopFirst": true,
   "movies": [
@@ -12,10 +12,10 @@
       "fps": 30,
       "width": 1440,
       "height": 900,
-      "bytes": 128036633
+      "bytes": 129201125
     }
   ],
-  "installed": 1792889503.6714096,
+  "installed": 1792925068.294382,
   "retainedMobile": {
     "base": "assets/rack-free-v1/recorded/field",
     "kind": "mobile",
