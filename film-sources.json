@@ -6,20 +6,11 @@
   },
   "field": {
     "base": "assets/town-env-v3/recorded/field",
-    "revision": "1792925067377838364",
+    "revision": "1792945012167841869",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 2302,
-    "operatorStartFrame": 1672,
-    "kind": "desktop"
-  },
-  "fieldMobile": {
-    "base": "assets/rack-free-v1/recorded/field",
-    "revision": "rack-free-1",
-    "neighborhood": false,
-    "operator": false,
-    "timelineFrames": 1381,
-    "kind": "mobile"
+    "operatorStartFrame": 1672
   },
   "opening": {
     "base": "assets/marvel-v4/opening-film",
