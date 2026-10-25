@@ -1,0 +1,29 @@
+{
+  "scene": "field",
+  "base": "assets/town-env-v3/recorded/field",
+  "previous": "assets/town-operator-v4/recorded/field",
+  "neighborhood": true,
+  "desktopFirst": true,
+  "movies": [
+    {
+      "kind": "desktop",
+      "frames": 2302,
+      "timelineFrames": 2302,
+      "fps": 30,
+      "width": 1440,
+      "height": 900,
+      "bytes": 128036633
+    }
+  ],
+  "installed": 1792889503.6714096,
+  "retainedMobile": {
+    "base": "assets/rack-free-v1/recorded/field",
+    "kind": "mobile",
+    "frames": 1381,
+    "timelineFrames": 1920,
+    "fps": 30,
+    "width": 640,
+    "height": 1280,
+    "bytes": 43988069
+  }
+}
