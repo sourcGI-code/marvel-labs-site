@@ -1,7 +1,7 @@
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
 import {loadFilmSources,sceneFilmSource} from './film-sources.js?v=3';
-import {filmFraming,placeFilm} from './film-framing.js?v=3-oldstage4';
+import {filmFraming,placeFilm} from './film-framing.js?v=4-hqworld3';
 const clamp=v=>Math.max(0,Math.min(1,v));
 const mix=(a,b,t)=>a+(b-a)*t;
 export function interpolateRecordedState(a,b,t){

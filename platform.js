@@ -1,5 +1,5 @@
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene.js?v=18-oldstage4';
+import {createRecordedScene} from './recorded-scene.js?v=19-hqworld3';
 import {createOpeningFilm,filmPose,filmDuration} from './opening-film.js?v=26';
 import {loadFilmSources} from './film-sources.js?v=3';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';

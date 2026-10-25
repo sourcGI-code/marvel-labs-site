@@ -1,4 +1,5 @@
-// Preview only. Restore the original right/left glide over the unchanged HQ
+// Preview only. Keep the right/left glide and report its geometry to the full-screen world layer.
+// Restore the original right/left glide over the unchanged HQ
 // films. Projection is centered CONTAIN; there is no arrival zoom or tail dip.
 const GAP=36,EDGE=24,FPS=30,SLIDE_IN=1.8,SLIDE_OUT=2.7,RELEASE_MS=900;
 const INTRO_TAG='THE AUTONOMOUS MICROFACTORY TRAILER';
@@ -103,6 +104,7 @@ export async function installHeroFrame(){
   if(feather!==lastFeather){lastFeather=feather;host.style.setProperty('--hero-edge-feather',feather);}
   // A paused seek directly into the fleet still needs labels reprojected while
   // the host releases. Platform listens and schedules its normal draw.
+  if(moved)host.dispatchEvent(new CustomEvent('hero-frame-geometry',{detail:{shift,scale}}));
   if(wasComparing&&moved)host.dispatchEvent(new Event('hero-frame-change'));
  }
  function set(shift=0,scale=1){

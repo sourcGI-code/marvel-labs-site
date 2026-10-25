@@ -68,7 +68,7 @@ export function filmFraming(base, kind, metadata) {
 // Returns {scale, dx, dy, cover, zoom}: a film point (x,y) is drawn at (x*scale+dx, y*scale+dy).
 export function placeFilm(w, h, W, H, framing, time = 0, frameWindow = null) {
   if(framing.oldDeliveryStage){
-   const cover=Math.max(w/W,h/H),scale=Math.min(w/W,h/H);
+   const cover=Math.max(w/W,h/H),scale=w<=760?cover:Math.min(w/W,h/H);
    const dx=(w-W*scale)/2,dy=(h-H*scale)/2;
    return {scale,dx,dy,cover,zoom:scale/cover,feather:false};
   }

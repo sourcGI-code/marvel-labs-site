@@ -1,0 +1,74 @@
+/* Preview only: fixed copy and the restored smooth intro glide.
+   The HQ movie and constant blue stage remain unchanged. */
+[data-page-flow-preview][data-experience=official] .platform-pin #hero-visual{
+ translate:none;scale:none;transform:none!important;transition:none!important;
+ -webkit-mask-image:none!important;mask-image:none!important;background:transparent!important;will-change:translate,scale;
+}
+/* Keep a world-only image behind the film, including first paint and loading.
+   The independent world canvas follows the film projection, extending only its
+   outer ground/sky pixels into the viewport margins. It contains no vehicles. */
+@media(min-width:761px){
+ [data-page-flow-preview][data-experience=official] .platform-pin:before{content:"";position:absolute;inset:0;z-index:0;pointer-events:none;background:url("assets/hqworld-background-v3/opening-world-poster.webp?v=1") center/cover no-repeat}
+ [data-page-flow-preview][data-experience=official] #hero-world-background{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+ [data-page-flow-preview][data-experience=official] #hero-world-background canvas{position:absolute;inset:0;width:100%;height:100%;display:block}
+ [data-page-flow-preview][data-experience=official] #hero-world-background video{position:absolute;width:1px;height:1px;opacity:0;pointer-events:none}
+ [data-page-flow-preview][data-experience=official] .platform-pin :is(.opening-film,.arrival-poster){
+  inset:auto!important;left:calc((100% - var(--hero-contained-width,min(100vw,160svh))) / 2)!important;top:calc((100% - var(--hero-contained-height,min(62.5vw,100svh))) / 2)!important;
+  width:var(--hero-contained-width,min(100vw,160svh))!important;height:var(--hero-contained-height,min(62.5vw,100svh))!important;
+ }
+ [data-page-flow-preview][data-experience=official] .platform-pin #hero-visual :is(.opening-film,.arrival-poster,.recorded-scene){
+  -webkit-mask-image:none!important;mask-image:none!important;
+ }
+}
+[data-page-flow-preview][data-experience=official] .platform-pin #hero-visual:after{content:none!important}
+[data-page-flow-preview][data-experience=official] .platform-pin :is(.opening-film,.arrival-poster img){object-fit:contain!important;object-position:50% 50%!important;transform:none!important}
+[data-page-flow-preview][data-experience=official] .platform-pin .arrival-poster{transform:none!important}
+[data-page-flow-preview][data-experience=official] .platform-pin :is(.recorded-scene,.recorded-still){-webkit-mask-image:none!important;mask-image:none!important}
+[data-page-flow-preview][data-experience=official] .platform-pin .platform-vignette{
+ opacity:1!important;transition:none;
+ background:linear-gradient(180deg,color-mix(in srgb,var(--bg) 72%,transparent),transparent 22%,transparent 78%,color-mix(in srgb,var(--bg) 65%,transparent));
+}
+/* Keep the copy on the left in every phase. Delivery's supporting sentence
+   sits at the upper right, in the same location as the old reference. */
+[data-page-flow-preview][data-experience=official] .platform-pin #platform-story{display:block;top:17%;left:var(--gutter);right:auto;bottom:auto;height:auto;width:auto;max-width:670px;text-align:left;transform:none;translate:none;transition:none}
+[data-page-flow-preview][data-experience=official] .platform-pin #hero-title{font-size:clamp(42px,4.5vw,66px);line-height:1.02;text-align:left;animation:none;transform:none}
+[data-page-flow-preview][data-experience=official] .platform-pin #hero-description{display:block;position:static;font-size:13px;line-height:1.65;width:auto;max-width:310px;margin-top:23px}
+[data-page-flow-preview][data-experience=official] .platform-pin #platform-tag{font-size:9px;letter-spacing:.12em;margin-bottom:20px}
+[data-page-flow-preview][data-experience=official] .platform-pin #platform-story :is(#platform-tag,#hero-title,#hero-description,.offer-text-link){text-shadow:0 1px 2px #000b,0 2px 18px #0008}
+[data-page-flow-preview][data-experience=official] .platform-pin.is-comparing[data-delivery-phase=arrival] .offer-actions{display:flex;flex-direction:row;gap:22px;margin-top:22px}
+[data-page-flow-preview][data-experience=official] .platform-pin.is-comparing .offer-stage-label{display:none}
+[data-page-flow-preview][data-experience=official] .platform-pin.is-comparing #capacity-labels:not([hidden]){display:block}
+[data-page-flow-preview][data-experience=official] .platform-pin #capacity-labels .capacity-label{transition:none;animation:none;text-shadow:0 1px 3px #000,0 2px 15px #000}
+[data-page-flow-preview][data-experience=official] .platform-pin #capacity-labels strong{font-size:34px}
+[data-page-flow-preview][data-experience=official] .platform-pin #capacity-labels span{font-size:9px;letter-spacing:.06em}
+[data-page-flow-preview][data-experience=official] .platform-pin.is-comparing .hero-base{visibility:visible}
+@media(min-width:761px){
+ [data-page-flow-preview][data-experience=official] .platform-pin.is-comparing #hero-description{position:absolute;left:calc(100vw - var(--gutter) * 2 - 300px);top:45px;width:300px;max-width:300px;margin:0}
+}
+body[data-page-flow-preview] :is(#sizes,#story){overflow-y:auto!important;overscroll-behavior-y:contain;scrollbar-width:thin}
+@media(max-width:760px){
+ [data-page-flow-preview][data-experience=official] .platform-pin #platform-story{top:112px;left:var(--gutter);right:var(--gutter);max-width:calc(100% - var(--gutter) * 2)}
+ [data-page-flow-preview][data-experience=official] .platform-pin #hero-title{font-size:clamp(30px,8.8vw,40px);line-height:1.04}
+ [data-page-flow-preview][data-experience=official] .platform-pin #platform-tag{font-size:7px;margin-bottom:12px}
+ [data-page-flow-preview][data-experience=official] .platform-pin #hero-description{max-width:280px;font-size:11px;line-height:1.5;margin-top:13px}
+ [data-page-flow-preview][data-experience=official] .platform-pin.is-comparing[data-delivery-phase=arrival] .offer-actions{gap:10px;margin-top:17px}
+ [data-page-flow-preview][data-experience=official] .platform-pin #capacity-labels strong{font-size:23px}
+ [data-page-flow-preview][data-experience=official] .platform-pin #capacity-labels span{font-size:7px}
+ [data-page-flow-preview][data-experience=official] .platform-pin.is-comparing .hero-base{bottom:28px}
+}
+@media(max-height:720px){
+ [data-page-flow-preview][data-experience=official] .platform-pin #platform-story{top:100px}
+}
+@media(max-width:760px) and (max-height:720px){
+ [data-page-flow-preview][data-experience=official] .platform-pin #hero-description{font-size:10px;line-height:1.5;margin-top:12px}
+ [data-page-flow-preview][data-experience=official] .platform-pin.is-comparing[data-delivery-phase=arrival] .offer-actions{margin-top:12px}
+}
+@media(min-width:761px) and (max-height:520px){
+ [data-page-flow-preview][data-experience=official] .platform-pin #platform-story{top:80px}
+ [data-page-flow-preview][data-experience=official] .platform-pin #hero-title{font-size:30px}
+}
+
+@media(max-width:760px){
+ [data-page-flow-preview][data-experience=official] .platform-pin :is(.opening-film,.arrival-poster img){object-fit:cover!important}
+ [data-page-flow-preview][data-experience=official] #hero-world-background{display:none}
+}
