@@ -18,7 +18,7 @@
 // tour's arrival / whole workflow / operator story, the numbers, the contact. Off with ?freescroll=1, ?edit=1 or
 // reduced motion.
 import {DELIVERY_END} from './intro-timing.js?v=1';
-import {displays} from './original-display-framework.js?v=10';
+import {displays} from './original-display-framework.js?v=10-oldstage4';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
 const GLIDE_MS=2400, GESTURE_GAP_MS=260, REQUEST_GAP_MS=900, STREAM_MS=1800, SWIPE_PX=28, START_MS=1500, SCRUB_FALLBACK_S=14;
 const MAX_BOOST=2, BOOST_PER_PX_S=1/1800, BOOST_TAU=.6, BACK_EASE=.18;
@@ -191,12 +191,21 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   return down/(d.length-1)>=.8&&d[d.length-1]<=d[0]*.97;
  }
  const newGestureAt=(now,gap)=>gap>=GESTURE_GAP_MS;
+ // The restored specs/story can be taller than a short screen. Let their
+ // own content scroll before interpreting the next gesture as the next section.
+ const scrollableSection=(target,active=false)=>target.closest?.('#sizes,#story')||(active&&['sizes','story'].includes(body.dataset.activeScene)?document.getElementById(body.dataset.activeScene):null);
+ const scrollsWithin=(target,delta,active=false)=>{
+  const section=scrollableSection(target,active);if(!section||!delta)return false;
+  const remaining=section.scrollHeight-section.clientHeight;
+  return remaining>2&&(delta>0?section.scrollTop<remaining-2:section.scrollTop>2);
+ };
  const inField=target=>!!target.closest?.('input,textarea,select,[contenteditable="true"],dialog[open]');
  const forwardAvailable=()=>!!next()||!!(current()?.film);
  addEventListener('wheel',event=>{
   if(reduced.matches||event.ctrlKey)return;
   const now=performance.now(),gap=now-lastWheel;lastWheel=now;
   const px=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?innerHeight:1);
+  if(scrollsWithin(event.target,px)){queued=false;return;}
   if(px<0){recent.length=0;speedLog.length=0;back();if(!event.deltaX||Math.abs(event.deltaY)>=Math.abs(event.deltaX)){event.preventDefault();smoothBack(px);}return;}
   if(!(px>0))return;                                               // sideways: ordinary
   if(!forwardAvailable())return;                                   // past the last part: ordinary scrolling
@@ -212,6 +221,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  addEventListener('touchmove',event=>{
   if(touchY===null||reduced.matches||inField(event.target))return;
   const dy=touchY-event.touches[0].clientY;                        // positive: finger moves up = forward
+  if(scrollsWithin(event.target,dy)){queued=false;return;}
   if(dy<-8){back();touchY=null;return;}                            // swipe down: ordinary scrolling
   if(!forwardAvailable())return;
   event.preventDefault();
@@ -220,6 +230,11 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  addEventListener('touchend',()=>{touchY=null;},{passive:true});
  addEventListener('keydown',event=>{
   if(reduced.matches||inField(event.target)||event.altKey||event.metaKey||event.ctrlKey)return;
+  const internalDelta=['ArrowUp','PageUp'].includes(event.code)?-1:['ArrowDown','PageDown','Space'].includes(event.code)?1:0;
+  if(!(event.code==='Space'&&event.target.closest('button,a'))&&scrollsWithin(event.target,internalDelta,true)){
+   queued=false;event.preventDefault();const section=scrollableSection(event.target,true);
+   section.scrollBy({top:internalDelta*(event.code.startsWith('Arrow')?60:section.clientHeight*.8),behavior:'smooth'});return;
+  }
   if(['ArrowUp','PageUp','Home'].includes(event.code)){back();return;}
   if(!['ArrowDown','PageDown','Space'].includes(event.code))return;
   if(event.code==='Space'&&event.target.closest('button,a'))return;

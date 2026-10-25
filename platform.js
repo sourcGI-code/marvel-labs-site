@@ -1,5 +1,5 @@
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene.js?v=18';
+import {createRecordedScene} from './recorded-scene.js?v=18-oldstage4';
 import {createOpeningFilm,filmPose,filmDuration} from './opening-film.js?v=26';
 import {loadFilmSources} from './film-sources.js?v=3';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';
@@ -17,6 +17,8 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
  let p=readProgress(),active=isActive(),frame=0,auto=false,autoStarted=false,available=true,playRequest=0,state={},lastCopy='',previousP=p;
  let opening,cargo,livePromise,liveReady=false,liveError=false,prepareTimer=0,liveMode='',openedOnce=false;
  const motion=createScrollMotion(p);
+ // Reproject fleet labels during the short intro framing release, including paused seeks.
+ host.addEventListener('hero-frame-change',request);
  let playbackTarget=null;
  function pinPlayback(value){p=motion.snap(value);playbackTarget={value,read:readProgress()};request();}
  const film=createOpeningFilm(host,{reduced,enabled:active,onChange(){
@@ -45,41 +47,20 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
   if(tag===lastCopy)return;
   lastCopy=tag;const direction=p<previousP?-1:1;
   $('platform-tag').textContent=tag;$('hero-description').textContent=description;
-  if(setAnimatedTitle($('hero-title'),title,{direction}))revealDetails([$('platform-tag'),$('hero-description'),$('hero-count'),$('hero-step')],{direction});
+  $('hero-title').innerHTML=title; // Copy stays still; only its content changes at the old phase boundary.
  }
- // The delivery hold frames both trailers in the gap the size cards leave (film-framing.js 'fit' keys).
- // Measured from layout offsets (no transforms), relative to the pin = the film host, once per viewport.
+ // Exact old centered contain throughout; no price-card window or late fit/zoom.
+ // The opening and delivery share one neutral stage and fixed background treatment.
  let windowKey='',frameWindow=null;
- function measureWindow(){
-  const specs=$('sizes'),key=`${innerWidth}x${innerHeight}:${document.fonts?.status}`;
-  if(!specs||key===windowKey)return frameWindow;windowKey=key;
-  const pin=host.closest('.pin'),hidden=specs.hidden;
-  if(hidden){specs.style.visibility='hidden';specs.hidden=false;}
-  // The headline's bottom in its .is-comparing layout (centred, 2 lines), derived from the CSS formula so it
-  // does not depend on the class at measuring time: top 15% + eyebrow + 2 x clamp(34px,3.4vw,52px) x 1.05.
-  const storyBox=()=>{const title=Math.min(52,Math.max(34,innerWidth*.034));return {y1:pin.clientHeight*.15+30+title*2.1};};
-  const box=el=>{let x=0,y=0,n=el;while(n&&n!==pin){x+=n.offsetLeft;y+=n.offsetTop;n=n.offsetParent;}return el&&el.offsetHeight&&getComputedStyle(el).display!=='none'?{x0:x,y0:y,x1:x+el.offsetWidth,y1:y+el.offsetHeight}:null;};
-  const big=box(specs.querySelector('.delivery-size-20')),story=storyBox(),small=box(specs.querySelector('.delivery-size-16')),strip=box(specs.querySelector('.delivery-earnings')),line=box(specs.querySelector('.delivery-loadout')),note=box(specs.querySelector('.delivery-price-note'));
-  if(hidden){specs.hidden=true;specs.style.visibility='';}
-  let rect=null;
-  // The earnings strip steps aside on very short landscape screens (popout.css): the window then runs to the stage's foot.
-  if(big&&small&&(strip||innerWidth>760)){
-   const w=pin.clientWidth,foot=strip?strip.y0:pin.clientHeight*.9;
-   rect=innerWidth<=760
-    ?{x0:12,x1:w-12,y0:Math.max(big.y1,small.y1,note?note.y1:0)+8,y1:foot-8}
-    :{x0:big.x1+18,x1:small.x0-18,y0:Math.max(line?line.y1+14:story.y1+14,Math.min(big.y0,small.y0)),y1:foot-14};
-   if(rect.x1-rect.x0<120||rect.y1-rect.y0<80)rect=null;
-  }
-  return frameWindow=rect;
- }
+ function measureWindow(){return null;}
  document.fonts?.ready.then(()=>{windowKey='';request();});
  function revealWhen(el,hidden){const entering=el.hidden&&!hidden;el.hidden=hidden;if(entering)revealDetails(el.id==='capacity-labels'?el.querySelectorAll('strong,span'):el.children,{delay:0});}
  function draw(){
   if(recorded){liveReady=recorded.ready;if(recorded.failed&&!liveReady){liveError=true;$('platform-status').textContent='The trailer film could not load. Refresh to try again.';}}
-  const continuation=p>=.25,t=cargoProgress(p),pose=filmPose(clamp(p/.25));
+  const continuation=p>.25+1e-6,t=cargoProgress(p),pose=filmPose(clamp(p/.25));
   if(!auto)film.seek(p/.25);
-  // Matching boundary images share the same frame fit. Hold that image until
-  // delivery's requested frame is decoded; subsequent scrubbing stays in cargo.
+  // Keep the approved opening visible at the arrival chapter's exact stop.
+  // Switch only once delivery advances and its requested frame is decoded.
   if(recorded){recorded.setFrameWindow?.(measureWindow());recorded.draw(t);}
   if(!continuation)deliveryVisible=false;
   else if(liveReady&&(!recorded||recorded.atTarget))deliveryVisible=true;
@@ -88,14 +69,12 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
   if(recorded){recorded.setVisible(deliveryVisible||reduced.matches);recorded.video.style.opacity=deliveryVisible||reduced.matches?'1':'0';}
   host.classList.toggle('film-ready',film.ready&&!reduced.matches);
   if(active&&(p>=.12||reduced.matches||film.failed))ensureLive();
-  $('platform-status').hidden=!liveError&&(p<.25||liveReady);
-  if(!liveError&&!liveReady&&p>=.25)$('platform-status').textContent='Loading the trailer film';
+  $('platform-status').hidden=!liveError&&(!continuation||liveReady);
+  if(!liveError&&!liveReady&&continuation)$('platform-status').textContent='Loading the trailer film';
   const mix=`${!livePreview?100:film.ready&&!reduced.matches?filmOpacity*100:0}%`;if(mix!==lastMix){lastMix=mix;document.body.style.setProperty('--opening-mix',mix);}
-  host.closest('.pin').classList.toggle('is-comparing',continuation&&t>=13/18);
-  host.closest('.pin').classList.toggle('is-focused',continuation&&t>=.50);
+  host.closest('.pin').classList.toggle('is-comparing',continuation&&deliveryVisible);
+  host.closest('.pin').classList.toggle('is-focused',false); // Rear/interior phases are outside this 18-second cut.
   host.closest('.pin').classList.toggle('is-opening',!continuation);
-  const specs=$('sizes');
-  if(specs?.classList.contains('delivery-specs')){specs.hidden=!(continuation&&liveReady&&t>=13/18);specs.inert=specs.hidden;}
   if(continuation&&!liveReady){film.seek(1);state={loading:true};return;}
   if(!continuation){
    if(liveReady&&(filmOpacity<1||!film.ready||reduced.matches)){
@@ -111,16 +90,26 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
    opening?.draw(1,false);
    const progress=t;
    state=recorded?recorded.draw(progress):cargo.draw(progress*(540/1079),canvas.clientWidth,canvas.clientHeight);liveMode='cargo';host.classList.add('scene-ready');
-   if(t>=15/18)copy('A SECOND ARRIVAL','A smaller footprint.<br><em>Delivered.</em>','Your equipment. Your footprint. Choose the 16 ft or 20 ft trailer, with your tools on board and an 8 ft factory behind the wall.');
-   else copy('THE AUTONOMOUS MICROFACTORY TRAILER','Your next trailer.<br><em>A factory inside.</em>','More than a place for your mowers and equipment. Your trailer turns grass, leaves, and food waste into products, creating a new source of income for your business with every product it produces.');
+   if(t<11.52/18)copy('A SECOND ARRIVAL','A smaller footprint.<br><em>Delivered.</em>','The compact trailer arrives behind the Ford pickup. The 20 ft platform stays right where it is.');
+   else copy('PARK / UNHITCH / PULL AWAY','Set it down.<br><em>See the whole fleet.</em>','The support jack lowers. The pickup uncouples and pulls clear as the camera widens to both trailers.');
    $('platform-story').style.opacity='1';
-   $('capacity-labels').hidden=true;
-   state.labels.forEach(label=>{const el=$('capacity-'+label.id),mobile=innerWidth<700;el.style.left=`${Math.max(60,Math.min(innerWidth-60,label.x))}px`;el.style.top=`${Math.max(225,Math.min(innerHeight-160,label.y-8))}px`;});
+   host.closest('.pin').dataset.deliveryPhase=t<11.52/18?'arrival':'fleet';
+   const nativeLabels=recorded?.video.dataset.timelinePlaying==='true'&&!recorded.video.seeking&&recorded.video.readyState>=2;
+   const labels=state.labels||[],showLabels=state.split>=.98&&labels.length===2&&deliveryVisible&&(!recorded||recorded.atTarget||nativeLabels);
+   $('capacity-labels').hidden=!showLabels;
+   // No text reveal animation. Labels use the same neutral contain projection.
+   const hostBox=host.getBoundingClientRect(),pinBox=host.closest('.pin').getBoundingClientRect();
+   const sx=hostBox.width/(host.offsetWidth||hostBox.width),sy=hostBox.height/(host.offsetHeight||hostBox.height);
+   for(const label of labels){
+    const el=$('capacity-'+label.id);if(!el)continue;
+    el.style.left=`${hostBox.left-pinBox.left+label.x*sx}px`;
+    el.style.top=`${hostBox.top-pinBox.top+label.y*sy-12}px`;
+   }
    $('capacity-summary').hidden=true;
    $('cargo-loadout').textContent='ZERO-TURN · PUSH MOWER · 3 WEED TRIMMERS';
   }
   $('hero-count').textContent=continuation&&t>=15/18?'02 / 02':'01 / 02';
-  $('hero-step').textContent=continuation&&t>=15/18?'THE DELIVERY':'THE ARRIVAL';
+  $('hero-step').textContent=continuation?(t>=14.4/18?'THE TWO SIZES':'THE DELIVERY'):'THE ARRIVAL';
   $('platform-invitation').textContent=auto?'THE PLATFORM ARRIVES':p<.25?'SCROLL TO REVEAL ↓':'SCROLL TO CONTINUE ↓';
   previousP=p;
  }
@@ -160,7 +149,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
   await recorded.retry();if(signal?.aborted)return null;liveError=recorded.failed;
   recorded.draw(cargoProgress(p));draw();
   return {video:recorded.video,start:.25,end:DELIVERY_END,duration:recorded.duration,terminal:true};
- },setPlaybackProgress:pinPlayback,setProgress(){request();},setActive(value){const entering=value&&!active;if(entering)p=motion.snap(readProgress());active=value;film.setActive(value);recorded?.setActive(value);if(!active){stop();arrivalReveal.clear();document.body.style.setProperty('--opening-mix','0%');}request();if(entering&&!openedOnce&&p<.01)start();},setPaused(value){const wasPaused=paused;paused=value;if(value)stop();else if(wasPaused)start();request();},setPalette:palette,inspect:()=>({...state,playback:livePreview?'live':'recorded',webgl:livePreview,ready:liveReady,liveReady,liveLoading:!!livePromise&&!liveReady&&!liveError,p,targetProgress:readProgress(),cargoProgress:state.p,auto,arrivalQuiet:arrivalReveal.quiet,continuation:p>=.25,...cargo?.inspect(),film:{ready:film.ready,failed:film.failed,playing:film.playing,time:film.time,kind:film.kind,opacity:Number(film.video.style.opacity)}})};
+ },setPlaybackProgress:pinPlayback,setProgress(){request();},setActive(value){const entering=value&&!active;if(entering)p=motion.snap(readProgress());active=value;film.setActive(value);recorded?.setActive(value);if(!active){stop();arrivalReveal.clear();document.body.style.setProperty('--opening-mix','0%');}request();if(entering&&!openedOnce&&p<.01)start();},setPaused(value){const wasPaused=paused;paused=value;if(value)stop();else if(wasPaused)start();request();},setPalette:palette,inspect:()=>({...state,playback:livePreview?'live':'recorded',webgl:livePreview,ready:liveReady,liveReady,liveLoading:!!livePromise&&!liveReady&&!liveError,p,targetProgress:readProgress(),cargoProgress:state.p,auto,arrivalQuiet:arrivalReveal.quiet,continuation:p>.25+1e-6,...cargo?.inspect(),film:{ready:film.ready,failed:film.failed,playing:film.playing,time:film.time,kind:film.kind,opacity:Number(film.video.style.opacity)}})};
  window.__platform={state:api.inspect,seek(value){stop();p=motion.snap(clamp(value));writeProgress(p);api.setProgress(p);}};
  palette();request();
  const review=new URLSearchParams(location.search);

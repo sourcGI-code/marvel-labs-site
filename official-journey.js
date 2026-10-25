@@ -1,5 +1,5 @@
 import {createRouteQuotes} from './route-quotes.js?v=2';
-import {createRecordedScene} from './recorded-scene.js?v=18';
+import {createRecordedScene} from './recorded-scene.js?v=18-oldstage4';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
 import {createVisionOverlay} from './vision-overlay.js?v=9';
 import {createScrollMotion} from './scroll-motion.js';
@@ -47,7 +47,7 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
   const i=Math.min(4,workflowStops.findLastIndex(s=>workflowP>=s)),local=clamp((workflowP-workflowStops[i])/(workflowStops[i+1]-workflowStops[i]));
   const operator=state?.operator,operatorActive=!!operator?.active,operatorCopy=operatorActive&&operatorCaptions[operator.stage];
   const routeActive=!!state?.route?.active,pitchActive=!operatorActive&&(routeActive||workflowP<.07),captionKey=operatorCopy?'operator-'+operatorCopy[1]:pitchActive?-2:i;
-  const [tag,title,copy,key,value]=operatorCopy||(pitchActive?['THE WORKDAY OPPORTUNITY','The route you run.<br><em>More possibility.</em>','Bring your tools and a microfactory to the same job. Keep suitable grass clippings from your route and put that material to work.','YOUR WORKING DAY','Service income + material opportunity']:captions[i]);
+  const [tag,title,copy,key,value]=operatorCopy||(pitchActive?captions[0]:captions[i]);
   const fact=$('route-fact');if(fact)fact.hidden=!pitchActive;
   if(captionKey!==lastCaption){
    const direction=p<lastP?-1:1;

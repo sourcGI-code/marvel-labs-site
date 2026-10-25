@@ -11,6 +11,7 @@ export const displays = [
  {id:'rtk',group:'Working day',label:'03 · RTK reference',section:'inside',start:.34,at:.40,title:'#tour-title',copy:'#tour-copy',purpose:'Show how site observations stay tied to the property reference.'},
  {id:'quote',group:'Working day',label:'04 · Quote',section:'inside',start:.46,at:.53,title:'#tour-title',copy:'#tour-copy',purpose:'Carry the scope into an estimate and an email draft for operator review.'},
  {id:'work',group:'Working day',label:'05 · Work and collection',section:'inside',start:.58,at:.65,title:'#tour-title',copy:'#tour-copy',purpose:'Follow the landscaping work and suitable material collection.'},
+ {id:'sizes',group:'Choose a trailer',label:'Start with the specs',section:'sizes',start:0,at:.15,title:'#sizes-title',copy:'.offer-title-row > p',purpose:'Choose the 16 ft or 20 ft footprint, then review the current Buy and Free options.'},
  {id:'numbers',group:'Choose a trailer',label:'The numbers',section:'story',start:0,at:.15,title:'#story-title',copy:'.daily-pitch .offer-lead',purpose:'Explain the illustrative earnings with the assumptions visible alongside the numbers.'},
  {id:'founding',group:'Next step',label:'Founding operators',section:'founding',start:0,at:.15,title:'#founding-title',copy:'.founding-grid .offer-lead',purpose:'Explain early participation and the operator input needed for the pilot.'},
  {id:'contact',group:'Next step',label:'Request pilot details',section:'contact',start:0,at:.65,title:'#contact-title',copy:'.contact-grid > div > p',purpose:'Collect the operator’s equipment needs and selected trailer option.'}
@@ -20,7 +21,9 @@ if(document.body.dataset.operatorSequence==='true'){
  const last=Number(document.body.dataset.fieldTimelineFrames)-1,start=Number(document.body.dataset.operatorStartFrame);
  displays.splice(displays.findIndex(d=>d.id==='numbers'),0,{id:'operator',group:'Working day',label:'05 · Grass in, product out',section:'inside',start:start/last,at:Math.min(1,(start+90)/last),title:'#tour-title',copy:'#tour-copy',purpose:'Second half of Work: clippings into the hopper, then the packaged product out on the conveyor at the side hatch. Ends on "Imagine the possibilities."'});
 }
-export const displayById = id => id==='sizes'?{...displays.find(display=>display.id==='delivery'),id:'sizes',at:.94,title:'#sizes-title',copy:'.delivery-loadout-text'}:displays.find(display => display.id === (['unhitch','cargo','overhead','receiving'].includes(id)?'delivery':['production','packaging','storage'].includes(id)?(document.body.dataset.operatorSequence==='true'?'operator':'work'):id));
+const sectionOrder=['top','sizes','story','inside','founding','contact'];
+displays.sort((a,b)=>sectionOrder.indexOf(a.section)-sectionOrder.indexOf(b.section));
+export const displayById = id => displays.find(display => display.id === (['unhitch','cargo','overhead','receiving'].includes(id)?'delivery':['production','packaging','storage'].includes(id)?(document.body.dataset.operatorSequence==='true'?'operator':'work'):id));
 export function displayAt(section, progress) {
  return displays.filter(display => display.section === section && progress >= display.start - 1e-6).at(-1);
 }

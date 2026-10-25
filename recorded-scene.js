@@ -1,7 +1,7 @@
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
 import {loadFilmSources,sceneFilmSource} from './film-sources.js?v=3';
-import {filmFraming,placeFilm} from './film-framing.js?v=3';
+import {filmFraming,placeFilm} from './film-framing.js?v=3-oldstage4';
 const clamp=v=>Math.max(0,Math.min(1,v));
 const mix=(a,b,t)=>a+(b-a)*t;
 export function interpolateRecordedState(a,b,t){
@@ -25,7 +25,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  still.className='recorded-scene recorded-still';still.alt='';still.setAttribute('aria-hidden','true');
  host.append(video,still);canvas.style.visibility='hidden';
  let metadata,kind='',wanted=0,enabled=true,visible=true,shown=false,failed=false,loading=0,frame=0,objectURL=null,localPending=false,lastSeek=0;
- let mediaURL='',generation=0,controller,stillFile='',pendingStill='';
+ let mediaURL='',generation=0,controller,stillFile='',pendingStill='',lastPresentedTime=0;
  // Cover fit + optional push-in (film-framing.js). The video and still are placed with the same transform the
  // overlays are projected with, so labels, callouts and leaders stay on their objects at any aspect ratio.
  let framing=filmFraming('','',null),frameWindow=null,placed='',lastPlace=null;
@@ -37,7 +37,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   if(key!==placed){placed=key;const width=`${metadata.width*f.cover}px`,height=`${metadata.height*f.cover}px`,transform=`translate3d(${f.dx}px,${f.dy}px,0) scale(${f.zoom})`;
    for(const el of [video,still])Object.assign(el.style,{left:'0',top:'0',right:'auto',bottom:'auto',width,height,transformOrigin:'0 0',transform});
    // Zoomed out below cover (film-framing.js minZoom): feather the film's edges into the page, in proportion.
-   const feather=Math.max(0,Math.min(14,(1-f.zoom)*70));host.style.setProperty('--film-feather',feather.toFixed(2)+'%');host.classList.toggle('film-contained',f.zoom<.999);}
+   const feather=f.feather===false?0:Math.max(0,Math.min(14,(1-f.zoom)*70));host.style.setProperty('--film-feather',feather.toFixed(2)+'%');host.classList.toggle('film-contained',f.feather!==false&&f.zoom<.999);}
   return f;
  }
  function unplace(){placed='';lastPlace=null;host.classList.remove('film-contained');for(const el of [video,still])for(const k of ['left','top','right','bottom','width','height','transformOrigin','transform'])el.style[k]='';}
@@ -62,7 +62,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   let seekable=false;
   for(let i=0;i<video.seekable.length;i++)if(target>=video.seekable.start(i)&&target<=video.seekable.end(i)+.04)seekable=true;
   if(!seekable){if(video.networkState===video.NETWORK_IDLE)localCopy();return;}
-  lastSeek=now;video.currentTime=target;
+  lastSeek=now;lastPresentedTime=video.currentTime;video.currentTime=target;
  }
  async function loadStill(){
   const chapter=chapterStill();if(!chapter||chapter.file===stillFile||chapter.file===pendingStill)return;
@@ -107,7 +107,13 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  function draw(p){
   wanted=clamp(p);requestSeek();if(!metadata)return {p:wanted,loading:true};
   const originalP=sourceProgress();
-  const sampleP=usingStill()?(chapterStill()?.p??originalP):originalP;
+  // Cargo's stage and overlays follow the displayed movie during native playback.
+  // A pending scrub retains the last decoded camera; its sought frame changes both
+  // film and host framing together on seeked. Other scene clocks stay unchanged.
+  const decodedCargo=name==='cargo'&&framing.oldDeliveryStage&&shown&&!usingStill();
+  if(decodedCargo&&!video.seeking)lastPresentedTime=video.currentTime;
+  const sampleP=usingStill()?(chapterStill()?.p??originalP):decodedCargo?
+   clamp(lastPresentedTime*metadata.fps/(metadata.frames-1)):originalP;
   const samples=metadata.samples,frameIndex=sampleP*(metadata.frames-1)/3,index=Math.min(samples.length-2,Math.floor(frameIndex));
   const a=samples[Math.max(0,index)],b=samples[Math.max(0,index)+1]||a;
   const state=interpolateRecordedState(a,b,clamp((sampleP-a.p)/Math.max(.000001,b.p-a.p)));
@@ -125,7 +131,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
    state.vision={...full,visible:workflowP>=.20&&workflowP<.46&&!state.route?.active,mix:1,count,classification,measuring,measured:measuring>=1,stage:workflowP>=.34?'localize':measuring>0?'measure':'classify',activeId:full.observations[Math.min(count-1,full.total-1)]?.id,origin:point(full.origin),observations:full.observations.slice(0,count).map(o=>({...o,box:{...point(o.box),width:o.box.width*scale,height:o.box.height*scale},polygons:o.polygons?.map(poly=>poly.map(point))}))};
    state.yardReveal=1;
   }
-  return {...state,p:wanted,workflowP,sourceProgress:sampleP,playback:usingStill()?'still':'recorded',videoTime:video.currentTime,videoTarget:targetTime(),videoReady:shown,loading:!shown,frameReused:true,webglFrames:0};
+  return {...state,p:wanted,workflowP,sourceProgress:sampleP,playback:usingStill()?'still':'recorded',videoTime:video.currentTime,presentationTime:sampleP*(metadata.frames-1)/metadata.fps,videoTarget:targetTime(),videoReady:shown,loading:!shown,frameReused:true,webglFrames:0};
  }
  await source();
  return {draw,async retry(){if(failed||video.error){kind='';await source();}return !failed;},resize(){placed='';source();requestSeek();},setFrameWindow(rect){frameWindow=rect||null;},get framing(){return lastPlace;},setPalette(){},setActive(value){enabled=value;if(value)requestSeek();},setVisible(value){visible=value;updateVisibility();},get ready(){return shown;},get atTarget(){return shown&&(usingStill()?stillFile===chapterStill()?.file:!video.seeking&&matches());},get failed(){return failed;},get duration(){return playbackDuration();},inspect:()=>({playback:usingStill()?'still':'recorded',kind,zoom:lastPlace?.zoom,ready:shown,failed,loading:!!loading,videoTime:video.currentTime,videoTarget:targetTime()}),video};

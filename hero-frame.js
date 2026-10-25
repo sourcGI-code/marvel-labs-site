@@ -1,138 +1,205 @@
-// Owner 10-24: "the truck should drive in on the center, then when it displays the truck on the side and the trailer
-// it should be displayed more to the right, then the trailer should be on center when the truck leaves" (no letters
-// ever blocked), and then: "the shake happens when it's moving it to the right and back to the center, smoothen it".
-// The film's horizontal offset (--hero-shift, CSS translate on #hero-visual) is ONE precomputed eased curve over the
-// opening film's time, recomputed only when the screen size changes:
-//   0 while the pickup drives in; an eased slide right (SLIDE_IN film seconds) to the rig's place, centred in the space
-//   right of the copy; hold; an eased slide back (SLIDE_OUT) to the trailer centred on screen once the pickup is gone.
-// The slide timings are chosen per screen so the curve never dips under the copy, checked against the vehicles' extents
-// in every frame (assets/marvel-v4/opening-film/desktop-frame.json). Nothing is recomputed from per-frame data while it
-// plays, and the film clock is interpolated between decoded frames, so the motion has no steps.
-// While the film PLAYS, the glide is handed to the browser's compositor as one Web Animation of `translate` built from
-// the same curve (owner 10-25: "stutters while gliding", every browser): the compositor runs it at the display's
-// refresh rate whatever the page's script is busy with, so a late script frame can no longer hitch it. Scrubbing,
-// pausing and the hold fall back to setting the position directly.
-const GAP=36, FPS=30, SLIDE_IN=1.8, SLIDE_OUT=2.7;
-// When the side view begins (the rig must clear the copy from then), the latest/earliest start of the slide right, and
-// the earliest start of the slide back. They belong to the film's choreography, so desktop-frame.json carries them
-// ("timing"); these defaults are the calm take's.
-let IN_LATEST=1.15, IN_EARLIEST=.5, CLEAR_FROM=1.9, OUT_EARLIEST=7.05;
-const ease=x=>{x=Math.max(0,Math.min(1,x));return x*x*x*(x*(x*6-15)+10);};   // smootherstep: zero speed and acceleration at both ends
+// Preview only. Restore the original right/left glide over the unchanged HQ
+// films. Projection is centered CONTAIN; there is no arrival zoom or tail dip.
+const GAP=36,EDGE=24,FPS=30,SLIDE_IN=1.8,SLIDE_OUT=2.7,RELEASE_MS=900;
+const INTRO_TAG='THE AUTONOMOUS MICROFACTORY TRAILER';
+const clamp=v=>Math.max(0,Math.min(1,v));
+export const heroEase=x=>{x=clamp(x);return x*x*x*(x*(x*6-15)+10);};
+
+export function projectHeroActor(frame,{cx,cy,filmWidth,filmHeight},shift=0,scale=1){
+ return {left:cx+shift+scale*(frame.l-.5)*filmWidth,right:cx+shift+scale*(frame.r-.5)*filmWidth,
+  top:cy+scale*(frame.t-.5)*filmHeight,bottom:cy+scale*(frame.b-.5)*filmHeight};
+}
+
+// Pure planner: geometry tests use the same code as the actual page.
+export function createHeroGlidePlan({frames,timing={},viewportWidth,cw,ch,cx,cy,copyRight,rects}){
+ if(!frames?.length||!rects?.length||!(cw>0&&ch>0))return null;
+ const clearFrom=timing.clearFrom??1.9,inLatest=timing.inLatest??1.15,inEarliest=timing.inEarliest??.5,outEarliest=timing.outEarliest??7.05;
+ const filmWidth=Math.min(cw,ch*1.6),filmHeight=filmWidth/1.6,projection={cx,cy,filmWidth,filmHeight};
+ const last=frames.length-1,firstSide=Math.round(clearFrom*FPS),lastSide=Math.min(last,Math.round(outEarliest*FPS));
+ function needed(index,scale=1){
+  const actor=projectHeroActor(frames[index],projection,0,scale);
+  let result=0;
+  for(const rect of rects){
+   if(rect.bottom<=actor.top||rect.top>=actor.bottom)continue;
+   result=Math.max(result,rect.right+GAP-actor.left);
+  }
+  return Math.max(0,result);
+ }
+ let L=1,R=0;
+ for(let i=firstSide;i<=lastSide;i++){L=Math.min(L,frames[i].l);R=Math.max(R,Math.min(frames[i].r,.78));}
+ const room=viewportWidth-EDGE-(copyRight+GAP);
+ const S=Math.max(.55,Math.min(1,room/Math.max(1,(R-L)*filmWidth)));
+ let need=0;
+ for(let i=firstSide;i<=lastSide;i++)need=Math.max(need,needed(i,S));
+ const rig=Math.max(0,copyRight+(viewportWidth-copyRight)/2-(cx+S*((L+R)/2-.5)*filmWidth),need);
+ // A centered endpoint is preferred. Keep only clearance required by actual
+ // vertically intersecting text; a wide headline above the trailer adds none.
+ let trailer=0;
+ for(let i=Math.round(9*FPS);i<=last;i++)trailer=Math.max(trailer,needed(i,1));
+ const weight=(t,a,o)=>t<a?0:t<o?heroEase((t-a)/SLIDE_IN):1-heroEase((t-o)/SLIDE_OUT);
+ const scaleAt=(t,a,o)=>1+(S-1)*weight(t,a,o);
+ const shiftAt=(t,a,o)=>t<a?0:t<o?rig*heroEase((t-a)/SLIDE_IN):rig+(trailer-rig)*heroEase((t-o)/SLIDE_OUT);
+ const holds=(a,o,from,to)=>{
+  for(let i=Math.round(from*FPS);i<=Math.min(last,Math.round(to*FPS));i++){
+   const t=i/FPS;
+   if(shiftAt(t,a,o)<needed(i,scaleAt(t,a,o))-1)return false;
+  }
+  return true;
+ };
+ let inStart=inLatest;
+ while(inStart>inEarliest+1e-8&&!holds(inStart,99,clearFrom,inStart+SLIDE_IN))inStart=Math.max(inEarliest,Math.round((inStart-.05)*100)/100);
+ let outStart=outEarliest;
+ const lastOutStart=10-SLIDE_OUT;
+ while(outStart<lastOutStart-1e-8&&!holds(inStart,outStart,outStart,10))outStart=Math.min(lastOutStart,Math.round((outStart+.05)*100)/100);
+ return {rig,trailer,S,inStart,outStart,ch,projection,rects,
+  at:t=>shiftAt(Math.max(0,Math.min(10,t)),inStart,outStart),
+  sc:t=>scaleAt(Math.max(0,Math.min(10,t)),inStart,outStart),needed,
+  clearsSide:holds(inStart,outStart,clearFrom,outStart),clearsReturn:holds(inStart,outStart,outStart,10)};
+}
+
+export function visibleHeroTextRects(story){
+ const rects=[],seen=new Set();
+ const append=rect=>{
+  if(!(rect.width>0&&rect.height>0))return;
+  const key=[rect.left,rect.top,rect.right,rect.bottom].map(v=>v.toFixed(3)).join();
+  if(seen.has(key))return;seen.add(key);
+  rects.push({left:rect.left,top:rect.top,right:rect.right,bottom:rect.bottom});
+ };
+ const visible=el=>{const s=getComputedStyle(el);return !el.closest('[hidden]')&&s.display!=='none'&&s.visibility!=='hidden'&&Number(s.opacity)!==0;};
+ for(const el of story.querySelectorAll('#platform-tag,#hero-title,#hero-description,small')){
+  if(!visible(el))continue;
+  const range=document.createRange();range.selectNodeContents(el);
+  for(const rect of range.getClientRects())append(rect);
+  range.detach?.();
+ }
+ for(const el of story.querySelectorAll('.offer-actions a'))if(visible(el))append(el.getBoundingClientRect());
+ return rects;
+}
+
+// Match the old CSS handoff easing, with the same curve for the edge blend.
+export function heroReleaseEase(progress){
+ const p=clamp(progress);if(p===0||p===1)return p;
+ let low=0,high=1,t=p;
+ for(let i=0;i<18;i++){const x=3*(1-t)*(1-t)*t*.2+3*(1-t)*t*t*.2+t*t*t;if(x<p)low=t;else high=t;t=(low+high)/2;}
+ return 3*(1-t)*(1-t)*t*.7+3*(1-t)*t*t+t*t*t;
+}
+
 export async function installHeroFrame(){
  const root=document.documentElement,host=document.getElementById('hero-visual'),story=document.getElementById('platform-story'),track=document.getElementById('top');
  if(!host||!story||!track)return;
+ const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  let data=null;
- try{const r=await fetch(new URL('assets/marvel-v4/opening-film/desktop-frame.json?v=4',import.meta.url));if(r.ok){const json=await r.json();data=json.frames;const k=json.timing||{};IN_LATEST=k.inLatest??IN_LATEST;IN_EARLIEST=k.inEarliest??IN_EARLIEST;CLEAR_FROM=k.clearFrom??CLEAR_FROM;OUT_EARLIEST=k.outEarliest??OUT_EARLIEST;}}catch{}
- let plan=null,last=NaN;
- // Written on the film element itself (not a page-wide variable: that restyled the whole page every frame and dropped
- // frames mid-slide), and only when it changes. '' hands the element back to the stylesheet (the delivery hold).
- // Scale (owner 10-25: "fix the first section so it matches every screen"): where the space right of the copy is
- // narrower than the side-view rig (4:3 tablets, small landscape windows), the film also scales down, in step with the
- // slide, so the whole rig shows instead of being cut by the right edge; it is back to 1 for the delivery handoff.
- let lastScale='';
- function set(px,s=1){
-  const v=px===null?'':Math.max(0,Math.round(px*100)/100)+'px 0';if(v!==last){last=v;host.style.translate=v;}
-  const sv=px===null||s>=.9995?'':String(Math.round(s*10000)/10000);if(sv!==lastScale){lastScale=sv;host.style.scale=sv;}
+ try{const response=await fetch(new URL('hero-framing-hqgloss-v2/desktop-frame.json?v=1',import.meta.url));if(response.ok)data=await response.json();}catch{}
+ let plan=null,pendingBuild=true,lastTranslate='',lastScale='',lastFade='',lastFeather='';
+ let visual={shift:0,scale:1},wasComparing=false,release=null,releaseStart=0,releaseFrom=null;
+ let anim=null,animFrom=0,animRate=1,animPlan=null,checkedAt=0,est=null,estWall=0,lastDecodedTime=0;
+ const comparing=()=>!!host.closest('.pin')?.classList.contains('is-comparing');
+ function edges(shift,scale){
+  const moved=Math.abs(visual.shift-shift)>1e-8||Math.abs(visual.scale-scale)>1e-8;
+  visual={shift,scale};
+  const fade=(shift>0?Math.min(220,Math.max(0,shift*1.2)):0).toFixed(2)+'px';
+  const feather=(Math.min(60,Math.max(0,(1-scale)*(plan?.ch||host.offsetHeight||innerHeight)*.18))).toFixed(2)+'px';
+  if(fade!==lastFade){lastFade=fade;host.style.setProperty('--hero-edge-fade',fade);}
+  if(feather!==lastFeather){lastFeather=feather;host.style.setProperty('--hero-edge-feather',feather);}
+  // A paused seek directly into the fleet still needs labels reprojected while
+  // the host releases. Platform listens and schedules its normal draw.
+  if(wasComparing&&moved)host.dispatchEvent(new Event('hero-frame-change'));
  }
- // Phones (owner 10-25 "every screen"): the portrait film puts the rig's roof at about 53% of the screen height; on
- // short phones (360x740, iPhone SE) the copy reaches lower than that, so the film moves down just enough to clear it.
- let phoneY=0;
+ function set(shift=0,scale=1){
+  const x=Math.max(0,Math.round(shift*100)/100),s=Math.round(scale*10000)/10000;
+  const translate=x?x+'px 0':'',scaleValue=Math.abs(s-1)<.00005?'':String(s);
+  if(translate!==lastTranslate){lastTranslate=translate;host.style.translate=translate;}
+  if(scaleValue!==lastScale){lastScale=scaleValue;host.style.scale=scaleValue;}
+  edges(x,s);
+ }
+ function stopGlide(){if(anim){anim.cancel();anim=null;}animPlan=null;}
+ function stopRelease(){if(release?.cancel)release.cancel();release=null;releaseFrom=null;}
  function build(){
-  if(innerWidth<=760){plan=null;host.style.removeProperty('--hero-feather');phoneY=Math.max(0,Math.round(story.getBoundingClientRect().bottom+14-.53*innerHeight));root.dataset.heroFrame=`phone down ${phoneY}`;return;}
-  if(!data){plan=null;host.style.removeProperty('--hero-feather');return;}
-  // The delivery hold swaps the copy for its own centred headline: the plan belongs to the intro's copy, keep it.
-  if(plan&&(host.closest('.pin')?.classList.contains('is-comparing')||parseFloat(track.dataset.sceneProgress||'0')>=.25))return;
-  // Layout sizes and the pin's box: unaffected by the shift itself.
+  if(innerWidth<=760||!data||reduced.matches){plan=null;pendingBuild=false;return;}
+  // The same nodes carry delivery copy. Never measure that copy for the intro.
+  if(comparing()||parseFloat(track.dataset.sceneProgress||'0')>=.25-1e-4||document.getElementById('platform-tag')?.textContent.trim()!==INTRO_TAG){pendingBuild=true;return;}
+  const rects=visibleHeroTextRects(story);if(!rects.length){pendingBuild=true;return;}
   const pin=host.parentElement.getBoundingClientRect(),cw=host.offsetWidth||innerWidth,ch=host.offsetHeight||innerHeight;
-  const cx=pin.left+host.offsetLeft+cw/2,film=Math.max(cw,ch*1.6),copyRight=story.getBoundingClientRect().right;
-  const aspect=cw/ch,fill=Math.max(aspect/1.6,1.6/aspect),EDGE=24;
-  const scale=t=>{const k=Math.max(0,Math.min(1,(t-9.1)/.9));return 1+(fill-1)*(1-k*k*(3-2*k));};   // arrival-reveal.js
-  const last=data.length-1;
-  // The rig's extent through the side view, and the scale that fits it between the copy and the right edge.
-  let L=1,R=0;for(let i=Math.round(CLEAR_FROM*FPS);i<=Math.round(OUT_EARLIEST*FPS);i++){L=Math.min(L,data[i].l);R=Math.max(R,Math.min(data[i].r,.78));}
-  const room=innerWidth-EDGE-(copyRight+GAP),S=Math.max(.55,Math.min(1,room/((R-L)*film*scale(4))));
-  // ONE eased weight drives the slide and the scale: 0 before the slide right, 1 through the side view, 0 at the end.
-  const weight=(t,a,o)=>t<a?0:t<o?ease((t-a)/SLIDE_IN):1-ease((t-o)/SLIDE_OUT);
-  const sAt=(t,a,o)=>1+(S-1)*weight(t,a,o);
-  const x=(f,t,s)=>cx+s*(f-.5)*film*scale(t);                          // film point -> screen x, before the shift
-  const clear=(i,s)=>copyRight+GAP-x(data[i].l,i/FPS,s);                // the shift a frame needs to clear the copy
-  let need=0;for(let i=Math.round(CLEAR_FROM*FPS);i<=Math.round(OUT_EARLIEST*FPS);i++)need=Math.max(need,clear(i,S));
-  const rig=Math.max(copyRight+(innerWidth-copyRight)/2-x((L+R)/2,4,S),need);
-  const end=data[last];let needEnd=0;for(let i=Math.round(9*FPS);i<=last;i++)needEnd=Math.max(needEnd,clear(i,1));
-  const trailer=Math.max(innerWidth/2-x((end.l+end.r)/2,10,1),needEnd,0);
-  const shiftAt=(t,inStart,outStart)=>{
-   if(t<inStart)return 0;
-   if(t<outStart)return rig*ease((t-inStart)/SLIDE_IN);
-   return rig+(trailer-rig)*ease((t-outStart)/SLIDE_OUT);
-  };
-  const holds=(inStart,outStart,from,to)=>{for(let i=Math.round(from*FPS);i<=Math.min(last,Math.round(to*FPS));i++)if(shiftAt(i/FPS,inStart,outStart)<clear(i,sAt(i/FPS,inStart,outStart))-1)return false;return true;};
-  // The slide right starts as late as it can (the pickup drives in centred) while being clear of the copy from the end
-  // of the camera's whip; the slide back starts as early as it can without ever dipping under the copy.
-  let inStart=IN_LATEST;
-  while(inStart>IN_EARLIEST&&!holds(inStart,99,CLEAR_FROM,inStart+SLIDE_IN))inStart-=.05;
-  let outStart=OUT_EARLIEST;
-  while(outStart<10-SLIDE_OUT&&!holds(inStart,outStart,outStart,10))outStart+=.05;
-  if(S<.9995)host.style.setProperty('--hero-feather',Math.min(14,(1-S)*45).toFixed(2)+'%');else host.style.removeProperty('--hero-feather');
-  plan={rig,trailer,inStart,outStart,S,at:t=>shiftAt(t,inStart,outStart),sc:t=>sAt(t,inStart,outStart)};   // a new object: a running glide is rebuilt for it
-  root.dataset.heroFrame=`rig ${Math.round(rig)} trailer ${Math.round(trailer)} scale ${S.toFixed(3)} right ${inStart.toFixed(2)}-${(inStart+SLIDE_IN).toFixed(2)}s back ${outStart.toFixed(2)}-${(outStart+SLIDE_OUT).toFixed(2)}s`;
+  const cx=pin.left+(host.offsetLeft||0)+cw/2,cy=pin.top+(host.offsetTop||0)+ch/2;
+  plan=createHeroGlidePlan({frames:data.frames,timing:data.timing,viewportWidth:innerWidth,cw,ch,cx,cy,
+   copyRight:Math.max(...rects.map(rect=>rect.right)),rects});
+  pendingBuild=false;
+  if(plan)root.dataset.heroFrame=`HQ contain rig ${Math.round(plan.rig)} trailer ${Math.round(plan.trailer)} scale ${plan.S.toFixed(3)} right ${plan.inStart.toFixed(2)}-${(plan.inStart+SLIDE_IN).toFixed(2)}s back ${plan.outStart.toFixed(2)}-${(plan.outStart+SLIDE_OUT).toFixed(2)}s`;
  }
- // The film clock between decoded frames: currentTime advances in steps, so while playing it is extrapolated from the
- // last change with the wall clock and the playback rate (never more than 0.12 s ahead of the decoder).
- // While playing, a smoothed clock runs at the playback rate and is nudged gently toward the decoder's time (snapped
- // only on a real jump: a seek or a scrub), so the curve is sampled at evenly advancing times.
- let est=null,estWall=0;
- function filmTime(p){
-  const v=document.querySelector('video.opening-film');
-  if(!v||v.readyState<1){est=null;return Math.min(10,p*40);}
-  const now=performance.now(),ct=v.currentTime;
-  if(v.paused||v.ended||v.seeking||est===null){est=ct;estWall=now;return ct;}
-  est+=(now-estWall)/1000*(v.playbackRate||1);estWall=now;
-  const off=ct-est;
-  if(Math.abs(off)>.25)est=ct;else est+=off*.08;
+ function filmTime(video,p){
+  if(!video||video.readyState<1){est=null;return Math.min(10,p*40);}
+  if(video.seeking)return lastDecodedTime;
+  const now=performance.now(),ct=video.currentTime;lastDecodedTime=ct;
+  if(video.paused||video.ended||est===null){est=ct;estWall=now;return ct;}
+  est+=(now-estWall)/1000*(video.playbackRate||1);estWall=now;
+  const off=ct-est;if(Math.abs(off)>.25)est=ct;else est+=off*.08;
   return est;
  }
- function update(){
-  if(innerWidth<=760){stopGlide();const p=parseFloat(track.dataset.sceneProgress||'0'),v=phoneY&&p<.25-1e-4?`0 ${phoneY}px`:'';if(v!==last){last=v;host.style.translate=v;}if(lastScale){lastScale='';host.style.scale='';}return;}
-  if(!plan){stopGlide();set(null);return;}
-  if(host.closest('.pin')?.classList.contains('is-comparing')){stopGlide();set(null);return;}   // the hold: the stylesheet glides it home
-  const p=parseFloat(track.dataset.sceneProgress||'0');
-  if(p>=.25-1e-4){stopGlide();set(plan.trailer,1);return;}              // the delivery: hold the trailer's place
-  const v=document.querySelector('video.opening-film');
-  const t=Math.min(10,Math.max(0,filmTime(p)));
-  if(v&&!v.paused&&!v.ended&&!v.seeking&&v.readyState>=2&&typeof host.animate==='function'){glide(v,t);return;}
-  stopGlide();set(plan.at(t),plan.sc(t));
- }
- // The compositor glide: from film time t to the film's end at the film's playback rate. Rebuilt only when the film
- // starts, jumps, changes rate, or the plan changes; otherwise checked against the decoder every half second.
- let anim=null,animFrom=0,animRate=1,animWall=0,animPlan=null,checkedAt=0;
- function glide(v,t){
-  const now=performance.now(),rate=v.playbackRate||1;
+ function glide(video){
+  const now=performance.now(),rate=video.playbackRate||1;
   if(anim&&animPlan===plan){
-   // The flywheel changes the film's rate continuously: follow it with the animation's own rate (no rebuild).
    const want=rate/animRate;if(Math.abs((anim.playbackRate||1)-want)>.005)anim.updatePlaybackRate(want);
    if(now-checkedAt<500)return;
    checkedAt=now;
    const expected=animFrom+(anim.currentTime||0)/1000*animRate;
-   if(Math.abs(expected-v.currentTime)<.12)return;                    // in step with the film
+   if(Math.abs(expected-video.currentTime)<.12)return;
   }
-  const from=v.currentTime,span=10-from;if(span<=.02){stopGlide();set(plan.at(10),plan.sc(10));return;}
-  const steps=Math.max(2,Math.min(400,Math.ceil(span*40)));
-  const frames=[];for(let i=0;i<=steps;i++){const ft=from+span*i/steps;frames.push({translate:Math.max(0,Math.round(plan.at(ft)*100)/100)+'px 0',scale:String(Math.round(plan.sc(ft)*10000)/10000),offset:i/steps});}
-  stopGlide(false);
-  set(plan.at(from),plan.sc(from));                                    // the resting value under the animation
-  anim=host.animate(frames,{duration:span/rate*1000,easing:'linear',fill:'none'});
-  anim.onfinish=()=>{if(anim){anim=null;set(plan.at(10),plan.sc(10));}};
-  animFrom=from;animRate=rate;animWall=now;animPlan=plan;checkedAt=now;
+  const from=video.currentTime,span=10-from;
+  if(span<=.02){stopGlide();set(plan.at(10),plan.sc(10));return;}
+  const steps=Math.max(2,Math.min(400,Math.ceil(span*40))),frames=[];
+  for(let i=0;i<=steps;i++){const t=from+span*i/steps;frames.push({translate:Math.max(0,Math.round(plan.at(t)*100)/100)+'px 0',scale:String(Math.round(plan.sc(t)*10000)/10000),offset:i/steps});}
+  stopGlide();set(plan.at(from),plan.sc(from));
+  const next=host.animate(frames,{duration:span/rate*1000,easing:'linear',fill:'none'});anim=next;
+  next.onfinish=()=>{if(anim===next){anim=null;set(plan.at(10),plan.sc(10));}};
+  animFrom=from;animRate=rate;animPlan=plan;checkedAt=now;
  }
- function stopGlide(capture=true){
-  if(!anim)return;
-  if(capture){const v=document.querySelector('video.opening-film');if(v){const t=Math.min(10,Math.max(0,v.currentTime));set(plan?plan.at(t):0,plan?plan.sc(t):1);}}
-  anim.cancel();anim=null;
+ function beginRelease(){
+  // Read the composited transform once at the decoded-film handoff, so an
+  // in-flight WAAPI glide is carried exactly into delivery before it relaxes.
+  const computed=getComputedStyle(host);
+  const shift=parseFloat(computed.translate),scale=parseFloat(computed.scale);
+  const from={shift:Number.isFinite(shift)?shift:visual.shift,scale:Number.isFinite(scale)?scale:visual.scale};
+  stopGlide();stopRelease();
+  if(reduced.matches||(Math.abs(from.shift)<.01&&Math.abs(from.scale-1)<.0001)){set();return;}
+  releaseFrom=from;releaseStart=performance.now();
+  if(typeof host.animate==='function'){
+   release=host.animate([{translate:from.shift+'px 0',scale:String(from.scale)},{translate:'0px 0',scale:'1'}],
+    {duration:RELEASE_MS,easing:'cubic-bezier(.2,.7,.2,1)',fill:'none'});
+   // The animation owns the transition; its underlying value is already home.
+   const captured=releaseFrom;set();releaseFrom=captured;edges(from.shift,from.scale);
+  }else{release={};set(from.shift,from.scale);}
+ }
+ function update(){
+  if(innerWidth<=760||reduced.matches){stopGlide();stopRelease();set();wasComparing=comparing();return;}
+  const isComparing=comparing();
+  if(isComparing){
+   if(!wasComparing){wasComparing=true;beginRelease();}
+   if(releaseFrom){
+    const p=clamp((performance.now()-releaseStart)/RELEASE_MS),weight=1-heroReleaseEase(p);
+    if(p>=1){stopRelease();set();}
+    else if(release?.cancel)edges(releaseFrom.shift*weight,1+(releaseFrom.scale-1)*weight);
+    else set(releaseFrom.shift*weight,1+(releaseFrom.scale-1)*weight);
+   }
+   return;
+  }
+  if(wasComparing){wasComparing=false;stopRelease();pendingBuild=true;est=null;}
+  if(pendingBuild)build();
+  if(!plan){stopGlide();set();return;}
+  const p=parseFloat(track.dataset.sceneProgress||'0'),video=document.querySelector('video.opening-film');
+  // Keep the intro's final place while the requested delivery frame is loading.
+  const t=p>=.25-1e-4?10:Math.max(0,Math.min(10,filmTime(video,p)));
+  if(p<.25-1e-4&&video&&!video.paused&&!video.ended&&!video.seeking&&video.readyState>=2&&typeof host.animate==='function'){
+   glide(video);
+   const displayTime=anim?animFrom+(anim.currentTime||0)/1000*animRate:t;
+   edges(plan.at(displayTime),plan.sc(displayTime));return;
+  }
+  stopGlide();set(plan.at(t),plan.sc(t));
  }
  build();
  (function loop(){if(document.body.dataset.activeScene==='top'&&!document.hidden)update();requestAnimationFrame(loop);})();
  let resizeTimer=0;
- addEventListener('resize',()=>{clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{build();update();},120);});
- document.fonts?.ready?.then(()=>{build();update();});
- new ResizeObserver(()=>{build();update();}).observe(story);
+ addEventListener('resize',()=>{pendingBuild=true;clearTimeout(resizeTimer);resizeTimer=setTimeout(()=>{build();update();},120);});
+ document.fonts?.ready?.then(()=>{pendingBuild=true;build();update();});
+ new ResizeObserver(()=>{pendingBuild=true;build();update();}).observe(story);
+ reduced.addEventListener('change',()=>{pendingBuild=true;build();update();});
 }

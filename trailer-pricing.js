@@ -37,7 +37,8 @@ form.addEventListener('submit', event => {
     return;
   }
   const size = document.body.dataset.trailerSize;
-  const plan = selection.value === 'buy' ? 'Buy — $49,999.99 / 75% operator profit share' : 'Free — $0 upfront / 25% operator profit share';
+  const buyPrice = size === '16' ? '$44,999' : '$49,999.99';
+  const plan = selection.value === 'buy' ? `Buy — ${buyPrice} / 75% operator profit share` : 'Free — $0 upfront / 25% operator profit share';
   const business = form.elements.business.value.trim();
   const subject = `${size} ft Autonomous Microfactory — ${selection.value === 'buy' ? 'Buy' : 'Free'}`;
   const body = `Hello,\n\nI’m interested in the ${size} ft Autonomous Microfactory trailer.\nPlan: ${plan}\nBusiness / service area: ${business || 'Not provided'}\n\n${message}\n\nPlease send the configuration, profit-share calculation, plan terms and availability.\n\n${name}`;

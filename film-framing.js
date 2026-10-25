@@ -58,6 +58,7 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const ease = t => t * t * (3 - 2 * t);
 
 export function filmFraming(base, kind, metadata) {
+ if(base==='assets/marvel-v4/recorded/cargo')return {position:[.5,.5],maxZoom:1,minZoom:1,window:[0,0,1,1],keys:[],oldDeliveryStage:true};
  const f = metadata?.framing || FILM_FRAMING[base]?.[kind] || {};
  return {position: f.position || [.5, .5], maxZoom: f.maxZoom ?? 1.6, minZoom: f.minZoom ?? 1, window: f.window || [.25, .25, .75, .75], keys: Array.isArray(f.keys) ? f.keys : []};
 }
@@ -66,7 +67,12 @@ export function filmFraming(base, kind, metadata) {
 // frameWindow: {x0,y0,x1,y1} in host px, or null for the fallback fractions.
 // Returns {scale, dx, dy, cover, zoom}: a film point (x,y) is drawn at (x*scale+dx, y*scale+dy).
 export function placeFilm(w, h, W, H, framing, time = 0, frameWindow = null) {
- const cover = Math.max(w / W, h / H), [px, py] = framing.position;
+  if(framing.oldDeliveryStage){
+   const cover=Math.max(w/W,h/H),scale=Math.min(w/W,h/H);
+   const dx=(w-W*scale)/2,dy=(h-H*scale)/2;
+   return {scale,dx,dy,cover,zoom:scale/cover,feather:false};
+  }
+  const cover = Math.max(w / W, h / H), [px, py] = framing.position;
  const baseX = (w - W * cover) * px, baseY = (h - H * cover) * py;
  const win = frameWindow || {x0: framing.window[0] * w, y0: framing.window[1] * h, x1: framing.window[2] * w, y1: framing.window[3] * h};
  function resolve(k) {
