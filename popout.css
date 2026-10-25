@@ -767,3 +767,31 @@ html.immersive [data-experience=official] #story .offer-actions .offer-button{bo
  [data-experience=official] .platform-pin #sizes .delivery-size h3{margin-bottom:8px}
  [data-experience=official] .platform-pin #sizes .delivery-size dl{margin-bottom:10px}
 }
+/* Owner 10-25 "fix the first section so it matches every screen". (1) hero-frame.js may scale the film down where the
+   space right of the copy is too narrow (4:3 tablets): its other three edges then feather in proportion
+   (--hero-feather; 0 = exactly the old left-edge fade). (2) Between the phone layout and 1240 px the earnings strip sits
+   in a narrow gap between the cards: two columns, with the formula on its own line. */
+@media (min-width:761px){[data-experience=official] .platform-pin:not(.is-comparing) #hero-visual{will-change:translate,scale;
+ -webkit-mask-image:linear-gradient(90deg,transparent 0,#000 260px,#000 calc(100% - var(--hero-feather,0%)),transparent 100%),linear-gradient(180deg,transparent 0,#000 var(--hero-feather,0%),#000 calc(100% - var(--hero-feather,0%)),transparent 100%);-webkit-mask-composite:source-in;
+ mask-image:linear-gradient(90deg,transparent 0,#000 260px,#000 calc(100% - var(--hero-feather,0%)),transparent 100%),linear-gradient(180deg,transparent 0,#000 var(--hero-feather,0%),#000 calc(100% - var(--hero-feather,0%)),transparent 100%);mask-composite:intersect}}
+@media (min-width:761px) and (max-width:1240px){
+ [data-experience=official] .platform-pin .delivery-earnings-row{grid-template-columns:auto 1fr;gap:8px 16px}
+ [data-experience=official] .platform-pin .delivery-earnings-row .delivery-equation{grid-column:1/-1;margin:0}
+}
+/* Owner 10-25 "every screen": phones held sideways and other very short landscape windows (<=520 px tall) get the
+   desktop layout with only ~400 px of height. The intro copy tightens; the delivery cards keep size, price and link
+   (their spec rows are on the size pages); the earnings strip, which covered the headline, steps aside here (the same
+   numbers are in "The numbers" section further down). */
+@media (min-width:761px) and (max-height:520px){
+ [data-experience=official] .platform-pin:not(.is-comparing) #hero-title{font-size:30px;line-height:1.02}
+ [data-experience=official] .platform-pin:not(.is-comparing) #hero-description{font-size:11px;line-height:1.45;max-width:330px;margin-top:10px}
+ [data-experience=official] .platform-pin:not(.is-comparing) .offer-actions{margin-top:12px}
+ [data-experience=official] .platform-pin:not(.is-comparing) .offer-stage-label{margin-top:6px}
+ [data-experience=official] .platform-pin #sizes .delivery-earnings{display:none!important}
+ [data-experience=official] .platform-pin #sizes .delivery-size dl,
+ [data-experience=official] .platform-pin #sizes .delivery-size .delivery-price small{display:none}
+ [data-experience=official] .platform-pin #sizes .delivery-size{padding:10px 16px}
+ [data-experience=official] .platform-pin #sizes .delivery-size .eyebrow{margin-bottom:4px}
+ [data-experience=official] .platform-pin #sizes .delivery-size h3{font-size:34px;margin-bottom:8px}
+ [data-experience=official] .platform-pin #sizes .delivery-size a{min-height:32px}
+}

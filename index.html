@@ -1,7 +1,9 @@
 <!doctype html>
 <html lang="en" data-palette="charcoal">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0a0c0d">
+<meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><script>/* Owner 10-25 "every screen": tablets held upright get the phone layout and portrait films (the side-by-side desktop
+   layout does not fit a portrait tablet). Desktop browsers ignore the viewport tag, so only real tablets switch; turning
+   the tablet sideways goes back to the desktop layout. */(function(){var m=document.querySelector('meta[name="viewport"]');if(!m)return;var dflt=m.getAttribute('content');function set(){var s=Math.min(screen.width,screen.height),up=window.matchMedia&&matchMedia('(orientation: portrait)').matches;var want=s>=761&&s<=1100&&up?'width=760':dflt;if(m.getAttribute('content')!==want)m.setAttribute('content',want);}set();addEventListener('orientationchange',function(){setTimeout(set,60);});addEventListener('resize',set);})();</script><meta name="theme-color" content="#0a0c0d">
 <title>Autonomous Microfactory Trailers — Marvel Labs</title>
 <meta name="description" content="Explore the Marvel Labs autonomous microfactory trailer for landscaping crews. Compare 16 ft × 7 ft and 20 ft × 8.5 ft layouts. Buy for $49,999.99 with 75% operator profit share, or start Free with 25%.">
 <meta property="og:title" content="Autonomous Microfactory Trailers — Marvel Labs"><meta property="og:description" content="Your next trailer. A factory inside. Explore two sizes. Spring 2027 delivery, limited availability."><meta property="og:type" content="website">
@@ -13,13 +15,13 @@
 <link rel="preload" href="assets/marvel-v4/opening-film/mobile-poster.webp?v=1792903357983112699" as="image" media="(max-width:760px) and (prefers-reduced-motion:no-preference)">
 <script>try{const p=new URLSearchParams(location.search).get('palette');if(['charcoal','ivory','burgundy','midnight'].includes(p))document.documentElement.dataset.palette=p;}catch{}</script>
 <script>if((!location.hash||location.hash==='#top')&&!new URLSearchParams(location.search).has('edit')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const root=document.documentElement,aspect=innerWidth/innerHeight,film=innerWidth<=760?.5:1.6;root.style.setProperty('--arrival-film-scale',Math.max(aspect/film,film/aspect));}</script>
-<script type="module" src="atlas.js?v=108"></script>
+<script type="module" src="atlas.js?v=112"></script>
 <link rel="stylesheet" href="company-links.css?v=1">
 <link rel="stylesheet" href="text-selection.css?v=1">
 <style>.tour-chapters button{font:inherit;color:inherit;background:none;border:0;padding:4px 2px;cursor:pointer}.tour-chapters button:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style>
 <link rel="stylesheet" href="route-quotes.css?v=2">
 <link rel="stylesheet" href="delivery-route.css?v=2">
-<link rel="stylesheet" href="popout.css?v=29">
+<link rel="stylesheet" href="popout.css?v=32">
 </head>
 <body class="offer-v2" data-variant="explore" data-experience="official" data-display-framework="original" data-scene-source="accepted-films" data-scroll-only="true">
 <a class="skip-link" href="#inside">Skip the animated introduction</a>

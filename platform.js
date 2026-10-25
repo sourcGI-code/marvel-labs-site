@@ -62,11 +62,12 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
   const big=box(specs.querySelector('.delivery-size-20')),story=storyBox(),small=box(specs.querySelector('.delivery-size-16')),strip=box(specs.querySelector('.delivery-earnings')),line=box(specs.querySelector('.delivery-loadout')),note=box(specs.querySelector('.delivery-price-note'));
   if(hidden){specs.hidden=true;specs.style.visibility='';}
   let rect=null;
-  if(big&&small&&strip){
-   const w=pin.clientWidth;
+  // The earnings strip steps aside on very short landscape screens (popout.css): the window then runs to the stage's foot.
+  if(big&&small&&(strip||innerWidth>760)){
+   const w=pin.clientWidth,foot=strip?strip.y0:pin.clientHeight*.9;
    rect=innerWidth<=760
-    ?{x0:12,x1:w-12,y0:Math.max(big.y1,small.y1,note?note.y1:0)+8,y1:strip.y0-8}
-    :{x0:big.x1+18,x1:small.x0-18,y0:Math.max(line?line.y1+14:story.y1+14,Math.min(big.y0,small.y0)),y1:strip.y0-14};
+    ?{x0:12,x1:w-12,y0:Math.max(big.y1,small.y1,note?note.y1:0)+8,y1:foot-8}
+    :{x0:big.x1+18,x1:small.x0-18,y0:Math.max(line?line.y1+14:story.y1+14,Math.min(big.y0,small.y0)),y1:foot-14};
    if(rect.x1-rect.x0<120||rect.y1-rect.y0<80)rect=null;
   }
   return frameWindow=rect;
