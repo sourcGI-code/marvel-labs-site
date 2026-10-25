@@ -22,7 +22,7 @@ export async function installHeroFrame(){
  const root=document.documentElement,host=document.getElementById('hero-visual'),story=document.getElementById('platform-story'),track=document.getElementById('top');
  if(!host||!story||!track)return;
  let data=null;
- try{const r=await fetch(new URL('assets/marvel-v4/opening-film/desktop-frame.json?v=3',import.meta.url));if(r.ok){const json=await r.json();data=json.frames;const k=json.timing||{};IN_LATEST=k.inLatest??IN_LATEST;IN_EARLIEST=k.inEarliest??IN_EARLIEST;CLEAR_FROM=k.clearFrom??CLEAR_FROM;OUT_EARLIEST=k.outEarliest??OUT_EARLIEST;}}catch{}
+ try{const r=await fetch(new URL('assets/marvel-v4/opening-film/desktop-frame.json?v=4',import.meta.url));if(r.ok){const json=await r.json();data=json.frames;const k=json.timing||{};IN_LATEST=k.inLatest??IN_LATEST;IN_EARLIEST=k.inEarliest??IN_EARLIEST;CLEAR_FROM=k.clearFrom??CLEAR_FROM;OUT_EARLIEST=k.outEarliest??OUT_EARLIEST;}}catch{}
  let plan=null,last=NaN;
  // Written on the film element itself (not a page-wide variable: that restyled the whole page every frame and dropped
  // frames mid-slide), and only when it changes. '' hands the element back to the stylesheet (the delivery hold).
