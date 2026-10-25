@@ -2,7 +2,7 @@
   "version": 1,
   "cargo": {
     "base": "assets/marvel-v4/recorded/cargo",
-    "revision": "1792896306428938986"
+    "revision": "1792899383460885912"
   },
   "field": {
     "base": "assets/town-env-v3/recorded/field",
@@ -23,6 +23,6 @@
   },
   "opening": {
     "base": "assets/marvel-v4/opening-film",
-    "revision": "1792896306428938986"
+    "revision": "1792899383460885912"
   }
 }
