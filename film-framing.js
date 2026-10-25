@@ -6,6 +6,10 @@
 //
 // position   cover crop anchor, like CSS object-position. The cargo film's value must equal the opening
 //            film's CSS object-position (popout.css) so the opening -> cargo handoff shows no jump.
+// minZoom    lower limit (default 1 = always cover). Below 1 the film may sit inside the host, fully within it on
+//            any axis it no longer fills; recorded-scene.js then feathers its edges into the page (owner 10-25:
+//            "the visuals of the 3d scene are not fitting to every laptop": on short, wide windows cover made the
+//            delivered trailers so big that the size cards hid them).
 // maxZoom    upper limit for any push-in (1.6 keeps the 2560 px desktop film sharp at 1440 px). The CSS
 //            variable --hold-zoom (popout.css) caps it again for every film: set it to 1 to turn every push-in off.
 // window     fallback framing window as host fractions [left, top, right, bottom], used until the page
@@ -14,7 +18,7 @@
 //              {t, zoom, focus:[x,y]}   zoom about a film point (timeline units = metadata width/height);
 //                                       the point stays where plain cover puts it, or lands at `at`
 //                                       ([fx,fy] host fractions, or 'window' = the framing window centre)
-//              {t, fit:[x0,y0,x1,y1]}   zoom until that film rectangle fills the framing window
+//              {t, fit:[x0,y0,x1,y1], max}   zoom until that film rectangle fills the framing window (max caps it)
 //            Values ease between keys; zoom is held within [1, maxZoom]; the frame always covers the host.
 //
 // A film that is not listed (e.g. a re-render installed in a new folder) gets plain cover at zoom 1.
@@ -25,13 +29,16 @@ export const FILM_FRAMING = {
  // Push in on the 20 ft while the camera retreats, then frame both trailers between the size cards.
  'assets/marvel-v4/recorded/cargo': {
   desktop: {
-   position: [.5, .62], maxZoom: 1.6, window: [.33, .36, .67, .78],
+   position: [.5, .62], maxZoom: 1.6, minZoom: .45, window: [.33, .36, .67, .78],
    keys: [
     {t: 0, zoom: 1},
     {t: 4, zoom: 1.25, focus: [765, 580]},
     {t: 9.5, zoom: 1.25, focus: [765, 580]},
-    {t: 14.5, zoom: 1.25, focus: [880, 650], at: 'window'},
-    {t: 18, fit: [595, 437, 1025, 775]}
+    // From the size cards on (13 s), both trailers are FITTED into the gap the cards leave (measured on the cargo frames
+    // at 14.5 s and 18 s), zooming out below cover on short, wide windows instead of hiding them behind the cards.
+    {t: 13, zoom: 1.25, focus: [880, 650], at: 'window'},
+    {t: 14.5, fit: [585, 445, 1180, 915], max: 1.25},
+    {t: 18, fit: [595, 437, 1025, 800]}
    ]
   },
   mobile: {
@@ -52,7 +59,7 @@ const ease = t => t * t * (3 - 2 * t);
 
 export function filmFraming(base, kind, metadata) {
  const f = metadata?.framing || FILM_FRAMING[base]?.[kind] || {};
- return {position: f.position || [.5, .5], maxZoom: f.maxZoom ?? 1.6, window: f.window || [.25, .25, .75, .75], keys: Array.isArray(f.keys) ? f.keys : []};
+ return {position: f.position || [.5, .5], maxZoom: f.maxZoom ?? 1.6, minZoom: f.minZoom ?? 1, window: f.window || [.25, .25, .75, .75], keys: Array.isArray(f.keys) ? f.keys : []};
 }
 
 // w,h: host box in CSS px. W,H: film timeline size. time: source-film seconds.
@@ -65,7 +72,7 @@ export function placeFilm(w, h, W, H, framing, time = 0, frameWindow = null) {
  function resolve(k) {
   if (k.fit) {
    const [x0, y0, x1, y1] = k.fit;
-   const zoom = clamp(Math.min((win.x1 - win.x0) / (x1 - x0), (win.y1 - win.y0) / (y1 - y0)) / cover, 1, framing.maxZoom);
+   const zoom = clamp(Math.min((win.x1 - win.x0) / (x1 - x0), (win.y1 - win.y0) / (y1 - y0)) / cover, framing.minZoom ?? 1, Math.min(k.max ?? Infinity, framing.maxZoom));
    return {zoom, fx: (x0 + x1) / 2, fy: (y0 + y1) / 2, ax: (win.x0 + win.x1) / 2, ay: (win.y0 + win.y1) / 2};
   }
   const zoom = clamp(k.zoom ?? 1, 1, framing.maxZoom), fx = k.focus?.[0] ?? W * px, fy = k.focus?.[1] ?? H * py;
@@ -86,6 +93,8 @@ export function placeFilm(w, h, W, H, framing, time = 0, frameWindow = null) {
   }
  }
  const scale = cover * s.zoom;
- const dx = clamp(s.ax - s.fx * scale, w - W * scale, 0), dy = clamp(s.ay - s.fy * scale, h - H * scale, 0);
+ // Covering axes stay covered; an axis the film no longer fills keeps the film wholly inside (continuous at equality).
+ const fitX = w - W * scale, fitY = h - H * scale;
+ const dx = clamp(s.ax - s.fx * scale, Math.min(fitX, 0), Math.max(fitX, 0)), dy = clamp(s.ay - s.fy * scale, Math.min(fitY, 0), Math.max(fitY, 0));
  return {scale, dx, dy, cover, zoom: s.zoom};
 }

@@ -1,7 +1,7 @@
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
 import {loadFilmSources,sceneFilmSource} from './film-sources.js?v=3';
-import {filmFraming,placeFilm} from './film-framing.js?v=1';
+import {filmFraming,placeFilm} from './film-framing.js?v=3';
 const clamp=v=>Math.max(0,Math.min(1,v));
 const mix=(a,b,t)=>a+(b-a)*t;
 export function interpolateRecordedState(a,b,t){
@@ -35,10 +35,12 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   const f=placeFilm(w,h,metadata.width,metadata.height,framing,time,frameWindow);lastPlace=f;
   const key=[w,h,f.cover,f.zoom,f.dx,f.dy].map(v=>v.toFixed(3)).join();
   if(key!==placed){placed=key;const width=`${metadata.width*f.cover}px`,height=`${metadata.height*f.cover}px`,transform=`translate3d(${f.dx}px,${f.dy}px,0) scale(${f.zoom})`;
-   for(const el of [video,still])Object.assign(el.style,{left:'0',top:'0',right:'auto',bottom:'auto',width,height,transformOrigin:'0 0',transform});}
+   for(const el of [video,still])Object.assign(el.style,{left:'0',top:'0',right:'auto',bottom:'auto',width,height,transformOrigin:'0 0',transform});
+   // Zoomed out below cover (film-framing.js minZoom): feather the film's edges into the page, in proportion.
+   const feather=Math.max(0,Math.min(14,(1-f.zoom)*70));host.style.setProperty('--film-feather',feather.toFixed(2)+'%');host.classList.toggle('film-contained',f.zoom<.999);}
   return f;
  }
- function unplace(){placed='';lastPlace=null;for(const el of [video,still])for(const k of ['left','top','right','bottom','width','height','transformOrigin','transform'])el.style[k]='';}
+ function unplace(){placed='';lastPlace=null;host.classList.remove('film-contained');for(const el of [video,still])for(const k of ['left','top','right','bottom','width','height','transformOrigin','transform'])el.style[k]='';}
  const changed=()=>onChange();
  const matches=()=>metadata&&Math.abs(video.currentTime-targetTime())<.075;
  const playbackDuration=()=>metadata?Math.min(maxSeconds,(metadata.playbackDuration??metadata.duration)-1/metadata.fps):0;

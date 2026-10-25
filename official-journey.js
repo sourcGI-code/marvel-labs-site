@@ -1,9 +1,9 @@
 import {createRouteQuotes} from './route-quotes.js?v=2';
-import {createRecordedScene} from './recorded-scene.js?v=16';
+import {createRecordedScene} from './recorded-scene.js?v=18';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
 import {createVisionOverlay} from './vision-overlay.js?v=9';
 import {createScrollMotion} from './scroll-motion.js';
-import {setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=6';
+import {setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=7';
 const clamp=v=>Math.max(0,Math.min(1,v));
 export async function createOfficialJourney(canvas,{readProgress,paused}){
  let scene;

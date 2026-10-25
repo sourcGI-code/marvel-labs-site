@@ -749,3 +749,21 @@ html.immersive [data-experience=official] #story .offer-actions .offer-button{bo
 [data-experience=official] .platform-pin.is-comparing #hero-visual{translate:none;-webkit-mask-image:none;mask-image:none;transition:translate .9s cubic-bezier(.2,.7,.2,1)}
 @media (max-width:1250px){[data-experience=official] .platform-pin:not(.is-comparing) #hero-title{font-size:clamp(40px,4.6vw,58px)}}
 @media (max-width:760px){[data-experience=official] .platform-pin:not(.is-comparing) #hero-visual{translate:none;-webkit-mask-image:none;mask-image:none}}
+/* Owner 10-25 "the visuals of the 3d scene are not fitting to every laptop": on short, wide windows the delivery hold
+   zooms the film OUT so both trailers sit between the size cards (film-framing.js minZoom). The film then no longer
+   covers the stage: its edges are feathered (recorded-scene.js --film-feather) into the film's own edge black, and the
+   old poster behind it stays hidden. */
+.film-contained{background:rgb(2,4,5)}
+.film-contained .scene-fallback,.film-contained .arrival-poster{visibility:hidden}
+.film-contained .recorded-scene,.film-contained .recorded-still{
+ -webkit-mask-image:linear-gradient(90deg,transparent,#000 var(--film-feather,0%),#000 calc(100% - var(--film-feather,0%)),transparent),linear-gradient(180deg,transparent,#000 var(--film-feather,0%),#000 calc(100% - var(--film-feather,0%)),transparent);
+ -webkit-mask-composite:source-in;mask-image:linear-gradient(90deg,transparent,#000 var(--film-feather,0%),#000 calc(100% - var(--film-feather,0%)),transparent),linear-gradient(180deg,transparent,#000 var(--film-feather,0%),#000 calc(100% - var(--film-feather,0%)),transparent);mask-composite:intersect}
+/* Owner 10-25 (laptops): on short laptop windows the size cards ran into the earnings strip and covered its buttons.
+   Compact them: the per-card pricing note goes (the same note sits once under the cards) and the spacing tightens. */
+@media (min-width:761px) and (max-height:820px){
+ [data-experience=official] .platform-pin #sizes .delivery-size .delivery-price small{display:none}
+ [data-experience=official] .platform-pin #sizes .delivery-size{padding-top:12px;padding-bottom:10px}
+ [data-experience=official] .platform-pin #sizes .delivery-size .eyebrow{margin-bottom:6px}
+ [data-experience=official] .platform-pin #sizes .delivery-size h3{margin-bottom:8px}
+ [data-experience=official] .platform-pin #sizes .delivery-size dl{margin-bottom:10px}
+}

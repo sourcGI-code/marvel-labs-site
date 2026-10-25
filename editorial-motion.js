@@ -113,7 +113,8 @@ export function createEditorialMotion() {
       if (active) for (const el of [...running.keys()]) if (active.contains(el)) cancel(el);
       active = next; previousIndex = index; detail = next.classList.contains('scene-detail');
       const first = !previousShown; previousShown = true;
-      if (!first || entrance) {
+      // Owner 10-25: "the text on the first intro moves up and down": the hero (#top) text never slides in or drifts.
+      if ((!first || entrance) && next.id !== 'top') {
         next.querySelectorAll('h1,h2,h3').forEach(el => revealTitle(el, {direction}));
         const key = next.id || 'footer';
         revealDetails(next.querySelectorAll(detailSelectors[key] || '.eyebrow'), {direction});
@@ -132,7 +133,7 @@ export function createEditorialMotion() {
     }
     const p = Number(next.dataset.sceneProgress || 0);
     // Small depth offset while scrubbing, followed by a stable reading hold.
-    const drift = enabled() ? (0.5 - p) * 8 : 0;
+    const drift = enabled() && next.id !== 'top' ? (0.5 - p) * 8 : 0;
     next.querySelectorAll('.motion-title').forEach(el => el.style.setProperty('--title-drift', `${drift.toFixed(2)}px`));
   }
 
@@ -146,6 +147,6 @@ export function createEditorialMotion() {
     // Never animate a control away from a keyboard user.
     for (const el of [...running.keys()]) if (el.contains(event.target)) cancel(el);
   });
-  if (entrance) revealDetails(document.querySelectorAll('.masthead > *'), {delay:0});
+  // The masthead sits over the hero: it stays put too (owner 10-25).
   return {update, setPaused};
 }

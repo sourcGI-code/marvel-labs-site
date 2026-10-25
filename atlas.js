@@ -6,7 +6,7 @@ import {installScenePlayback} from './scene-playback.js?v=13';
 import { createStage } from './atlas-stage.js?v=9';
 import {setupGrassEconomics} from './grass-economics.js?v=2';
 import {createAmbientSpace} from './ambient-space.js?v=4';
-import {createEditorialMotion,setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=6';
+import {createEditorialMotion,setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=7';
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const clamp = x => Math.max(0, Math.min(1, x));
@@ -163,7 +163,7 @@ async function loadTrailer(state,canvas,single=false){
      stage.seekProgress(state.track,at,{refresh:true});
     }
    }
-   const view=single?await (await import('./official-journey.js?v=51')).createOfficialJourney($(canvas),{readProgress:()=>stage.progress(state.track),paused}):await (await import('./platform.js?v=61')).createPlatform($(canvas),{readProgress:()=>stage.progress(state.track),writeProgress:p=>stage.seekProgress(state.track,p),isActive:()=>stage.visible(state.track),paused});
+   const view=single?await (await import('./official-journey.js?v=54')).createOfficialJourney($(canvas),{readProgress:()=>stage.progress(state.track),paused}):await (await import('./platform.js?v=64')).createPlatform($(canvas),{readProgress:()=>stage.progress(state.track),writeProgress:p=>stage.seekProgress(state.track,p),isActive:()=>stage.visible(state.track),paused});
    scenes.push(view);state.view=view;view.setActive(stage.visible(state.track));view.setProgress(stage.progress(state.track));view.setPalette();view.setPaused(paused);playback?.sync();
    if(!single&&!new URLSearchParams(location.search).has('edit'))playback?.autoplay(state,{end:.25});
   }catch(e){state.pin.dataset.renderer='static';const status=$('#platform-status');if(!single&&status){document.documentElement.classList.remove('arrival-quiet');document.querySelectorAll('.masthead,#mobile-menu,#platform-story,.hero-base,#capacity-labels,#capacity-summary,#platform-status').forEach(el=>el.inert=false);document.body.style.setProperty('--opening-mix','0%');status.hidden=false;status.textContent='The trailer preview is unavailable. Explore the layouts and pilot details below.';}console.warn('Showing the trailer still.',e.message);}

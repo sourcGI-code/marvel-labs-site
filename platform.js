@@ -1,10 +1,10 @@
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene.js?v=16';
+import {createRecordedScene} from './recorded-scene.js?v=18';
 import {createOpeningFilm,filmPose,filmDuration} from './opening-film.js?v=26';
 import {loadFilmSources} from './film-sources.js?v=3';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';
 import {createScrollMotion} from './scroll-motion.js';
-import {setAnimatedTitle,revealDetails} from './editorial-motion.js?v=6';
+import {setAnimatedTitle,revealDetails} from './editorial-motion.js?v=7';
 const clamp=v=>Math.max(0,Math.min(1,v));
 const $=id=>document.getElementById(id);
 const colors={charcoal:'#4dd8e8',ivory:'#356b50',burgundy:'#ff7866',midnight:'#d2ed70'};
