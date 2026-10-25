@@ -97,6 +97,12 @@ export function createEditorialMotion() {
   const sections = [...document.querySelectorAll('main > section, body > .site-footer')];
   sections.forEach(section => section.querySelectorAll('h1,h2,h3').forEach(prepareTitle));
   let active = null, detail = false, previousIndex = 0;
+  // The entrance animation hides text and slides it in. When the page's HTML has already painted that text (a slow first
+  // visit runs the scripts a second or more after the text appears), it would vanish and come back: owner 10-24, "a flash
+  // only one time". Only animate the entrance when the text has not been painted yet.
+  const fcp = performance.getEntriesByType('paint').find(entry => entry.name === 'first-contentful-paint');
+  const entrance = !fcp || performance.now() - fcp.startTime < 60;
+  let previousShown = false;
 
   function update() {
     const next = sections.find(section => !section.inert);
@@ -106,9 +112,12 @@ export function createEditorialMotion() {
       // A rapid scrub cannot leave stale animation layers behind a new scene.
       if (active) for (const el of [...running.keys()]) if (active.contains(el)) cancel(el);
       active = next; previousIndex = index; detail = next.classList.contains('scene-detail');
-      next.querySelectorAll('h1,h2,h3').forEach(el => revealTitle(el, {direction}));
-      const key = next.id || 'footer';
-      revealDetails(next.querySelectorAll(detailSelectors[key] || '.eyebrow'), {direction});
+      const first = !previousShown; previousShown = true;
+      if (!first || entrance) {
+        next.querySelectorAll('h1,h2,h3').forEach(el => revealTitle(el, {direction}));
+        const key = next.id || 'footer';
+        revealDetails(next.querySelectorAll(detailSelectors[key] || '.eyebrow'), {direction});
+      }
     }
     const nextDetail = next.classList.contains('scene-detail');
     if (nextDetail !== detail && innerWidth <= 760) {
@@ -137,6 +146,6 @@ export function createEditorialMotion() {
     // Never animate a control away from a keyboard user.
     for (const el of [...running.keys()]) if (el.contains(event.target)) cancel(el);
   });
-  revealDetails(document.querySelectorAll('.masthead > *'), {delay:0});
+  if (entrance) revealDetails(document.querySelectorAll('.masthead > *'), {delay:0});
   return {update, setPaused};
 }

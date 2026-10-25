@@ -1,6 +1,11 @@
 // The opening can autoplay once; scrolling then owns the timeline. During playback,
 // decoded media time drives that same timeline, including captions and navigation.
-const OPENING_RATE=.7;
+// The arrival film is rendered at 84 fps and played at 5/7 speed: exactly one film frame per 60 Hz refresh (owner 10-24:
+// "jittery and not smooth"; the 60 fps film at 0.7x showed 42 frames a second, held for one or two refreshes unevenly).
+// The flywheel may speed it up, but never past 1x (84 decoded frames a second).
+import {waitPlayable} from './playthrough.js?v=3';
+const OPENING_RATE=5/7;
+const playRate=(base,boost)=>{const r=base*boost;return Math.round((base<1?Math.min(r,1):r)*1e4)/1e4;};
 export function installScenePlayback({getActive,readProgress,writeProgress,setPaused,reduced}){
  const buttons=[...document.querySelectorAll('.motion-button')];
  let owner=null,segment=null,mode='paused',generation=0,frame=0,abort=null,error='',lastUI='',completedOwner=null;
@@ -75,7 +80,13 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
    // The arrival plays slower than real time (owner 10-24: "the arrival film itself" is too fast); its progress
    // is read from the decoded time, so captions and the hand-off stay in step.
    baseRate=(owner.track.id==='top'&&next.end<=.25+1e-6)?OPENING_RATE:1;
-   next.video.playbackRate=Math.round(baseRate*rateBoost*100)/100;
+   next.video.playbackRate=playRate(baseRate,rateBoost);
+   // Only start once the rest of this part can download faster than it plays (playthrough.js): a first visit used to
+   // start at once and stall every half second. The intro's autoplay may wait for it (the poster and headline are up);
+   // a part started by a scroll waits at most 1.2 s (the stepper falls back to scrubbing at 1.5 s).
+   const until=stopAt!==null?clamp((stopAt-next.start)/(next.end-next.start))*next.duration:next.duration;
+   await waitPlayable(next.video,{rate:playRate(baseRate,rateBoost),until,maxWait:autoplayEnd!==null?7000:1200,signal});
+   if(token!==generation)return;
    await next.video.play();
    if(token!==generation){if(segment?.video!==next.video)next.video.pause();return;}
    mode='playing';markBlocked(false);sync();frame=requestAnimationFrame(tick);
@@ -130,7 +141,7 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  addEventListener('resize',interrupt);reduced.addEventListener('change',()=>{interrupt();sync();});
  sync();return {pause,toggle,sync,setRate(boost){
   rateBoost=Math.max(.25,Math.min(3,boost||1));
-  if(segment&&mode==='playing'){const r=Math.round(baseRate*rateBoost*100)/100;if(Math.abs(segment.video.playbackRate-r)>=.02)segment.video.playbackRate=r;}
+  if(segment&&mode==='playing'){const r=playRate(baseRate,rateBoost);if(Math.abs(segment.video.playbackRate-r)>=.02||(rateBoost===1&&segment.video.playbackRate!==r))segment.video.playbackRate=r;}
  },playTo(target){
   // Play the active chapter's film from where it is to `target` (a progress fraction), then pause there.
   const next=getActive();if(!next?.view?.preparePlayback||reduced.matches)return false;

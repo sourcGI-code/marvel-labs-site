@@ -12,13 +12,17 @@
 // the same curve (owner 10-25: "stutters while gliding", every browser): the compositor runs it at the display's
 // refresh rate whatever the page's script is busy with, so a late script frame can no longer hitch it. Scrubbing,
 // pausing and the hold fall back to setting the position directly.
-const GAP=36, FPS=30, SLIDE_IN=1.8, SLIDE_OUT=2.7, IN_LATEST=1.15, IN_EARLIEST=.5, CLEAR_FROM=1.9, OUT_EARLIEST=7.05;
+const GAP=36, FPS=30, SLIDE_IN=1.8, SLIDE_OUT=2.7;
+// When the side view begins (the rig must clear the copy from then), the latest/earliest start of the slide right, and
+// the earliest start of the slide back. They belong to the film's choreography, so desktop-frame.json carries them
+// ("timing"); these defaults are the calm take's.
+let IN_LATEST=1.15, IN_EARLIEST=.5, CLEAR_FROM=1.9, OUT_EARLIEST=7.05;
 const ease=x=>{x=Math.max(0,Math.min(1,x));return x*x*x*(x*(x*6-15)+10);};   // smootherstep: zero speed and acceleration at both ends
 export async function installHeroFrame(){
  const root=document.documentElement,host=document.getElementById('hero-visual'),story=document.getElementById('platform-story'),track=document.getElementById('top');
  if(!host||!story||!track)return;
  let data=null;
- try{const r=await fetch(new URL('assets/marvel-v4/opening-film/desktop-frame.json',import.meta.url));if(r.ok)data=(await r.json()).frames;}catch{}
+ try{const r=await fetch(new URL('assets/marvel-v4/opening-film/desktop-frame.json?v=3',import.meta.url));if(r.ok){const json=await r.json();data=json.frames;const k=json.timing||{};IN_LATEST=k.inLatest??IN_LATEST;IN_EARLIEST=k.inEarliest??IN_EARLIEST;CLEAR_FROM=k.clearFrom??CLEAR_FROM;OUT_EARLIEST=k.outEarliest??OUT_EARLIEST;}}catch{}
  let plan=null,last=NaN;
  // Written on the film element itself (not a page-wide variable: that restyled the whole page every frame and dropped
  // frames mid-slide), and only when it changes. '' hands the element back to the stylesheet (the delivery hold).

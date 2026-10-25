@@ -20,7 +20,9 @@ export function createArrivalReveal({reduced}){
   update({active,progress,time=0,failed=false,ready=false,deliveryVisible=false,live=false,blocked=false}){
    const seconds=Math.max(0,Math.min(10,progress*40));
    // A phone that refused autoplay shows the poster with the headline and the tap-to-play pill, not a bare poster.
-   const waiting=!blocked&&(seconds<arrivalRevealTime||(!live&&!deliveryVisible&&(!ready||time<arrivalRevealTime)));
+   // Owner 10-24: the headline never hides while the film loads. Hiding it until the film was ready made it flicker on a
+   // first visit (painted by the HTML, hidden by the script, faded back); the poster under it is the film's first frame.
+   const waiting=!blocked&&arrivalRevealTime>0&&(seconds<arrivalRevealTime||(!live&&!deliveryVisible&&(!ready||time<arrivalRevealTime)));
    show(active&&!editing&&!reduced.matches&&!failed&&waiting);
    // Fill the screen during the approach, then ease into the exact cargo-film
    // framing. At the handoff both films still use the identical projection.
