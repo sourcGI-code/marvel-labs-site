@@ -21,7 +21,7 @@ if(document.body.dataset.operatorSequence==='true'){
  const last=Number(document.body.dataset.fieldTimelineFrames)-1,start=Number(document.body.dataset.operatorStartFrame);
  displays.splice(displays.findIndex(d=>d.id==='numbers'),0,{id:'operator',group:'Working day',label:'05 · Grass in, product out',section:'inside',start:start/last,at:Math.min(1,(start+90)/last),title:'#tour-title',copy:'#tour-copy',purpose:'Second half of Work: clippings into the hopper, then the packaged product out on the conveyor at the side hatch. Ends on "Imagine the possibilities."'});
 }
-const sectionOrder=['top','sizes','story','inside','founding','contact'];
+const sectionOrder=['top','story','sizes','inside','founding','contact'];   // owner 10-26: the workday opportunity (01) before the specs (02)
 displays.sort((a,b)=>sectionOrder.indexOf(a.section)-sectionOrder.indexOf(b.section));
 export const displayById = id => displays.find(display => display.id === (['unhitch','cargo','overhead','receiving'].includes(id)?'delivery':['production','packaging','storage'].includes(id)?(document.body.dataset.operatorSequence==='true'?'operator':'work'):id));
 export function displayAt(section, progress) {
