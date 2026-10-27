@@ -5,7 +5,9 @@
 //     a chapter's film plays natively to the chapter's end (scene-playback.js playTo); between sections the page moves
 //     with the same fixed glide (GLIDE_MS) and the part there plays. The rest of that same scroll changes nothing;
 //   * scrolling again while a part plays (or while the page glides to one) is ordinary scrolling: the page moves with
-//     the wheel, trackpad or finger at their own speed (the film scrubs along), as far as they like;
+//     the wheel, trackpad or finger, slowed down (owner: "the second scroll speeds and goes crazy fast ... slow it
+//     down"): the page moves FOLLOW_GAIN of the scroll and never faster than FOLLOW_MAX_RATE times the film's normal
+//     speed (FOLLOW_MAX_PX_S outside the films), as far as they like;
 //   * letting go, the part they are in plays on at its normal speed from there to its end, then holds. Let go inside a
 //     section without a film (numbers, specs, app) it stays there; in a hand-off it glides on to the next part. The
 //     momentum a trackpad or smooth mouse sends after a flick (its deltas only fade) counts as letting go;
@@ -22,7 +24,8 @@ import {DELIVERY_END} from './intro-timing.js?v=1';
 import {displays} from './original-display-framework.js?v=15-hiw-crew1';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
 const GLIDE_MS=2400, GESTURE_GAP_MS=400, REQUEST_GAP_MS=700, FOLLOW_GUARD_MS=900, STREAM_MS=2000, RELEASE_MS=220;
-const FOLLOW_TAU=.08, SWIPE_PX=28, START_MS=1500, SCRUB_FALLBACK_S=14;
+const FOLLOW_TAU=.08, FOLLOW_GAIN=.4, FOLLOW_MAX_RATE=1.5, FOLLOW_MAX_PX_S=900, FOLLOW_LEAD_S=.25;
+const SWIPE_PX=28, START_MS=1500, SCRUB_FALLBACK_S=14;
 export function installBeatScroll({stage,tracks,playback,getActive,readProgress}){
  const params=new URLSearchParams(location.search);
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
@@ -166,22 +169,34 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  }
  // Requests start on the next task, after every listener of the gesture has run.
  function request(){setTimeout(()=>{if(!busy())go();else if(!holding()&&performance.now()-actionAt>=FOLLOW_GUARD_MS)skip();},0);}
- // Ordinary scrolling: the page eased toward where the scroll has asked for (FOLLOW_TAU), both directions.
+ // The fastest the page may follow a forward scroll at y: FOLLOW_MAX_RATE times the film's normal speed there, or
+ // FOLLOW_MAX_PX_S outside the films. The chapter table is read once per takeover (it doesn't move while scrolling).
+ let followChapters=null;
+ function followCap(y){
+  let here=null;for(const c of followChapters||(followChapters=chapters()))if(c.y<=y+4)here=c;
+  return here&&here.film&&y<here.yEnd-2?FOLLOW_MAX_RATE*(here.yEnd-here.y)/Math.max(.1,filmSeconds(here)):FOLLOW_MAX_PX_S;
+ }
+ // Scrolling: the page eased toward where the scroll has asked for (FOLLOW_TAU), both directions. Forward it moves
+ // FOLLOW_GAIN of the scroll, capped (followCap) and never more than FOLLOW_LEAD_S ahead of the page.
  function steer(dy){
   if(followTarget===null){followPos=scrollY;followTarget=followPos;}
-  followTarget=Math.max(0,Math.min(maxScroll(),followTarget+dy));
+  if(following&&dy>0)followTarget=Math.min(followTarget+dy*FOLLOW_GAIN,Math.max(followTarget,followPos+followCap(followPos)*FOLLOW_LEAD_S));
+  else followTarget+=dy;
+  followTarget=Math.max(0,Math.min(maxScroll(),followTarget));
   if(!followFrame){followWall=performance.now();followFrame=requestAnimationFrame(stepFollow);}
  }
  function stepFollow(now){
   const dt=Math.min(.05,Math.max(.001,(now-followWall)/1000));followWall=now;
   const d=followTarget-followPos;
   if(Math.abs(d)<.75){followPos=followTarget;scrollTo(0,followPos);followFrame=0;followTarget=null;return;}
-  followPos+=d*(1-Math.exp(-dt/FOLLOW_TAU));scrollTo(0,followPos);
+  let step=d*(1-Math.exp(-dt/FOLLOW_TAU));
+  if(following&&step>0)step=Math.min(step,followCap(followPos)*dt);
+  followPos+=step;scrollTo(0,followPos);
   followFrame=requestAnimationFrame(stepFollow);
  }
  function stopFollow(){clearTimeout(releaseTimer);releaseTimer=0;cancelAnimationFrame(followFrame);followFrame=0;followTarget=null;following=false;}
  // A second scroll while a part moves: it stops, and the page is theirs to scroll.
- function takeOver(){stopMotion();stopFollow();following=true;}
+ function takeOver(){stopMotion();stopFollow();following=true;followChapters=null;}
  function armRelease(){clearTimeout(releaseTimer);releaseTimer=setTimeout(()=>{releaseTimer=0;release();},RELEASE_MS);}
  // They let go: the page stays where they scrolled it and plays on from there.
  function release(){if(!following)return;stopFollow();handBack();}
@@ -240,13 +255,13 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   // A part is moving: a new scroll (or this one kept going) is ordinary scrolling, not the scroll that started it.
   if((fresh||now-requestAt>=STREAM_MS)&&now-actionAt>=FOLLOW_GUARD_MS){requestAt=now;takeOver();steer(px);armRelease();}
  },{passive:false});
- // Touch: a swipe at rest plays the next part; a swipe while one moves drags the page with the finger, and lifting it
- // plays on from there. A swipe down is ordinary scrolling.
- addEventListener('touchstart',event=>{touch={y0:event.touches[0].clientY,drag:false,done:false,native:false,base:0,from:0};},{passive:true});
+ // Touch: a swipe at rest plays the next part; a swipe while one moves drags the page (slowed, like the wheel), and
+ // lifting the finger plays on from there. A swipe down is ordinary scrolling.
+ addEventListener('touchstart',event=>{touch={y0:event.touches[0].clientY,drag:false,done:false,native:false,last:0};},{passive:true});
  addEventListener('touchmove',event=>{
   if(!touch||touch.native||reduced.matches||inField(event.target))return;
   const y=event.touches[0].clientY,dy=touch.y0-y;                  // positive: finger moves up = forward
-  if(touch.drag){event.preventDefault();scrollTo(0,Math.max(0,Math.min(maxScroll(),touch.base+touch.from-y)));return;}
+  if(touch.drag){event.preventDefault();steer(touch.last-y);touch.last=y;return;}   // slowed like the wheel (steer)
   if(scrollsWithin(event.target,dy)){touch.native=true;return;}
   if(dy<-8){back();touch.native=true;return;}                      // swipe down: ordinary scrolling
   if(!forwardAvailable())return;
@@ -254,12 +269,12 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(touch.done)return;
   if(busy()&&performance.now()-actionAt>=FOLLOW_GUARD_MS){
    if(dy<6)return;
-   stopMotion();stopFollow();touch.drag=true;touch.base=scrollY;touch.from=y;return;
+   takeOver();touch.drag=true;touch.last=y;return;
   }
   if(dy>SWIPE_PX){touch.done=true;const now=performance.now();if(!busy()&&now-requestAt>=REQUEST_GAP_MS){requestAt=now;request();}}
  },{passive:false});
- addEventListener('touchend',()=>{const t=touch;touch=null;if(t?.drag)handBack();},{passive:true});
- addEventListener('touchcancel',()=>{const t=touch;touch=null;if(t?.drag)handBack();},{passive:true});
+ addEventListener('touchend',()=>{const t=touch;touch=null;if(t?.drag)release();},{passive:true});
+ addEventListener('touchcancel',()=>{const t=touch;touch=null;if(t?.drag)release();},{passive:true});
  addEventListener('keydown',event=>{
   if(reduced.matches||inField(event.target)||event.altKey||event.metaKey||event.ctrlKey)return;
   const internalDelta=['ArrowUp','PageUp'].includes(event.code)?-1:['ArrowDown','PageDown','Space'].includes(event.code)?1:0;
