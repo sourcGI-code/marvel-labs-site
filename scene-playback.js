@@ -2,10 +2,12 @@
 // decoded media time drives that same timeline, including captions and navigation.
 // The arrival film is rendered at 84 fps and played at 5/7 speed: exactly one film frame per 60 Hz refresh (owner 10-24:
 // "jittery and not smooth"; the 60 fps film at 0.7x showed 42 frames a second, held for one or two refreshes unevenly).
-// The flywheel may speed it up, but never past 1x (84 decoded frames a second).
+// While someone keeps scrolling, beat-scroll.js speeds the playing film up (setRate, owner 10-26: "I am scrolling and it
+// doesnt speed up the quote animation or the solo trailer ... I need it to smoothly scroll past it"), up to MAX_RATE.
 import {waitPlayable} from './playthrough.js?v=3';
 const OPENING_RATE=5/7;
-const playRate=(base,boost)=>{const r=base*boost;return Math.round((base<1?Math.min(r,1):r)*1e4)/1e4;};
+const MAX_RATE=4;
+const playRate=(base,boost)=>Math.round(Math.min(MAX_RATE,base*boost)*1e4)/1e4;
 export function installScenePlayback({getActive,readProgress,writeProgress,setPaused,reduced}){
  const buttons=[...document.querySelectorAll('.motion-button')];
  let owner=null,segment=null,mode='paused',generation=0,frame=0,abort=null,error='',lastUI='',completedOwner=null;
@@ -140,7 +142,7 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  document.addEventListener('visibilitychange',()=>{if(document.hidden)interrupt();});
  addEventListener('resize',interrupt);reduced.addEventListener('change',()=>{interrupt();sync();});
  sync();return {pause,toggle,sync,setRate(boost){
-  rateBoost=Math.max(.25,Math.min(3,boost||1));
+  rateBoost=Math.max(.25,Math.min(MAX_RATE,boost||1));
   if(segment&&mode==='playing'){const r=playRate(baseRate,rateBoost);if(Math.abs(segment.video.playbackRate-r)>=.02||(rateBoost===1&&segment.video.playbackRate!==r))segment.video.playbackRate=r;}
  },playTo(target){
   // Play the active chapter's film from where it is to `target` (a progress fraction), then pause there.
