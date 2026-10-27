@@ -148,7 +148,7 @@ installDisplayFramework({stage,refresh:update});
 if(official)import('./hero-frame.js?v=17-hqworld3').then(m=>m.installHeroFrame()).catch(e=>console.warn('Hero framing unavailable.',e.message));
 if(official)import('./hero-world-background.js?v=1-hqworld3').then(m=>m.installHeroWorldBackground()).catch(e=>console.warn('World background unavailable.',e.message));
 // One scroll per thing (owner 10-24): forward input steps beat to beat, playing each chapter's film; back scrolls freely.
-if(manualPlayback&&official&&playback)import('./beat-scroll.js?v=28-gain60').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
+if(manualPlayback&&official&&playback)import('./beat-scroll.js?v=29-gain50').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
 async function loadTrailer(state,canvas,single=false){
  if(!state)return;
  if(official){
