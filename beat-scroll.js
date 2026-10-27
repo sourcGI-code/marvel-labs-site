@@ -1,7 +1,7 @@
 // Scroll and let go: the part plays at its normal speed. Keep scrolling: it goes faster with the scroll, smoothly, and
 // carries on past the part; let go and it settles back to normal speed (owner 10-26: "i need to be able to scroll and
 // let go and it plays normal"; "the second swipe activates a scroll ... to just scroll through but if someone lets go it
-// continues"; 1:1 was "crazy fast", 40% "too slow", "make do 50 percent"; "I am scrolling and it doesnt speed up the
+// continues"; 1:1 was "crazy fast", 40% "too slow", "make do 50 percent", then "5 percent off" (45%); "I am scrolling and it doesnt speed up the
 // quote animation or the solo trailer or any, I need it to smoothly scroll past it"):
 //   * a forward scroll (any speed), a swipe up or ArrowDown/PageDown/Space plays the next part at its normal speed:
 //     a chapter's film plays natively to the chapter's end (scene-playback.js playTo); between sections the page moves
@@ -24,7 +24,7 @@ import {DELIVERY_END} from './intro-timing.js?v=1';
 import {displays} from './original-display-framework.js?v=15-hiw-crew1';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
 const GLIDE_VH_S=2.8, GLIDE_ACCEL_VH=8, GLIDE_DECEL_VH=6, GESTURE_GAP_MS=400, REQUEST_GAP_MS=700, START_WINDOW_MS=350, RELEASE_MS=220, SPEED_WINDOW_MS=250;
-const FOLLOW_GAIN=.5, FOLLOW_MAX_PX_S=1125, FOLLOW_TAU=.08, FOLLOW_LEAD_S=.25, RATE_UP_TAU=.15, RATE_DOWN_TAU=.5;
+const FOLLOW_GAIN=.45, FOLLOW_MAX_PX_S=1125, FOLLOW_TAU=.08, FOLLOW_LEAD_S=.25, RATE_UP_TAU=.15, RATE_DOWN_TAU=.5;
 const EXTEND_S=.6, SWIPE_PX=28, START_MS=1500, SCRUB_FALLBACK_S=14;
 export function installBeatScroll({stage,tracks,playback,getActive,readProgress}){
  const params=new URLSearchParams(location.search);
