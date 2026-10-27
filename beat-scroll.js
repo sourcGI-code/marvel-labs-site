@@ -6,8 +6,8 @@
 //     with the same fixed glide (GLIDE_MS) and the part there plays. The rest of that same scroll changes nothing;
 //   * scrolling again while a part plays (or while the page glides to one) is ordinary scrolling: the page moves with
 //     the wheel, trackpad or finger, slowed down (owner: "the second scroll speeds and goes crazy fast ... slow it
-//     down"): the page moves FOLLOW_GAIN of the scroll and never faster than FOLLOW_MAX_RATE times the film's normal
-//     speed (FOLLOW_MAX_PX_S outside the films), as far as they like;
+//     down"; then "too slow, maybe do 60 percent of scroll"): the page moves FOLLOW_GAIN of the scroll and never
+//     faster than FOLLOW_MAX_RATE times the film's normal speed (FOLLOW_MAX_PX_S outside the films), as far as they like;
 //   * letting go, the part they are in plays on at its normal speed from there to its end, then holds. Let go inside a
 //     section without a film (numbers, specs, app) it stays there; in a hand-off it glides on to the next part. The
 //     momentum a trackpad or smooth mouse sends after a flick (its deltas only fade) counts as letting go;
@@ -24,7 +24,7 @@ import {DELIVERY_END} from './intro-timing.js?v=1';
 import {displays} from './original-display-framework.js?v=15-hiw-crew1';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
 const GLIDE_MS=2400, GESTURE_GAP_MS=400, REQUEST_GAP_MS=700, FOLLOW_GUARD_MS=900, STREAM_MS=2000, RELEASE_MS=220;
-const FOLLOW_TAU=.08, FOLLOW_GAIN=.4, FOLLOW_MAX_RATE=1.5, FOLLOW_MAX_PX_S=900, FOLLOW_LEAD_S=.25;
+const FOLLOW_TAU=.08, FOLLOW_GAIN=.6, FOLLOW_MAX_RATE=2.25, FOLLOW_MAX_PX_S=1350, FOLLOW_LEAD_S=.25;
 const SWIPE_PX=28, START_MS=1500, SCRUB_FALLBACK_S=14;
 export function installBeatScroll({stage,tracks,playback,getActive,readProgress}){
  const params=new URLSearchParams(location.search);
