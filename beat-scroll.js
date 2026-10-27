@@ -18,7 +18,7 @@
 // tour's arrival / whole workflow / operator story, the numbers, the contact. Off with ?freescroll=1, ?edit=1 or
 // reduced motion.
 import {DELIVERY_END} from './intro-timing.js?v=1';
-import {displays} from './original-display-framework.js?v=13-order2';
+import {displays} from './original-display-framework.js?v=15-hiw-crew1';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
 const GLIDE_MS=2400, GESTURE_GAP_MS=260, REQUEST_GAP_MS=900, STREAM_MS=1800, SWIPE_PX=28, START_MS=1500, SCRUB_FALLBACK_S=14;
 const MAX_BOOST=2, BOOST_PER_PX_S=1/1800, BOOST_TAU=.6, BACK_EASE=.18;
@@ -37,6 +37,9 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   // vision, RTK, quote, work) and the operator story (grass in, product out, imagine). The fractions are where the
   // captions switch on the installed films: the desktop film (2302 frames, operator in the second half) and the
   // phone film (1381 frames, no operator, so its workflow runs to the end).
+  // How it works (owner 10-26): grass in + product out / the drop-off / the drive to the next job / the whole workflow.
+  if(body.dataset.fieldLeadFrames){const last=Number(body.dataset.fieldTimelineFrames)-1,lead=Number(body.dataset.fieldLeadFrames);
+   return [0,Number(body.dataset.deliveryStartFrame)/last,lead/last,(lead+426)/last];}
   if(body.dataset.operatorSequence==='true')return [0,.185,.73];
   if(body.dataset.neighborhood!=='true')return [0,.097];
   const table=displays.filter(d=>d.section==='inside').map(d=>d.start).filter(p=>p>=0&&p<1);

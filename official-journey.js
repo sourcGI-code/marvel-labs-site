@@ -37,6 +37,12 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
  const grassIn=['GRASS IN','Grass in.','Off the mower. The clippings go into the hopper beside the side hatch.','',''];
  const productOut=['PRODUCT OUT','Product out.','Open the hatch. A packaged product comes out on the conveyor.','',''];
  const possibilities=['GRASS IN · PRODUCT OUT','Imagine<br><em>the possibilities.</em>','','',''];
+ // How it works (owner 10-26): after the product comes out, a drop-off run to the post office, then the next job.
+ const deliveryCaptions={
+  A:['DROP IT OFF','On your route.<br><em>Ship it out.</em>','Close up and drive. The packaged product rides along to the post office on the way to the next job.','',''],
+  B1:['HAND IT OVER','Made on the job.<br><em>Shipped today.</em>','Pull up, take the carton from the side hatch and hand it to the post office.','',''],
+  C:['BACK ON THE ROUTE','On to<br><em>the next yard.</em>','Delivered. The trailer heads for the next job.','','']};
+ deliveryCaptions.B2=deliveryCaptions.B1;
  const operatorCaptions=Object.fromEntries([
   ...['dismount','to bag','lift clippings','carry clippings','grass in','collect-grass','load-grass'].map(stage=>[stage,grassIn]),
   ...['to hatch','at hatch','open hatch','product out','side-door','retrieve-product'].map(stage=>[stage,productOut]),
@@ -46,15 +52,16 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
   const state=scene?.draw(p,paused),workflowP=state?.workflowP??p*(1380/1919);
   const i=Math.min(4,workflowStops.findLastIndex(s=>workflowP>=s)),local=clamp((workflowP-workflowStops[i])/(workflowStops[i+1]-workflowStops[i]));
   const operator=state?.operator,operatorActive=!!operator?.active,operatorCopy=operatorActive&&operatorCaptions[operator.stage];
-  const routeActive=!!state?.route?.active,pitchActive=!operatorActive&&(routeActive||workflowP<.07),captionKey=operatorCopy?'operator-'+operatorCopy[1]:pitchActive?-2:i;
-  const [tag,title,copy,key,value]=operatorCopy||(pitchActive?captions[0]:captions[i]);
+  const delivery=state?.segment==='delivery'?(state.delivery||{shot:'A'}):null,deliveryCopy=delivery&&deliveryCaptions[delivery.shot];
+  const routeActive=!!state?.route?.active,pitchActive=!operatorActive&&!delivery&&(routeActive||workflowP<.07),captionKey=operatorCopy?'operator-'+operatorCopy[1]:deliveryCopy?'delivery-'+deliveryCopy[1]:pitchActive?-2:i;
+  const [tag,title,copy,key,value]=operatorCopy||deliveryCopy||(pitchActive?captions[0]:captions[i]);
   const fact=$('route-fact');if(fact)fact.hidden=!pitchActive;
   if(captionKey!==lastCaption){
    const direction=p<lastP?-1:1;
    $('tour-kicker').textContent=tag;setAnimatedTitle($('tour-title'),title,{direction});$('tour-copy').textContent=copy;$('tour-copy').hidden=!copy;
    // The operator beats are the second half of chapter 5 (Work), so the count and the chapter nav stay on 05.
-   const chapter=operatorActive?4:i;
-   $('tour-count').textContent=`0${chapter+1} / 05`;$('tour-spec').hidden=!key;document.querySelector('#tour-spec dt').textContent=key;document.querySelector('#tour-spec dd').textContent=value;
+   const how=!!document.body.dataset.fieldLeadFrames,chapter=how?(operatorActive?0:delivery?1:i+2):operatorActive?4:i;
+   $('tour-count').textContent=`0${chapter+1} / 0${how?7:5}`;$('tour-spec').hidden=!key;document.querySelector('#tour-spec dt').textContent=key;document.querySelector('#tour-spec dd').textContent=value;
    document.querySelectorAll('.tour-chapters li').forEach((el,index)=>{if(index===chapter)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
    if(lastCaption>=0)revealDetails(['tour-count','tour-kicker','tour-copy','tour-spec'].map($),{direction});
    lastCaption=captionKey;
@@ -63,9 +70,9 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
   pin.style.setProperty('--yard-reveal',state?.yardReveal||0);
   const mode=state?.mode||(p<.035?'towing':'parked');pin.dataset.fieldMode=mode;pin.dataset.fieldChapter=String(i);pin.dataset.interior=String(i>=5);
   pin.dataset.operator=String(operatorActive);
-  const status=operatorActive?'PARKED · '+tag:routeActive?'DRIVE-BY AUTO QUOTES':mode==='towing'?'ARRIVING AT THE JOB':i===0?'PARKED · UNLOAD YOUR EQUIPMENT':i<=3?'PARKED · UNDERSTAND THE JOB':'PARKED · WORK & CREATE VALUE';
+  const status=delivery?(delivery.shot==='C'?'BACK ON THE ROUTE':'DROP-OFF · POST OFFICE'):operatorActive?'PARKED · '+tag:routeActive?'DRIVE-BY AUTO QUOTES':mode==='towing'?'ARRIVING AT THE JOB':i===0?'PARKED · UNLOAD YOUR EQUIPMENT':i<=3?'PARKED · UNDERSTAND THE JOB':'PARKED · WORK & CREATE VALUE';
   if($('field-status').textContent!==status){$('field-status').textContent=status;revealDetails([$('field-status')],{delay:0});}
-  document.querySelectorAll('.field-modes span').forEach((el,index)=>el.classList.toggle('active',index===(i===0?0:i<=3?1:2)));
+  document.querySelectorAll('.field-modes span').forEach((el,index)=>el.classList.toggle('active',index===(delivery||operatorActive?2:i===0?0:i<=3?1:2)));
   const quoteEntering=$('workflow-demo').hidden&&i===3;$('workflow-demo').hidden=i!==3;
   if(quoteEntering){revealTitle($('workflow-state'));revealDetails($('workflow-demo').querySelectorAll('p,li,#workflow-scope > div'),{delay:0});}
   const jobs=state?.vision?.jobs||[],scope=JSON.stringify(jobs);

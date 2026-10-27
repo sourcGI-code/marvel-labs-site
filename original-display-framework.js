@@ -1,7 +1,9 @@
 import {DELIVERY_TITLE_START} from './intro-timing.js?v=1';
-import {fieldProgress,neighborhoodEnabled} from './neighborhood-timing.js?v=2';
+import {fieldProgress,neighborhoodEnabled} from './neighborhood-timing.js?v=4-hiw-crew1';
 import {loadFilmSources} from './film-sources.js?v=3';
-await loadFilmSources();
+const howItWorks=(await loadFilmSources()).field?.howItWorks;
+// How it works (owner 10-26): grass in -> product out -> the post-office drop-off -> the old town film (route, then the job).
+if(howItWorks){document.body.dataset.fieldLeadFrames=String(howItWorks.fieldLeadFrames);document.body.dataset.deliveryStartFrame=String(howItWorks.deliveryStartFrame);}
 // One ordered map for the homepage's displays, editor navigation and chapter links.
 export const displays = [
  {id:'arrival',group:'Opening',label:'Arrival',section:'top',start:0,at:.055,title:'#hero-title',copy:'#hero-description',purpose:'Introduce the microfactory trailer. Keep the truck, approach and impact in one continuous scene.'},
@@ -14,15 +16,17 @@ export const displays = [
  {id:'sizes',group:'Choose a trailer',label:'Start with the specs',section:'sizes',start:0,at:.15,title:'#sizes-title',copy:'.offer-title-row > p',purpose:'Choose the 16 ft or 20 ft footprint, then review the current Buy and Free options.'},
  {id:'numbers',group:'Choose a trailer',label:'The numbers',section:'story',start:0,at:.15,title:'#story-title',copy:'.daily-pitch .offer-lead',purpose:'Explain the illustrative earnings with the assumptions visible alongside the numbers.'},
  {id:'founding',group:'Next step',label:'Founding operators',section:'founding',start:0,at:.15,title:'#founding-title',copy:'.founding-grid .offer-lead',purpose:'Explain early participation and the operator input needed for the pilot.'},
- {id:'contact',group:'Next step',label:'Request pilot details',section:'contact',start:0,at:.65,title:'#contact-title',copy:'.contact-grid > div > p',purpose:'Collect the operator’s equipment needs and selected trailer option.'}
+ {id:'app',group:'Next step',label:'Marvel Crew app',section:'app',start:0,at:.15,title:'#app-title',copy:'.crew-lead',purpose:'The app for the trailer: status and production, the live storage camera, auto quotes with the yard before and after, the map, schedule and money.'}
 ].map(display=>display.section==='inside'?{...display,start:fieldProgress(display.start),at:fieldProgress(display.at)}:display);
-if(neighborhoodEnabled())displays.splice(displays.findIndex(d=>d.id==='equipment'),0,{id:'route',group:'Working day',label:'Drive-by auto quotes',section:'inside',start:0,at:.06,title:'#tour-title',copy:'#tour-copy',purpose:'Quote each property along the route, then stop at the selected house.'});
+const fieldLast=Number(document.body.dataset.fieldTimelineFrames)-1,fieldLead=Number(document.body.dataset.fieldLeadFrames)||0;
+if(neighborhoodEnabled())displays.splice(displays.findIndex(d=>d.id==='equipment'),0,{id:'route',group:'Working day',label:'Drive-by auto quotes',section:'inside',start:fieldLead/fieldLast,at:fieldLead?(fieldLead+138)/fieldLast:.06,title:'#tour-title',copy:'#tour-copy',purpose:'Quote each property along the route, then stop at the selected house.'});
 if(document.body.dataset.operatorSequence==='true'){
  const last=Number(document.body.dataset.fieldTimelineFrames)-1,start=Number(document.body.dataset.operatorStartFrame);
  displays.splice(displays.findIndex(d=>d.id==='numbers'),0,{id:'operator',group:'Working day',label:'05 · Grass in, product out',section:'inside',start:start/last,at:Math.min(1,(start+90)/last),title:'#tour-title',copy:'#tour-copy',purpose:'Second half of Work: clippings into the hopper, then the packaged product out on the conveyor at the side hatch. Ends on "Imagine the possibilities."'});
 }
-const sectionOrder=['top','story','inside','sizes','founding','contact'];   // owner 10-26: workday (01), how it works (02), specs (03)
-displays.sort((a,b)=>sectionOrder.indexOf(a.section)-sectionOrder.indexOf(b.section));
+if(howItWorks){const start=howItWorks.deliveryStartFrame;displays.splice(displays.findIndex(d=>d.id==='numbers'),0,{id:'dropoff',group:'Working day',label:'Drop-off',section:'inside',start:start/fieldLast,at:Math.min(1,(start+60)/fieldLast),title:'#tour-title',copy:'#tour-copy',purpose:'The packaged product rides to the post office and is handed over; then the truck drives on to the next job.'});}
+const sectionOrder=['top','story','inside','sizes','founding','app'];   // owner 10-26: workday (01), how it works (02), specs (03)
+displays.sort((a,b)=>sectionOrder.indexOf(a.section)-sectionOrder.indexOf(b.section)||(a.section==='inside'&&b.section==='inside'?a.start-b.start:0));
 export const displayById = id => displays.find(display => display.id === (['unhitch','cargo','overhead','receiving'].includes(id)?'delivery':['production','packaging','storage'].includes(id)?(document.body.dataset.operatorSequence==='true'?'operator':'work'):id));
 export function displayAt(section, progress) {
  return displays.filter(display => display.section === section && progress >= display.start - 1e-6).at(-1);

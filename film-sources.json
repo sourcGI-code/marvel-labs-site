@@ -5,12 +5,17 @@
     "revision": "hqgloss1"
   },
   "field": {
-    "base": "assets/town-env-v3/recorded/field",
-    "revision": "1792945012167841869",
+    "base": "assets/how-it-works-v1/recorded/field",
+    "revision": "hiw-crew1",
     "neighborhood": true,
     "operator": true,
-    "timelineFrames": 2302,
-    "operatorStartFrame": 1672
+    "timelineFrames": 2836,
+    "operatorStartFrame": 0,
+    "howItWorks": {
+      "fieldLeadFrames": 1164,
+      "deliveryStartFrame": 336,
+      "deliveryFrames": 828
+    }
   },
   "opening": {
     "base": "assets/marvel-v4/opening-film",
