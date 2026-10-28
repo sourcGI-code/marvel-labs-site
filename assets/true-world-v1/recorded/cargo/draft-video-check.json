@@ -1,0 +1,22 @@
+{
+  "previewOnly": true,
+  "sourceManifest": "/home/jaxon/marvel_site/marvel-labs-integration/work/restore-yesterday-presentation-20261025/iteration-previews-20261027/previews/smooth-30-v1-review-cargo/manifest.json",
+  "renderedFrames": 541,
+  "encodedFrames": 541,
+  "exactWebsiteTiming": true,
+  "fullDecode": "passed",
+  "metadata": {
+    "programs": [],
+    "streams": [
+      {
+        "width": 2304,
+        "height": 1024,
+        "level": 50,
+        "nb_frames": "541"
+      }
+    ],
+    "format": {
+      "duration": "18.034000"
+    }
+  }
+}

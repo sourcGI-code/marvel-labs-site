@@ -1,0 +1,94 @@
+{
+ "version": 1,
+ "cargo": {
+  "base": "assets/marvel-v4/recorded/cargo",
+  "revision": "hqgloss1",
+  "desktop": {
+   "base": "assets/true-world-v1/recorded/cargo",
+   "revision": "sleek20-real-v4",
+   "kind": "desktop",
+   "trueWorld": {
+    "version": 1,
+    "nativeWidth": 2560,
+    "nativeHeight": 1600,
+    "renderWidth": 4608,
+    "renderHeight": 2048,
+    "cropX": 1328,
+    "cropY": 224
+   },
+   "videoFile": "desktop.mp4",
+   "quality": "draft",
+   "nativeVideo": {
+    "file": "desktop.mp4",
+    "width": 2304,
+    "height": 1024,
+    "framerate": 60,
+    "codec": "avc1.640032",
+    "bitrate": 9137618
+   },
+   "compatibilityVideo": {
+    "file": "desktop.mp4",
+    "width": 2304,
+    "height": 1024,
+    "framerate": 60,
+    "linearResolution": 0.25,
+    "codec": "avc1.640032",
+    "bitrate": 9137618,
+    "verticalResolution": 0.25
+   },
+   "motionFps": 59.99999999999999
+  }
+ },
+ "field": {
+  "base": "assets/how-it-works-v2/recorded/field",
+  "revision": "hiw2-final1",
+  "neighborhood": true,
+  "operator": true,
+  "timelineFrames": 3088,
+  "operatorStartFrame": 0,
+  "howItWorks": {
+   "fieldLeadFrames": 1416,
+   "deliveryStartFrame": 300,
+   "deliveryFrames": 1116
+  }
+ },
+ "opening": {
+  "base": "assets/marvel-v4/opening-film",
+  "revision": "hqgloss1",
+  "desktop": {
+   "base": "assets/true-world-v1/opening-film",
+   "revision": "sleek20-real-v4",
+   "kind": "desktop",
+   "trueWorld": {
+    "version": 1,
+    "nativeWidth": 2560,
+    "nativeHeight": 1600,
+    "renderWidth": 4608,
+    "renderHeight": 2048,
+    "cropX": 1328,
+    "cropY": 224
+   },
+   "videoFile": "desktop.mp4",
+   "quality": "draft",
+   "nativeVideo": {
+    "file": "desktop.mp4",
+    "width": 2304,
+    "height": 1024,
+    "framerate": 84,
+    "codec": "avc1.640033",
+    "bitrate": 11393272
+   },
+   "compatibilityVideo": {
+    "file": "desktop.mp4",
+    "width": 2304,
+    "height": 1024,
+    "framerate": 84,
+    "linearResolution": 0.25,
+    "codec": "avc1.640033",
+    "bitrate": 11393272,
+    "verticalResolution": 0.25
+   },
+   "motionFps": 60.0
+  }
+ }
+}

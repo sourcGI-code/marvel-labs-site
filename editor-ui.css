@@ -1,0 +1,27 @@
+#visual-editor{position:fixed;right:16px;top:16px;width:300px;max-height:calc(100dvh - 32px);overflow:auto;z-index:2147483647;background:#f4f5f2;color:#172122;border:1px solid #c5cdca;border-radius:14px;box-shadow:0 12px 48px #0006;padding:18px;font:14px/1.45 system-ui,sans-serif;text-align:left;color-scheme:light}#visual-editor *{box-sizing:border-box}#visual-editor header{display:flex;align-items:center;justify-content:space-between;margin:0 0 12px}#visual-editor h2{font:700 19px/1.2 system-ui;margin:0;color:inherit;letter-spacing:-.03em}#visual-editor p{font:13px/1.45 system-ui;margin:10px 0;color:#4d5e5b}#visual-editor label{display:block;margin-top:12px;font:600 12px/1.3 system-ui;color:#34413f}#visual-editor textarea,#visual-editor select,#visual-editor input{width:100%;display:block;margin:5px 0 0;padding:9px;background:white;border:1px solid #b7c3bf;border-radius:6px;color:#172122;font:14px/1.4 system-ui;letter-spacing:normal;text-transform:none}#visual-editor textarea{resize:vertical;min-height:110px}#visual-editor input[type=color]{height:39px;padding:4px}#visual-editor button{padding:9px 12px;min-height:38px;border:1px solid #aebdb8;border-radius:7px;background:white;color:#172122;font:600 13px system-ui;cursor:pointer;letter-spacing:normal;text-transform:none;transform:none}#visual-editor button:disabled{opacity:.5;cursor:default}#visual-editor button.primary{background:#195e53;color:white;border-color:#195e53}#visual-editor .row{display:grid;grid-template-columns:1fr 1fr;gap:10px}#visual-editor .actions{display:flex;gap:8px;margin-top:16px}#visual-editor .pages{display:flex;gap:12px;margin-top:12px}#visual-editor a{color:#195e53;font:13px system-ui;text-decoration:underline}#visual-editor fieldset{border:0;padding:0;margin:0;min-width:0}#visual-editor [hidden]{display:none!important}#visual-editor :focus-visible{outline:3px solid #3d9f8c;outline-offset:2px}.visual-editor-selected{outline:2px solid #59d8bb!important;outline-offset:6px!important}.visual-editor-hover{outline:1px dashed #59d8bb!important;outline-offset:5px!important}#visual-editor.is-collapsed{width:auto}#visual-editor.is-collapsed header{margin:0;gap:12px}#visual-editor.is-collapsed .editor-body{display:none}@media(max-width:650px){#visual-editor{top:auto;bottom:8px;right:8px;left:8px;width:auto;max-height:54dvh}#visual-editor textarea{min-height:70px}#visual-editor.is-collapsed{left:auto}}
+
+/* Local authoring: one website display at a time. */
+#visual-editor .display-framework{border-bottom:1px solid #c5cdca;padding:0 0 14px;margin:0 0 14px}
+#visual-editor .display-framework h3{font-size:14px;margin:0 0 8px;color:#172122}
+#visual-editor .display-framework select{width:100%;margin:5px 0 9px}
+#visual-editor .display-framework .row{display:flex;gap:8px;margin:7px 0}
+#visual-editor .display-framework .row button{flex:1}
+#visual-editor #ve-display-purpose{font-size:12px;line-height:1.5;color:#4d5e5b;margin:8px 0}
+#visual-editor #ve-display-count{font:11px monospace;letter-spacing:.08em;color:#195e53}
+#visual-editor #ve-copy-link{width:100%;font-size:12px}
+.tour-chapters button{font:inherit;color:inherit;background:none;border:0;padding:4px 2px;cursor:pointer;text-align:inherit}
+.tour-chapters button:focus-visible{outline:2px solid #55d4df;outline-offset:4px;border-radius:2px}
+
+#visual-editor .pages{flex-wrap:wrap}
+#visual-editor .design-settings{border-top:1px solid #c5cdca;margin-top:18px;padding-top:8px}
+#visual-editor details{padding:10px 0;border-bottom:1px solid #d6deda}
+#visual-editor summary{font-weight:700;cursor:pointer}
+#visual-editor .theme-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-top:10px}
+#visual-editor .theme-grid button{display:flex;align-items:center;gap:7px;padding:8px 6px;font-size:11px;text-align:left}
+#visual-editor .theme-grid i{width:23px;height:23px;border-radius:50%;border:1px solid #647a73;flex:none}
+#visual-editor .theme-grid [aria-pressed=true]{border-color:#195e53;box-shadow:inset 0 0 0 1px #195e53;background:#e4f0e9}
+#visual-editor output{float:right;font-weight:400}
+#visual-editor input[type=range]{padding:0;accent-color:#195e53}
+#visual-editor #ve-frame-reset{margin-top:12px}
+body[data-page-editor] :is(h1,h2,h3,h4,h5,h6,p,small,.eyebrow){cursor:text}
+body[data-page-editor] .motion-word,body[data-page-editor] .motion-word-inner{pointer-events:auto;user-select:text}

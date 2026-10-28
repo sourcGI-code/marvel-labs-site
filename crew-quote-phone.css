@@ -1,0 +1,12 @@
+/* Quote chapter: the Marvel Crew app's real quote screen on the Pro Max (owner 10-27: "display the auto quoting on the app"). */
+#workflow-demo{background:none!important;border:0!important;box-shadow:none!important;padding:0!important;
+ position:absolute;right:clamp(16px,5vw,90px);top:50%;transform:translateY(-50%);width:min(290px,24vw);z-index:6;pointer-events:none}
+#workflow-demo>:not(.crew-quote-phone):not(.crew-quote-note){display:none!important}
+#workflow-demo .crew-quote-phone{display:block;width:100%;height:auto;filter:drop-shadow(0 26px 40px rgba(0,0,0,.55))}
+#workflow-demo:not([hidden]) .crew-quote-phone{animation:crewQuoteIn .7s cubic-bezier(.2,.8,.2,1) both}
+#workflow-demo .crew-quote-note{margin:10px 0 0;text-align:center;font:600 10px/1.4 ui-monospace,monospace;letter-spacing:.14em;text-transform:uppercase;color:rgba(238,240,236,.72)}
+@keyframes crewQuoteIn{from{opacity:0;transform:translateY(40px) scale(.94)}to{opacity:1;transform:none}}
+@media (max-width:760px){#workflow-demo{top:auto;bottom:96px;right:16px;transform:none;width:min(170px,42vw)}}
+@media (prefers-reduced-motion:reduce){#workflow-demo:not([hidden]) .crew-quote-phone{animation:none}}
+/* 10-28 owner: "the phone shouldnt just pop onto the screen" - the worker opens the quote on his own phone in the film. */
+#workflow-demo{display:none!important}

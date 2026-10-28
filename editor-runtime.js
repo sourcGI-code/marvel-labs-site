@@ -66,7 +66,7 @@ export function reset(el){
  for(const p of properties)el.style[p]=base.styles[p];for(const p of ['color','font-weight','font-style','font-family'])el.removeAttribute('data-page-edit-'+p);base.output=textOf(el);
 }
 export async function save(){
- const response=await fetch('__editor/save',{method:'POST',headers:{'Content-Type':'application/json','X-Marvel-Editor':'1','If-Match':revision},body:JSON.stringify(documentData)});
+ const response=await fetch('/__editor/save',{method:'POST',headers:{'Content-Type':'application/json','X-Marvel-Editor':'1','If-Match':revision},body:JSON.stringify(documentData)});
  const result=await response.json();if(!response.ok)throw Error(result.error||'Save failed');revision=result.revision;
 }
 async function start(){
