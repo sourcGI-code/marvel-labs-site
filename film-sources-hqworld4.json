@@ -5,7 +5,7 @@
   "revision": "hqgloss1",
   "desktop": {
    "base": "assets/true-world-v1/recorded/cargo",
-   "revision": "sleek20-real-v4",
+   "revision": "gloss4k-v1-83940",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -17,24 +17,24 @@
     "cropY": 224
    },
    "videoFile": "desktop.mp4",
-   "quality": "draft",
+   "quality": "final",
    "nativeVideo": {
     "file": "desktop.mp4",
-    "width": 2304,
-    "height": 1024,
+    "width": 3840,
+    "height": 1706,
     "framerate": 60,
-    "codec": "avc1.640032",
-    "bitrate": 9137618
+    "codec": "avc1.640034",
+    "bitrate": 6869175
    },
    "compatibilityVideo": {
     "file": "desktop.mp4",
-    "width": 2304,
-    "height": 1024,
+    "width": 3840,
+    "height": 1706,
     "framerate": 60,
-    "linearResolution": 0.25,
-    "codec": "avc1.640032",
-    "bitrate": 9137618,
-    "verticalResolution": 0.25
+    "linearResolution": 1,
+    "codec": "avc1.640034",
+    "bitrate": 6869175,
+    "verticalResolution": 1
    },
    "motionFps": 59.99999999999999
   }
@@ -57,7 +57,7 @@
   "revision": "hqgloss1",
   "desktop": {
    "base": "assets/true-world-v1/opening-film",
-   "revision": "sleek20-real-v4",
+   "revision": "gloss4k-v1-66603",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -69,24 +69,24 @@
     "cropY": 224
    },
    "videoFile": "desktop.mp4",
-   "quality": "draft",
+   "quality": "final",
    "nativeVideo": {
     "file": "desktop.mp4",
-    "width": 2304,
-    "height": 1024,
+    "width": 3840,
+    "height": 1706,
     "framerate": 84,
-    "codec": "avc1.640033",
-    "bitrate": 11393272
+    "codec": "avc1.64003c",
+    "bitrate": 8834672
    },
    "compatibilityVideo": {
     "file": "desktop.mp4",
-    "width": 2304,
-    "height": 1024,
+    "width": 3840,
+    "height": 1706,
     "framerate": 84,
-    "linearResolution": 0.25,
-    "codec": "avc1.640033",
-    "bitrate": 11393272,
-    "verticalResolution": 0.25
+    "linearResolution": 1,
+    "codec": "avc1.64003c",
+    "bitrate": 8834672,
+    "verticalResolution": 1
    },
    "motionFps": 60.0
   }
