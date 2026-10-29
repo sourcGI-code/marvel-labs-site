@@ -28,6 +28,7 @@ export function loadFilmSources(){
    data.operatorSequence=String(sources.field.operator);
    data.fieldTimelineFrames=String(sources.field.timelineFrames);
    if(sources.field.operator)data.operatorStartFrame=String(sources.field.operatorStartFrame);else delete data.operatorStartFrame;
+   if(sources.field.mediaBase)data.fieldMediaBase=sources.field.mediaBase;else delete data.fieldMediaBase;   // 10-29: the movie's host, read by recorded-scene.js
   }
   return sources;
  })();

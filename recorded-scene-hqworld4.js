@@ -88,7 +88,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   if(next===kind)return;kind=next;filmSource=sceneFilmSource(name,kind);revision=filmSource.revision;const current=++generation;unplace();
   controller?.abort();controller=new AbortController();loading++;shown=false;failed=false;metadata=null;stillFile=pendingStill='';updateVisibility();
   if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}localPending=false;
-  const base=`${filmSource.base}/${kind}`;mediaURL=`${filmSource.base}/${filmSource.videoFile||kind+'.mp4'}?v=${revision}`;video.dataset.filmQuality=filmSource.quality||'original';
+  const base=`${filmSource.base}/${kind}`;mediaURL=`${filmSource.mediaBase||filmSource.base}/${filmSource.videoFile||kind+'.mp4'}?v=${revision}`;   // 10-29: the movie may live off GitHub Pages (mediaBase); json + stills stay herevideo.dataset.filmQuality=filmSource.quality||'original';
   // A deep link waits for its actual frame, never an unrelated first-frame still.
   video.removeAttribute('poster');video.pause();
   if(reduced.matches)video.removeAttribute('src');else video.src=mediaURL;
@@ -122,7 +122,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   const point=v=>({...v,x:v.x*scale+dx,y:v.y*scale+dy});
   if(state.labels)state.labels=state.labels.map(point);
   if(state.annotation)state.annotation=point(state.annotation);
-  if(state.route?.properties)state.route.properties=state.route.properties.map(point);
+  if(state.route?.properties)state.route.properties=state.route.properties.map(v=>{const q=point(v);if(v.box)q.box={x0:v.box.x0*scale+dx,y0:v.box.y0*scale+dy,x1:v.box.x1*scale+dx,y1:v.box.y1*scale+dy};return q;})   // 10-29: house boxes (auto-quote);
   const workflowP=state.workflowP??sampleP;
   if(name==='cargo'&&state.cargoFeet){state.cargoFeet=[12,8];state.factoryFeet=8;}
   if(metadata.vision){

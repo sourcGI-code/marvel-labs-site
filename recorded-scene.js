@@ -1,6 +1,7 @@
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
 import {loadFilmSources,sceneFilmSource} from './film-sources.js?v=3';
+import {loadFilmSources as loadHqSources} from './film-sources-hqworld4.js?v=sleek20-review-v1';   // 10-29: the manifest that carries field.mediaBase
 import {filmFraming,placeFilm} from './film-framing.js?v=3';
 const clamp=v=>Math.max(0,Math.min(1,v));
 const mix=(a,b,t)=>a+(b-a)*t;
@@ -17,8 +18,9 @@ export function interpolateRecordedState(a,b,t){
 }
 
 export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSeconds=Infinity}){
- await loadFilmSources();
+ const [,hq]=await Promise.all([loadFilmSources(),loadHqSources().catch(()=>null)]);
  const filmSource=sceneFilmSource(name),revision=filmSource.revision;
+ const mediaBase=filmSource.mediaBase??(name==='field'?hq?.field?.mediaBase:undefined);   // 10-29: the movie may live off GitHub Pages
  const host=canvas.parentElement,video=document.createElement('video'),still=new Image();
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  video.className='recorded-scene';video.muted=video.defaultMuted=true;video.playsInline=true;video.preload='auto';video.disablePictureInPicture=true;video.tabIndex=-1;video.setAttribute('aria-hidden','true');
@@ -88,7 +90,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   if(next===kind)return;kind=next;const current=++generation;unplace();
   controller?.abort();controller=new AbortController();loading++;shown=false;failed=false;metadata=null;stillFile=pendingStill='';updateVisibility();
   if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}localPending=false;
-  const base=`${filmSource.base}/${kind}`;mediaURL=`${filmSource.mediaBase??filmSource.base}/${kind}.mp4?v=${revision}`;   // 10-29: the movie may live off GitHub Pages (mediaBase); json + stills stay here
+  const base=`${filmSource.base}/${kind}`;mediaURL=`${mediaBase||filmSource.base}/${kind}.mp4?v=${revision}`;   // 10-29: the movie may live off GitHub Pages (mediaBase); json + stills stay here
   // A deep link waits for its actual frame, never an unrelated first-frame still.
   video.removeAttribute('poster');video.pause();
   if(reduced.matches)video.removeAttribute('src');else video.src=mediaURL;

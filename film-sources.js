@@ -3,7 +3,7 @@
 // A later cargo correction cannot replace a newer neighborhood/operator film.
 const fallback={version:1,opening:{base:'assets/hq-v3/opening-film',revision:'13'},cargo:{base:'assets/pickup-wheel-fixed-v1/recorded/cargo',revision:'pickup-wheel-fixed-1'},field:{base:'assets/rack-free-v1/recorded/field',revision:'rack-free-1',neighborhood:false,operator:false,timelineFrames:1381}};
 let sources=fallback,pending;
-const validEntry=value=>value&&typeof value.base==='string'&&/^assets\/[a-zA-Z0-9_/-]+$/.test(value.base)&&!value.base.split('/').includes('..')&&typeof value.revision==='string';
+const validEntry=value=>value&&typeof value.base==='string'&&/^assets\/[a-zA-Z0-9_/-]+$/.test(value.base)&&!value.base.split('/').includes('..')&&typeof value.revision==='string'&&(value.mediaBase===undefined||(typeof value.mediaBase==='string'&&/^https:\/\/[a-zA-Z0-9._/-]+$/.test(value.mediaBase)));
 const validField=value=>validEntry(value)&&typeof value.neighborhood==='boolean'&&typeof value.operator==='boolean'&&Number.isInteger(value.timelineFrames)&&value.timelineFrames>=2&&(!value.operator||(Number.isInteger(value.operatorStartFrame)&&value.operatorStartFrame>=0&&value.operatorStartFrame<value.timelineFrames));
 const initialFieldKind=()=>typeof innerWidth!=='undefined'&&(innerWidth<=760||(innerWidth<=1024&&typeof innerHeight!=='undefined'&&innerHeight>innerWidth))?'mobile':'desktop';
 export function loadFilmSources(){
