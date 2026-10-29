@@ -1,0 +1,10 @@
+/* Auto-quote house boxes over the drive-by (v3 test, Claude 10-29): drawn by route-quotes.js from the film json. */
+.route-quotes .route-boxes{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible}
+.route-box rect{fill:rgba(77,216,232,.06);stroke:var(--accent,#4dd8e8);stroke-width:1.5;stroke-dasharray:6 4;opacity:.75;transition:opacity .3s}
+.route-box[data-active="true"] rect{stroke-dasharray:none;stroke-width:2;fill:rgba(77,216,232,.12);opacity:1}
+.route-box[data-done="true"] rect{stroke:#8fe3a2;fill:rgba(143,227,162,.08)}
+.route-box text{font:600 13px/1 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.08em;fill:#f2f3f2;paint-order:stroke;stroke:rgba(10,14,16,.85);stroke-width:4px;stroke-linejoin:round}
+.route-box[data-active="true"] text{fill:var(--accent,#4dd8e8)}
+.route-box[data-done="true"] text{fill:#8fe3a2}
+.route-box .route-box-id{font-size:10px;font-weight:400;letter-spacing:.12em;fill:#c9d1d4}
+@media(max-width:760px){.route-box text{font-size:11px}.route-box .route-box-id{font-size:8px}}

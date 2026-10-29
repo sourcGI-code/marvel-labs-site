@@ -41,7 +41,7 @@
  },
  "field": {
   "base": "assets/how-it-works-v2/recorded/field",
-  "revision": "hiw2-final1",
+  "revision": "hiw-phone-preview",
   "neighborhood": true,
   "operator": true,
   "timelineFrames": 3088,
@@ -50,7 +50,8 @@
    "fieldLeadFrames": 1416,
    "deliveryStartFrame": 300,
    "deliveryFrames": 1116
-  }
+  },
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films"
  },
  "opening": {
   "base": "assets/marvel-v4/opening-film",
