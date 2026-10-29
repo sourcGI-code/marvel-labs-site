@@ -5,7 +5,7 @@
   "revision": "hqgloss1",
   "desktop": {
    "base": "assets/true-world-v1/recorded/cargo",
-   "revision": "gloss4k-v1-83940",
+   "revision": "gloss4k-v1-10027",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -24,7 +24,7 @@
     "height": 1706,
     "framerate": 60,
     "codec": "avc1.640034",
-    "bitrate": 6869175
+    "bitrate": 6874686
    },
    "compatibilityVideo": {
     "file": "desktop.mp4",
@@ -33,7 +33,7 @@
     "framerate": 60,
     "linearResolution": 1,
     "codec": "avc1.640034",
-    "bitrate": 6869175,
+    "bitrate": 6874686,
     "verticalResolution": 1
    },
    "motionFps": 59.99999999999999
