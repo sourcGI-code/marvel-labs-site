@@ -1,0 +1,64 @@
+/* Reserve page variants to compare (Claude 10-29). Owner: "I want the trailer display on the right and the reserve on the
+   left ... make the whole animation full screen and not have too much text ... make 3 different ones to compare", then
+   "I like c but what I want to change is the thing behind the lettering, and we can try that thing removed a and then b is
+   if they move their cursor it still moves the trailer and scrolls it brings the text up".
+   C  full-screen stage, minimal rail on a frosted panel.
+   A  C with the panel gone: the words sit on the stage over a soft shade.
+   B  A, and the cursor steers the trailer from anywhere (data-pointer="page"); the rail starts below the fold and
+      scrolls up over the stage.
+   Phones keep the stock stacked layout (reserve-page.css). */
+.rv-switch{position:fixed;right:14px;bottom:10px;z-index:2147483647;display:flex;gap:6px;font:700 11px/1 ui-monospace,monospace;letter-spacing:.08em}
+.rv-switch a{color:#0a0e10;background:#a4adb0;padding:6px 8px;border-radius:3px;text-decoration:none}
+.rv-switch a[aria-current]{background:#4dd8e8}
+.rv .rv-fine,.rv .rv-compare,.rv .rv-pay-note{display:none}
+.rv-scroll-hint{display:none}
+
+@media(min-width:861px){
+ /* ---- the stage is the whole screen, the rail floats on the left (A, B, C) */
+ .rv[data-variant]{display:block}
+ .rv[data-variant] .rv-show{position:fixed;inset:0;height:100svh;z-index:0}
+ .rv[data-variant] .rv-fade{background:linear-gradient(0deg,#0a0e10 0%,rgba(10,14,16,.8) 10%,rgba(10,14,16,0) 26%),linear-gradient(180deg,#0a0e10 0%,rgba(10,14,16,0) 14%)}
+ .rv[data-variant] .rv-rail{position:relative;z-index:3;width:var(--rail);min-height:100svh;margin:0 0 0 var(--gutter,4.5vw);border:0;background:none}
+ .rv[data-variant] .rv-metrics{left:calc(var(--rail) + 2 * var(--gutter,4.5vw));grid-template-columns:auto repeat(3,auto);justify-content:end}
+ .rv[data-variant] .rs-3d-bar{left:calc(50% + var(--rail) / 2)}
+ .rv[data-variant] .rs-back{left:calc(var(--rail) + 2 * var(--gutter,4.5vw))}
+ body[data-variant] .masthead{right:0;background:none}
+ body[data-variant] .site-footer{position:relative;z-index:3}
+
+ /* ---- fewer words (A, B, C) */
+ /* owner 10-29: the words were mixing with the Marvel Labs logo: the rail starts under the masthead */
+ .rv[data-variant] .rv-rail{margin-top:88px;min-height:calc(100svh - 88px);padding-top:34px;gap:0}
+ .rv[data-variant="c"] .rv-rail{border-top:1px solid var(--line)}
+ .rv[data-variant] .rv-rail h1{font-size:clamp(30px,2.1vw,40px)}
+ .rv[data-variant] .rv-when{font:var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-top:10px}
+ .rv[data-variant] .rv-group{margin-top:22px}
+ .rv[data-variant] .rv-card small,.rv[data-variant] .rv-plan small,.rv[data-variant] .rv-due small{display:none}
+ .rv[data-variant] .rv-card{padding:13px 16px}
+ .rv[data-variant] .rv-card b{font-size:22px}
+ .rv[data-variant] .rv-price small{display:block}
+ .rv[data-variant] .rv-plan{gap:2px}
+ .rv[data-variant] .rv-plan span{font-size:13px;color:var(--offer-muted,#b6bfc1)}
+ .rv[data-variant] .rv-due{margin-top:22px;padding:14px 0}
+ .rv[data-variant] .rv-due b{font-size:32px}
+ .rv[data-variant] .rv-fields{margin-top:18px;gap:8px}
+ .rv[data-variant] .rv-field span{display:none}
+ .rv[data-variant] .rv-field input{height:44px}
+ .rv[data-variant] .rv-legal{margin-top:14px}
+ .rv[data-variant] .rv-submit{margin-top:16px}
+
+ /* ---- C: the frosted panel behind the words */
+ .rv[data-variant="c"] .rv-rail{background:rgba(10,14,16,.72);-webkit-backdrop-filter:blur(22px) saturate(1.2);backdrop-filter:blur(22px) saturate(1.2);border:1px solid var(--line);border-top:0;border-bottom:0}
+
+ /* ---- A + B: no panel; a soft shade on the stage's left keeps the words readable; cards and fields on the stage itself */
+ .rv[data-variant="a"] .rv-fade,.rv[data-variant="b"] .rv-fade{background:linear-gradient(90deg,rgba(10,14,16,.82) 0%,rgba(10,14,16,.55) 26%,rgba(10,14,16,0) 46%),linear-gradient(0deg,#0a0e10 0%,rgba(10,14,16,.8) 10%,rgba(10,14,16,0) 26%),linear-gradient(180deg,#0a0e10 0%,rgba(10,14,16,0) 14%)}
+ .rv[data-variant="a"] .rv-card,.rv[data-variant="b"] .rv-card,.rv[data-variant="a"] .rv-field input,.rv[data-variant="b"] .rv-field input{background:rgba(10,14,16,.42)}
+ .rv[data-variant="a"] .rv-card:has(input:checked),.rv[data-variant="b"] .rv-card:has(input:checked){background:rgba(77,216,232,.09)}
+
+ /* ---- B: the rail starts below the fold and scrolls up over the stage; the cursor steers from anywhere */
+ .rv[data-variant="b"] .rv-rail{margin-top:100svh;padding-top:28px;min-height:auto;padding-bottom:72px}
+ .rv[data-variant="b"] .rv-scroll-hint{display:block;position:fixed;left:var(--gutter,4.5vw);bottom:46px;z-index:4;margin:0;font:var(--mono);letter-spacing:.12em;text-transform:uppercase;color:var(--muted);transition:opacity .4s}
+ .rv[data-variant="b"] .rv-scroll-hint:after{content:' ↓'}
+ body.rv-scrolled .rv-scroll-hint{opacity:0}
+ .rv[data-variant="b"] .rv-metrics{transition:opacity .4s}
+ body.rv-scrolled .rv[data-variant="b"] .rv-metrics{opacity:.35}
+}
