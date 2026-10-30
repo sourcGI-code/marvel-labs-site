@@ -174,9 +174,12 @@ function start(sec) {
       env.add(softbox(14, .5, 6, [0, 12, 2], [0, 0, 0], [.7, .9, 1]));            // one cool roof line
       env.add(softbox(16, .6, 3, [0, .6, 12], [0, .8, 0], [.3, .85, .91]));       // cyan along the lower body from the front, the stage glow
     } else {                                           // outdoors: a low warm sun, blue sky, asphalt ground; the sky is the backdrop too
-      env.add(gradientSphere(60, [[-1, [.11, .105, .1]], [-.01, [.17, .165, .16]], [0, [1.5, 1.2, .9]], [.06, [1.2, 1.05, .9]], [.2, [.7, .8, 1.0]], [.6, [.45, .6, .95]], [1, [.35, .5, .9]]]));
+      // 10-30 owner: "a long [line] in the middle of the roof that people will mistake as the wall": a flat black roof mirrors
+      // the horizon as a hard line. The ground-to-sky step is a slow blend (-0.12 to +0.2 of the dome), so the roof shows
+      // a soft gradient, never an edge.
+      env.add(gradientSphere(60, [[-1, [.11, .105, .1]], [-.12, [.15, .145, .14]], [-.04, [.3, .29, .28]], [.03, [.7, .66, .6]], [.1, [1.0, .92, .84]], [.2, [.75, .82, 1.0]], [.6, [.45, .6, .95]], [1, [.35, .5, .9]]]));
       env.add(softbox(3, 3, 60, [-24, 11, 16], [0, 0, 0], [1, .82, .6]));         // the sun, 20 degrees up, front-left: long golden highlights
-      env.add(softbox(40, 6, .9, [24, 7, -20], [0, 2, 0], [.75, .82, 1]));        // open sky on the far side: a cool fill on the shade side
+      env.add(softbox(40, 14, .7, [24, 9, -20], [0, 2, 0], [.75, .82, 1]));        // open sky on the far side: a cool fill on the shade side
     }
     return env;
   }
@@ -198,15 +201,15 @@ function start(sec) {
     lamp(12, 2, 3.5, [6, 5, 5], [5, 1, 0], [.66, .80, .88]);       // far rim, 1800 W
     lamp(7, 5, 3, [-6, 5, 3], [-2, 1, 0], [1, .94, .85]);          // cab soft key, 1800 W
     // v4 separation strips (Blender x,y,z -> x, z, -y)
-    lamp(6, .45, 71, [2, 1.45, -3.8], [0, 1.3, 0], [.78, .89, 1]); // body streak, 600 W: a low card along the near wall
-    lamp(.4, 3, 70, [6.5, 2.2, -1.7], [2.9, 1.4, 0], [.70, .84, 1]);   // rear edge, 380 W: a vertical card at the rear corner
-    lamp(5, .5, 51, [2, 1.6, -9], [2, 1.3, -5.7], [.78, .89, 1]);  // fleet body streak, 400 W
+    lamp(6, 1.4, 23, [2, 1.45, -3.8], [0, 1.3, 0], [.78, .89, 1]); // body streak, 600 W: a low card along the near wall
+    lamp(1.2, 3, 23, [6.5, 2.2, -1.7], [2.9, 1.4, 0], [.70, .84, 1]);   // rear edge, 380 W: a vertical card at the rear corner
+    lamp(5, 1.2, 21, [2, 1.6, -9], [2, 1.3, -5.7], [.78, .89, 1]);  // fleet body streak, 400 W
     // v5: raking keys from the rear end, low (1500 / 1000 W, .5 x 2.2 m), rim strips high behind the rooflines, the streak
-    lamp(2.2, .5, 150, [16, 1.6, -1.15], [0, 1.25, 0], [1, .97, .92]);   // (the films' 430 / 350 radiance: a 14 deg spread kept it off
-    lamp(1.8, .5, 120, [15, 1.4, 1.15], [0, 1.0, 0], [1, .97, .92]);    //  everything but the far side; a panel shines everywhere, so dimmer)
-    lamp(7, .35, 143, [-7.8, 6.2, 7.2], [0, 2.3, 0], [.62, .82, 1]);
-    lamp(6, .35, 105, [-7.5, 6.4, -7.5], [0, 2.1, 0], [.62, .82, 1]);
-    lamp(9, .28, 76, [14.8, 2.4, -11.5], [0, 1.2, 0], [.82, .91, 1]);
+    lamp(2.2, 1.2, 62, [16, 1.6, -1.15], [0, 1.25, 0], [1, .97, .92]);   // (the films' 430 / 350 radiance: a 14 deg spread kept it off
+    lamp(1.8, 1.0, 60, [15, 1.4, 1.15], [0, 1.0, 0], [1, .97, .92]);    //  everything but the far side; a panel shines everywhere, so dimmer)
+    lamp(7, 1.6, 31, [-7.8, 6.2, 7.2], [0, 2.3, 0], [.62, .82, 1]);
+    lamp(6, 1.6, 23, [-7.5, 6.4, -7.5], [0, 2.1, 0], [.62, .82, 1]);
+    lamp(9, 1.4, 15, [14.8, 2.4, -11.5], [0, 1.2, 0], [.82, .91, 1]);
     scene.environment = pmrem.fromScene(env, PRESET.sigma ?? .02).texture;
     if (/[?&]debug3d/.test(location.search)) window.__env = env;
   } else {
@@ -303,10 +306,11 @@ function start(sec) {
     const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone(), P = g.attributes.position, N = g.attributes.normal;
     const M = o.matrixWorld, nm = new THREE.Matrix3().getNormalMatrix(M), inv = nm.clone().invert();
     const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), f = new THREE.Vector3(), s0 = new THREE.Vector3();
-    const wn = new Float32Array(P.count), area = new Float32Array(P.count / 3), clusters = [];   // world normal + area per triangle
+    const wn = new Float32Array(P.count), area = new Float32Array(P.count / 3), clusters = [], sliver = [];   // world normal + area per triangle
     for (let i = 0; i < P.count; i += 3) {
       a.fromBufferAttribute(P, i).applyMatrix4(M); b.fromBufferAttribute(P, i + 1).applyMatrix4(M); c.fromBufferAttribute(P, i + 2).applyMatrix4(M);
       f.subVectors(c, b).cross(a.sub(b)); const ar = f.length() / 2; if (ar < 1e-12) continue; f.divideScalar(ar * 2);
+      if (ar < 2e-6) { sliver.push(i); continue; }                 // 10-30: hair-thin triangles along the roof skin's old cut lines: given the nearest panel's normal below, never their own
       s0.fromBufferAttribute(N, i).add(b.fromBufferAttribute(N, i + 1)).add(c.fromBufferAttribute(N, i + 2)).applyMatrix3(nm);
       if (f.dot(s0) < 0) f.negate();                   // keep the side the model's own normals face
       wn[i] = f.x; wn[i + 1] = f.y; wn[i + 2] = f.z; area[i / 3] = ar;
@@ -315,6 +319,12 @@ function start(sec) {
       cl.n.addScaledVector(f, ar); cl.a += ar; cl.d.copy(cl.n).normalize();
     }
     const panels = clusters.filter(k => k.a >= PANEL_M2);
+    for (const i of sliver) {                            // a sliver takes the normal of the panel nearest its own (any angle), or the model's if no panel
+      if (!panels.length) break;
+      a.fromBufferAttribute(N, i).add(b.fromBufferAttribute(N, i + 1)).add(c.fromBufferAttribute(N, i + 2)).applyMatrix3(nm).normalize();
+      let best = panels[0], bd = -2; for (const k of panels) { const d = k.d.dot(a); if (d > bd) { bd = d; best = k; } }
+      f.copy(best.d).applyMatrix3(inv).normalize(); for (let j = 0; j < 3; j++) N.setXYZ(i + j, f.x, f.y, f.z);
+    }
     for (let i = 0; i < P.count; i += 3) {
       if (!area[i / 3]) continue;
       f.set(wn[i], wn[i + 1], wn[i + 2]);
