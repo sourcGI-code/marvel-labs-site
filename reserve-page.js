@@ -1,6 +1,6 @@
 // Reserve page rail (Claude, 2026-10-29). Owner 10-29: the 3D trailers on their own page, laid out like Tesla's
 // Cybertruck reservation: the stage on the left with three numbers under it, on the right the size, the plan,
-// "Due today $100", name / email / phone, the legal line and one button. Settings: reserve-config.js.
+// "Preorder today $100", name / email / phone, the legal line and one button. Settings: reserve-config.js.
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 
@@ -28,7 +28,7 @@ function start(sec) {
   }
   function summary() {
     const s = size(), buy = plan() === 'buy';
-    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy : '$0 upfront'}`;
+    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy : '$100 now'}`;
   }
 
   // a size card: hover (mouse) or choose it, and the stage goes to that trailer
@@ -75,7 +75,7 @@ function start(sec) {
     const subject = `Reservation: ${s} ft Marvel Labs trailer (${pl}) · $100 refundable deposit`;
     const body = [`Hi Marvel Labs,`, ``, `I'd like to reserve a ${s} ft autonomous microfactory trailer with the $100 fully refundable deposit.`, ``,
       `Size: ${s} ft (${SPEC[s].width} wide · ${SPEC[s].factory} factory · ${SPEC[s].cargo} rear cargo)`,
-      `Plan: ${pl} (${pl === 'Buy' ? SPEC[s].buy + ' · 75% profit share' : '$0 upfront · 25% profit share'})`, ``,
+      `Plan: ${pl} (${pl === 'Buy' ? SPEC[s].buy + ' · 75% profit share' : '$100 now · 25% profit share'})`, ``,
       `Name: ${d.get('name')}`, `Email: ${d.get('email')}`, `Phone: ${d.get('phone')}`, ``, `Please send my $100 deposit link.`].join('\n');
     location.href = `mailto:${C.email}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
     form.classList.add('is-sent');
