@@ -16,14 +16,14 @@
 <link rel="preload" href="assets/marvel-v4/opening-film/mobile-poster.webp?v=hqgloss1" as="image" media="(max-width:760px) and (prefers-reduced-motion:no-preference), (orientation:portrait) and (prefers-reduced-motion:no-preference)">
 <script>try{const p=new URLSearchParams(location.search).get('palette');if(['charcoal','ivory','burgundy','midnight'].includes(p))document.documentElement.dataset.palette=p;}catch{}</script>
 <script>if((!location.hash||location.hash==='#top')&&!new URLSearchParams(location.search).has('edit')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const root=document.documentElement,aspect=innerWidth/innerHeight,film=innerWidth<=760?.5:1.6;root.style.setProperty('--arrival-film-scale',Math.max(aspect/film,film/aspect));}</script>
-<script type="module" src="atlas-hqworld4.js?v=v4-1030"></script>
+<script type="module" src="atlas-hqworld4.js?v=v4-1030b"></script>
 <link rel="stylesheet" href="company-links.css?v=1">
 <link rel="stylesheet" href="text-selection.css?v=1">
 <style>.tour-chapters button{font:inherit;color:inherit;background:none;border:0;padding:4px 2px;cursor:pointer}.tour-chapters button:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style>
 <link rel="stylesheet" href="route-quotes.css?v=2">
 <link rel="stylesheet" href="delivery-route.css?v=2">
 <link rel="stylesheet" href="popout.css?v=32">
-<link rel="stylesheet" href="crew-app.css?v=v4-1030">
+<link rel="stylesheet" href="crew-app.css?v=v4-1030b">
 <link rel="stylesheet" href="true-world-hqworld4.css?v=hqworld5-intro3072-30">
 <link rel="stylesheet" href="crew-quote-phone.css?v=2">
 
@@ -71,7 +71,7 @@
 </section>
 <section id="sizes" class="trailer-offer section-pad" data-scroll-length="250" aria-labelledby="sizes-title">
  <div class="offer-section-top"><p class="eyebrow">03 / START WITH THE SPECS</p><span class="offer-preview-label">TWO SIZES · BUY OR LEASE</span></div>
- <div class="offer-title-row"><h2 id="sizes-title">Two sizes.<br><em>Same 6 ft factory.</em></h2><p>Pick the size by what you haul: a 10 ft or 14 ft cargo bay behind the same 6 ft enclosed factory. Then buy it, or lease it with $0 upfront.</p></div>
+ <div class="offer-title-row"><h2 id="sizes-title">Two sizes.<br><em>Same 6 ft factory.</em></h2></div>
  <div class="size-options">
   <article class="size-option" aria-labelledby="size-16-title"><header><h3 id="size-16-title">16 <span class="size-unit">ft</span></h3><p>Compact and 7 ft wide.<br>Same factory, same sinks.</p></header><dl class="size-specs"><div><dt>Trailer width</dt><dd>7 ft</dd></div><div><dt>Factory length</dt><dd>6 ft</dd></div><div><dt>Rear cargo length</dt><dd>10 ft</dd></div></dl><p class="size-plan-summary"><strong>Buy $44,999</strong> · 75% profit share<br><strong>Lease $0 upfront</strong> · 25% profit share</p><a class="offer-button" href="trailer-16.html">Reserve the 16 ft <span>↗</span></a></article>
   <article class="size-option" aria-labelledby="size-20-title"><header><h3 id="size-20-title">20 <span class="size-unit">ft</span></h3><p>8.5 ft wide, 14 ft of cargo.<br>Room for more mowers.</p></header><dl class="size-specs"><div><dt>Trailer width</dt><dd>8.5 ft</dd></div><div><dt>Factory length</dt><dd>6 ft</dd></div><div><dt>Rear cargo length</dt><dd>14 ft</dd></div></dl><p class="size-plan-summary"><strong>Buy $49,999.99</strong> · 75% profit share<br><strong>Lease $0 upfront</strong> · 25% profit share</p><a class="offer-button" href="trailer-20.html">Reserve the 20 ft <span>↗</span></a></article>
@@ -81,31 +81,26 @@
 
 
 <section id="app" class="crew-app section-pad" data-scroll-length="300" aria-labelledby="app-title" data-film="assets/crew-app-v2" data-revision="crew4">
-  <div class="crew-intro">
-   <p class="eyebrow">04 / MARVEL CREW</p>
-   <h2 id="app-title">Your trailer.<br><em>In your pocket.</em></h2>
-   <p class="crew-lead">Marvel Crew is the app that ships with the trailer. One phone runs the machine&rsquo;s day: what it is making, what is ready in storage, the quotes that bring in the work, and the money.</p>
-   <p class="crew-links"><a class="crew-try" href="https://sourcgi-code.github.io/marvel-labs-site/crew/trailer-app/" target="_blank" rel="noopener">Try the app <span>&nearr;</span></a><a class="crew-sample" href="https://sourcgi-code.github.io/marvel-labs-site/versions.html#app-versions">Earlier app sample</a></p>
-  </div>
-  <div class="crew-stage">
-   <ol class="crew-beats">
-    <li data-at="0"><button type="button"><span>01</span><b>Trailer status + production</b><small>Battery, the light, packages in storage, and the cycle running inside: prepare, press, cure, check, pack.</small></button></li>
-    <li data-at="6"><button type="button"><span>02</span><b>Storage camera</b><small>The side-storage and hopper cameras, with the packed cartons counted as they arrive.</small></button></li>
-    <li data-at="12"><button type="button"><span>03</span><b>Auto quotes</b><small>Type the lawn size and the distance. Your rates and rules price the visit line by line, with the total.</small></button></li>
-    <li data-at="18"><button type="button"><span>04</span><b>Map, schedule + earnings</b><small>Every trailer on the map, the week&rsquo;s visits with clock-in, and what the work and the trailer paid.</small></button></li>
-   </ol>
-   <div class="crew-film" aria-hidden="true"><video muted playsinline preload="metadata" disablepictureinpicture></video></div>
-  </div>
-  <div class="crew-foot">
-   <a class="offer-button" href="reserve.html">Reserve your trailer <span>&searr;</span></a>
-   <p class="crew-note">App screens shown with example data. The demo runs in your browser with simulated trailer, camera and fleet data.</p>
-  </div>
- </section>
+ <div class="crew-film" aria-hidden="true"><video muted playsinline preload="metadata" disablepictureinpicture></video></div>
+ <div class="crew-copy">
+  <p class="eyebrow">04 / MARVEL CREW</p>
+  <h2 id="app-title">Your trailer.<br><em>In your pocket.</em></h2>
+  <p class="crew-lead">Marvel Crew is the app for your trailer and your crews, launching with the trailer.</p>
+  <ol class="crew-beats">
+   <li data-at="0"><button type="button"><span>01</span><b>Trailer status + production</b><small>The trailer light, battery and the sink being made.</small></button></li>
+   <li data-at="6"><button type="button"><span>02</span><b>Live storage camera</b><small>The finished cartons behind the side door, live.</small></button></li>
+   <li data-at="12"><button type="button"><span>03</span><b>Auto quotes</b><small>Every quote shows the customer their yard before and after.</small></button></li>
+   <li data-at="18"><button type="button"><span>04</span><b>Map, schedule + money</b><small>Every crew and yard, the work calendar and what you made.</small></button></li>
+  </ol>
+  <a class="offer-button" href="reserve.html">Reserve your trailer <span>&searr;</span></a>
+  <p class="crew-note">App screens shown with example data.<a href="https://sourcgi-code.github.io/marvel-labs-site/crew/trailer-app/" target="_blank" rel="noopener">Try the app <span>&nearr;</span></a></p>
+ </div>
+</section>
 </main>
 <footer class="site-footer"><a href="#top" class="footer-wordmark">MARVEL LABS<span>↗</span></a><div class="footer-meta"><span>© 2026 MARVEL LABS INC.</span><span>AUTONOMOUS MICROFACTORY TRAILERS</span><a href="privacy.html">Privacy</a><a href="credits.html">Credits</a></div></footer>
 
 <noscript><p class="noscript-note">The photos and contact links are available without JavaScript. Enable JavaScript for the trailer walkthrough and interactive navigation.</p></noscript>
-<script type="module" src="crew-app.js?v=v4-1030"></script>
+<script type="module" src="crew-app.js?v=v4-1030b"></script>
 <script type="module" src="editor-runtime.js?v=12"></script>
 </body>
 </html>

@@ -57,6 +57,9 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   const id=section.id;
   if(id==='top')return [{start:0,end:.25,film:true},{start:.25,end:DELIVERY_END,film:true}];
   if(id==='inside'){const s=tourStarts();return s.map((p,i)=>({start:p,end:i+1<s.length?s[i+1]:1,film:true}));}
+  // 10-30 owner: "when I scroll it shows me the 1 through 4 ... instead of just playing it": the Marvel Crew section has one
+  // stop per feature; a forward scroll glides to the next stop and crew-app.js plays that feature's part of the film.
+  if(id==='app'){const n=section.querySelectorAll('.crew-beats li').length||1,stops=[...Array(n)].map((_,i)=>.15+i*.85/n);return stops.map((p,i)=>({start:p,end:i+1<n?stops[i+1]:1,film:false}));}
   const d=displays.find(x=>x.section===id);
   return [{start:d?d.at:.15,end:1,film:false}];
  }
@@ -273,8 +276,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  const rising=()=>{const d=recent.slice(-3).map(([,v])=>v);return d.length===3&&d[2]>d[1]&&d[1]>d[0]&&d[2]>d[0]*1.15;};
  // The restored specs/story can be taller than a short screen. Let their
  // own content scroll before interpreting the next gesture as the next section.
- // 10-30: the Marvel Crew section (#app) scrolls the same way, so its four features can be read through (owner: "scroll through this section").
- const scrollableSection=(target,active=false)=>target.closest?.('#sizes,#story,#app')||(active&&['sizes','story','app'].includes(body.dataset.activeScene)?document.getElementById(body.dataset.activeScene):null);
+ const scrollableSection=(target,active=false)=>target.closest?.('#sizes,#story')||(active&&['sizes','story'].includes(body.dataset.activeScene)?document.getElementById(body.dataset.activeScene):null);
  const scrollsWithin=(target,delta,active=false)=>{
   const section=scrollableSection(target,active);if(!section||!delta)return false;
   const remaining=section.scrollHeight-section.clientHeight;
