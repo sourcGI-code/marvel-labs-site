@@ -33,7 +33,7 @@
  #app .crew-note{margin-top:10px}
  #app .crew-note a{display:block;margin:6px 0 0;width:max-content}
  #app .crew-film{position:relative;inset:auto;order:2;flex:1 1 auto;min-height:240px;margin-top:6px}
- #app .crew-film video{object-position:50% 0%}
+ #app .crew-film video{object-position:50% 85%}       /* the phone sits low in the mobile film */
  #app .crew-film::after{background:linear-gradient(180deg,rgba(10,14,16,0) 78%,#0a0e10 100%)}
 }
 @media (prefers-reduced-motion:reduce){#app .crew-beats button{opacity:1}}

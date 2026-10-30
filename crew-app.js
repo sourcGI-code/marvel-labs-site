@@ -10,6 +10,7 @@ if (section) {
   const video = section.querySelector('.crew-film video');
   const beats = [...section.querySelectorAll('.crew-beats li')];
   const starts = beats.map(li => Number(li.dataset.at));
+  const HOLD_BEFORE = .2;                               // the film cuts to the next screen exactly at the next data-at: hold just before it
   const ENTER = .15;                                    // beat-scroll: a section's first stop is 15% into its scroll (after the hand-off)
   const stops = beats.map((_, i) => ENTER + i * (1 - ENTER) / beats.length);   // the stops beat-scroll glides to; keep both in step
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
@@ -26,7 +27,7 @@ if (section) {
   function loop() { hold(); frame = video.paused ? 0 : requestAnimationFrame(loop); }
   function play(i) {
     if (reduced.matches) return;
-    const from = starts[i]; stopAt = i + 1 < starts.length ? starts[i + 1] : (video.duration || Infinity);
+    const from = starts[i]; stopAt = i + 1 < starts.length ? starts[i + 1] - HOLD_BEFORE : (video.duration || Infinity);
     const begin = () => { try { video.currentTime = from; } catch {} video.play().then(() => { if (!frame) frame = requestAnimationFrame(loop); }).catch(() => {}); };
     if (video.readyState >= 1) begin(); else video.addEventListener('loadedmetadata', begin, {once: true});
   }
