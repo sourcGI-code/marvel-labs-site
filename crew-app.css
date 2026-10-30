@@ -22,16 +22,18 @@
 #app .crew-note a span{color:var(--accent,#4dd8e8)}
 #app .crew-note a:is(:hover,:focus-visible){color:var(--accent,#4dd8e8);border-color:var(--accent,#4dd8e8)}
 @media (max-width:760px),(max-width:1024px) and (orientation:portrait){
- #app.crew-app{align-items:flex-start;padding-top:96px}
- #app .crew-film video{object-position:50% 100%}
- #app .crew-film::after{background:linear-gradient(180deg,#0a0e10 0%,rgba(10,14,16,.9) 30%,rgba(10,14,16,0) 46%)}
- #app .crew-copy{width:100%}
+ /* a phone: the copy first, the film below it in the rest of the screen (no copy over the phone) */
+ #app.crew-app{flex-direction:column;align-items:stretch;padding-top:96px;padding-bottom:0;gap:8px}
+ #app .crew-copy{order:1;width:100%}
  #app .crew-copy h2{font-size:clamp(34px,9vw,48px);margin:10px 0}
  #app .crew-lead{font-size:14px;margin-bottom:12px}
  #app .crew-beats{margin-bottom:14px}
- #app .crew-beats li:not(.is-current){display:none}                 /* a phone shows the feature the swipe reached */
+ #app .crew-beats li:not(.is-current){display:none}                 /* the feature the swipe reached */
  #app:not(.is-playing) .crew-beats li:first-child{display:block}
  #app .crew-note{margin-top:10px}
  #app .crew-note a{display:block;margin:6px 0 0;width:max-content}
+ #app .crew-film{position:relative;inset:auto;order:2;flex:1 1 auto;min-height:240px;margin-top:6px}
+ #app .crew-film video{object-position:50% 0%}
+ #app .crew-film::after{background:linear-gradient(180deg,rgba(10,14,16,0) 78%,#0a0e10 100%)}
 }
 @media (prefers-reduced-motion:reduce){#app .crew-beats button{opacity:1}}
