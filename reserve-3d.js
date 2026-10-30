@@ -42,7 +42,9 @@ function start(sec) {
   //   a 'showroom': dark-grey cyc, one big soft overhead box and two soft keys: broad, soft highlights, the body reads as a shape
   //   b 'daylight': sky dome + a soft sun over grey ground: the roof mirrors the sky, a horizon line runs along the sides
   //   c 'reveal':   black room, slim hard rims, one roof line, cyan at stage height: edges only, deep black body
-  const LIGHT = sec.dataset.light || (location.search.match(/[?&]light=(old|[abc])\b/) || [])[1] || '';
+  // 13:55 owner: "I think 3 should be the best, make that on live" -> the outdoor lot is the reserve page's rig; the film
+  // studio stays at ?light=film, the morning rig at ?light=old.
+  const LIGHT = sec.dataset.light || (location.search.match(/[?&]light=(old|film|white|reveal|outdoor)\b/) || [])[1] || 'outdoor';
   const PRESET = {
     // '' (12:40, owner: "same brightness and glossiness" as the films, "this is our showroom"): the films' studio. The paint
     // is already the film's (stage_gloss_blender.py BODY); what differed was the light. Cycles saw only the lamps the
@@ -51,11 +53,16 @@ function start(sec) {
     // no diffuse fill, so the body reads black and every bright thing in the mirror reads crisp. Here: no camera light
     // (it was a grey sheen over everything), a whisper of hemisphere for the tyres and chassis, the same lamps as sharp
     // emissive panels in the reflection map (no PMREM blur), the overhead pool only over the chosen trailer.
-    '': {exposure: 1.0, hemi: [0xcfe3ea, 0x0a0e10, .12], head: 0, frame: [3.5, 8.5, 3.2], bloom: [.4, .5, 2.0], floor: .12, sigma: 0, vinyl: .05},
+    film: {exposure: 1.0, hemi: [0xcfe3ea, 0x0a0e10, .12], head: 0, frame: [3.5, 8.5, 3.2], bloom: [.4, .5, 2.0], floor: .12, sigma: 0, vinyl: .05},
     old: {exposure: 1.12, hemi: [0xcfe3ea, 0x0a0e10, .35], head: 1.5, frame: [5, 8.5, 3.2], bloom: [.45, .5, 1.6], floor: .25},
-    a:  {exposure: 1.15, hemi: [0xe6ecef, 0x1a1e20, .3], head: .3, frame: [2.5, 10, 4], bloom: [.35, .5, 2.2], floor: .08},
-    b:  {exposure: 1.0, hemi: [0x9fc0f0, 0x3b3a36, .45], head: 0, frame: [1.2, 8.5, 3.2], bloom: [.35, .5, 2.2], floor: .08},
-    c:  {exposure: 1.1, hemi: [0x9fd8e4, 0x04070a, .1], head: 0, frame: [5, 9, .9], bloom: [.5, .55, 1.8], floor: .12},
+    // 13:30 owner: "I told you to make 3 completely different ones so we can choose": three worlds, not three lamp placements.
+    // Each sets the room, floor and colour as well as the light.
+    white:   {exposure: 1.0, hemi: [0xffffff, 0x9aa0a4, .9], head: 0, frame: [1.5, 8.5, 3.2], bloom: [.25, .5, 2.6], floor: .5,
+              bg: 0xe6e9eb, fog: [16, 44], floorColor: 0xd3d7da, floorRough: .42, deck: 0xb6bdc1, vinyl: .02},
+    reveal:  {exposure: 1.1, hemi: [0x1b7a88, 0x000000, .3], head: 0, frame: [1.2, 8.5, 3.2], bloom: [.65, .55, 1.3], floor: .18,
+              bg: 0x000000, fog: [18, 46], floorColor: 0x040505, floorRough: .5, deck: 0x070909, vinyl: .08, sigma: 0},
+    outdoor: {exposure: .95, hemi: [0x9fb7e0, 0x6b5a48, .9], head: 0, frame: [0, 8.5, 3.2], bloom: [.25, .5, 2.6], floor: .5,
+              bg: 0xc9b9a3, fog: [30, 90], floorColor: 0x2b2a28, floorRough: .85, deck: 0x3a3936, sky: true, vinyl: .02},
   }[LIGHT];
 
   const renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
@@ -66,13 +73,13 @@ function start(sec) {
   renderer.shadowMap.enabled = false;                // 10-30: no punctual light is left to cast one (see the lights below)
   host.append(renderer.domElement);
   const scene = new THREE.Scene();
-  scene.background = new THREE.Color(BG); scene.fog = new THREE.Fog(BG, 18, 46);
+  scene.background = new THREE.Color(PRESET.bg ?? BG); scene.fog = new THREE.Fog(PRESET.bg ?? BG, ...(PRESET.fog || [18, 46]));
   const camera = new THREE.PerspectiveCamera(30, 1.6, .1, 200);
 
   // ---- the studio: dark floor that fades into the page, the round stage with its cyan underglow, the film's light
-  const floor = new THREE.Mesh(new THREE.CircleGeometry(70, 96), new THREE.MeshStandardMaterial({color: 0x090b0c, roughness: .55, envMapIntensity: PRESET.floor}));
+  const floor = new THREE.Mesh(new THREE.CircleGeometry(70, 96), new THREE.MeshStandardMaterial({color: PRESET.floorColor ?? 0x090b0c, roughness: PRESET.floorRough ?? .55, envMapIntensity: PRESET.floor}));
   floor.rotation.x = -Math.PI / 2; floor.receiveShadow = true; scene.add(floor);
-  const deckMat = new THREE.MeshPhysicalMaterial({color: 0x0c0f10, roughness: .5, metalness: 0, clearcoat: .12, clearcoatRoughness: .35, envMapIntensity: .3});
+  const deckMat = new THREE.MeshPhysicalMaterial({color: PRESET.deck ?? 0x0c0f10, roughness: .5, metalness: 0, clearcoat: .12, clearcoatRoughness: .35, envMapIntensity: .3});
   function stage(r) {
     const g = new THREE.Group();
     const deck = new THREE.Mesh(new THREE.CylinderGeometry(r, r, .16, 160), deckMat); deck.position.y = .05 + .08;
@@ -154,29 +161,27 @@ function start(sec) {
   }
   function buildEnv(kind) {
     const env = new THREE.Scene();
-    if (kind === 'a') {                                // showroom
-      // the surround is one smooth gradient: dark floor, brightest just above the horizon (1.6, light grey after AgX, never
-      // white), fading to a dark zenith. A flat roof or side mirrors it as a gradient from any orbit angle, never as a sheet
-      // (10-30 owner: "at some views the light becomes blinding"). Small HDR keys add sparkle along the edges only.
-      env.add(gradientSphere(40, [[-1, [.015, .017, .019]], [-.03, [.03, .033, .036]], [0, [.9, .93, .96]], [.12, [1.6, 1.63, 1.66]], [.3, [.9, .92, .94]], [.6, [.25, .26, .27]], [1, [.08, .085, .09]]]));
-      env.add(softbox(20, 10, 2.4, [0, 15, 0], [0, 0, 0]));               // the overhead box: the roof from above (2.4: brighter read white)
-      env.add(softbox(2.5, 2.5, 9, [-20, 13, 14], [0, 1, 0]));            // a small hot key, front-left high: a sparkle on the nose and the top edges
-      env.add(softbox(2.5, 2.5, 6, [18, 11, -16], [0, 1, 0]));            // and one opposite
-    } else if (kind === 'b') {                         // daylight
-      env.add(gradientSphere(50, [[-1, [.07, .068, .066]], [-.01, [.12, .117, .114]], [0, [.75, .74, .72]], [.1, [.6, .65, .75]], [.4, [.2, .29, .48]], [1, [.08, .13, .3]]]));
-      env.add(softbox(3, 3, 30, [-18, 26, 14], [0, 0, 0], [1, .96, .88]));   // the sun: small and hot, so its mirror image is a glint: high, front-left, soft-edged so its mirror image is a glint, not a sheet
-    } else {                                           // reveal
-      env.add(gradientSphere(60, [[-1, [.003, .004, .005]], [1, [.003, .004, .005]]]));   // black room (the rings must sit inside it)
-      env.add(ring(30, 12, 26, 1.1));                                      // a faint soft band at shoulder height: the sides keep their shape
-      env.add(ring(30, 17.6, 18.6, 6));                                    // one thin LED line all round: a crisp line along every side, a band (not a sheet) on a roof at the matching angle
-      env.add(ring(30, 46.5, 47.5, 4.5));                                  // a second, higher: the roof's edges and the top chamfer
-      env.add(ring(30, 2, 4.5, 4, [.3, .85, .91]));                        // cyan at stage height: the stage glow caught along the lower body
-      env.add(softbox(18, .5, 6, [0, 12.5, 0], [0, 0, 0]));                 // one roof line down the length
+    if (kind === 'white') {                            // a white cyclorama studio: black paint on white, the Tesla-configurator look
+      // the walls the paint mirrors are dimmer than the backdrop it stands in front of, so the body stays charcoal on white
+      env.add(gradientSphere(40, [[-1, [.3, .31, .32]], [-.02, [.4, .41, .42]], [0, [.5, .51, .52]], [.4, [.56, .57, .58]], [1, [.62, .63, .64]]]));
+      env.add(softbox(22, 11, 3.2, [0, 15, 0], [0, 0, 0]));               // a big soft ceiling box: the roof goes bright white
+      env.add(softbox(8, 5, 2.2, [-18, 8, 10], [0, 1, 0])); env.add(softbox(8, 5, 1.8, [18, 7, -10], [0, 1, 0]));   // two soft side boxes
+    } else if (kind === 'reveal') {                    // a black room, teal from behind, one warm key in front: coloured edges on a black body
+      env.add(gradientSphere(60, [[-1, [.002, .003, .004]], [1, [.002, .003, .004]]]));
+      env.add(softbox(12, 5, 7, [-9, 3.5, -14], [0, 1.5, 0], [.16, .72, .84]));   // teal, behind left
+      env.add(softbox(12, 5, 5.5, [9, 3.5, -14], [0, 1.5, 0], [.16, .72, .84]));  // teal, behind right
+      env.add(softbox(3, 3, 12, [-14, 9, 11], [0, 1.2, 0], [1, .78, .55]));       // warm key, front left, high
+      env.add(softbox(14, .5, 6, [0, 12, 2], [0, 0, 0], [.7, .9, 1]));            // one cool roof line
+      env.add(softbox(16, .6, 3, [0, .6, 12], [0, .8, 0], [.3, .85, .91]));       // cyan along the lower body from the front, the stage glow
+    } else {                                           // outdoors: a low warm sun, blue sky, asphalt ground; the sky is the backdrop too
+      env.add(gradientSphere(60, [[-1, [.11, .105, .1]], [-.01, [.17, .165, .16]], [0, [1.5, 1.2, .9]], [.06, [1.2, 1.05, .9]], [.2, [.7, .8, 1.0]], [.6, [.45, .6, .95]], [1, [.35, .5, .9]]]));
+      env.add(softbox(3, 3, 60, [-24, 11, 16], [0, 0, 0], [1, .82, .6]));         // the sun, 20 degrees up, front-left: long golden highlights
+      env.add(softbox(40, 6, .9, [24, 7, -20], [0, 2, 0], [.75, .82, 1]));        // open sky on the far side: a cool fill on the shade side
     }
     return env;
   }
-  if (LIGHT && LIGHT !== 'old') scene.environment = pmrem.fromScene(buildEnv(LIGHT), .02).texture;
-  else if (!LIGHT) {
+  if (LIGHT !== 'old' && LIGHT !== 'film') { scene.environment = pmrem.fromScene(buildEnv(LIGHT), PRESET.sigma ?? .02).texture; if (PRESET.sky) { scene.background = scene.environment; scene.backgroundBlurriness = .04; } }
+  else if (LIGHT === 'film') {
     // The films' lamps, placed round the stage as the paint sees them (three.js metres: x along the trailers, y up).
     // Positions are the film rigs' offsets from the hero trailer (render-opening-film.py tracking studio, intro-quality-v4
     // separation strips, intro-quality-v5 keys/rims/streak); brightness is each lamp's radiance, watts / (area * pi), so

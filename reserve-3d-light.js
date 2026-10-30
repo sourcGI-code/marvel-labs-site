@@ -42,7 +42,9 @@ function start(sec) {
   //   a 'showroom': dark-grey cyc, one big soft overhead box and two soft keys: broad, soft highlights, the body reads as a shape
   //   b 'daylight': sky dome + a soft sun over grey ground: the roof mirrors the sky, a horizon line runs along the sides
   //   c 'reveal':   black room, slim hard rims, one roof line, cyan at stage height: edges only, deep black body
-  const LIGHT = sec.dataset.light || (location.search.match(/[?&]light=(old|white|reveal|outdoor)\b/) || [])[1] || '';
+  // 13:55 owner: "I think 3 should be the best, make that on live" -> the outdoor lot is the reserve page's rig; the film
+  // studio stays at ?light=film, the morning rig at ?light=old.
+  const LIGHT = sec.dataset.light || (location.search.match(/[?&]light=(old|film|white|reveal|outdoor)\b/) || [])[1] || 'outdoor';
   const PRESET = {
     // '' (12:40, owner: "same brightness and glossiness" as the films, "this is our showroom"): the films' studio. The paint
     // is already the film's (stage_gloss_blender.py BODY); what differed was the light. Cycles saw only the lamps the
@@ -51,7 +53,7 @@ function start(sec) {
     // no diffuse fill, so the body reads black and every bright thing in the mirror reads crisp. Here: no camera light
     // (it was a grey sheen over everything), a whisper of hemisphere for the tyres and chassis, the same lamps as sharp
     // emissive panels in the reflection map (no PMREM blur), the overhead pool only over the chosen trailer.
-    '': {exposure: 1.0, hemi: [0xcfe3ea, 0x0a0e10, .12], head: 0, frame: [3.5, 8.5, 3.2], bloom: [.4, .5, 2.0], floor: .12, sigma: 0, vinyl: .05},
+    film: {exposure: 1.0, hemi: [0xcfe3ea, 0x0a0e10, .12], head: 0, frame: [3.5, 8.5, 3.2], bloom: [.4, .5, 2.0], floor: .12, sigma: 0, vinyl: .05},
     old: {exposure: 1.12, hemi: [0xcfe3ea, 0x0a0e10, .35], head: 1.5, frame: [5, 8.5, 3.2], bloom: [.45, .5, 1.6], floor: .25},
     // 13:30 owner: "I told you to make 3 completely different ones so we can choose": three worlds, not three lamp placements.
     // Each sets the room, floor and colour as well as the light.
@@ -178,8 +180,8 @@ function start(sec) {
     }
     return env;
   }
-  if (LIGHT && LIGHT !== 'old') { scene.environment = pmrem.fromScene(buildEnv(LIGHT), PRESET.sigma ?? .02).texture; if (PRESET.sky) { scene.background = scene.environment; scene.backgroundBlurriness = .04; } }
-  else if (!LIGHT) {
+  if (LIGHT !== 'old' && LIGHT !== 'film') { scene.environment = pmrem.fromScene(buildEnv(LIGHT), PRESET.sigma ?? .02).texture; if (PRESET.sky) { scene.background = scene.environment; scene.backgroundBlurriness = .04; } }
+  else if (LIGHT === 'film') {
     // The films' lamps, placed round the stage as the paint sees them (three.js metres: x along the trailers, y up).
     // Positions are the film rigs' offsets from the hero trailer (render-opening-film.py tracking studio, intro-quality-v4
     // separation strips, intro-quality-v5 keys/rims/streak); brightness is each lamp's radiance, watts / (area * pi), so
