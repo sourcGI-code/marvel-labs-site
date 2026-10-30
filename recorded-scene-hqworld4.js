@@ -120,7 +120,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   if(next===kind)return;kind=next;filmSource=sceneFilmSource(name,kind);revision=filmSource.revision;const current=++generation;unplace();
   controller?.abort();controller=new AbortController();loading++;shown=false;failed=false;metadata=null;stillFile=pendingStill='';updateVisibility();
   if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}localPending=false;
-  const base=`${filmSource.base}/${kind}`;mediaURL=`${filmSource.mediaBase||filmSource.base}/${filmSource.videoFile||kind+'.mp4'}?v=${revision}`;   // 10-29: the movie may live off GitHub Pages (mediaBase); json + stills stay herevideo.dataset.filmQuality=filmSource.quality||'original';
+  const base=`${filmSource.base}/${kind}`;mediaURL=`${filmSource.mediaBase||filmSource.base}/${filmSource.videoFile||(document.body.dataset.filmVariant?kind+'-'+document.body.dataset.filmVariant+'.mp4':kind+'.mp4')}?v=${revision}`;   // 10-30: a test page may ask for a variant of the film (body data-film-variant, e.g. 'static' = still phone shots)   // 10-29: the movie may live off GitHub Pages (mediaBase); json + stills stay herevideo.dataset.filmQuality=filmSource.quality||'original';
   // A deep link waits for its actual frame, never an unrelated first-frame still.
   video.removeAttribute('poster');video.pause();
   if(reduced.matches)video.removeAttribute('src');else video.src=mediaURL;
