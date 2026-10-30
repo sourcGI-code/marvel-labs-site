@@ -1,6 +1,6 @@
 import {createFleetLabelMotion} from './fleet-label-motion.js?v=2-nodip';
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=hqworld5-intro3072-30';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=v4-1030';
 import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.js?v=hqworld5-intro3072-30';
 import {loadFilmSources} from './film-sources-hqworld4.js?v=hqworld5-intro3072-30';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';
@@ -85,15 +85,15 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
     // Recorded films: the poster stays until the opening has a decodable frame (phones that refused autoplay).
     liveMode='opening';if(!recorded||reduced.matches||film.ready)host.classList.add('scene-ready');
    }
-   copy('THE AUTONOMOUS MICROFACTORY TRAILER','Your next trailer.<br><em>A factory inside.</em>','Your mowers ride in the back. Up front, an enclosed factory turns the clippings you collect into sinks, and you earn a share of every one sold.');
+   copy('THE AUTONOMOUS MICROFACTORY TRAILER','Your next trailer.<br><em>A sink factory inside.</em>','Mowers in the back, a 6 ft enclosed factory up front. It turns the clippings you bag into sinks while you mow, and you earn a share of every one sold.');
    $('platform-story').style.opacity='1';
    fleetLabels.update({inFleet:false,frameReady:false});$('capacity-summary').hidden=true;
   }else{
    opening?.draw(1,false);
    const progress=t;
    state=recorded?recorded.draw(progress):cargo.draw(progress*(540/1079),canvas.clientWidth,canvas.clientHeight);liveMode='cargo';host.classList.add('scene-ready');
-   if(t<11.52/18)copy('THE 16 FT MODEL','A 6 ft factory.<br><em>A smaller trailer.</em>','The 16 ft carries the same 6 ft factory with a 10 ft equipment bay. Same factory, a smaller rig to tow.');
-   else copy('TWO SIZES · 6 FT FACTORY','Choose your<br><em>trailer size.</em>','16 ft or 20 ft. Both carry the same enclosed factory, so choose by the equipment you haul.');
+   if(t<11.52/18)copy('THE 16 FT MODEL · 7 FT WIDE','Same 6 ft factory.<br><em>Smaller trailer.</em>','The 16 ft carries the same 6 ft factory with a 10 ft cargo bay for your mowers. A smaller rig to tow, the same sinks out the side.');
+   else copy('TWO SIZES · ONE 6 FT FACTORY','Choose by<br><em>what you haul.</em>','16 ft with a 10 ft cargo bay, or 20 ft with 14 ft. The 6 ft factory is the same in both, so choose by the equipment you tow.');
    $('platform-story').style.opacity='1';
    host.closest('.pin').dataset.deliveryPhase=t<11.52/18?'arrival':'fleet';
    const nativeLabels=recorded?.video.dataset.timelinePlaying==='true'&&!recorded.video.seeking&&recorded.video.readyState>=2;
@@ -111,7 +111,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
    $('cargo-loadout').textContent='ZERO-TURN · PUSH MOWER · 3 WEED TRIMMERS';
   }
   $('hero-count').textContent=continuation&&t>=15/18?'02 / 02':'01 / 02';
-  $('hero-step').textContent=continuation?(t>=14.4/18?'THE TWO SIZES':'THE DELIVERY'):'THE ARRIVAL';
+  $('hero-step').textContent=continuation?(t>=14.4/18?'TWO SIZES · ONE FACTORY':'THE 16 FT ARRIVES'):'THE 20 FT ARRIVES';
   $('platform-invitation').textContent=auto?'THE PLATFORM ARRIVES':p<.25?'SCROLL TO REVEAL ↓':'SCROLL TO CONTINUE ↓';
   previousP=p;
  }

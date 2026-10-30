@@ -102,8 +102,8 @@ export async function createFieldWorkflow(canvas){
   if(render&&!frameReused){daylight.restore();grounded.render(scene,camera);webglFrames++;renderPose=nextRenderPose;}
   let annotation=null;
   if(index===0&&p>.065)annotation={title:'YOUR EVERYDAY EQUIPMENT',detail:'Zero-turn · push mower · trimmers',...project(workingRoute.mower,[0,1,0])};
-  if(index===4)annotation=working.step==='collect'?{title:'KEEP THE CLIPPINGS',detail:'Bagged clippings → factory feedstock',...project(workingRoute.collection,[0,.65,0])}:{title:'WORK THE JOB',detail:'Illustrative operator workflow',...project(workingRoute.mower,[0,1,0])};
-  if(index===5&&p>=.785)annotation={title:'20 × 20 INCH SINK',detail:'Enclosed front factory',...project(large.root,finishing.portPoint)};
+  if(index===4)annotation=working.step==='collect'?{title:'BAG THE CLIPPINGS',detail:'Bagged clippings → hopper → sink',...project(workingRoute.collection,[0,.65,0])}:{title:'MOW LIKE ALWAYS',detail:'Illustrative operator workflow',...project(workingRoute.mower,[0,1,0])};
+  if(index===5&&p>=.785)annotation={title:'20 × 20 INCH SINK',detail:'Made in the enclosed front factory',...project(large.root,finishing.portPoint)};
   const classification=phase(p,.205,.27),measuring=phase(p,.275,.325);
   const detectedCount=p<.205?0:Math.min(yard.detections.length,Math.floor(classification*yard.detections.length)+1);
   const surveying=p>=.20&&p<.46;

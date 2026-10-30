@@ -3,6 +3,37 @@
 import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=sleek20-review-v1';
 import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=sleek20-review-v1';
 const clamp=v=>Math.max(0,Math.min(1,v));
+// 10-30 owner: the drive-by auto quote must "act like live camera recognition": the box draws itself, the measurements
+// count up, the estimate comes last. Each house gets a scan clock that is a pure function of the film frame (scrubbing
+// back undraws it): it starts when the house's box is first well framed, houses are read one at a time in route order,
+// and it runs for 48-96 frames or until the house leaves the frame. Built once per film from the timeline's samples
+// (route.properties[].box from render-town-prefix-v6.py house_boxes; a film without boxes uses the property point).
+function routeScanSchedule(data){
+ const W=data.width,H=data.height,fr=f=>f/Math.max(1,(data.frames||2)-1),MIN=fr(48),MAX=fr(96),OVERLAP=.35;
+ const order=(data.route?.houses||[]).map(h=>h.id),seen={};
+ for(const s of data.samples||[]){
+  const r=s.route;if(!r?.active)continue;
+  for(const p of r.properties||[]){
+   if(!order.includes(p.id))order.push(p.id);
+   const b=p.box,inView=b?(p.boxInView??p.inView):p.inView;if(!inView)continue;
+   const w=seen[p.id]??={first:s.p,enter:null,exit:null};
+   let good;
+   if(b){const bw=b.x1-b.x0,bh=b.y1-b.y0,vw=Math.min(W,b.x1)-Math.max(0,b.x0),vh=Math.min(H,b.y1)-Math.max(0,b.y0);
+    // well framed: not blown up by the projection (the house beside the camera), a readable size, at most a third past an edge
+    good=bw>0&&bh>0&&bw<=1.6*W&&bh<=1.6*H&&vw>=.12*W&&vh>=.06*H&&vw*vh<=.6*W*H&&b.x0>=-.35*bw&&b.x1<=W+.35*bw;}
+   else good=p.x>.06*W&&p.x<.94*W&&p.y>.1*H&&p.y<.9*H;
+   if(good){w.enter??=s.p;w.exit=s.p;}
+  }
+ }
+ const out={};let prev=null;
+ order.forEach((id,i)=>{
+  const w=seen[id];if(!w||w.enter==null)return;   // never readable in this film (passed too close): no scan, no box
+  const start=prev?Math.max(w.enter,prev.end-OVERLAP*(prev.end-prev.start)):w.enter;
+  const end=start+Math.max(MIN,Math.min(MAX,w.exit-start));
+  out[id]=prev={order:i,start,end};
+ });
+ return out;
+}
 const mix=(a,b,t)=>a+(b-a)*t;
 export function interpolateRecordedState(a,b,t){
  if(typeof a==='number'&&typeof b==='number')return mix(a,b,t);
@@ -29,6 +60,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  // Cover fit + optional push-in (film-framing.js). The video and still are placed with the same transform the
  // overlays are projected with, so labels, callouts and leaders stay on their objects at any aspect ratio.
  let framing=filmFraming('','',null),frameWindow=null,placed='',lastPlace=null;
+ let routeScan={};   // 10-30: per-house scan clocks for the drive-by (routeScanSchedule)
  // popout.css --hold-zoom is the single switch for every push-in: its value caps the zoom (1 = plain cover).
  function capFraming(){const cap=parseFloat(getComputedStyle(host).getPropertyValue('--hold-zoom'));if(Number.isFinite(cap)&&cap>=1)framing={...framing,maxZoom:Math.min(framing.maxZoom,cap)};}
  function place(w,h,time){
@@ -93,7 +125,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   video.removeAttribute('poster');video.pause();
   if(reduced.matches)video.removeAttribute('src');else video.src=mediaURL;
   video.load();
-  try{const response=await fetch(`${base}.json?v=${revision}`,{signal:controller.signal});if(!response.ok)throw Error('Film timeline unavailable');const data=await response.json();if(current!==generation)return;metadata=data;framing=filmFraming(filmSource.base,kind,data);capFraming();requestSeek();changed();}
+  try{const response=await fetch(`${base}.json?v=${revision}`,{signal:controller.signal});if(!response.ok)throw Error('Film timeline unavailable');const data=await response.json();if(current!==generation)return;metadata=data;routeScan=routeScanSchedule(data);framing=filmFraming(filmSource.base,kind,data);capFraming();requestSeek();changed();}
   catch(error){if(current===generation&&error.name!=='AbortError'){failed=true;changed();}}
   finally{loading--;}
  }
@@ -122,7 +154,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   const point=v=>({...v,x:v.x*scale+dx,y:v.y*scale+dy});
   if(state.labels)state.labels=state.labels.map(point);
   if(state.annotation)state.annotation=point(state.annotation);
-  if(state.route?.properties)state.route.properties=state.route.properties.map(v=>{const q=point(v);if(v.box)q.box={x0:v.box.x0*scale+dx,y0:v.box.y0*scale+dy,x1:v.box.x1*scale+dx,y1:v.box.y1*scale+dy};return q;})   // 10-29: house boxes (auto-quote);
+  if(state.route?.properties)state.route.properties=state.route.properties.map(v=>{const q=point(v);if(v.box)q.box={x0:v.box.x0*scale+dx,y0:v.box.y0*scale+dy,x1:v.box.x1*scale+dx,y1:v.box.y1*scale+dy};const sc=routeScan[v.id];if(sc)q.scan={...sc,t:clamp((sampleP-sc.start)/(sc.end-sc.start))};return q;})   // 10-29: house boxes (auto-quote); 10-30: scan clock t per house, a pure function of the film frame
   const workflowP=state.workflowP??sampleP;
   if(name==='cargo'&&state.cargoFeet){state.cargoFeet=[12,8];state.factoryFeet=8;}
   if(metadata.vision){

@@ -205,7 +205,8 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   const c=playing||entering||(autoplaying()?current():null),on=scrolling(now)&&!!c;
   // 10-28 owner: "scrolling faster doesnt seem to work" (a steady scroll gave 1.25x on the arrival, 1.7x in How it works):
   // while they scroll the film runs at least RATE_SCROLLING, faster for a faster scroll (RATE_GAIN), up to MAX_RATE.
-  const target=on?Math.max(RATE_SCROLLING,RATE_GAIN*inputSpeed(now)/nativeSpeed(c)):1;
+  // v3 (10-28): How it works is a 3840x2400 60 fps film; Chrome decodes it at ~2.3x at most (measured), so cap it there.
+  const target=Math.min(on?Math.max(RATE_SCROLLING,RATE_GAIN*inputSpeed(now)/nativeSpeed(c)):1,c?.section?.id==='inside'?2.3:99);
   rate=target+(rate-target)*Math.exp(-dt/(target>rate?RATE_UP_TAU:RATE_DOWN_TAU));
   if(!on&&rate<1.01){rate=1;playback.setRate(1);rateFrame=0;return;}
   playback.setRate(rate);
@@ -272,7 +273,8 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  const rising=()=>{const d=recent.slice(-3).map(([,v])=>v);return d.length===3&&d[2]>d[1]&&d[1]>d[0]&&d[2]>d[0]*1.15;};
  // The restored specs/story can be taller than a short screen. Let their
  // own content scroll before interpreting the next gesture as the next section.
- const scrollableSection=(target,active=false)=>target.closest?.('#sizes,#story')||(active&&['sizes','story'].includes(body.dataset.activeScene)?document.getElementById(body.dataset.activeScene):null);
+ // 10-30: the Marvel Crew section (#app) scrolls the same way, so its four features can be read through (owner: "scroll through this section").
+ const scrollableSection=(target,active=false)=>target.closest?.('#sizes,#story,#app')||(active&&['sizes','story','app'].includes(body.dataset.activeScene)?document.getElementById(body.dataset.activeScene):null);
  const scrollsWithin=(target,delta,active=false)=>{
   const section=scrollableSection(target,active);if(!section||!delta)return false;
   const remaining=section.scrollHeight-section.clientHeight;

@@ -41,7 +41,7 @@ function start(sec) {
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.AgXToneMapping; renderer.toneMappingExposure = 1.12;
   RectAreaLightUniformsLib.init();
-  renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.shadowMap.enabled = false;                // 10-30: no punctual light is left to cast one (see the lights below)
   host.append(renderer.domElement);
   const scene = new THREE.Scene();
   scene.background = new THREE.Color(BG); scene.fog = new THREE.Fog(BG, 18, 46);
@@ -81,18 +81,19 @@ function start(sec) {
     g.userData.glow = glow; return g;
   }
   const deckGroup = stage(6.4); scene.add(deckGroup);
+  // 10-30 owner: "at some views the light becomes blinding" -> the sun, two rims and the head light were directional lights
+  // and the light frame had a 180 cd spot: a dead-flat gloss panel mirrors a directional light as one solid white sheet
+  // the moment the camera crosses its mirror angle (the sun off the roof from overhead, a rim off a side at 45 deg), the
+  // spot's image lands on the roof from any view above 55 deg as a white blob, and the bloom spread both. Direct light is
+  // now all area light, which a mirror can only ever show at the light's own brightness: the hemisphere fill, a soft board
+  // that follows the camera (the sides and the nose mirror it as a moving sheen, never a peak) and the light frame over the
+  // chosen trailer (its reflection is the pool on the deck). The showroom's overhead panel below drops from 7 to 2.4 for
+  // the same reason. The spot's shadow went with it; the stage mirror grounds the trailers
   scene.add(new THREE.HemisphereLight(0xcfe3ea, 0x0a0e10, .35));
-  const sun = new THREE.DirectionalLight(0xffffff, 1.1); sun.position.set(-2, 14, 4); sun.castShadow = true;
-  Object.assign(sun.shadow.camera, {left: -9, right: 9, top: 9, bottom: -9, near: 1, far: 40}); sun.shadow.mapSize.set(2048, 2048);
-  sun.shadow.bias = -.0004; sun.shadow.normalBias = .02; scene.add(sun, sun.target);
-  for (const [px, pz] of [[9, -9], [9, 9]]) { const rim = new THREE.DirectionalLight(0xbfe6ff, .45); rim.position.set(px, 5, pz); scene.add(rim); }
-  const head = new THREE.DirectionalLight(0xffffff, .55); scene.add(head, head.target);   // follows the camera: the sides never go black
-  const spot = new THREE.SpotLight(0xeaf4ff, 0, 0, .5, .85, 1.2);   // the light frame over the chosen trailer
-  spot.position.set(0, 8, 0); spot.castShadow = true; spot.shadow.mapSize.set(1024, 1024); spot.shadow.bias = -.0004;
-  scene.add(spot, spot.target);
+  const head = new THREE.RectAreaLight(0xffffff, 1.5, 6, 3.5); scene.add(head);   // follows the camera: the sides never go black
   const frame = new THREE.RectAreaLight(0xffffff, 0, 8.5, 3.2); frame.position.set(0, 6.4, 0); frame.lookAt(0, 0, 0); scene.add(frame);
   const LIGHTS = [];                                   // [light, full intensity]: they come up together when the page opens
-  scene.traverse(o => { if (o.isLight && o !== spot && o !== frame) LIGHTS.push([o, o.intensity]); });
+  scene.traverse(o => { if (o.isLight && o !== frame) LIGHTS.push([o, o.intensity]); });
   if (!still) for (const [l] of LIGHTS) l.intensity = 0;
   // reflections: a dark showroom with white light frames (a big one overhead, strips round the walls), so the glossy paint
   // and the roof shine the way they do in the film; the warm workshop HDR tinted the dark paint brown
@@ -105,9 +106,9 @@ function start(sec) {
       const m = new THREE.Mesh(new THREE.PlaneGeometry(w, h), new THREE.MeshBasicMaterial({color: new THREE.Color(.95, .97, 1).multiplyScalar(k), side: THREE.DoubleSide}));
       m.position.set(...pos); m.rotation.set(...rot); env.add(m);
     };
-    panel(16, 7, [0, 15.8, 0], [Math.PI / 2, 0, 0], 7);           // the overhead light frame
-    panel(2.5, 9, [-21.8, 7, -4], [0, Math.PI / 2, 0], 2.6); panel(2.5, 9, [-21.8, 7, 6], [0, Math.PI / 2, 0], 2.6);
-    panel(2.5, 9, [21.8, 7, 0], [0, -Math.PI / 2, 0], 2.2);
+    panel(16, 7, [0, 15.8, 0], [Math.PI / 2, 0, 0], 2.4);         // the overhead light frame (10-30: was 7, the whole roof read white from above)
+    panel(2.5, 9, [-21.8, 7, -4], [0, Math.PI / 2, 0], 1.9); panel(2.5, 9, [-21.8, 7, 6], [0, Math.PI / 2, 0], 1.9);   // 10-30: 2.6/2.2 -> 1.9/1.6
+    panel(2.5, 9, [21.8, 7, 0], [0, -Math.PI / 2, 0], 1.6);                                                               // (a roof end mirrors them at grazing)
     panel(22, 1.6, [0, 4.5, -21.8], [0, 0, 0], 1.8); panel(22, 1.6, [0, 4.5, 21.8], [0, Math.PI, 0], 1.4);
     // a big softbox high on the far side from the film camera: the roofs mirror it
     for (const dy of [-1.6, 0, 1.6]) {                // three slim bars, so the reflection reads as a light frame, not a grey sheet
@@ -178,25 +179,38 @@ function start(sec) {
     made.set(id, out); return out;
   }
 
-  // the film trailer's side, roof and rear panels are scanned surfaces, a few mm wavy: fine under the film's satin metal,
-  // broken-up streaks under gloss. Each triangle within 25 deg of an axis gets that axis as its normal (a flat panel);
-  // the rest (fenders, the V-nose, rounded trim) keep the model's own smooth normals
-  const COS25 = Math.cos(THREE.MathUtils.degToRad(25));
+  // the film trailer's side, roof, rear and V-nose panels are scanned surfaces, a few mm wavy: fine under the film's satin
+  // metal, broken-up streaks under gloss. 10-30 owner: "the v nose walls have a horrible paint job/texture, it looks very
+  // worn" -> the nose walls sit 25 deg off the axis, right on the old axis-only cut, so half their triangles snapped to the
+  // axis and half kept the wobble (the camouflage). Now the flat panels come from the mesh itself: triangle normals are
+  // clustered (8 deg cones, area-weighted) and every triangle within 25 deg of a panel of 0.04 m2 or more takes that
+  // panel's mean normal; the rest (fenders, rounded trim) keep the model's own smooth normals
+  const COS25 = Math.cos(THREE.MathUtils.degToRad(25)), COS8 = Math.cos(THREE.MathUtils.degToRad(8)), PANEL_M2 = .04;
   function flatten(o) {
     o.updateWorldMatrix(true, false);
     if (Math.abs(o.matrixWorld.determinant()) < 1e-12 || !o.geometry.attributes.normal) return;   // parts the film scaled to nothing
     const g = o.geometry.index ? o.geometry.toNonIndexed() : o.geometry.clone(), P = g.attributes.position, N = g.attributes.normal;
-    const nm = new THREE.Matrix3().getNormalMatrix(o.matrixWorld), inv = nm.clone().invert();
-    const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), f = new THREE.Vector3(), w = new THREE.Vector3(), s0 = new THREE.Vector3();
+    const M = o.matrixWorld, nm = new THREE.Matrix3().getNormalMatrix(M), inv = nm.clone().invert();
+    const a = new THREE.Vector3(), b = new THREE.Vector3(), c = new THREE.Vector3(), f = new THREE.Vector3(), s0 = new THREE.Vector3();
+    const wn = new Float32Array(P.count), area = new Float32Array(P.count / 3), clusters = [];   // world normal + area per triangle
     for (let i = 0; i < P.count; i += 3) {
-      a.fromBufferAttribute(P, i); b.fromBufferAttribute(P, i + 1); c.fromBufferAttribute(P, i + 2);
-      f.subVectors(c, b).cross(a.sub(b)); if (f.lengthSq() < 1e-14) continue; f.normalize();
-      s0.fromBufferAttribute(N, i).add(b.fromBufferAttribute(N, i + 1)).add(c.fromBufferAttribute(N, i + 2));
+      a.fromBufferAttribute(P, i).applyMatrix4(M); b.fromBufferAttribute(P, i + 1).applyMatrix4(M); c.fromBufferAttribute(P, i + 2).applyMatrix4(M);
+      f.subVectors(c, b).cross(a.sub(b)); const ar = f.length() / 2; if (ar < 1e-12) continue; f.divideScalar(ar * 2);
+      s0.fromBufferAttribute(N, i).add(b.fromBufferAttribute(N, i + 1)).add(c.fromBufferAttribute(N, i + 2)).applyMatrix3(nm);
       if (f.dot(s0) < 0) f.negate();                   // keep the side the model's own normals face
-      w.copy(f).applyMatrix3(nm).normalize();
-      const ax = [Math.abs(w.x), Math.abs(w.y), Math.abs(w.z)], k = ax.indexOf(Math.max(...ax));
-      if (ax[k] < COS25) continue;
-      const sg = Math.sign(w.getComponent(k)); w.set(0, 0, 0).setComponent(k, sg); f.copy(w).applyMatrix3(inv).normalize();
+      wn[i] = f.x; wn[i + 1] = f.y; wn[i + 2] = f.z; area[i / 3] = ar;
+      let cl = clusters.find(k => k.d.dot(f) > COS8);
+      if (!cl) clusters.push(cl = {n: new THREE.Vector3(), d: f.clone(), a: 0});
+      cl.n.addScaledVector(f, ar); cl.a += ar; cl.d.copy(cl.n).normalize();
+    }
+    const panels = clusters.filter(k => k.a >= PANEL_M2);
+    for (let i = 0; i < P.count; i += 3) {
+      if (!area[i / 3]) continue;
+      f.set(wn[i], wn[i + 1], wn[i + 2]);
+      let best = null, bd = COS25;
+      for (const k of panels) { const d = k.d.dot(f); if (d > bd) { bd = d; best = k; } }
+      if (!best) continue;
+      f.copy(best.d).applyMatrix3(inv).normalize();
       for (let j = 0; j < 3; j++) N.setXYZ(i + j, f.x, f.y, f.z);
     }
     N.needsUpdate = true; o.geometry = g;
@@ -236,7 +250,7 @@ function start(sec) {
   if (fancy) {                                         // a little bloom on the lit lenses and the stage glow; MSAA kept
     composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, {type: THREE.HalfFloatType, samples: 4}));
     composer.addPass(new RenderPass(scene, camera));
-    composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), .45, .5, .95));
+    composer.addPass(new UnrealBloomPass(new THREE.Vector2(256, 256), .45, .5, 1.6));   // 10-30: threshold .95 -> 1.6: the lenses bloom, a light board mirrored at grazing no longer flares
     composer.addPass(new OutputPass());
   }
   function resize() {
@@ -261,11 +275,8 @@ function start(sec) {
   function light(size) {                               // the hovered/chosen trailer comes forward under the light
     hover = size;
     for (const [s, t] of Object.entries(T)) t.scaleTo = s === size ? 1.08 : 1;
-    if (size) {
-      const p = T[size].group.position; spot.target.position.set(p.x, 1, p.z); spot.position.set(p.x - 1.5, 8.5, p.z + 1.2);
-      frame.position.set(p.x, 6.4, p.z); frame.lookAt(p.x, 0, p.z);
-    }
-    spot.userData.to = size ? 180 : 0; frame.userData.to = size ? 3.5 : 0; dirty = true;
+    if (size) { const p = T[size].group.position; frame.position.set(p.x, 6.4, p.z); frame.lookAt(p.x, 0, p.z); }
+    frame.userData.to = size ? 5 : 0; dirty = true;
   }
 
   function enter(size) {
@@ -274,7 +285,10 @@ function start(sec) {
     const from = focus; focus = size; mode = 'viewer'; sec.dataset.mode = 'viewer';
     setPanel(size); light(size);
     for (const [s, t] of Object.entries(T)) t.show = s === size;
-    radius = size === '20' ? 13.5 : 11.5; locked = false; sec.classList.remove('is-locked');
+    radius = size === '20' ? 13.5 : 11.5;             // the framing: the 16 ft fills the frame the way the 20 ft does
+    // 10-30 owner: "if I click to lock the trailer then I switch to view another one I want that same pov on the other
+    // trailer not to just unlock when I switch" -> the lock, the azimuth and the elevation carry over; only the first entry
+    // from the overview picks its angle from where the camera already is
     if (!from) { az = Math.atan2(cur.pos.z - T[size].group.position.z, cur.pos.x - T[size].group.position.x); el = .3; }
     setRamp(0);
     const o = size === '20' ? '16' : '20';
@@ -299,6 +313,11 @@ function start(sec) {
   }
 
   // ---- pointer: hover a trailer to go to it; then the cursor turns the view; click locks
+  // 10-30 owner: "I want that to follow everywhere even when off the screen unless clicked off, I want it to follow even
+  // when its selecting on the trailer. They have to click when they want a solid move" -> the cursor steers from anywhere
+  // on the page (the rail and its cards, the masthead, the trailer itself) on every page and variant, not only variant B;
+  // when the pointer leaves the window the view simply holds. A click on the stage, the trailer included, locks the view
+  // where it is (the cursor no longer turns it); a click again frees it. Touch and pen still drag
   const ray = new THREE.Raycaster(), ndc = new THREE.Vector2();
   let intent = 0;
   function pick(e) {
@@ -334,8 +353,9 @@ function start(sec) {
     az = Math.PI * .2 + (u - .5) * Math.PI * 2; el = 1.42 - v * 1.36; orbitView();
   };
   renderer.domElement.addEventListener('pointermove', e => onMove(e, false));
-  if (sec.dataset.pointer === 'page')                  // 10-29 variant B: the cursor steers the trailer from anywhere on the page, the rail included
-    window.addEventListener('pointermove', e => { if (e.target !== renderer.domElement && !matchMedia('(max-width:860px)').matches) onMove(e, true); });
+  // the cursor steers the trailer from anywhere on the page, the rail included (10-29 variant B's data-pointer="page";
+  // 10-30 owner: everywhere, on every page). Phones keep the drag
+  window.addEventListener('pointermove', e => { if (e.target !== renderer.domElement && !matchMedia('(max-width:860px)').matches) onMove(e, true); });
   renderer.domElement.addEventListener('pointerdown', e => {
     if (e.pointerType !== 'mouse' || locked) drag = {x: e.clientX, y: e.clientY, moved: false};
     renderer.domElement.setPointerCapture?.(e.pointerId);
@@ -397,7 +417,10 @@ function start(sec) {
       ok();
     }, undefined, bad))));
     sec.classList.add('rs-live'); dirty = true;
-    if (/[?&]debug3d/.test(location.search)) window.__rs3d = {scene, T, renderer, camera, composer};
+    if (/[?&]debug3d/.test(location.search)) window.__rs3d = {scene, T, renderer, camera, composer, head, frame, LIGHTS,   // 10-30: the QA grid drives the view
+      state: () => ({az, el, radius, locked, mode, focus}), enter, leave,
+      view: (a, e, snap) => { az = a; el = e; if (focus) { orbitView(); if (snap) { cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift = want.shift; } dirty = true; } },
+      lock: v => { locked = v; sec.classList.toggle('is-locked', locked); }};
     if (own) enter(sec.dataset.size || '20');
     else if (pending) enter(pending);
   });
@@ -415,7 +438,6 @@ function start(sec) {
     cur.pos.set(ease(cur.pos.x, want.pos.x, k), ease(cur.pos.y, want.pos.y, k), ease(cur.pos.z, want.pos.z, k));
     cur.look.set(ease(cur.look.x, want.look.x, k), ease(cur.look.y, want.look.y, k), ease(cur.look.z, want.look.z, k));
     cur.shift = ease(cur.shift, want.shift, k);
-    spot.intensity = ease(spot.intensity, spot.userData.to || 0, kf);
     frame.intensity = ease(frame.intensity, frame.userData.to || 0, kf);
     if (reveal < .999 && T['20']) {
       reveal = ease(reveal, 1, 1 - Math.exp(-dt * 1.6));
@@ -433,7 +455,7 @@ function start(sec) {
     if (!moving && !dirty) return;
     dirty = false;
     camera.position.copy(cur.pos); camera.lookAt(cur.look);
-    head.position.copy(cur.pos).add(new THREE.Vector3(0, 3, 0)); head.target.position.copy(cur.look);
+    head.position.copy(cur.pos).add(new THREE.Vector3(0, 3, 0)); head.lookAt(cur.look);
     const w = host.clientWidth, h = host.clientHeight;
     if (Math.abs(cur.shift) > 1e-4) camera.setViewOffset(w, h, cur.shift * w, 0, w, h); else camera.clearViewOffset();   // Blender lens shift: + moves the frame right
     if (composer) composer.render(); else renderer.render(scene, camera);
