@@ -24,13 +24,8 @@ import {DELIVERY_END} from './intro-timing.js?v=1';
 import {displays} from './original-display-framework-hqworld4.js?v=sleek20-review-v1';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
 const GLIDE_VH_S=2.8, GLIDE_ACCEL_VH=8, GLIDE_DECEL_VH=6, GESTURE_GAP_MS=400, REQUEST_GAP_MS=700, START_WINDOW_MS=350, RELEASE_MS=220, SPEED_WINDOW_MS=250;
-const FOLLOW_GAIN=.45, FOLLOW_MAX_PX_S=1125, FOLLOW_TAU=.08, FOLLOW_LEAD_S=.25, RATE_UP_TAU=.08, RATE_DOWN_TAU=.5;
-// 10-30 owner: "when I scroll a second time to speed it up it should be sped up, it doesnt do it accurately". The old rule
-// held 2x only while wheel events kept coming (220 ms gaps) and fell back within half a second, so a flick barely showed.
-// Now every forward tick while a film plays adds BOOST_TICK (per 120 px) to a boost that starts at BOOST_FIRST (so the
-// first tick is a clear 2x at once), is capped by the film's decode limit, and fades with BOOST_TAU after the last tick:
-// one flick = about two seconds at 2x; keep scrolling = up to the cap for as long as you scroll.
-const BOOST_TICK=.5, BOOST_FIRST=1.2, BOOST_TAU=1.6, MAX_RATE=4;
+const FOLLOW_GAIN=.45, FOLLOW_MAX_PX_S=1125, FOLLOW_TAU=.08, FOLLOW_LEAD_S=.25, RATE_UP_TAU=.15, RATE_DOWN_TAU=.5;
+const RATE_SCROLLING=2, RATE_GAIN=.9;
 const EXTEND_S=.6, SWIPE_PX=28, START_MS=1500, SCRUB_FALLBACK_S=14;
 export function installBeatScroll({stage,tracks,playback,getActive,readProgress}){
  const params=new URLSearchParams(location.search);
@@ -40,7 +35,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  let playing=null,gliding=null,scrubbing=null,entering=null,glideFrame=0,token=0;
  let following=false,followTarget=null,followPos=0,followFrame=0,followWall=0,releaseTimer=0;
  let lastWheel=0,lastPx=0,requestAt=-1e9,startAt=-1e9,lastReal=-1e9,momentum=false,touch=null;
- let rate=1,rateFrame=0,rateWall=0,boost=0;
+ let rate=1,rateFrame=0,rateWall=0;
  const sections=()=>[...document.querySelectorAll('main > section')];
  const maxScroll=()=>Math.max(0,document.documentElement.scrollHeight-innerHeight);
  function tourStarts(){
@@ -100,7 +95,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  const holding=()=>following||!!touch?.drag;
  const scrolling=(now=performance.now())=>now-lastReal<RELEASE_MS;
  function stopMotion(){
-  token++;boost=0;
+  token++;
   if(gliding||scrubbing||entering){cancelAnimationFrame(glideFrame);glideFrame=0;gliding=scrubbing=entering=null;}
   if(playing||autoplaying()){playing=null;playback.pause({capture:true});}
   delete body.dataset.beatStep;
@@ -210,15 +205,15 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  function speedUp(){if(!rateFrame){rateWall=performance.now();rateFrame=requestAnimationFrame(rateStep);}}
  function rateStep(now){
   const dt=Math.min(.05,Math.max(.001,(now-rateWall)/1000));rateWall=now;
-  const c=playing||entering||(autoplaying()?current():null);
-  boost*=Math.exp(-dt/BOOST_TAU);                                  // fades after the last tick (half in ~1.1 s)
-  const on=!!c&&boost>.03;
-  // v3 (10-28): How it works is a 2560x1600 60 fps film; Chrome decodes it at ~2.3x at most (measured), so cap it there.
-  const target=Math.min(on?1+boost:1,c?.section?.id==='inside'?2.3:MAX_RATE);
+  const c=playing||entering||(autoplaying()?current():null),on=scrolling(now)&&!!c;
+  // 10-28 owner: "scrolling faster doesnt seem to work" (a steady scroll gave 1.25x on the arrival, 1.7x in How it works):
+  // while they scroll the film runs at least RATE_SCROLLING, faster for a faster scroll (RATE_GAIN), up to MAX_RATE.
+  // v3 (10-28): How it works is a 3840x2400 60 fps film; Chrome decodes it at ~2.3x at most (measured), so cap it there.
+  const target=Math.min(on?Math.max(RATE_SCROLLING,RATE_GAIN*inputSpeed(now)/nativeSpeed(c)):1,c?.section?.id==='inside'?2.3:99);
   rate=target+(rate-target)*Math.exp(-dt/(target>rate?RATE_UP_TAU:RATE_DOWN_TAU));
-  if(!on&&rate<1.01){rate=1;boost=0;playback.setRate(1);rateFrame=0;return;}
+  if(!on&&rate<1.01){rate=1;playback.setRate(1);rateFrame=0;return;}
   playback.setRate(rate);
-  if(on&&(scrolling(now)||boost>.5))extend();
+  if(on)extend();
   rateFrame=requestAnimationFrame(rateStep);
  }
  // Still scrolling as the playing film nears its chapter's end: run on into the next chapter of the same film.
@@ -311,7 +306,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   }
   if(!fresh&&now-startAt<START_WINDOW_MS)return;                   // the short scroll that started the part
   speedLog.push([now,px]);lastReal=now;
-  if(playing||entering||autoplaying()){boost=Math.min(MAX_RATE-1,Math.max(boost+BOOST_TICK*px/120,BOOST_FIRST));speedUp();return;}   // a film: faster with every tick
+  if(playing||entering||autoplaying()){speedUp();return;}          // a film: faster with the scroll
   // A move between sections keeps its one steady speed; still scrolling when it arrives, it carries on (done).
  },{passive:false});
  // Touch: a swipe at rest plays the next part; a swipe while one moves drags the page (FOLLOW_GAIN, like the wheel),
