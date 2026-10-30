@@ -42,9 +42,17 @@ function start(sec) {
   //   a 'showroom': dark-grey cyc, one big soft overhead box and two soft keys: broad, soft highlights, the body reads as a shape
   //   b 'daylight': sky dome + a soft sun over grey ground: the roof mirrors the sky, a horizon line runs along the sides
   //   c 'reveal':   black room, slim hard rims, one roof line, cyan at stage height: edges only, deep black body
-  const LIGHT = sec.dataset.light || (location.search.match(/[?&]light=([abc])\b/) || [])[1] || '';
+  const LIGHT = sec.dataset.light || (location.search.match(/[?&]light=(old|[abc])\b/) || [])[1] || '';
   const PRESET = {
-    '': {exposure: 1.12, hemi: [0xcfe3ea, 0x0a0e10, .35], head: 1.5, frame: [5, 8.5, 3.2], bloom: [.45, .5, 1.6], floor: .25},
+    // '' (12:40, owner: "same brightness and glossiness" as the films, "this is our showroom"): the films' studio. The paint
+    // is already the film's (stage_gloss_blender.py BODY); what differed was the light. Cycles saw only the lamps the
+    // intro-quality-v5 rig makes visible to glossy rays: small raking keys low along the sides, cool rim strips high
+    // behind the rooflines, one long clearcoat streak, slim light frames overhead; the room itself near black and almost
+    // no diffuse fill, so the body reads black and every bright thing in the mirror reads crisp. Here: no camera light
+    // (it was a grey sheen over everything), a whisper of hemisphere for the tyres and chassis, the same lamps as sharp
+    // emissive panels in the reflection map (no PMREM blur), the overhead pool only over the chosen trailer.
+    '': {exposure: 1.0, hemi: [0xcfe3ea, 0x0a0e10, .12], head: 0, frame: [3.5, 8.5, 3.2], bloom: [.4, .5, 2.0], floor: .12, sigma: 0, vinyl: .05},
+    old: {exposure: 1.12, hemi: [0xcfe3ea, 0x0a0e10, .35], head: 1.5, frame: [5, 8.5, 3.2], bloom: [.45, .5, 1.6], floor: .25},
     a:  {exposure: 1.15, hemi: [0xe6ecef, 0x1a1e20, .3], head: .3, frame: [2.5, 10, 4], bloom: [.35, .5, 2.2], floor: .08},
     b:  {exposure: 1.0, hemi: [0x9fc0f0, 0x3b3a36, .45], head: 0, frame: [1.2, 8.5, 3.2], bloom: [.35, .5, 2.2], floor: .08},
     c:  {exposure: 1.1, hemi: [0x9fd8e4, 0x04070a, .1], head: 0, frame: [5, 9, .9], bloom: [.5, .55, 1.8], floor: .12},
@@ -167,8 +175,36 @@ function start(sec) {
     }
     return env;
   }
-  if (LIGHT) scene.environment = pmrem.fromScene(buildEnv(LIGHT), .02).texture;
-  else {
+  if (LIGHT && LIGHT !== 'old') scene.environment = pmrem.fromScene(buildEnv(LIGHT), .02).texture;
+  else if (!LIGHT) {
+    // The films' lamps, placed round the stage as the paint sees them (three.js metres: x along the trailers, y up).
+    // Positions are the film rigs' offsets from the hero trailer (render-opening-film.py tracking studio, intro-quality-v4
+    // separation strips, intro-quality-v5 keys/rims/streak); brightness is each lamp's radiance, watts / (area * pi), so
+    // a 1500 W key of .5 x 2.2 m is ~430 and a 2600 W 11 x 3 m strip ~25. Lamps the films hide from glossy rays
+    // (overhead softbox, ground wash, cyan edge, counterlight) are left out: they only lit the floor and tyres, which the
+    // light frame over the chosen trailer does here. The room is the films' world: ambient (.10,.11,.12) x .25.
+    const env = new THREE.Scene();
+    env.add(gradientSphere(60, [[-1, [.012, .013, .014]], [-.02, [.016, .018, .02]], [0, [.025, .0275, .03]], [1, [.025, .0275, .03]]]));
+    const lamp = (w, h, k, pos, look, tint) => env.add(softbox(w, h, k, pos, look, tint));
+    // opening-film studio (Y-up coords as written there)
+    // (the three big boxes at a sixth of their radiance: 12 x 2 m at 8 m spans 70 degrees, and a side panel that mirrors
+    //  it from above shows a white sheet; at ~3.5 it is a soft grey sheen, the crisp whites come from the strips below)
+    lamp(11, 3, 4, [-1, 4, -7], [3, 1, 0], [.94, .98, 1]);         // near vertical strip, 2600 W
+    lamp(12, 2, 3.5, [6, 5, 5], [5, 1, 0], [.66, .80, .88]);       // far rim, 1800 W
+    lamp(7, 5, 3, [-6, 5, 3], [-2, 1, 0], [1, .94, .85]);          // cab soft key, 1800 W
+    // v4 separation strips (Blender x,y,z -> x, z, -y)
+    lamp(6, .45, 71, [2, 1.45, -3.8], [0, 1.3, 0], [.78, .89, 1]); // body streak, 600 W: a low card along the near wall
+    lamp(.4, 3, 70, [6.5, 2.2, -1.7], [2.9, 1.4, 0], [.70, .84, 1]);   // rear edge, 380 W: a vertical card at the rear corner
+    lamp(5, .5, 51, [2, 1.6, -9], [2, 1.3, -5.7], [.78, .89, 1]);  // fleet body streak, 400 W
+    // v5: raking keys from the rear end, low (1500 / 1000 W, .5 x 2.2 m), rim strips high behind the rooflines, the streak
+    lamp(2.2, .5, 150, [16, 1.6, -1.15], [0, 1.25, 0], [1, .97, .92]);   // (the films' 430 / 350 radiance: a 14 deg spread kept it off
+    lamp(1.8, .5, 120, [15, 1.4, 1.15], [0, 1.0, 0], [1, .97, .92]);    //  everything but the far side; a panel shines everywhere, so dimmer)
+    lamp(7, .35, 143, [-7.8, 6.2, 7.2], [0, 2.3, 0], [.62, .82, 1]);
+    lamp(6, .35, 105, [-7.5, 6.4, -7.5], [0, 2.1, 0], [.62, .82, 1]);
+    lamp(9, .28, 76, [14.8, 2.4, -11.5], [0, 1.2, 0], [.82, .91, 1]);
+    scene.environment = pmrem.fromScene(env, PRESET.sigma ?? .02).texture;
+    if (/[?&]debug3d/.test(location.search)) window.__env = env;
+  } else {
     const env = new THREE.Scene();
     const room = new THREE.Mesh(new THREE.BoxGeometry(44, 18, 44), new THREE.MeshBasicMaterial({color: 0x0b0e10, side: THREE.BackSide}));
     room.position.y = 7; env.add(room);
@@ -243,7 +279,7 @@ function start(sec) {
     else if (mat.map) {                                 // the wrap: printed vinyl under the same clear gloss, white reads white in shade
       out = new THREE.MeshPhysicalMaterial({name: mat.name, map: mat.map, transparent: mat.transparent, alphaTest: mat.alphaTest, side: mat.side,
         depthWrite: mat.depthWrite, roughness: .38, metalness: 0, clearcoat: 1, clearcoatRoughness: .04, envMapIntensity: 1.2,
-        emissive: new THREE.Color(1, 1, 1), emissiveMap: mat.map, emissiveIntensity: /lettering|wordmark/i.test(mat.name) ? .3 : .18,
+        emissive: new THREE.Color(1, 1, 1), emissiveMap: mat.map, emissiveIntensity: PRESET.vinyl ?? (/lettering|wordmark/i.test(mat.name) ? .3 : .18),
         polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2});
     } else if ('envMapIntensity' in mat) mat.envMapIntensity = 1.15;
     made.set(id, out); return out;
