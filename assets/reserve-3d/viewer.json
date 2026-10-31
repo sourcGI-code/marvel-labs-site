@@ -5,55 +5,9 @@
   0.0
  ],
  "trailers": {
-  "20": {
-   "file": "trailer-20-solidworks-v2.glb",
-   "bytes": 410968,
-   "bounds": [
-    [
-     -3.91159987449646,
-     -1.358900547027588,
-     3.9826049032853916e-05
-    ],
-    [
-     3.44677996635437,
-     1.3588999509811401,
-     2.6670005321502686
-    ]
-   ],
-   "hingeNode": "ramp_door",
-   "rampAxis": [
-    0,
-    0,
-    -1
-   ],
-   "rampOpen": -1.7446318268771068,
-   "model": "Shared SolidWorks factory layout from the intro + Marvel wrap",
-   "revision": "solidworks-v2",
-   "boxFeet": 20,
-   "boxWidthFeet": 8.5,
-   "openingSizesInches": {
-    "passThrough": [
-     24,
-     75
-    ],
-    "vNose": [
-     36,
-     75
-    ],
-    "factoryPort": [
-     42,
-     34
-    ]
-   },
-   "park": [
-    -0.555877685546875,
-    -2.85098934173584,
-    0.0
-   ]
-  },
   "16": {
-   "file": "trailer-16-solidworks-v2.glb",
-   "bytes": 982364,
+   "file": "trailer-16-solidworks-v3.glb",
+   "bytes": 999376,
    "bounds": [
     [
      -3.302000045776367,
@@ -74,7 +28,7 @@
    ],
    "rampOpen": -1.7446319460871522,
    "model": "Shared SolidWorks factory layout from the intro + Marvel wrap",
-   "revision": "solidworks-v2",
+   "revision": "solidworks-v3",
    "boxFeet": 16,
    "boxWidthFeet": 7,
    "openingSizesInches": {
@@ -97,9 +51,9 @@
     0.0
    ]
   },
-  "20old": {
-   "file": "trailer-20-solidworks-v1.glb",
-   "bytes": 410964,
+  "20": {
+   "file": "trailer-20-solidworks-v3.glb",
+   "bytes": 427976,
    "bounds": [
     [
      -3.91159987449646,
@@ -120,7 +74,7 @@
    ],
    "rampOpen": -1.7446318268771068,
    "model": "Shared SolidWorks factory layout from the intro + Marvel wrap",
-   "revision": "solidworks-v1",
+   "revision": "solidworks-v3",
    "boxFeet": 20,
    "boxWidthFeet": 8.5,
    "openingSizesInches": {
@@ -142,168 +96,6 @@
     -2.85098934173584,
     0.0
    ]
-  },
-  "16old": {
-   "file": "trailer-16-solidworks-v1.glb",
-   "bytes": 982364,
-   "bounds": [
-    [
-     -3.302000045776367,
-     -1.1303002834320068,
-     0.0001117110950872302
-    ],
-    [
-     2.8371801376342773,
-     1.1303000450134277,
-     2.6670000553131104
-    ]
-   ],
-   "hingeNode": "ramp_door",
-   "rampAxis": [
-    0,
-    0,
-    -1
-   ],
-   "rampOpen": -1.7446319460871522,
-   "model": "Shared SolidWorks factory layout from the intro + Marvel wrap",
-   "revision": "solidworks-v1",
-   "boxFeet": 16,
-   "boxWidthFeet": 7,
-   "openingSizesInches": {
-    "passThrough": [
-     24,
-     75
-    ],
-    "vNose": [
-     36,
-     75
-    ],
-    "factoryPort": [
-     42,
-     34
-    ]
-   },
-   "park": [
-    0.9120235443115234,
-    2.8507280349731445,
-    0.0
-   ]
-  },
-  "20revB2": {
-   "file": "trailer-20-new.glb",
-   "bytes": 471440,
-   "bounds": [
-    [
-     -3.91159987449646,
-     -1.3589000701904297,
-     2.3084506750592482e-08
-    ],
-    [
-     3.44677996635437,
-     1.3589004278182983,
-     2.6670005321502686
-    ]
-   ],
-   "hingeNode": "ramp_door",
-   "rampAxis": [
-    0,
-    0,
-    -1
-   ],
-   "rampOpen": -1.7446318268771068,
-   "model": "supplied 8.5x20 V-nose blackout + Marvel wrap",
-   "park": [
-    -0.555877685546875,
-    -2.85098934173584,
-    0.0
-   ]
-  },
-  "16revB2": {
-   "file": "trailer-16-new.glb",
-   "bytes": 466548,
-   "bounds": [
-    [
-     -3.3015999794006348,
-     -1.1190942525863647,
-     2.3084506750592482e-08
-    ],
-    [
-     2.836780071258545,
-     1.1190944910049438,
-     2.6670005321502686
-    ]
-   ],
-   "hingeNode": "ramp_door",
-   "rampAxis": [
-    0,
-    0,
-    -1
-   ],
-   "rampOpen": -1.7446318268771068,
-   "model": "supplied 8.5x20 V-nose blackout + Marvel wrap",
-   "park": [
-    0.9120235443115234,
-    2.8507280349731445,
-    0.0
-   ]
-  },
-  "20v2": {
-   "file": "trailer-20-v2.glb",
-   "bytes": 860396,
-   "bounds": [
-    [
-     -4.4019999504089355,
-     -1.3264000415802002,
-     -3.836998075712472e-05
-    ],
-    [
-     3.442000389099121,
-     1.3404000997543335,
-     2.783600330352783
-    ]
-   ],
-   "hingeNode": "ramp_door",
-   "rampAxis": [
-    0,
-    0,
-    -1
-   ],
-   "rampOpen": 1.7857150435445728,
-   "park": [
-    -0.555877685546875,
-    -2.85098934173584,
-    0.0
-   ],
-   "model": "photo-based Xtreme blackout (Jake Miller pkg 10-27) + Marvel wrap"
-  },
-  "16v2": {
-   "file": "trailer-16-v2.glb",
-   "bytes": 836396,
-   "bounds": [
-    [
-     -3.7923998832702637,
-     -1.092329502105713,
-     -3.836998075712472e-05
-    ],
-    [
-     2.832400321960449,
-     1.1038589477539062,
-     2.783600330352783
-    ]
-   ],
-   "hingeNode": "ramp_door",
-   "rampAxis": [
-    0,
-    0,
-    -1
-   ],
-   "rampOpen": 1.7857150435445728,
-   "park": [
-    0.9120235443115234,
-    2.8507280349731445,
-    0.0
-   ],
-   "model": "photo-based Xtreme blackout (Jake Miller pkg 10-27) + Marvel wrap"
   }
  },
  "camera": {
