@@ -4,8 +4,8 @@
   "base": "assets/shared-solidworks-mobile-fleet-v3",
   "revision": "solidworks-mobile-v3",
   "desktop": {
-   "base": "assets/true-world-v1/recorded/cargo",
-   "revision": "gloss4k-v1-55173",
+   "base": "assets/shared-solidworks-fleet-v3",
+   "revision": "solidworks-fleet-v3",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -22,21 +22,21 @@
     "file": "desktop.mp4",
     "width": 3840,
     "height": 1706,
-    "framerate": 60,
-    "codec": "avc1.640034",
-    "bitrate": 6873332
+    "framerate": 30,
+    "bitrate": 7361640,
+    "codec": "avc1.640033"
    },
    "compatibilityVideo": {
     "file": "desktop.mp4",
     "width": 3840,
     "height": 1706,
-    "framerate": 60,
+    "framerate": 30,
+    "bitrate": 7361640,
+    "codec": "avc1.640033",
     "linearResolution": 1,
-    "codec": "avc1.640034",
-    "bitrate": 6873332,
     "verticalResolution": 1
    },
-   "motionFps": 59.99999999999999
+   "motionFps": 30
   }
  },
  "field": {
