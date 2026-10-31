@@ -147,7 +147,7 @@ addEventListener('scroll',requestUpdate,{passive:true});addEventListener('resize
 installDisplayFramework({stage,refresh:update});
 if(official)import('./hero-frame-hqworld4.js?v=solidworks-final-v3').then(m=>m.installHeroFrame()).catch(e=>console.warn('Hero framing unavailable.',e.message));
 // One scroll per thing (owner 10-24): forward input steps beat to beat, playing each chapter's film; back scrolls freely.
-if(manualPlayback&&official&&playback)import('./beat-scroll-hqworld4.js?v=intro-skip-1030a').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
+if(manualPlayback&&official&&playback)import(document.body.dataset.fastSectionSkip==='true'?'./three-step-scroll.js?v=three-gestures-1031a':'./beat-scroll-hqworld4.js?v=intro-skip-1030a').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
 async function loadTrailer(state,canvas,single=false){
  if(!state)return;
  if(official){
