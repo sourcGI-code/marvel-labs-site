@@ -29,7 +29,7 @@ if (sec) start(sec);
 
 function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/hybrid-trailer-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = 'assets/hybrid-trailer-v2/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -255,7 +255,7 @@ function start(sec) {
     // (clear coat roughness .07, not lower: on a dead-flat panel a sharper coat turns a light's highlight into a peak past the
     // half-float range of the bloom buffers, and the bloom spreads it until the whole frame goes black)
     paint: {color: 0x060708, metalness: .25, roughness: .5, specularIntensity: .25, clearcoat: 1, clearcoatRoughness: .07, envMapIntensity: 1.6,
-            normalMap: flake, normalScale: new THREE.Vector2(.12, .12)},
+            normalMap: null},
     plate: {color: 0x1b1e21, metalness: .92, roughness: .3, envMapIntensity: 1.35},
     trim: {color: 0x0c0e10, metalness: .75, roughness: .3, envMapIntensity: 1.25},
     chassis: {color: 0x0a0b0c, metalness: .35, roughness: .55, envMapIntensity: .8},
