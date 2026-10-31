@@ -137,6 +137,11 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     gesture(direction);
   });
   document.addEventListener('stage:navigate',event=>{if(!event.detail?.beat)halt();});
+  // A second gesture may arrive while the video is still buffering. Apply
+  // the selected rate when it starts, without spending another gesture.
+  document.addEventListener('motion:playback',event=>{
+    if(event.detail?.mode==='playing'&&owner===current()?.key)playback.setRate(rate);
+  });
   reduced.addEventListener('change',halt);
   addEventListener('resize',halt);
   const api={request:()=>gesture(1),back:()=>gesture(-1),chapters,current,next:()=>nextFrom(current(),1),get step(){return step;},get rate(){return rate;}};
