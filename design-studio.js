@@ -1,4 +1,4 @@
-// Review-only adaptation of reserve-3d.js at 0da3505. Shared model/finish assets,
+// Shared approved hybrid trailer with smooth running gear and clean panel finish,
 // with spherical camera travel to avoid cutting through the trailer on a wide cursor move.
 // Reserve stage in real 3D (v3 test, Claude 10-28). Owner: "i want people to lock this onto an axis and truly see all of
 // it, also I want the full screen to be the animation so the text and if they click it locks the position"; "they just
@@ -29,7 +29,7 @@ if (sec) start(sec);
 
 function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/reserve-3d/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = 'assets/hybrid-trailer-v2/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -255,7 +255,7 @@ function start(sec) {
     // (clear coat roughness .07, not lower: on a dead-flat panel a sharper coat turns a light's highlight into a peak past the
     // half-float range of the bloom buffers, and the bloom spreads it until the whole frame goes black)
     paint: {color: 0x060708, metalness: .25, roughness: .5, specularIntensity: .25, clearcoat: 1, clearcoatRoughness: .07, envMapIntensity: 1.6,
-            normalMap: flake, normalScale: new THREE.Vector2(.12, .12)},
+            normalMap: null},
     plate: {color: 0x1b1e21, metalness: .92, roughness: .3, envMapIntensity: 1.35},
     trim: {color: 0x0c0e10, metalness: .75, roughness: .3, envMapIntensity: 1.25},
     chassis: {color: 0x0a0b0c, metalness: .35, roughness: .55, envMapIntensity: .8},
@@ -416,7 +416,7 @@ function start(sec) {
     setRamp(0);
     const o = size === '20' ? '16' : '20';
     if (other) {
-      other.dataset.size = o; other.querySelector('img').src = `assets/reserve-viewer/thumb-${o}.webp?v=solidworks-v3`;
+      other.dataset.size = o; other.querySelector('img').src = `assets/hybrid-trailer-v2/thumb-${o}.webp?v=hybrid-v2`;
       other.querySelector('.rs-other-size').textContent = `${o} ft`;
     }
     orbitView();

@@ -37,7 +37,7 @@ if (studio) {
     if (started || document.body.dataset.activeScene !== 'sizes') return;
     started = true;
     try {
-      await import('./design-studio.js?v=1');
+      await import('./design-studio.js?v=hybrid-v2');
     } catch (error) {
       studio.querySelector('.dc-studio-fallback p').textContent = 'The interactive view is unavailable. Explore either size using the links.';
       console.warn('3D studio unavailable.', error.message);

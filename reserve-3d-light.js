@@ -1,3 +1,5 @@
+// Shared approved hybrid trailer with smooth running gear and clean panel finish,
+// with spherical camera travel to avoid cutting through the trailer on a wide cursor move.
 // Reserve stage in real 3D (v3 test, Claude 10-28). Owner: "i want people to lock this onto an axis and truly see all of
 // it, also I want the full screen to be the animation so the text and if they click it locks the position"; "they just
 // need to hover over the 16ft one for it to transition". The exact film trailers (tools/export_viewer_glb.py), on the
@@ -27,7 +29,7 @@ if (sec) start(sec);
 
 function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/reserve-3d/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = 'assets/hybrid-trailer-v2/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -253,7 +255,7 @@ function start(sec) {
     // (clear coat roughness .07, not lower: on a dead-flat panel a sharper coat turns a light's highlight into a peak past the
     // half-float range of the bloom buffers, and the bloom spreads it until the whole frame goes black)
     paint: {color: 0x060708, metalness: .25, roughness: .5, specularIntensity: .25, clearcoat: 1, clearcoatRoughness: .07, envMapIntensity: 1.6,
-            normalMap: flake, normalScale: new THREE.Vector2(.12, .12)},
+            normalMap: null},
     plate: {color: 0x1b1e21, metalness: .92, roughness: .3, envMapIntensity: 1.35},
     trim: {color: 0x0c0e10, metalness: .75, roughness: .3, envMapIntensity: 1.25},
     chassis: {color: 0x0a0b0c, metalness: .35, roughness: .55, envMapIntensity: .8},
@@ -414,7 +416,7 @@ function start(sec) {
     setRamp(0);
     const o = size === '20' ? '16' : '20';
     if (other) {
-      other.dataset.size = o; other.querySelector('img').src = `assets/reserve-viewer/thumb-${o}.webp?v=solidworks-v3`;
+      other.dataset.size = o; other.querySelector('img').src = `assets/hybrid-trailer-v2/thumb-${o}.webp?v=hybrid-v2`;
       other.querySelector('.rs-other-size').textContent = `${o} ft`;
     }
     orbitView();
@@ -511,7 +513,7 @@ function start(sec) {
   // ---- load, then run (only while the section is on screen)
   let visible = true;
   new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) dirty = true; }).observe(sec);
-  fetch(A + 'viewer.json?v=' + (sec.dataset.rev || '1')).then(r => r.json()).then(async m => {
+  fetch(A + 'viewer.json?v=' + (sec.dataset.rev || '1'), {cache:'no-store'}).then(r => r.json()).then(async m => {
     meta = m;
     const c = m.camera, hfov = 2 * Math.atan(c.sensor / 2 / c.lens);
     filmFov = hfov; filmShift = c.shift[0];
@@ -556,8 +558,17 @@ function start(sec) {
     const k = 1 - Math.exp(-dt * (still ? 60 : 3.2)), kf = 1 - Math.exp(-dt * 7);
     let moving = false;
     const ease = (a, b, f) => { const d = b - a; if (Math.abs(d) > 1e-4) moving = true; return a + d * f; };
-    cur.pos.set(ease(cur.pos.x, want.pos.x, k), ease(cur.pos.y, want.pos.y, k), ease(cur.pos.z, want.pos.z, k));
+    // Interpolate around the target, not along a chord through the product.
+    // Maintain the orbit's radius even when a pointer jumps to the opposite edge.
+    const currentOrbit = new THREE.Spherical().setFromVector3(cur.pos.clone().sub(cur.look));
+    const targetOrbit = new THREE.Spherical().setFromVector3(want.pos.clone().sub(want.look));
+    let turn = targetOrbit.theta - currentOrbit.theta;
+    turn = Math.atan2(Math.sin(turn), Math.cos(turn));
+    currentOrbit.theta = ease(currentOrbit.theta, currentOrbit.theta + turn, k);
+    currentOrbit.phi = ease(currentOrbit.phi, targetOrbit.phi, k);
+    currentOrbit.radius = ease(currentOrbit.radius, targetOrbit.radius, k);
     cur.look.set(ease(cur.look.x, want.look.x, k), ease(cur.look.y, want.look.y, k), ease(cur.look.z, want.look.z, k));
+    cur.pos.copy(cur.look).add(new THREE.Vector3().setFromSpherical(currentOrbit));
     cur.shift = ease(cur.shift, want.shift, k);
     frame.intensity = ease(frame.intensity, frame.userData.to || 0, kf);
     if (reveal < .999 && T['20']) {
