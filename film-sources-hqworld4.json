@@ -1,8 +1,8 @@
 {
  "version": 1,
  "cargo": {
-  "base": "assets/marvel-v4/recorded/cargo",
-  "revision": "hqgloss1",
+  "base": "assets/shared-solidworks-mobile-fleet-v3",
+  "revision": "solidworks-mobile-v3",
   "desktop": {
    "base": "assets/true-world-v1/recorded/cargo",
    "revision": "gloss4k-v1-55173",
@@ -54,8 +54,8 @@
   "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films"
  },
  "opening": {
-  "base": "assets/marvel-v4/opening-film",
-  "revision": "hqgloss1",
+  "base": "assets/shared-solidworks-mobile-opening-v3",
+  "revision": "solidworks-mobile-v3",
   "desktop": {
    "base": "assets/true-world-v1/opening-film",
    "revision": "gloss4k-v1-66603",
