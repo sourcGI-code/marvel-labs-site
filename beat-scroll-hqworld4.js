@@ -252,7 +252,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   const n=next();if(n)glide(n);                                           // a hand-off: on to the next part
  }
  // Back: everything stops; a backward wheel keeps easing the page (steer). A link, key back or resize also ends that.
- function back(){momentum=false;lastReal=-1e9;clearTimeout(releaseTimer);releaseTimer=0;following=false;stopMotion();}
+ function back(){momentum=false;lastReal=-1e9;stopFollow();stopMotion();}
  function halt(){back();stopFollow();}
  // Momentum: a trackpad or smooth mouse keeps sending events after a flick, each weaker than the last.
  const recent=[];
@@ -329,7 +329,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
    event.preventDefault();const section=scrollableSection(event.target,true);
    section.scrollBy({top:internalDelta*(event.code.startsWith('Arrow')?60:section.clientHeight*.8),behavior:'smooth'});return;
   }
-  if(['ArrowUp','PageUp','Home'].includes(event.code)){halt();return;}
+  if(['ArrowUp','PageUp','Home','End'].includes(event.code)){halt();return;}
   if(!['ArrowDown','PageDown','Space'].includes(event.code))return;
   if(event.code==='Space'&&event.target.closest('button,a'))return;
   if(!forwardAvailable())return;
