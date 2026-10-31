@@ -1,0 +1,57 @@
+[
+  {
+    "id": "01",
+    "slug": "cinema",
+    "name": "Cinema",
+    "tagline": "Let the product tell the story.",
+    "description": "Full-screen films, quieter copy and generous space. A simple sequence from the working day to the trailer and the app.",
+    "first": "story",
+    "technique": "Cinematic chapters",
+    "focus": "Feel the product",
+    "color": "#81e1e2"
+  },
+  {
+    "id": "02",
+    "slug": "field-notes",
+    "name": "Field Notes",
+    "tagline": "A clearer story, at your pace.",
+    "description": "An editorial direction with warm paper sections, photography, concise explanations and a direct specification table.",
+    "first": "story",
+    "technique": "Editorial spreads",
+    "focus": "Understand the idea",
+    "color": "#dcd4c3"
+  },
+  {
+    "id": "03",
+    "slug": "product-studio",
+    "name": "Product Studio",
+    "tagline": "Choose it. Turn it. Make it yours.",
+    "description": "A hands-on 3D product stage directly after the arrival. Switch sizes, turn the trailer, open the ramp and compare the plans.",
+    "first": "sizes",
+    "technique": "Interactive 3D",
+    "focus": "Explore the trailer",
+    "color": "#5bdfe8"
+  },
+  {
+    "id": "04",
+    "slug": "the-route",
+    "name": "The Route",
+    "tagline": "One day. Every connection.",
+    "description": "A guided journey through the work. Choose a stop and jump directly into the film, then find the trailer for your route.",
+    "first": "story",
+    "technique": "Guided chapter navigation",
+    "focus": "See it fit the day",
+    "color": "#9ec8d2"
+  },
+  {
+    "id": "05",
+    "slug": "business",
+    "name": "The Business View",
+    "tagline": "Put the opportunity in perspective.",
+    "description": "An owner-focused layout led by a transparent earnings illustration, practical comparison and the app\u2019s business controls.",
+    "first": "story",
+    "technique": "Interactive earnings illustration",
+    "focus": "Consider the business",
+    "color": "#b4e7ce"
+  }
+]
