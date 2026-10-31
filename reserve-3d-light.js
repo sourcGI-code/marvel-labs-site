@@ -414,7 +414,7 @@ function start(sec) {
     setRamp(0);
     const o = size === '20' ? '16' : '20';
     if (other) {
-      other.dataset.size = o; other.querySelector('img').src = `assets/reserve-viewer/thumb-${o}.webp?v=new1`;
+      other.dataset.size = o; other.querySelector('img').src = `assets/reserve-viewer/thumb-${o}.webp?v=solidworks-v1`;
       other.querySelector('.rs-other-size').textContent = `${o} ft`;
     }
     orbitView();
