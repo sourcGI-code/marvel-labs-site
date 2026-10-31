@@ -29,7 +29,7 @@ if (sec) start(sec);
 
 function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/graphite-cyan-finish-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = 'assets/graphite-cyan-finish-v2/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -48,8 +48,8 @@ function start(sec) {
   // studio stays at ?light=film, the morning rig at ?light=old.
   const LIGHT = (location.search.match(/[?&]light=(paint|old|film|white|reveal|outdoor)\b/) || [])[1] || sec.dataset.light || 'paint';
   const PRESET = {
-    paint: {exposure: 1.05, hemi: [0xc8dbe6, 0x18232b, .6], head: 1.2, frame: [1.4, 8.5, 3.2], bloom: [.12, .4, 3], floor: .35,
-            bg: 0x0b1218, fog: [25, 65], floorColor: 0x101a22, floorRough: .58, deck: 0x16212a, vinyl: .02, sigma: .035},
+    paint: {exposure: 1.0, hemi: [0xc8dbe6, 0x18232b, .3], head: .45, frame: [.8, 8.5, 3.2], bloom: [.06, .4, 3.5], floor: .35,
+            bg: 0x0b1218, fog: [25, 65], floorColor: 0x101a22, floorRough: .58, deck: 0x16212a, vinyl: .02, sigma: 0},
     // '' (12:40, owner: "same brightness and glossiness" as the films, "this is our showroom"): the films' studio. The paint
     // is already the film's (stage_gloss_blender.py BODY); what differed was the light. Cycles saw only the lamps the
     // intro-quality-v5 rig makes visible to glossy rays: small raking keys low along the sides, cool rim strips high
@@ -173,16 +173,21 @@ function start(sec) {
   function buildEnv(kind) {
     const env = new THREE.Scene();
     if (kind === 'paint') {
-      env.add(gradientSphere(50, [[-1,[.025,.035,.045]],[0,[.055,.075,.095]],[1,[.07,.09,.11]]]));
-      env.add(softbox(12,5,3.5,[0,5,-14],[0,1.3,0],[.9,.96,1]));
-      env.add(softbox(10,4,2.8,[0,5,14],[0,1.3,0],[.85,.94,1]));
-      env.add(softbox(14,3,3,[0,12,0],[0,0,0]));
-      env.add(softbox(14,.45,6,[0,2,-8],[0,1.3,0]));
-      env.add(softbox(14,.45,5,[0,2,8],[0,1.3,0]));
-      env.add(softbox(20,1.0,5,[0,-2.5,-11],[0,1.3,0],[.87,.95,1]));
-      env.add(softbox(20,1.0,4,[0,-2.5,11],[0,1.3,0],[.87,.95,1]));
-      env.add(softbox(4,6,3,[-14,5,3],[0,1.4,0]));
-      env.add(softbox(4,6,3,[14,5,-3],[0,1.4,0]));
+      env.add(gradientSphere(50, [[-1,[.025,.04,.06]],[0,[.07,.10,.14]],[1,[.10,.14,.19]]]));
+      // Recognizable showroom window frames in the reflection map. Their
+      // dark mullions stay sharp and travel over the paint as the view turns.
+      const paneMaterial = new THREE.MeshBasicMaterial({color:new THREE.Color(.5,.62,.75),side:THREE.DoubleSide,toneMapped:false});
+      for(let i=0;i<8;i++) {
+        const angle=i*Math.PI/4,window=new THREE.Group();
+        window.position.set(Math.cos(angle)*18,-1.4,Math.sin(angle)*18);window.lookAt(0,-1.4,0);
+        for(const x of [-3.0,0,3.0])for(const y of [-3.0,0,3.0]) {
+          const pane=new THREE.Mesh(new THREE.PlaneGeometry(2.65,2.35),paneMaterial);pane.position.set(x,y,0);window.add(pane);
+        }
+        env.add(window);
+      }
+      for(const x of [-4,4])for(const z of [-4,4]) {
+        const pane=new THREE.Mesh(new THREE.PlaneGeometry(2.8,6.8),paneMaterial);pane.position.set(x,14,z);pane.rotation.x=Math.PI/2;env.add(pane);
+      }
     } else if (kind === 'white') {                     // white comparison environment
       // the walls the paint mirrors are dimmer than the backdrop it stands in front of, so the body stays charcoal on white
       env.add(gradientSphere(40, [[-1, [.3, .31, .32]], [-.02, [.4, .41, .42]], [0, [.5, .51, .52]], [.4, [.56, .57, .58]], [1, [.62, .63, .64]]]));
@@ -302,7 +307,7 @@ function start(sec) {
     let key = (mat.name || '').replace(/^Marvel /, '').replace(/\.\d+$/, '');
     for (const [re, k] of FILM) if (re.test(mat.name || '')) { key = k; break; }
     let out = mat;
-    if ((mat.name || '').startsWith('Livery /')) { mat.envMapIntensity = 1.05; made.set(id, mat); return mat; }
+    if ((mat.name || '').startsWith('Livery /')) { mat.envMapIntensity = /wordmark/.test(mat.name) ? 1.0 : 1.35; made.set(id, mat); return mat; }
     if (FINISH[key]) {
       out = new THREE.MeshPhysicalMaterial({name: mat.name, ...FINISH[key], side: mat.side});   // the film's panels are double-sided
       if (!uv) out.normalMap = null;
