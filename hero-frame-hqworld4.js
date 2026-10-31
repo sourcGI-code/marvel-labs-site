@@ -91,7 +91,7 @@ export async function installHeroFrame(){
  if(!host||!story||!track)return;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  let data=null;
- try{const response=await fetch(new URL('hero-framing-hqgloss-v2/desktop-frame.json?v=1',import.meta.url));if(response.ok)data=await response.json();}catch{}
+ try{const response=await fetch(new URL('hero-framing-solidworks-v3/desktop-frame.json?v=solidworks-final-v3',import.meta.url));if(response.ok)data=await response.json();}catch{}
  let plan=null,pendingBuild=true,lastTranslate='',lastScale='';
  let visual={shift:0,scale:1},wasComparing=false,release=null,releaseStart=0,releaseFrom=null;
  let anim=null,animFrom=0,animRate=1,animPlan=null,checkedAt=0,est=null,estWall=0,lastDecodedTime=0;

@@ -57,8 +57,8 @@
   "base": "assets/shared-solidworks-mobile-opening-v3",
   "revision": "solidworks-mobile-v3",
   "desktop": {
-   "base": "assets/true-world-v1/opening-film",
-   "revision": "gloss4k-v1-66603",
+   "base": "assets/intro-solidworks-v3",
+   "revision": "solidworks-final-v3",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -72,24 +72,24 @@
    "videoFile": "desktop.mp4",
    "quality": "final",
    "nativeVideo": {
-    "file": "desktop.mp4",
     "width": 3840,
     "height": 1706,
-    "framerate": 84,
-    "codec": "avc1.64003c",
-    "bitrate": 8834672
+    "framerate": 42.0,
+    "bitrate": 9160437,
+    "codec": "avc1.640034",
+    "file": "desktop.mp4"
    },
    "compatibilityVideo": {
-    "file": "desktop.mp4",
     "width": 3840,
     "height": 1706,
-    "framerate": 84,
+    "framerate": 42.0,
+    "bitrate": 9160437,
+    "codec": "avc1.640034",
+    "file": "desktop.mp4",
     "linearResolution": 1,
-    "codec": "avc1.64003c",
-    "bitrate": 8834672,
     "verticalResolution": 1
    },
-   "motionFps": 60.0
+   "motionFps": 30
   }
  }
 }
