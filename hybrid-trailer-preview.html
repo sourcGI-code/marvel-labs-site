@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="en" data-palette="charcoal"><head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex"><title>Trailer model review — Marvel Labs</title>
+<script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="atlas.css?v=6"><link rel="stylesheet" href="reserve-page.css?v=54906758"><link rel="stylesheet" href="reserve-variants.css?v=9874262"><link rel="stylesheet" href="hybrid-trailer-preview.css?v=1">
+</head><body class="reserve-page" data-trailer-size="20" data-variant="c">
+<header class="masthead"><a class="brand" href="index.html" aria-label="Marvel Labs home"><span class="brand-wordmark" aria-hidden="true"></span></a><nav aria-label="Review navigation"><a href="index.html?v=three-gestures-1031a">Back to the website ↗</a></nav></header>
+<main><section id="reserve" class="rv reserve-stage" data-page="reserve" data-size="20" data-open="20" data-mode="overview" data-rev="hybrid-v1" data-variant="c" data-shift="-.15" aria-labelledby="rv-title">
+<div class="rv-show"><div class="rs-3d" aria-hidden="true"></div><p class="rv-loading">Loading trailer review</p><div class="rv-fade"></div>
+<button type="button" class="rs-back">← See both trailers</button>
+<div class="rs-3d-bar"><span class="rs-3d-hint"><span class="in-overview">Choose a trailer</span><span class="in-viewer"><span class="hover">Move to look around · Click to lock</span><span class="tap">Drag to turn</span></span></span><button type="button" class="rs-lock">Locked · click to unlock</button><button type="button" class="rs-ramp-btn">Open the ramp</button></div>
+</div><aside class="rv-rail"><p class="eyebrow">Trailer model review</p><h1 id="rv-title">The old foundation.<br><em>The new walls.</em></h1>
+<p class="review-copy">The wheels, fenders and chassis from the driving films, fitted with the new glossy walls, factory doors, grass chute and package exit.</p>
+<div class="review-sizes" role="group" aria-label="Trailer size"><button type="button" data-review-size="20" aria-pressed="true">20 ft</button><button type="button" data-review-size="16" aria-pressed="false">16 ft</button></div>
+<p class="review-note">The frame rails fit the new body dimensions. The original wheel shapes are unchanged.</p>
+<p class="review-note">Model preview. The films on the main website still show the current trailer.</p>
+<a class="line-link" href="index.html?v=three-gestures-1031a">Try the updated scrolling <span>↗</span></a>
+</aside></section></main>
+<script type="module" src="hybrid-trailer-preview.js?v=1"></script>
+<script type="module">
+const section=document.querySelector('.reserve-stage'),buttons=[...document.querySelectorAll('[data-review-size]')];
+for(const button of buttons)button.addEventListener('click',()=>section.dispatchEvent(new CustomEvent('rs:enter',{detail:button.dataset.reviewSize})));
+section.addEventListener('rs:size',event=>{for(const button of buttons)button.setAttribute('aria-pressed',String(button.dataset.reviewSize===event.detail));});
+</script></body></html>
