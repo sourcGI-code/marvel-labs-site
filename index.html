@@ -16,7 +16,7 @@
 <link rel="preload" href="assets/marvel-v4/opening-film/mobile-poster.webp?v=hqgloss1" as="image" media="(max-width:760px) and (prefers-reduced-motion:no-preference), (orientation:portrait) and (prefers-reduced-motion:no-preference)">
 <script>try{const p=new URLSearchParams(location.search).get('palette');if(['charcoal','ivory','burgundy','midnight'].includes(p))document.documentElement.dataset.palette=p;}catch{}</script>
 <script>if((!location.hash||location.hash==='#top')&&!new URLSearchParams(location.search).has('edit')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const root=document.documentElement,aspect=innerWidth/innerHeight,film=innerWidth<=760?.5:1.6;root.style.setProperty('--arrival-film-scale',Math.max(aspect/film,film/aspect));}</script>
-<script type="module" src="atlas-hqworld4.js?v=scroll-travel-1030b"></script>
+<script type="module" src="atlas-hqworld4.js?v=intro-skip-1030a"></script>
 <link rel="stylesheet" href="company-links.css?v=1">
 <link rel="stylesheet" href="text-selection.css?v=1">
 <style>.tour-chapters button{font:inherit;color:inherit;background:none;border:0;padding:4px 2px;cursor:pointer}.tour-chapters button:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style>
@@ -29,13 +29,12 @@
 
 <link rel="stylesheet" href="route-boxes.css?v=v4-1030">
 </head>
-<body data-page-flow-preview="old-sections" class="offer-v2" data-variant="explore" data-experience="official" data-display-framework="original" data-scene-source="accepted-films" data-scroll-only="true">
+<body data-fast-section-skip="true" data-page-flow-preview="old-sections" class="offer-v2" data-variant="explore" data-experience="official" data-display-framework="original" data-scene-source="accepted-films" data-scroll-only="true">
 <a class="skip-link" href="#inside">Skip the animated introduction</a>
 <header class="masthead">
  <a class="brand" href="#top" aria-label="Marvel Labs home"><span class="brand-wordmark" aria-hidden="true"></span></a>
  <nav class="desktop-nav" aria-label="Main"><a href="#sizes">Specs &amp; pricing</a><a href="#story">The numbers</a><a href="#inside">See it work</a></nav>
 
- <button class="motion-button ambient-motion" aria-pressed="false" aria-label="Play animation"><span aria-hidden="true">▷</span></button>
  <button class="menu-button" aria-expanded="false" aria-controls="mobile-menu">Menu <span>+</span></button>
 </header>
 <nav id="mobile-menu" aria-label="Mobile navigation" hidden><a href="#sizes">Specs &amp; pricing ↗</a><a href="#story">The numbers ↗</a><a href="#inside">See it work ↗</a><a href="reserve.html">Reserve your trailer ↗</a></nav>
@@ -44,13 +43,12 @@
  <div class="pin hero-pin platform-pin">
   <div class="hero-visual scene-host" id="hero-visual"><picture class="arrival-poster" aria-hidden="true"><source media="(prefers-reduced-motion:reduce)" srcset="assets/true-world-v1/recorded/cargo/desktop-poster.webp?v=hqworld4"><source data-opening-mobile media="(max-width:760px), (orientation:portrait)" srcset="assets/marvel-v4/opening-film/mobile-poster.webp?v=hqgloss1"><img src="assets/true-world-v1/opening-film/desktop-poster.webp?v=hqworld4" alt="" fetchpriority="high"></picture><div class="scene-fallback"><picture><source media="(max-width:760px), (orientation:portrait)" srcset="assets/marvel-v4/recorded/cargo/mobile-poster.webp?v=hqgloss1"><img src="assets/true-world-v1/recorded/cargo/desktop-poster.webp?v=hqworld4" alt="Closed 20-foot Autonomous Microfactories trailer concept"></picture></div><canvas id="hero-canvas" aria-label="Truck arrival and impact camera lift, followed by the Ford pickup delivering and unhitching a separate 16-foot trailer beside the parked 20-foot trailer. After the pickup leaves, the camera holds on the delivered trailers. The front microfactory stays enclosed."></canvas></div>
   <div class="platform-vignette" aria-hidden="true"></div>
-  <div id="platform-story" class="hero-heading"><p class="eyebrow" id="platform-tag">THE AUTONOMOUS MICROFACTORY TRAILER</p><h1 id="hero-title">Your next trailer.<br><em>A sink factory inside.</em></h1><p id="hero-description">Mowers in the back, a 6 ft enclosed factory up front. It turns the clippings you bag into sinks while you mow, and you earn a share of every one sold.</p><div class="offer-actions"><a class="offer-button" href="reserve.html">Reserve your trailer <span>↗</span></a><a class="offer-text-link" href="#story">See the numbers ↓</a></div><small class="offer-stage-label">SPRING 2027 DELIVERY. LIMITED AVAILABILITY.</small></div>
+  <div id="platform-story" class="hero-heading"><p class="eyebrow" id="platform-tag">THE AUTONOMOUS MICROFACTORY TRAILER</p><h1 id="hero-title">Your next trailer.<br><em>A factory inside.</em></h1><p id="hero-description">More than a place for your mowers and equipment. Your trailer turns grass, leaves, and food waste into products, creating a new source of income for your business with every product it produces.</p><div class="offer-actions"><a class="offer-button" href="reserve.html">Reserve your trailer <span>↗</span></a><a class="offer-text-link" href="#story">See the numbers ↓</a></div><small class="offer-stage-label">SPRING 2027 DELIVERY. LIMITED AVAILABILITY.</small></div>
   <div id="capacity-labels" hidden><div id="capacity-large" class="capacity-label"><strong>20 ft</strong><span>14 FT REAR CARGO</span></div><div id="capacity-small" class="capacity-label"><strong>16 ft</strong><span>10 FT REAR CARGO</span></div></div>
   <div id="capacity-summary" hidden><p><span class="factory-dot"></span><strong>6 ft enclosed microfactory</strong><span>Factory stays enclosed</span></p><p id="cargo-loadout">ZERO-TURN · PUSH MOWER · 3 WEED TRIMMERS</p><small>Enclosed factory. Equipment space for your working day.</small></div>
 
   <p id="platform-status" role="status">Preparing the arrival</p>
   <div class="hero-base"><div class="chapter-meter"><span id="hero-count">01 / 02</span><span class="meter"><i></i></span><span id="hero-step">THE ARRIVAL</span></div><span class="scroll-invitation" id="platform-invitation">SCROLL TO UNFOLD ↓</span></div>
-  <button id="hero-play" class="motion-button hero-play" type="button" aria-label="Play animation" data-label="Tap to play the arrival">▷</button>
  </div>
 </section>
 <section id="story" class="trailer-overview section-pad" data-scroll-length="220" aria-labelledby="story-title">

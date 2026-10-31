@@ -1,7 +1,6 @@
-// One gesture starts normal playback. Another deliberate forward gesture moves
-// the playhead directly: about ten seconds per ordinary wheel step, with eased
-// travel and normal playback after release. Trackpad momentum does not keep
-// advancing; reverse input, navigation and resize cancel the movement.
+// Small gestures move the playhead and playback continues after release. On the
+// main page, a fast flick snaps one whole section forward or backward. Consume
+// each flick's momentum so it cannot skip several sections accidentally.
 // Touch uses the same play-then-drag behavior. Reading panels keep their own
 // scrolling, and reduced motion / ?freescroll=1 use native browser scrolling.
 import {DELIVERY_END} from './intro-timing.js?v=1';
@@ -20,6 +19,9 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  if(params.has('freescroll')||params.has('edit'))return null;
  const body=document.body;body.dataset.beatScroll='1';
+ const fastSections=body.dataset.fastSectionSkip==='true';
+ const FAST_WINDOW_MS=180,FAST_SINGLE_PX=480,FAST_DISTANCE_PX=300,FAST_SPEED_PX_S=1800;
+ const fastWheel=[];let fastWheelLocked=false,fastWheelDirection=0;
  let playing=null,gliding=null,scrubbing=null,entering=null,glideFrame=0,token=0;
  let following=false,followTarget=null,followPos=0,followFrame=0,followWall=0,releaseTimer=0,releasePending=false;
  let lastWheel=0,lastPx=0,requestAt=-1e9,startAt=-1e9,lastReal=-1e9,momentum=false,touch=null;
@@ -75,6 +77,34 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  const chapterAt=(y,all=chapters())=>{let at=null;for(const c of all){if(c.y<=y+4)at=c;}return at;};
  const current=()=>chapterAt(scrollY);
  const next=()=>chapters().find(c=>c.y>scrollY+4)||null;
+ function snapSection(direction=1){
+  const list=sections(),active=list.find(s=>s.id===body.dataset.activeScene)||current()?.section;
+  const index=body.dataset.activeScene==='footer'?list.length:list.indexOf(active);
+  const target=list[index+direction]||(direction>0&&index===list.length-1?document.querySelector('body > .site-footer'):null);
+  if(index<0||!target)return false;
+  const chapter=chapters().find(c=>c.section===target);
+  takeOver();stopFollow();lastReal=-1e9;
+  recent.length=0;speedLog.length=0;momentum=false;
+  requestAt=startAt=performance.now();
+  document.dispatchEvent(new CustomEvent('stage:navigate',{detail:{hash:'#'+(target.id||'footer'),beat:true,fast:true}}));
+  stage.seekProgress(target,chapter?.start||0);
+  if(chapter?.film)enter(chapter,true);
+  return true;
+ }
+ function fastWheelGesture(now,px,gap){
+  const direction=Math.sign(px);px=Math.abs(px);
+  if(gap>=GESTURE_GAP_MS||direction!==fastWheelDirection){fastWheel.length=0;fastWheelLocked=false;}
+  fastWheelDirection=direction;
+  if(fastWheelLocked)return true;                 // consume the tail of one flick; never skip several screens
+  while(fastWheel.length&&now-fastWheel[0][0]>FAST_WINDOW_MS)fastWheel.shift();
+  fastWheel.push([now,px]);
+  const distance=fastWheel.reduce((sum,[,delta])=>sum+delta,0);
+  const speed=distance/(Math.max(32,now-fastWheel[0][0])/1000);
+  if(px>=FAST_SINGLE_PX||(distance>=FAST_DISTANCE_PX&&speed>=FAST_SPEED_PX_S)){
+   if(snapSection(direction)){fastWheelLocked=true;fastWheel.length=0;return true;}
+  }
+  return false;
+ }
  const filmLeft=(c,y)=>!!c&&c.film&&y<c.yEnd-2;
  const autoplaying=()=>!playing&&['playing','loading'].includes(body.dataset.animationPlayback||'');
  // Something is already moving: one of our parts, our glide/scrub, or the page's own load-time autoplay.
@@ -221,11 +251,12 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  }
  function steer(dy){
   if(followTarget===null){followPos=scrollY;followTarget=followPos;}
-  if(following&&dy>0){
+  if(following&&(dy>0||(fastSections&&dy<0))){
    releasePending=false;
    const here=chapterAt(followPos,followChapters||(followChapters=chapters()));
    const distance=filmLeft(here,followPos)?dy/120*FILM_SCROLL_SECONDS*nativeSpeed(here):dy*FOLLOW_GAIN;
-   followTarget=Math.min(followTarget+distance,Math.max(followTarget,followPos+followCap(followPos)*FOLLOW_LEAD_S));
+   followTarget=dy>0?Math.min(followTarget+distance,Math.max(followTarget,followPos+followCap(followPos)*FOLLOW_LEAD_S))
+    :Math.max(followTarget+distance,Math.min(followTarget,followPos-followCap(followPos)*FOLLOW_LEAD_S));
   }
   else followTarget+=dy;
   followTarget=Math.max(0,Math.min(maxScroll(),followTarget));
@@ -236,7 +267,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   const d=followTarget-followPos;
   if(Math.abs(d)<.75){followPos=followTarget;scrollTo(0,followPos);followFrame=0;followTarget=null;if(releasePending)release();return;}
   let step=d*(1-Math.exp(-dt/FOLLOW_TAU));
-  if(following&&step>0)step=Math.min(step,followCap(followPos)*dt);
+  if(following&&(step>0||fastSections))step=Math.sign(step)*Math.min(Math.abs(step),followCap(followPos)*dt);
   followPos+=step;scrollTo(0,followPos);
   followFrame=requestAnimationFrame(stepFollow);
  }
@@ -244,7 +275,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  function takeOver(){stopMotion();stopFollow();cancelAnimationFrame(rateFrame);rateFrame=0;rate=1;playback.setRate(1);following=true;followChapters=null;}
  function armRelease(){clearTimeout(releaseTimer);releaseTimer=setTimeout(()=>{releaseTimer=0;release();},RELEASE_MS);}
  // They let go: the page stays where it is and plays on from there.
- function release(){if(!following)return;if(followTarget!==null&&Math.abs(followTarget-followPos)>=.75){releasePending=true;return;}stopFollow();handBack();}
+ function release(){if(!following)return;if(!fastSections&&followTarget!==null&&Math.abs(followTarget-followPos)>=.75){releasePending=true;return;}stopFollow();handBack();}
  function handBack(){
   const y=scrollY,here=current();
   if(filmLeft(here,y)){if(!play(here))scrub(here);return;}                // the part they are in plays on
@@ -253,7 +284,7 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  }
  // Back: everything stops; a backward wheel keeps easing the page (steer). A link, key back or resize also ends that.
  function back(){momentum=false;lastReal=-1e9;stopFollow();stopMotion();}
- function halt(){back();stopFollow();}
+ function halt(){back();stopFollow();fastWheel.length=0;fastWheelLocked=false;fastWheelDirection=0;}
  // Momentum: a trackpad or smooth mouse keeps sending events after a flick, each weaker than the last.
  const recent=[];
  function fading(now){
@@ -281,8 +312,16 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
   if(reduced.matches||event.ctrlKey||inField(event.target))return;
   const now=performance.now(),gap=now-lastWheel;lastWheel=now;
   const px=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?innerHeight:1);
+  if(fastSections&&px!==0&&Math.abs(event.deltaY)>=Math.abs(event.deltaX)&&fastWheelGesture(now,px,gap)){event.preventDefault();return;}
   if(scrollsWithin(event.target,px))return;
-  if(px<0){recent.length=0;speedLog.length=0;lastPx=0;back();if(!event.deltaX||Math.abs(event.deltaY)>=Math.abs(event.deltaX)){event.preventDefault();steer(px);}return;}
+  if(px<0){
+   recent.length=0;speedLog.length=0;lastPx=0;
+   if(fastSections){
+    if(!following||followTarget===null||followTarget>=followPos)takeOver();
+    if(!event.deltaX||Math.abs(event.deltaY)>=Math.abs(event.deltaX)){event.preventDefault();steer(px);armRelease();}
+   }else{back();if(!event.deltaX||Math.abs(event.deltaY)>=Math.abs(event.deltaX)){event.preventDefault();steer(px);}}
+   return;
+  }
   if(!(px>0))return;                                               // sideways: ordinary
   if(!forwardAvailable()&&!following)return;                       // past the last part: ordinary scrolling
   event.preventDefault();
@@ -304,13 +343,28 @@ export function installBeatScroll({stage,tracks,playback,getActive,readProgress}
  },{passive:false});
  // Touch: a swipe at rest plays the next part; a swipe while one moves drags the page (FOLLOW_GAIN, like the wheel),
  // and lifting the finger plays on from there. A swipe down is ordinary scrolling.
- addEventListener('touchstart',event=>{touch={y0:event.touches[0].clientY,drag:false,done:false,native:false,last:0};},{passive:true});
+ addEventListener('touchstart',event=>{const y=event.touches[0].clientY;touch={y0:y,drag:false,done:false,native:false,last:0,fast:false,samples:[[performance.now(),y]]};},{passive:true});
  addEventListener('touchmove',event=>{
-  if(!touch||touch.native||reduced.matches||inField(event.target))return;
+  if(!touch||reduced.matches||inField(event.target))return;
   const y=event.touches[0].clientY,dy=touch.y0-y;                  // positive: finger moves up = forward
+  if(touch.fast){event.preventDefault();return;}
+  if(fastSections&&dy!==0){
+   const now=performance.now();
+   while(touch.samples.length>1&&now-touch.samples[0][0]>FAST_WINDOW_MS)touch.samples.shift();
+   const [start,from]=touch.samples[0],distance=from-y;
+   touch.samples.push([now,y]);
+   if(Math.abs(distance)>=120&&Math.abs(distance)/(Math.max(32,now-start)/1000)>=900&&snapSection(Math.sign(distance))){
+    touch.fast=true;touch.drag=false;touch.done=true;event.preventDefault();return;
+   }
+  }
+  if(touch.native)return;
   if(touch.drag){event.preventDefault();steer(touch.last-y);touch.last=y;return;}
   if(scrollsWithin(event.target,dy)){touch.native=true;return;}
-  if(dy<-8){back();touch.native=true;return;}                      // swipe down: ordinary scrolling
+  if(dy<-8){
+   if(fastSections){event.preventDefault();takeOver();touch.drag=true;touch.last=y;steer(dy);}
+   else{back();touch.native=true;}
+   return;
+  }
   if(!forwardAvailable())return;
   event.preventDefault();
   if(touch.done)return;
