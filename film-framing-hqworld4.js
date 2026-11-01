@@ -67,8 +67,10 @@ const clamp = (v, lo, hi) => Math.max(lo, Math.min(hi, v));
 const ease = t => t * t * (3 - 2 * t);
 
 export function filmFraming(base, kind, metadata) {
- if(base==='assets/true-world-v1/recorded/cargo'){
-  if(kind!=='desktop'||JSON.stringify(metadata?.trueWorld)!==JSON.stringify(TRUE_WORLD))throw Error('Invalid true-world projection metadata');
+ // Re-renders keep the native camera projection even when their asset folder
+ // changes. Fit the overscan movie around that projection, just like the intro.
+ if(metadata?.trueWorld||base==='assets/true-world-v1/recorded/cargo'){
+  if(kind!=='desktop'||!Object.entries(TRUE_WORLD).every(([key,value])=>metadata?.trueWorld?.[key]===value))throw Error('Invalid true-world projection metadata');
   return {oldDeliveryStage:true,trueWorld:true};
  }
  if(base==='assets/marvel-v4/recorded/cargo')return {position:[.5,.5],maxZoom:1,minZoom:1,window:[0,0,1,1],keys:[],oldDeliveryStage:true,mobileCover:kind==='mobile'};

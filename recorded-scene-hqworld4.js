@@ -1,7 +1,7 @@
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
 import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=fuller-media-4fa6002088';
-import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=sleek20-review-v1';
+import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=fleet-labels-v1';
 const clamp=v=>Math.max(0,Math.min(1,v));
 // 10-30 owner: the drive-by auto quote must "act like live camera recognition": the box draws itself, the measurements
 // count up, the estimate comes last. Each house gets a scan clock that is a pure function of the film frame (scrubbing
@@ -142,7 +142,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   // Cargo's stage and overlays follow the displayed movie during native playback.
   // A pending scrub retains the last decoded camera; its sought frame changes both
   // film and host framing together on seeked. Other scene clocks stay unchanged.
-  const decodedCargo=name==='cargo'&&framing.oldDeliveryStage&&shown&&!usingStill();
+  const decodedCargo=name==='cargo'&&shown&&!usingStill();
   if(decodedCargo&&!video.seeking)lastPresentedTime=video.currentTime;
   const sampleP=usingStill()?(chapterStill()?.p??originalP):decodedCargo?
    clamp(lastPresentedTime*metadata.fps/(metadata.frames-1)):originalP;

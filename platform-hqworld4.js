@@ -1,6 +1,6 @@
 import {createFleetLabelMotion} from './fleet-label-motion.js?v=2-nodip';
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=fuller-media-4fa6002088';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=fleet-labels-v1';
 import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.js?v=fuller-media-4fa6002088';
 import {loadFilmSources} from './film-sources-hqworld4.js?v=fuller-media-4fa6002088';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';
@@ -102,10 +102,13 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
    // Hold the last decoded projection during seeks so labels do not jump ahead of the film.
    const hostBox=host.getBoundingClientRect(),pinBox=host.closest('.pin').getBoundingClientRect();
    const sx=hostBox.width/(host.offsetWidth||hostBox.width),sy=hostBox.height/(host.offsetHeight||hostBox.height);
+   // The projected anchor is at the roof centre. Leave room for the near
+   // roof edge in this elevated camera view, scaled with the film on resize.
+   const labelGap=12+60*(recorded?.framing?.scale??1)*sy;
    for(const label of frameReady?labels:[]){
     const el=$('capacity-'+label.id);if(!el)continue;
     el.style.left=`${hostBox.left-pinBox.left+label.x*sx}px`;
-    el.style.top=`${hostBox.top-pinBox.top+label.y*sy-12}px`;
+    el.style.top=`${hostBox.top-pinBox.top+label.y*sy-labelGap}px`;
    }
    $('capacity-summary').hidden=true;
    $('cargo-loadout').textContent='ZERO-TURN · PUSH MOWER · 3 WEED TRIMMERS';
