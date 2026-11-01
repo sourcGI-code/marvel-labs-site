@@ -17,8 +17,10 @@
 #app .crew-note a span{color:#4dd8e8}
 #app :is(button,a):focus-visible{outline:2px solid #4dd8e8;outline-offset:4px}
 #app .crew-phone-stage{position:relative;width:100%;height:100%;min-height:410px;display:flex;align-items:center;justify-content:center;perspective:1200px}
+#app .crew-phone-entrance{position:absolute;z-index:2;left:50%;top:50%;height:calc(var(--phone-height,680px) * 1920 / 1828);width:calc(var(--phone-height,680px) * 960 / 1828);max-width:none;transform:translate(-50%,-48.83%);pointer-events:none;opacity:1;transition:opacity .18s linear}
+#app[data-phone-state="ready"] .crew-phone-entrance{opacity:0;visibility:hidden;transition:opacity .18s linear,visibility 0s .18s}
 #app .crew-phone-stage::before{content:"";position:absolute;inset:5% -12%;background:radial-gradient(ellipse at 50% 50%,#4dd8e80a,transparent 65%);pointer-events:none}
-#app .crew-phone{--phone-height:680px;position:relative;height:var(--phone-height);width:calc(var(--phone-height) / 2.04);flex:none;padding:6px;border-radius:clamp(30px,4.8svh,48px);background:linear-gradient(105deg,#939a9e 0%,#232a2d 2%,#06090a 6%,#171d20 92%,#6c9b9f 97%,#151a1c 100%);border:1px solid #919b9f;box-shadow:0 0 0 1px #000,0 0 0 2px #293236,0 24px 65px #0009,1px 0 16px #4dd8e81a;opacity:0;transform:translateY(120px) rotateY(-34deg) rotateZ(-9deg)}
+#app .crew-phone{--phone-height:680px;position:relative;height:var(--phone-height);width:calc(var(--phone-height) / 2.04);flex:none;padding:6px;border-radius:clamp(30px,4.8svh,48px);background:linear-gradient(105deg,#939a9e 0%,#232a2d 2%,#06090a 6%,#171d20 92%,#6c9b9f 97%,#151a1c 100%);border:1px solid #919b9f;box-shadow:0 0 0 1px #000,0 0 0 2px #293236,0 24px 65px #0009,1px 0 16px #4dd8e81a;opacity:0;transform:none;transition:opacity .18s linear}
 #app .crew-phone::before,#app .crew-phone::after{content:"";position:absolute;background:linear-gradient(90deg,#242c30,#8c969b,#232b2e);width:3px;border-radius:2px}
 #app .crew-phone::before{left:-4px;top:22%;height:42px;box-shadow:0 52px 0 #4c565c}
 #app .crew-phone::after{right:-4px;top:28%;height:64px}
@@ -68,4 +70,4 @@
 @media(max-height:540px) and (min-width:761px){
  #app.crew-app{overflow-y:auto;grid-template-rows:minmax(440px,1fr)}
 }
-@media(prefers-reduced-motion:reduce){#app .crew-phone{opacity:1;transform:none}#app .crew-beats button{transition:none}}
+@media(prefers-reduced-motion:reduce){#app .crew-phone-entrance{display:none}#app .crew-phone{opacity:1;transform:none;transition:none}#app .crew-beats button{transition:none}}

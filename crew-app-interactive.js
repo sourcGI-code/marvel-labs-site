@@ -3,16 +3,18 @@ const section = document.querySelector('#app[data-phone-mode="interactive"]');
 if (section) {
   const phone = section.querySelector('.crew-phone');
   const stage = section.querySelector('.crew-phone-stage');
+  const entrance = section.querySelector('.crew-phone-entrance');
   const frame = section.querySelector('iframe');
   const status = section.querySelector('.crew-phone-status');
   const buttons = [...section.querySelectorAll('[data-app-route]')];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let entered = false, entrance, loaded = false, loadTimer;
+  let entered = false, loaded = false, loadTimer, entranceTimer;
 
   function sizePhone() {
     const available = stage.getBoundingClientRect();
     const height = Math.max(380, Math.min(790, available.height - 30, (available.width - 28) * 2.04));
     phone.style.setProperty('--phone-height', `${height}px`);
+    stage.style.setProperty('--phone-height', `${height}px`);
   }
   new ResizeObserver(sizePhone).observe(stage);
 
@@ -85,7 +87,8 @@ if (section) {
   });
 
   function settle() {
-    entrance?.cancel();
+    clearTimeout(entranceTimer);
+    entrance.pause();
     phone.style.opacity = '1';
     phone.style.transform = 'none';
     phone.inert = false;
@@ -98,13 +101,20 @@ if (section) {
     selectRoute('trailer');
     section.dataset.phoneState = 'entering';
     if (reduced.matches) { settle(); return; }
-    entrance = phone.animate([
-      { opacity: 0, transform: 'translateY(120px) rotateY(-34deg) rotateX(9deg) rotateZ(-9deg)', offset: 0 },
-      { opacity: 1, offset: .25 },
-      { opacity: 1, transform: 'translateY(0) rotateY(0) rotateX(0) rotateZ(0)', offset: 1 }
-    ], { duration: 1500, easing: 'cubic-bezier(.2,.75,.2,1)', fill: 'forwards' });
-    entrance.onfinish = settle;
+    // These are the original rendered frames, at their original 30 fps.
+    // The file ends after two seconds; it never replays on feature changes.
+    entrance.src = entrance.dataset.src;
+    entrance.muted = true;
+    entrance.play().catch(settle);
+    entranceTimer = setTimeout(settle, 12000);
   }
+  entrance.addEventListener('ended', settle);
+  entrance.addEventListener('error', settle);
+  entrance.addEventListener('playing', () => {
+    clearTimeout(entranceTimer);
+    // A failed/stalled stream must still leave the app reachable.
+    entranceTimer = setTimeout(settle, 8000);
+  });
   buttons.forEach(button => button.addEventListener('click', () => {
     enter();
     selectRoute(button.dataset.appRoute);
