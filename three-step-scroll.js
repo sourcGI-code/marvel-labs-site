@@ -15,7 +15,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
       let spans;
       if(section.id==='top')spans=[[0,DELIVERY_END,'film']];
       else if(section.id==='inside')spans=[[0,1,'film']];
-      else if(section.id==='app'){
+      else if(section.id==='app' && section.dataset.phoneMode!=='interactive'){
         const n=section.querySelectorAll('.crew-beats li').length||1;
         spans=Array.from({length:n},(_,i)=>[.15+i*.85/n,i+1<n?.15+(i+1)*.85/n:1,'phone']);
       }else spans=[[.15,1,'reading']];

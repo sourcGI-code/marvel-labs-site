@@ -16,14 +16,14 @@
 <link rel="preload" href="assets/marvel-v4/opening-film/mobile-poster.webp?v=hqgloss1" as="image" media="(max-width:760px) and (prefers-reduced-motion:no-preference), (orientation:portrait) and (prefers-reduced-motion:no-preference)">
 <script>try{const p=new URLSearchParams(location.search).get('palette');if(['charcoal','ivory','burgundy','midnight'].includes(p))document.documentElement.dataset.palette=p;}catch{}</script>
 <script>if((!location.hash||location.hash==='#top')&&!new URLSearchParams(location.search).has('edit')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const root=document.documentElement,aspect=innerWidth/innerHeight,film=innerWidth<=760?.5:1.6;root.style.setProperty('--arrival-film-scale',Math.max(aspect/film,film/aspect));}</script>
-<script type="module" src="atlas-hqworld4.js?v=fuller-graphite-spotlight-v1"></script>
+<script type="module" src="atlas-hqworld4.js?v=interactive-phone-v1"></script>
 <link rel="stylesheet" href="company-links.css?v=home-app-nav-v1">
 <link rel="stylesheet" href="text-selection.css?v=1">
 <style>.tour-chapters button{font:inherit;color:inherit;background:none;border:0;padding:4px 2px;cursor:pointer}.tour-chapters button:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style>
 <link rel="stylesheet" href="route-quotes.css?v=2">
 <link rel="stylesheet" href="delivery-route.css?v=2">
 <link rel="stylesheet" href="popout.css?v=32">
-<link rel="stylesheet" href="crew-app.css?v=v4-1030d">
+<link rel="stylesheet" href="crew-app-interactive.css?v=interactive-phone-v1">
 <link rel="stylesheet" href="true-world-hqworld4.css?v=hqworld5-intro3072-30">
 <link rel="stylesheet" href="crew-quote-phone.css?v=2">
 
@@ -77,27 +77,38 @@
 </section>
 
 
-<section id="app" class="crew-app section-pad" data-scroll-length="300" aria-labelledby="app-title" data-film="assets/crew-app-sharp-v1" data-revision="crew6-sharp">
- <div class="crew-film" aria-hidden="true"><video muted playsinline preload="metadata" disablepictureinpicture></video></div>
+<section id="app" class="crew-app section-pad" data-scroll-length="220" aria-labelledby="app-title" data-phone-mode="interactive">
  <div class="crew-copy">
   <p class="eyebrow">04 / MARVEL CREW</p>
   <h2 id="app-title">Your trailer.<br><em>In your pocket.</em></h2>
   <p class="crew-lead">Marvel Crew is the app for your trailer and your crews, launching with the trailer.</p>
   <ol class="crew-beats">
-   <li data-at="0"><button type="button"><span>01</span><b>Trailer status + production</b><small>The trailer light, battery and the sink being made.</small></button></li>
-   <li data-at="6"><button type="button"><span>02</span><b>Live storage camera</b><small>The finished cartons behind the side door, live.</small></button></li>
-   <li data-at="12"><button type="button"><span>03</span><b>Auto quotes</b><small>Every quote shows the customer their yard before and after.</small></button></li>
-   <li data-at="18"><button type="button"><span>04</span><b>Map, schedule + money</b><small>Every crew and yard, the work calendar and what you made.</small></button></li>
+   <li class="is-current"><button type="button" data-app-route="trailer" aria-pressed="true"><span>01</span><b>Trailer status + production</b><small>The trailer light, battery and the sink being made.</small></button></li>
+   <li><button type="button" data-app-route="camera" aria-pressed="false"><span>02</span><b>Live storage camera</b><small>The finished cartons behind the side door, live.</small></button></li>
+   <li><button type="button" data-app-route="quotes" aria-pressed="false"><span>03</span><b>Auto quotes</b><small>Every quote shows the customer their yard before and after.</small></button></li>
+   <li><button type="button" data-app-route="trailers" aria-pressed="false"><span>04</span><b>Map, schedule + money</b><small>Every crew and yard, the work calendar and what you made.</small></button></li>
   </ol>
   <a class="offer-button" href="reserve.html?v=mirror-graphite-v1">Reserve your trailer <span>&searr;</span></a>
-  <p class="crew-note">App screens shown with example data.<a href="https://sourcgi-code.github.io/marvel-labs-site/crew/trailer-app/" target="_blank" rel="noopener">Try the app <span>&nearr;</span></a></p>
+  <p class="crew-note">Interactive demo · Example data.<a class="crew-open-app" href="crew/trailer-app/?view=phone" target="_blank" rel="noopener">Open the app <span>&nearr;</span></a></p>
  </div>
+ <div class="crew-phone-stage">
+  <div class="crew-phone" inert>
+   <div class="crew-phone-glass">
+    <div class="crew-phone-top" aria-hidden="true"><span>9:41</span><span class="crew-phone-island"></span><span class="crew-phone-signals"><svg viewBox="0 0 16 14"><path d="M1 10h2v4H1zm4-3h2v7H5zm4-3h2v10H9zm4-3h2v13h-2z"/></svg><span class="crew-phone-battery"></span></span></div>
+    <iframe title="Interactive Marvel Crew app demo" src="about:blank" loading="lazy"></iframe>
+    <div class="crew-phone-loading"><strong>MARVEL CREW</strong><span>Opening your trailer…</span></div>
+    <div class="crew-phone-home" aria-hidden="true"></div>
+   </div>
+  </div>
+  <p class="crew-phone-caption">Tap the screen to explore · Scroll inside the phone</p>
+ </div>
+ <p class="crew-phone-status" role="status" aria-live="polite"></p>
 </section>
 </main>
 <footer class="site-footer"><a href="#top" class="footer-wordmark">MARVEL LABS<span>↗</span></a><div class="footer-meta"><span>© 2026 MARVEL LABS INC.</span><span>AUTONOMOUS MICROFACTORY TRAILERS</span><a href="privacy.html">Privacy</a><a href="credits.html">Credits</a></div></footer>
 
 <noscript><p class="noscript-note">The photos and contact links are available without JavaScript. Enable JavaScript for the trailer walkthrough and interactive navigation.</p></noscript>
-<script type="module" src="crew-app.js?v=v4-1030c"></script>
+<script type="module" src="crew-app-interactive.js?v=interactive-phone-v1"></script>
 <script type="module" src="editor-runtime.js?v=fuller-graphite-spotlight-v1"></script>
 </body>
 </html>
