@@ -49,6 +49,19 @@
 .rd-policies a:hover{color:var(--ink)}
 .rd-check{width:46px;height:46px;display:grid;place-items:center;border:1px solid var(--accent);border-radius:50%;color:var(--accent);font-size:22px;margin:28px 0 20px}
 .rd-reference{font:10px/1.4 ui-monospace,monospace;letter-spacing:.12em;color:var(--accent);margin:18px 0 12px}
+.rd-email-dialog{padding:0;width:min(720px,calc(100% - 24px));max-width:720px;max-height:calc(100svh - 32px);border:1px solid var(--line);border-radius:5px;background:#0a0e10;color:var(--ink);overflow:auto}
+.rd-email-dialog::backdrop{background:#000b;backdrop-filter:blur(6px)}
+.rd-email-header{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:22px 24px;border-bottom:1px solid var(--line)}
+.rd-email-header p{font:9px/1.5 ui-monospace,monospace;letter-spacing:.1em;color:var(--accent);margin:0 0 8px}
+.rd-email-header h2{font-size:23px;margin:0;letter-spacing:-.03em;line-height:1.2}
+.rd-email-header button{border:0;background:none;color:var(--ink);font-size:26px;cursor:pointer;padding:5px 8px}
+.rd-email-meta{padding:14px 24px;margin:0;font-size:11px;line-height:1.6;border-bottom:1px solid var(--line)}
+.rd-email-meta>div{display:flex;gap:14px;margin:4px 0}.rd-email-meta dt{color:var(--muted);width:46px;flex-shrink:0}.rd-email-meta dd{margin:0;overflow-wrap:anywhere}
+.rd-email-dialog iframe{display:block;border:0;width:100%;height:min(580px,55svh);background:#0a0e10}
+.rd-email-dialog footer{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:16px 24px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}
+.rd-email-dialog footer button{padding:10px 12px;font-size:11px;white-space:nowrap;background:transparent;border:1px solid var(--line);color:var(--ink);cursor:pointer;border-radius:3px}
+.rd-email-dialog footer button:hover{border-color:var(--accent)}
+@media(max-width:500px){.rd-email-header,.rd-email-meta{padding-left:16px;padding-right:16px}.rd-email-dialog footer{padding:14px 16px;flex-wrap:wrap}.rd-email-header h2{font-size:20px}}
 .rd-confirm-copy{font-size:12px;line-height:1.7;color:var(--offer-muted,#b6bfc1);margin-top:14px}
 .rd-next{padding:0;margin:26px 0;list-style:none}
 .rd-next li{display:flex;gap:16px;margin-top:20px}
@@ -81,7 +94,7 @@
 }
 @media print{
  body.reserve-page{background:white!important;color:black!important}
- .masthead,.rv-show,.site-footer,.rd-demo,.rd-steps,.rd-controls,.rd-policies,.rd-actions,.rd-dialog,.rv-pay-note,.rv-when,.rv-rail>.eyebrow{display:none!important}
+ .masthead,.rv-show,.site-footer,.rd-demo,.rd-steps,.rd-controls,.rd-policies,.rd-actions,.rd-dialog,.rd-email-dialog,.rv-pay-note,.rv-when,.rv-rail>.eyebrow{display:none!important}
  section.rv{display:block!important;min-height:0!important;background:white!important}
  .rv[data-variant] .rv-rail,.rv-rail{display:block!important;margin:0!important;padding:20px!important;width:100%!important;max-width:none!important;min-height:0!important;background:white!important;border:0!important;backdrop-filter:none!important;color:black!important}
  .rv-rail h1 em,.rd-reference,.rd-order dt,.rd-confirm-copy,.rd-next small,.rd-small{color:#333!important}

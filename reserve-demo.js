@@ -1,3 +1,4 @@
+import {createReservationEmail, emailDraft} from './reservation-email.js?v=confirmation-email-v1';
 const STORAGE = 'marvel-reservation-demo-v1';
 const money = value => new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: value % 1 ? 2 : 0}).format(value);
 const price = size => size === '16' ? 44999 : 49999.99;
@@ -13,6 +14,8 @@ export function installReservationDemo({sec, form, selection, restore}) {
   const error = form.querySelector('.rd-error');
   const title = form.querySelector('#rv-title');
   const dialog = sec.querySelector('.rd-dialog');
+  const emailDialog = sec.querySelector('.rd-email-dialog');
+  let message = null;
   const value = name => form.querySelector(`[name="${name}"]`)?.value.trim() || '';
   const method = () => form.querySelector('[name="payment"]:checked')?.value || 'card';
   const methodNames = {card: 'Demo Visa ···· 4242', apple: 'Apple Pay · demo wallet', google: 'Google Pay · demo wallet'};
@@ -45,7 +48,11 @@ export function installReservationDemo({sec, form, selection, restore}) {
   function renderConfirmation() {
     if (!record) return;
     const cancelled = record.status === 'cancelled';
-    for (const el of form.querySelectorAll('.rd-reference')) el.textContent = record.id;
+    for (const el of form.querySelectorAll('.rd-reference')) el.textContent = `Reservation number · ${record.id}`;
+    form.querySelector('[data-action="email-preview"]').textContent = cancelled ? 'View cancellation email' : 'View confirmation email';
+    form.querySelector('.rd-email-note').textContent = value('email')
+      ? `Email preview ready for ${value('email')}. Nothing has been sent.`
+      : 'Your confirmation email is available to preview. Nothing has been sent.';
     form.querySelector('.rd-confirm-title').textContent = cancelled ? 'Cancelled. Fully refunded.' : 'You’re on the list.';
     form.querySelector('.rd-confirm-copy').textContent = cancelled
       ? 'Your demo reservation is cancelled and the $100 refund is simulated. No money was charged or refunded.'
@@ -139,11 +146,33 @@ export function installReservationDemo({sec, form, selection, restore}) {
     if (action === 'manage') go('manage');
     if (action === 'confirmation') go('complete');
     if (action === 'print') window.print();
+    if (action === 'email-preview') {
+      message = createReservationEmail(record, {name: value('name'), email: value('email')});
+      emailDialog.querySelector('#email-preview-title').textContent = record.status === 'cancelled' ? 'Your cancellation email.' : 'Your confirmation email.';
+      emailDialog.querySelector('[data-email-to]').textContent = message.recipient || 'Your email address (not saved after refresh)';
+      emailDialog.querySelector('[data-email-subject]').textContent = message.subject;
+      emailDialog.showModal();
+      // Build the frame after the dialog is visible; reused hidden frames can
+      // keep a zero-sized document when the preview is opened again.
+      const frame = document.createElement('iframe');
+      frame.title = record.status === 'cancelled' ? 'Marvel Labs cancellation email' : 'Marvel Labs confirmation email';
+      frame.setAttribute('sandbox', 'allow-popups allow-popups-to-escape-sandbox');
+      emailDialog.querySelector('iframe').replaceWith(frame);
+      frame.srcdoc = message.html;
+      emailDialog.scrollTop = 0;
+    }
     if (action === 'cancel' && record?.status === 'reserved') dialog.showModal();
   });
   dialog.addEventListener('close', () => {
     if (dialog.returnValue !== 'refund' || !record || record.status === 'cancelled') return;
     record.status = 'cancelled'; save(); go('complete');
+  });
+  emailDialog.querySelector('[data-email-close]').addEventListener('click', () => emailDialog.close());
+  emailDialog.querySelector('[data-email-download]').addEventListener('click', () => {
+    if (!message) return;
+    const url = URL.createObjectURL(new Blob([emailDraft(message)], {type: 'message/rfc822'}));
+    const a = document.createElement('a'); a.href = url; a.download = `${record.id}-${record.status === 'cancelled' ? 'cancellation' : 'confirmation'}.eml`; a.click();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
   });
   let stored;
   try { stored = JSON.parse(sessionStorage.getItem(STORAGE)); } catch {}

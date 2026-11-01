@@ -11,7 +11,7 @@
 <link rel="modulepreload" href="vendor/three/three.module.min.js">
 <link rel="stylesheet" href="atlas.css?v=6"><link rel="stylesheet" href="company-links.css?v=home-app-nav-v1"><link rel="stylesheet" href="text-selection.css?v=1">
 <link rel="stylesheet" href="reserve-page.css?v=preorder-demo-v1"><link rel="stylesheet" href="reserve-variants.css?v=preorder-demo-v1">
-<link rel="stylesheet" href="reserve-demo.css?v=preorder-demo-v1">
+<link rel="stylesheet" href="reserve-demo.css?v=confirmation-email-v1">
 </head>
 <body class="reserve-page" data-trailer-size="20" data-variant="c">
 <header class="masthead">
@@ -78,8 +78,8 @@
    <div class="rd-check" aria-hidden="true">✓</div><p class="rd-reference"></p><h2 class="rd-confirm-title">You’re on the list.</h2><p class="rd-confirm-copy">Your demo reservation is complete. No payment was taken and no real reservation was created.</p>
    <dl class="rd-order" data-receipt></dl>
    <ol class="rd-next"><li><span>01</span><div><b>Your configuration</b><small>Your selected trailer and plan are summarized above.</small></div></li><li><span>02</span><div><b>Before production</b><small>Review your equipment needs, final specification and written terms.</small></div></li><li><span>03</span><div><b>Delivery planning</b><small>Confirm timing and any remaining payment. No automatic balance charge.</small></div></li></ol>
-   <div class="rd-actions"><button type="button" class="rd-secondary" data-action="print">Save confirmation ↗</button><button type="button" class="rd-secondary" data-action="manage">Manage reservation</button></div>
-   <p class="rd-small">This preview stays in this tab. No confirmation email is sent.</p>
+   <div class="rd-actions"><button type="button" class="rd-secondary" data-action="email-preview">View confirmation email</button><button type="button" class="rd-secondary" data-action="print">Save confirmation ↗</button><button type="button" class="rd-secondary" data-action="manage">Manage reservation</button></div>
+   <p class="rd-small rd-email-note" role="status">Your confirmation email is available to preview. Nothing has been sent.</p>
   </div>
   <div data-panel="manage" hidden>
    <h2>Your reservation.</h2><p class="rd-reference"></p><dl class="rd-order" data-manage></dl>
@@ -94,6 +94,12 @@
   <noscript><p>Enable JavaScript to try the reservation demo. No payments are accepted on this page.</p></noscript>
  </form>
  <dialog class="rd-dialog" aria-labelledby="cancel-title"><form method="dialog"><p class="rd-demo">RESERVATION PREVIEW</p><h2 id="cancel-title">Cancel your reservation?</h2><p>The demo will mark your reservation cancelled and show the full $100 refund. No real payment or refund will occur.</p><button value="keep" class="rd-secondary" autofocus>Keep my reservation</button><button value="refund" class="rd-secondary rd-cancel">Cancel &amp; preview refund</button></form></dialog>
+ <dialog class="rd-email-dialog" aria-labelledby="email-preview-title">
+  <header class="rd-email-header"><div><p>MESSAGE PREVIEW · NOT SENT</p><h2 id="email-preview-title">Your confirmation email.</h2></div><button type="button" data-email-close aria-label="Close email preview">×</button></header>
+  <dl class="rd-email-meta"><div><dt>To</dt><dd data-email-to></dd></div><div><dt>Subject</dt><dd data-email-subject></dd></div></dl>
+  <iframe title="Marvel Labs confirmation email" sandbox="allow-popups allow-popups-to-escape-sandbox"></iframe>
+  <footer><span>Demo only. No email has been sent.</span><button type="button" data-email-download>Download email draft ↗</button></footer>
+ </dialog>
 </section>
 </main>
 <footer class="site-footer"><div class="footer-meta"><span>© 2026 MARVEL LABS INC.</span><a href="index.html">Autonomous Microfactories ↗</a><a href="privacy.html">Privacy</a></div></footer>
@@ -106,7 +112,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidd
 
 </script>
 <script src="reserve-config.js?v=preorder-demo-v1"></script>
-<script type="module" src="reserve-page.js?v=preorder-demo-v1"></script>
+<script type="module" src="reserve-page.js?v=confirmation-email-v1"></script>
 <script type="module" src="reserve-3d-light.js?v=fuller-graphite-v1"></script>
 <script type="module" src="editor-runtime.js?v=fuller-graphite-spotlight-v1"></script>
 <nav aria-label="Lighting setups" style="position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:60;display:flex;gap:6px;padding:6px;background:rgba(10,14,16,.88);border:1px solid #243034;border-radius:6px;font:12px/1 Lato,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase"><span style="color:#a4adb0;padding:7px 4px 7px 8px">Lighting</span><a href="reserve-light-white.html" style="color:#f2f3f2;text-decoration:none;padding:7px 12px;border:1px solid #243034;border-radius:4px">White studio</a><a href="reserve-light-reveal.html" style="color:#4dd8e8;text-decoration:none;padding:7px 12px;border:1px solid #4dd8e8;border-radius:4px">Reveal</a><a href="reserve-light-outdoor.html" style="color:#f2f3f2;text-decoration:none;padding:7px 12px;border:1px solid #243034;border-radius:4px">Outdoor lot</a><a href="reserve.html?light=film" style="color:#f2f3f2;text-decoration:none;padding:7px 12px;border:1px solid #243034;border-radius:4px">Film studio</a><a href="reserve.html?light=old" style="color:#a4adb0;text-decoration:none;padding:7px 10px">Before</a></nav>
