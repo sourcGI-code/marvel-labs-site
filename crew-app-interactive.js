@@ -39,6 +39,10 @@ if (section) {
   frame.addEventListener('load', () => {
     const doc = frame.contentDocument;
     if (!doc || frame.src === 'about:blank') return;
+    // A gesture that reaches the app's edge must not scroll the host timeline.
+    const scrollContainment = doc.createElement('style');
+    scrollContainment.textContent = 'html,body,#root,#root *{overscroll-behavior:contain}';
+    doc.head.append(scrollContainment);
     let lastPath;
     function highlightRoute() {
       const path = doc.location.pathname;
