@@ -14,3 +14,15 @@
 .paint-note strong{color:#c6d4da;font-weight:400}.paint-swatches{margin:1rem 0 1.2rem}.paint-views{margin:.7rem 0 .3rem;flex-wrap:wrap;gap:.8rem}
 @media(min-width:861px) and (max-height:790px){.paint-finishes{margin-top:8px;gap:6px}.paint-finishes button{min-height:38px;padding:6px 8px}.paint-copy{margin:0 0 .4rem}.paint-swatches{margin:.65rem 0 .85rem}.paint-swatches i{width:1.6rem;height:1.6rem}.paint-note{margin:.7rem 0}.paint-sizes button{padding:.7rem}.rv[data-variant] .rv-rail h1{margin:.5rem 0 .8rem}}
 @media(max-width:860px){.paint-finishes{margin-top:16px}.paint-finishes button{min-height:48px}.paint-copy{max-width:36ch}}
+
+/* Artwork changes independently of the two approved surface finishes. */
+.paint-control-label{margin:1rem 0 .5rem;font:10px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:#a0b1ba}
+.paint-wraps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.paint-wraps button{display:flex;flex-direction:column;gap:8px;align-items:flex-start;border:1px solid #3b4b54;background:transparent;padding:10px;color:#bfccd1;font:inherit;font-size:.74rem;cursor:pointer}
+.paint-wraps button:hover,.paint-wraps button[aria-pressed="true"]{background:#14313b;border-color:#70dce5;color:white}
+.wrap-chip{display:block;width:100%;height:22px;background-color:#172a34;border:1px solid #ffffff18}
+.wrap-chip.original{background:linear-gradient(103deg,transparent 18%,#43d5e4 19% 21%,transparent 22% 75%,#43d5e4 76% 78%,transparent 79%),#172a34}
+.wrap-chip.flow{background:linear-gradient(172deg,transparent 50%,#91acb6 51% 53%,#1d5968 54% 63%,#43d5e4 64% 78%,#172a34 79%),#172a34}
+.wrap-chip.precision{background:linear-gradient(#43d5e4,#43d5e4) 5px 4px/60% 2px no-repeat,linear-gradient(#43d5e4,#43d5e4) right 5px bottom 4px/60% 2px no-repeat,linear-gradient(115deg,transparent 45%,#94acb5 46% 49%,transparent 50%),#172a34}
+.paint-wrap-note{margin:.5rem 0 .3rem;font-size:.69rem;line-height:1.4;color:#8fa5af}.paint-finishes{margin-top:0}
+@media(min-width:861px) and (max-height:790px){.paint-control-label{margin:.6rem 0 .35rem}.paint-wraps button{padding:7px;gap:5px}.wrap-chip{height:16px}.paint-swatches{margin:.5rem 0 .65rem}.paint-swatches i{width:1.3rem;height:1.3rem}.paint-wrap-note{font-size:.65rem}.paint-note{margin:.6rem 0}}

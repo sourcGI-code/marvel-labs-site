@@ -11,6 +11,7 @@
 // rail and the stage talk through two events on the section: 'rs:enter' (go to a size) and 'rs:size' (size shown).
 import * as THREE from 'three';
 import {finishes, prepareFinishUV, createFinishManager} from './paint-finishes.js?v=2';
+import {wrapDesigns, createWrapManager} from './paint-wraps.js?v=1';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {RectAreaLightUniformsLib} from 'three/addons/lights/RectAreaLightUniformsLib.js';
@@ -30,7 +31,7 @@ if (sec) start(sec);
 
 function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/original-wrap-finishes-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = 'assets/trailer-wraps-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -50,13 +51,21 @@ function start(sec) {
   const query = new URLSearchParams(location.search), LIGHT = 'paint';
   if (['16','20'].includes(query.get('size'))) sec.dataset.open = query.get('size');
   const paintFinishes = createFinishManager(THREE, query.get('finish'));
+  const paintWraps = createWrapManager(query.get('wrap'));
+  function updateWrapUI() {
+    const id=paintWraps.current;
+    for(const b of document.querySelectorAll('button[data-wrap]'))b.setAttribute('aria-pressed',String(b.dataset.wrap===id));
+    document.querySelector('[data-wrap-detail]').textContent=wrapDesigns[id].detail;
+    const url=new URL(location.href);url.searchParams.set('wrap',id);url.searchParams.set('v','9');history.replaceState(null,'',url);
+  }
+  updateWrapUI();
   function updateFinishUI() {
     const id=paintFinishes.current, f=finishes[id];
     for(const b of document.querySelectorAll('button[data-finish]'))b.setAttribute('aria-pressed',String(b.dataset.finish===id));
     document.querySelector('[data-finish-label]').textContent=f.label;
     document.querySelector('[data-finish-detail]').textContent=f.detail;
     document.querySelector('[data-paint-swatch]').style.setProperty('--swatch','#'+f.color.toString(16).padStart(6,'0'));
-    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','8');history.replaceState(null,'',url);
+    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','9');history.replaceState(null,'',url);
   }
   updateFinishUI();
   const PRESET = {
@@ -495,7 +504,7 @@ function start(sec) {
   const overCopy = e => { if (!copy) return false; const r = copy.getBoundingClientRect(); return e.clientX < r.right + 10 && !matchMedia('(max-width:760px)').matches; };
   let drag = null;
   const onMove = (e, fromPage) => {
-    if (!meta || e.target.closest?.('.paint-finishes')) return;
+    if (!meta || e.target.closest?.('.paint-finishes,.paint-wraps')) return;
     const r = renderer.domElement.getBoundingClientRect();
     if (drag && !fromPage) {                           // touch / pen, or dragging while locked: turn it by hand
       az += (e.clientX - drag.x) * .008; el = Math.min(1.42, Math.max(.04, el + (e.clientY - drag.y) * .006));
@@ -535,6 +544,7 @@ function start(sec) {
   let pending = sec.dataset.open || '';                // the reserve page's rail: go to a size (before the models load: on arrival)
   sec.addEventListener('rs:enter', e => { if (T[e.detail]) enter(e.detail); else pending = e.detail; });
   sec.addEventListener('rs:leave', () => { if (mode === 'viewer') leave(); });
+  sec.addEventListener('paint:wrap', e => { if(paintWraps.select(e.detail)){updateWrapUI();dirty=true;} });
   sec.addEventListener('paint:finish', e => { if (paintFinishes.select(e.detail)) { updateFinishUI(); dirty=true; } });
   sec.addEventListener('paint:view', e => { if (!focus) return; radius=e.detail.close ? 7 : (focus==='20'?12.8:11); az = e.detail.az; el = e.detail.el; locked = true; sec.classList.add('is-locked'); orbitView(); dirty = true; });
   for (const b of radios) b.addEventListener('click', () => enter(b.dataset.size));
@@ -578,6 +588,7 @@ function start(sec) {
         const uv = !!o.geometry.attributes.uv;
         o.material = Array.isArray(o.material) ? o.material.map(m => finish(m, uv)) : finish(o.material, uv);
       });
+      paintWraps.register(g.scene);
       // the ramp: the old rigs carry a 'Ramp hinge' node turned about Z; the owner's new 20 ft names its own (ramp_door, axis in meta)
       const hinge = (t.hingeNode && g.scene.getObjectByName(t.hingeNode)) || g.scene.getObjectByName(`Ramp_hinge_${size}`) || g.scene.getObjectByName(`Ramp hinge ${size}`);
       scene.add(group);
@@ -587,7 +598,7 @@ function start(sec) {
     }, undefined, bad))));
     sec.classList.add('rs-live'); dirty = true;
     if (/[?&]debug3d/.test(location.search)) window.__rs3d = {scene, T, renderer, camera, composer, head, frame, LIGHTS,   // 10-30: the QA grid drives the view
-      state: () => ({az, el, radius, locked, mode, focus, finish:paintFinishes.current}), enter, leave,
+      state: () => ({az, el, radius, locked, mode, focus, finish:paintFinishes.current, wrap:paintWraps.current}), enter, leave,
       view: (a, e, snap) => { az = a; el = e; if (focus) { orbitView(); if (snap) { cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift = want.shift; } dirty = true; } },
       lock: v => { locked = v; sec.classList.toggle('is-locked', locked); }};
     if (own) enter(sec.dataset.size || '20');
