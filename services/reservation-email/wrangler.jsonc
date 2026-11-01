@@ -1,0 +1,14 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "marvel-demo-reservation-email",
+  "main": "worker.mjs",
+  "compatibility_date": "2026-11-01",
+  "workers_dev": true,
+  "observability": {"enabled": false},
+  "vars": {
+    "EMAIL_ENABLED": "false",
+    "ALLOWED_ORIGIN": "https://sourcgi-code.github.io",
+    "EMAIL_FROM": "Marvel Labs Demo <reservations@updates.marvellabs.com>"
+  },
+  "ratelimits": [{"name":"EMAIL_RATE_LIMITER","namespace_id":"1001","simple":{"limit":3,"period":60}}]
+}
