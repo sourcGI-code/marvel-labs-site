@@ -10,7 +10,7 @@
 // (data-page="reserve"): the stage fills the left column, the size cards and checkout sit in a rail on the right; the
 // rail and the stage talk through two events on the section: 'rs:enter' (go to a size) and 'rs:size' (size shown).
 import * as THREE from 'three';
-import {createLetteringStudy} from './lettering-study.js?v=1';
+import {createLetteringStudy} from './lettering-study.js?v=2';
 import {finishes, prepareFinishUV, createFinishManager} from './paint-finishes.js?v=2';
 import {wrapDesigns, createWrapManager} from './paint-wraps.js?v=1';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
@@ -57,7 +57,7 @@ function start(sec) {
     const id=paintWraps.current;
     for(const b of document.querySelectorAll('button[data-wrap]'))b.setAttribute('aria-pressed',String(b.dataset.wrap===id));
     document.querySelector('[data-wrap-detail]').textContent=wrapDesigns[id].detail;
-    const url=new URL(location.href);url.searchParams.set('wrap',id);url.searchParams.set('v','lettering-study-v1');history.replaceState(null,'',url);
+    const url=new URL(location.href);url.searchParams.set('wrap',id);url.searchParams.set('v','2');history.replaceState(null,'',url);
   }
   updateWrapUI();
   function updateFinishUI() {
@@ -66,7 +66,7 @@ function start(sec) {
     document.querySelector('[data-finish-label]').textContent=f.label;
     document.querySelector('[data-finish-detail]').textContent=f.detail;
     document.querySelector('[data-paint-swatch]').style.setProperty('--swatch','#'+f.color.toString(16).padStart(6,'0'));
-    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','lettering-study-v1');history.replaceState(null,'',url);
+    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','2');history.replaceState(null,'',url);
   }
   updateFinishUI();
   const PRESET = {
@@ -548,7 +548,7 @@ function start(sec) {
   sec.addEventListener('rs:leave', () => { if (mode === 'viewer') leave(); });
 
 
-  sec.addEventListener('paint:view', e => { if (!focus) return; radius=e.detail.close ? 7 : (focus==='20'?12.8:11); az = e.detail.az; el = e.detail.el; locked = true; sec.classList.add('is-locked'); orbitView(); dirty = true; });
+  sec.addEventListener('paint:view', e => { if (!focus) return; radius=e.detail.radius || (e.detail.close ? 7 : (focus==='20'?12.8:11)); az = e.detail.az; el = e.detail.el; locked = true; sec.classList.add('is-locked'); orbitView(); dirty = true; });
   for (const b of radios) b.addEventListener('click', () => enter(b.dataset.size));
   for (const a of sec.querySelectorAll('.rs-explore')) a.addEventListener('click', e => { e.preventDefault(); enter(a.closest('.rs-panel').dataset.size); });
   rampBtn.addEventListener('click', () => { if (focus) setRamp(T[focus].rampTo ? 0 : 1); });
@@ -575,7 +575,6 @@ function start(sec) {
       const away = cur.pos.clone().sub(cur.look); away.y *= .55; cur.pos.copy(cur.look).addScaledVector(away, 1.45);
     }
     new ResizeObserver(resize).observe(host);
-    await document.fonts.load('700 100px Lato');
     await Promise.all(Object.entries(m.trailers).filter(([size]) => size === '20' || size === '16').map(([size, t]) => new Promise((ok, bad) => loader.load(A + t.file, g => {
       const group = new THREE.Group(); group.userData.size = size; group.add(g.scene);
       group.position.copy(b2t(t.park)).add(new THREE.Vector3(0, LIFT, 0));

@@ -1,0 +1,36 @@
+{
+  "revision": "lettering-study-v2",
+  "mode": "preview only",
+  "model": "original-wrap-finishes-v1",
+  "finish": "Mirror Graphite",
+  "sizes": [
+    16,
+    20
+  ],
+  "content": "Original autonomous-microfactory-side texture and original Marvel Labs rear logo",
+  "options": [
+    "balanced",
+    "signature",
+    "bold"
+  ],
+  "changes": [
+    "Uniform side-artwork scaling",
+    "Side-artwork position",
+    "Rear-logo vertical position"
+  ],
+  "preserved": [
+    "Original font",
+    "Original tracking",
+    "Original line breaks",
+    "Original cyan underline",
+    "Original textures and UVs",
+    "Rear logo size",
+    "Geometry",
+    "Cyan stripes",
+    "Paint",
+    "Background",
+    "Production render inputs"
+  ],
+  "fit": "Constrain enlarged side artwork to the clear space between existing stripes and doors",
+  "source": "lettering-study.js"
+}
