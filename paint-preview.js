@@ -10,7 +10,7 @@
 // (data-page="reserve"): the stage fills the left column, the size cards and checkout sit in a rail on the right; the
 // rail and the stage talk through two events on the section: 'rs:enter' (go to a size) and 'rs:size' (size shown).
 import * as THREE from 'three';
-import {scenePresets, sceneLabels, createPaintScene} from './paint-scenes.js?v=1';
+import {finishes, prepareFinishUV, createFinishManager} from './paint-finishes.js?v=1';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {RectAreaLightUniformsLib} from 'three/addons/lights/RectAreaLightUniformsLib.js';
@@ -47,14 +47,19 @@ function start(sec) {
   //   c 'reveal':   black room, slim hard rims, one roof line, cyan at stage height: edges only, deep black body
   // 13:55 owner: "I think 3 should be the best, make that on live" -> the outdoor lot is the reserve page's rig; the film
   // studio stays at ?light=film, the morning rig at ?light=old.
-  const query = new URLSearchParams(location.search), requestedScene = query.get('scene');
-  const LIGHT = requestedScene && sceneLabels[requestedScene] ? requestedScene : (location.search.match(/[?&]light=(paint|old|film|white|reveal|outdoor)\b/) || [])[1] || sec.dataset.light || 'paint';
-  document.body.dataset.scene = LIGHT;
-  for (const link of document.querySelectorAll('a[data-scene]')) if (link.dataset.scene === LIGHT) link.setAttribute('aria-current', 'page');
-  const sceneName = document.querySelector('[data-scene-name]'); if (sceneName) sceneName.textContent = sceneLabels[LIGHT] || 'Reflective studio';
+  const query = new URLSearchParams(location.search), LIGHT = 'paint';
   if (['16','20'].includes(query.get('size'))) sec.dataset.open = query.get('size');
+  const paintFinishes = createFinishManager(THREE, query.get('finish'));
+  function updateFinishUI() {
+    const id=paintFinishes.current, f=finishes[id];
+    for(const b of document.querySelectorAll('button[data-finish]'))b.setAttribute('aria-pressed',String(b.dataset.finish===id));
+    document.querySelector('[data-finish-label]').textContent=f.label;
+    document.querySelector('[data-finish-detail]').textContent=f.detail;
+    document.querySelector('[data-paint-swatch]').style.setProperty('--swatch','#'+f.color.toString(16).padStart(6,'0'));
+    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','7');history.replaceState(null,'',url);
+  }
+  updateFinishUI();
   const PRESET = {
-    ...scenePresets,
     paint: {exposure: 1.0, hemi: [0xc8dbe6, 0x18232b, .3], head: .45, frame: [.8, 8.5, 3.2], bloom: [.06, .4, 3.5], floor: .35,
             bg: 0x0b1218, fog: [25, 65], floorColor: 0x101a22, floorRough: .58, deck: 0x16212a, vinyl: .02, sigma: 0},
     // '' (12:40, owner: "same brightness and glossiness" as the films, "this is our showroom"): the films' studio. The paint
@@ -110,7 +115,7 @@ function start(sec) {
       new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false}));
     halo.rotation.x = -Math.PI / 2; halo.position.y = .004;
     g.add(deck, plinth, glow, halo);
-    if (fancy && LIGHT !== 'paint' && !scenePresets[LIGHT]) {                  // daylight comparison keeps the original mirrored stage
+    if (fancy && LIGHT !== 'paint') {                  // daylight comparison keeps the original mirrored stage
       const mirror = new Reflector(new THREE.CircleGeometry(r - .02, 160), {clipBias: .003, textureWidth: 1024, textureHeight: 1024, color: 0x9aa2a8});
       mirror.rotation.x = -Math.PI / 2; mirror.position.y = .2105;
       const gloss = new THREE.Mesh(new THREE.CircleGeometry(r - .02, 160), new THREE.MeshPhysicalMaterial({
@@ -118,7 +123,7 @@ function start(sec) {
       gloss.rotation.x = -Math.PI / 2; gloss.position.y = .2125; gloss.receiveShadow = true;
       g.add(mirror, gloss);
     }
-    g.userData.glow = glow; g.userData.halo = halo; return g;
+    g.userData.glow = glow; return g;
   }
   const deckGroup = stage(6.4); scene.add(deckGroup);
   const contactTexture = (() => {
@@ -145,8 +150,6 @@ function start(sec) {
   // reflections: a dark showroom with white light frames (a big one overhead, strips round the walls), so the glossy paint
   // and the roof shine the way they do in the film; the warm workshop HDR tinted the dark paint brown
   const pmrem = new THREE.PMREMGenerator(renderer);
-  const customScene = scenePresets[LIGHT] ? createPaintScene(THREE, LIGHT) : null;
-  if (customScene) { scene.add(customScene.world); deckGroup.userData.glow.visible = false; deckGroup.userData.halo.visible = false; }
   function gradientSphere(r, stops) {                  // the surround: colour by height, t = y/r from -1 (floor) to 1 (zenith), linear between stops
     const g = new THREE.SphereGeometry(r, 48, 32), P = g.attributes.position, col = new Float32Array(P.count * 3);
     for (let i = 0; i < P.count; i++) {
@@ -180,7 +183,6 @@ function start(sec) {
     m.position.y = (y0 + y1) / 2; return m;
   }
   function buildEnv(kind) {
-    if (customScene) return customScene.environment;
     const env = new THREE.Scene();
     if (kind === 'paint') {
       env.add(gradientSphere(50, [[-1,[.025,.04,.06]],[0,[.07,.10,.14]],[1,[.10,.14,.19]]]));
@@ -220,7 +222,7 @@ function start(sec) {
     }
     return env;
   }
-  if (LIGHT !== 'old' && LIGHT !== 'film') { scene.environment = pmrem.fromScene(buildEnv(LIGHT), PRESET.sigma ?? .02, .1, 220).texture; if (PRESET.sky) { scene.background = scene.environment; scene.backgroundBlurriness = .04; } }
+  if (LIGHT !== 'old' && LIGHT !== 'film') { scene.environment = pmrem.fromScene(buildEnv(LIGHT), PRESET.sigma ?? .02).texture; if (PRESET.sky) { scene.background = scene.environment; scene.backgroundBlurriness = .04; } }
   else if (LIGHT === 'film') {
     // The films' lamps, placed round the stage as the paint sees them (three.js metres: x along the trailers, y up).
     // Positions are the film rigs' offsets from the hero trailer (render-opening-film.py tracking studio, intro-quality-v4
@@ -317,7 +319,7 @@ function start(sec) {
     let key = (mat.name || '').replace(/^Marvel /, '').replace(/\.\d+$/, '');
     for (const [re, k] of FILM) if (re.test(mat.name || '')) { key = k; break; }
     let out = mat;
-    if ((mat.name || '').startsWith('Livery /')) { mat.envMapIntensity = /wordmark/.test(mat.name) ? 1.0 : (PRESET.envIntensity ?? 1.35); made.set(id, mat); return mat; }
+    if ((mat.name || '').startsWith('Livery /')) { mat.envMapIntensity = /wordmark/.test(mat.name) ? 1.0 : 1.35; paintFinishes.register(mat); made.set(id, mat); return mat; }
     if (FINISH[key]) {
       out = new THREE.MeshPhysicalMaterial({name: mat.name, ...FINISH[key], side: mat.side});   // the film's panels are double-sided
       if (!uv) out.normalMap = null;
@@ -492,7 +494,7 @@ function start(sec) {
   const overCopy = e => { if (!copy) return false; const r = copy.getBoundingClientRect(); return e.clientX < r.right + 10 && !matchMedia('(max-width:760px)').matches; };
   let drag = null;
   const onMove = (e, fromPage) => {
-    if (!meta) return;
+    if (!meta || e.target.closest?.('.paint-finishes')) return;
     const r = renderer.domElement.getBoundingClientRect();
     if (drag && !fromPage) {                           // touch / pen, or dragging while locked: turn it by hand
       az += (e.clientX - drag.x) * .008; el = Math.min(1.42, Math.max(.04, el + (e.clientY - drag.y) * .006));
@@ -532,7 +534,8 @@ function start(sec) {
   let pending = sec.dataset.open || '';                // the reserve page's rail: go to a size (before the models load: on arrival)
   sec.addEventListener('rs:enter', e => { if (T[e.detail]) enter(e.detail); else pending = e.detail; });
   sec.addEventListener('rs:leave', () => { if (mode === 'viewer') leave(); });
-  sec.addEventListener('paint:view', e => { if (!focus) return; az = e.detail.az; el = e.detail.el; locked = true; sec.classList.add('is-locked'); orbitView(); dirty = true; });
+  sec.addEventListener('paint:finish', e => { if (paintFinishes.select(e.detail)) { updateFinishUI(); dirty=true; } });
+  sec.addEventListener('paint:view', e => { if (!focus) return; radius=e.detail.close ? 7 : (focus==='20'?12.8:11); az = e.detail.az; el = e.detail.el; locked = true; sec.classList.add('is-locked'); orbitView(); dirty = true; });
   for (const b of radios) b.addEventListener('click', () => enter(b.dataset.size));
   for (const a of sec.querySelectorAll('.rs-explore')) a.addEventListener('click', e => { e.preventDefault(); enter(a.closest('.rs-panel').dataset.size); });
   rampBtn.addEventListener('click', () => { if (focus) setRamp(T[focus].rampTo ? 0 : 1); });
@@ -562,14 +565,15 @@ function start(sec) {
     await Promise.all(Object.entries(m.trailers).filter(([size]) => size === '20' || size === '16').map(([size, t]) => new Promise((ok, bad) => loader.load(A + t.file, g => {
       const group = new THREE.Group(); group.userData.size = size; group.add(g.scene);
       group.position.copy(b2t(t.park)).add(new THREE.Vector3(0, LIFT, 0));
-      if (LIGHT === 'paint' || scenePresets[LIGHT]) {
+      if (LIGHT === 'paint') {
         const shadow=new THREE.Mesh(new THREE.PlaneGeometry(size==='20'?7.1:5.9,size==='20'?3.0:2.6),new THREE.MeshBasicMaterial({map:contactTexture,transparent:true,depthWrite:false,toneMapped:false}));
         shadow.rotation.x=-Math.PI/2;shadow.position.set(.1,.004,0);group.add(shadow);
       }
       g.scene.traverse(o => {
         if (!o.isMesh) return;
         o.castShadow = true; o.receiveShadow = true;
-        // Native CAD normals are retained for the finish study.
+        // Add metre-scale finish UVs; native positions and normals remain unchanged.
+        prepareFinishUV(THREE,o);
         const uv = !!o.geometry.attributes.uv;
         o.material = Array.isArray(o.material) ? o.material.map(m => finish(m, uv)) : finish(o.material, uv);
       });
@@ -582,7 +586,7 @@ function start(sec) {
     }, undefined, bad))));
     sec.classList.add('rs-live'); dirty = true;
     if (/[?&]debug3d/.test(location.search)) window.__rs3d = {scene, T, renderer, camera, composer, head, frame, LIGHTS,   // 10-30: the QA grid drives the view
-      state: () => ({az, el, radius, locked, mode, focus}), enter, leave,
+      state: () => ({az, el, radius, locked, mode, focus, finish:paintFinishes.current}), enter, leave,
       view: (a, e, snap) => { az = a; el = e; if (focus) { orbitView(); if (snap) { cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift = want.shift; } dirty = true; } },
       lock: v => { locked = v; sec.classList.toggle('is-locked', locked); }};
     if (own) enter(sec.dataset.size || '20');
