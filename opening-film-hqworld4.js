@@ -1,4 +1,4 @@
-import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=fuller-media-4795b207b4';
+import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=fuller-graphite-spotlight-v1';
 const clamp=v=>Math.max(0,Math.min(1,v));
 export const filmDuration=10;
 // The fast approach/impact is retained; the reveal settles sooner for the handoff.

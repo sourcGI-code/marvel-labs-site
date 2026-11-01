@@ -1,4 +1,4 @@
-import {introFilmKind} from './film-sources-hqworld4.js?v=fuller-media-4795b207b4';
+import {introFilmKind} from './film-sources-hqworld4.js?v=fuller-graphite-spotlight-v1';
 // Preview only. Preserve the original glide over one genuinely expanded movie.
 // Restore the original right/left glide over the unchanged HQ
 // films. Projection is centered CONTAIN; there is no arrival zoom or tail dip.

@@ -57,8 +57,8 @@
   "base": "assets/shared-solidworks-mobile-opening-v3",
   "revision": "solidworks-mobile-v3",
   "desktop": {
-   "base": "assets/intro-fuller-graphite-v1",
-   "revision": "fuller-graphite-intro-v1",
+   "base": "assets/intro-fuller-graphite-spotlight-v1",
+   "revision": "fuller-graphite-spotlight-v1",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -70,22 +70,22 @@
     "cropY": 224
    },
    "videoFile": "desktop.mp4",
-   "quality": "final",
+   "quality": "balanced",
    "nativeVideo": {
-    "width": 3840,
-    "height": 1706,
-    "framerate": 42.0,
-    "bitrate": 9327862,
-    "codec": "avc1.640034",
-    "file": "desktop.mp4"
+    "file": "desktop.mp4",
+    "width": 2304,
+    "height": 1024,
+    "framerate": 42,
+    "bitrate": 2674084,
+    "codec": "avc1.640032"
    },
    "compatibilityVideo": {
-    "width": 3840,
-    "height": 1706,
-    "framerate": 42.0,
-    "bitrate": 9327862,
-    "codec": "avc1.640034",
     "file": "desktop.mp4",
+    "width": 2304,
+    "height": 1024,
+    "framerate": 42,
+    "bitrate": 2674084,
+    "codec": "avc1.640032",
     "linearResolution": 1,
     "verticalResolution": 1
    },
