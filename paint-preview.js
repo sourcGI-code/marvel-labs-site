@@ -10,6 +10,7 @@
 // (data-page="reserve"): the stage fills the left column, the size cards and checkout sit in a rail on the right; the
 // rail and the stage talk through two events on the section: 'rs:enter' (go to a size) and 'rs:size' (size shown).
 import * as THREE from 'three';
+import {createFullerGraphiteFinish} from './fuller-graphite-finish.js?v=fuller-graphite-v1';
 import {finishes, prepareFinishUV, createFinishManager} from './paint-finishes.js?v=2';
 import {wrapDesigns, createWrapManager} from './paint-wraps.js?v=1';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
@@ -31,7 +32,7 @@ if (sec) start(sec);
 
 function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/original-wrap-finishes-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = 'assets/fuller-graphite-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -56,7 +57,7 @@ function start(sec) {
     const id=paintWraps.current;
     for(const b of document.querySelectorAll('button[data-wrap]'))b.setAttribute('aria-pressed',String(b.dataset.wrap===id));
     document.querySelector('[data-wrap-detail]').textContent=wrapDesigns[id].detail;
-    const url=new URL(location.href);url.searchParams.set('wrap',id);url.searchParams.set('v','mirror-graphite-v1');history.replaceState(null,'',url);
+    const url=new URL(location.href);url.searchParams.set('wrap',id);url.searchParams.set('v','fuller-graphite-v1');history.replaceState(null,'',url);
   }
   updateWrapUI();
   function updateFinishUI() {
@@ -65,7 +66,7 @@ function start(sec) {
     document.querySelector('[data-finish-label]').textContent=f.label;
     document.querySelector('[data-finish-detail]').textContent=f.detail;
     document.querySelector('[data-paint-swatch]').style.setProperty('--swatch','#'+f.color.toString(16).padStart(6,'0'));
-    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','mirror-graphite-v1');history.replaceState(null,'',url);
+    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','fuller-graphite-v1');history.replaceState(null,'',url);
   }
   updateFinishUI();
   const PRESET = {
@@ -91,6 +92,7 @@ function start(sec) {
   }[LIGHT];
 
   const renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
+  const approvedFinish=createFullerGraphiteFinish(renderer);
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.AgXToneMapping; renderer.toneMappingExposure = PRESET.exposure;
@@ -328,7 +330,7 @@ function start(sec) {
     let key = (mat.name || '').replace(/^Marvel /, '').replace(/\.\d+$/, '');
     for (const [re, k] of FILM) if (re.test(mat.name || '')) { key = k; break; }
     let out = mat;
-    if ((mat.name || '').startsWith('Livery /')) { mat.envMapIntensity = /wordmark/.test(mat.name) ? 1.0 : 1.35; paintFinishes.register(mat); made.set(id, mat); return mat; }
+    if ((mat.name || '').startsWith('Livery /')) { mat.envMapIntensity = /wordmark/.test(mat.name) ? 1.0 : 1.35; paintFinishes.register(mat); made.set(id, mat); return approvedFinish(mat); }
     if (FINISH[key]) {
       out = new THREE.MeshPhysicalMaterial({name: mat.name, ...FINISH[key], side: mat.side});   // the film's panels are double-sided
       if (!uv) out.normalMap = null;
@@ -340,7 +342,7 @@ function start(sec) {
         polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2});
     } else if ('envMapIntensity' in mat) mat.envMapIntensity = 1.15;
     if (/wordmark|lettering/i.test(out.name || '')) paintFinishes.register(out);
-    made.set(id, out); return out;
+    made.set(id, out); return approvedFinish(out);
   }
 
   // the film trailer's side, roof, rear and V-nose panels are scanned surfaces, a few mm wavy: fine under the film's satin
@@ -464,7 +466,7 @@ function start(sec) {
     setRamp(0);
     const o = size === '20' ? '16' : '20';
     if (other) {
-      other.dataset.size = o; other.querySelector('img').src = `assets/original-wrap-finishes-v1/thumb-${o}.webp?v=mirror-graphite-v1`;
+      other.dataset.size = o; other.querySelector('img').src = `assets/fuller-graphite-v1/thumb-${o}.webp?v=fuller-graphite-v1`;
       other.querySelector('.rs-other-size').textContent = `${o} ft`;
     }
     orbitView();

@@ -1,12 +1,13 @@
 {
-  "revision": "mirror-graphite-v1",
-  "wrap": "Original",
+  "revision": "fuller-graphite-v1",
+  "wrap": "Original / Fuller",
   "finish": "Mirror Graphite",
-  "modelBase": "assets/original-wrap-finishes-v1/",
+  "modelBase": "assets/fuller-graphite-v1/",
   "models": {
-    "16": "trailer-16-original-wrap.glb",
-    "20": "trailer-20-original-wrap.glb"
+    "16": "trailer-16-fuller-graphite.glb",
+    "20": "trailer-20-fuller-graphite.glb"
   },
   "alternatives": false,
-  "filmUpdate": "Rendering the same approved model into the existing scenes"
+  "filmUpdate": "Rendering the approved Fuller design into the existing scenes",
+  "approvedOption": 2
 }
