@@ -4,8 +4,8 @@
   "base": "assets/shared-solidworks-mobile-fleet-v3",
   "revision": "solidworks-mobile-v3",
   "desktop": {
-   "base": "assets/shared-solidworks-fleet-v3",
-   "revision": "solidworks-fleet-v3",
+   "base": "assets/fuller-graphite-fleet-v1",
+   "revision": "fuller-graphite-fleet-v1",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -17,22 +17,22 @@
     "cropY": 224
    },
    "videoFile": "desktop.mp4",
-   "quality": "final",
+   "quality": "balanced",
    "nativeVideo": {
     "file": "desktop.mp4",
-    "width": 3840,
-    "height": 1706,
+    "width": 2304,
+    "height": 1024,
     "framerate": 30,
-    "bitrate": 7361640,
-    "codec": "avc1.640033"
+    "bitrate": 1841492,
+    "codec": "avc1.640032"
    },
    "compatibilityVideo": {
     "file": "desktop.mp4",
-    "width": 3840,
-    "height": 1706,
+    "width": 2304,
+    "height": 1024,
     "framerate": 30,
-    "bitrate": 7361640,
-    "codec": "avc1.640033",
+    "bitrate": 1841492,
+    "codec": "avc1.640032",
     "linearResolution": 1,
     "verticalResolution": 1
    },
