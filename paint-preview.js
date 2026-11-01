@@ -31,7 +31,7 @@ if (sec) start(sec);
 
 function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/trailer-wraps-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = 'assets/original-wrap-finishes-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -50,13 +50,13 @@ function start(sec) {
   // studio stays at ?light=film, the morning rig at ?light=old.
   const query = new URLSearchParams(location.search), LIGHT = 'paint';
   if (['16','20'].includes(query.get('size'))) sec.dataset.open = query.get('size');
-  const paintFinishes = createFinishManager(THREE, query.get('finish'));
-  const paintWraps = createWrapManager(query.get('wrap'));
+  const paintFinishes = createFinishManager(THREE, 'graphite');
+  const paintWraps = createWrapManager('classic');
   function updateWrapUI() {
     const id=paintWraps.current;
     for(const b of document.querySelectorAll('button[data-wrap]'))b.setAttribute('aria-pressed',String(b.dataset.wrap===id));
     document.querySelector('[data-wrap-detail]').textContent=wrapDesigns[id].detail;
-    const url=new URL(location.href);url.searchParams.set('wrap',id);url.searchParams.set('v','9');history.replaceState(null,'',url);
+    const url=new URL(location.href);url.searchParams.set('wrap',id);url.searchParams.set('v','mirror-graphite-v1');history.replaceState(null,'',url);
   }
   updateWrapUI();
   function updateFinishUI() {
@@ -65,7 +65,7 @@ function start(sec) {
     document.querySelector('[data-finish-label]').textContent=f.label;
     document.querySelector('[data-finish-detail]').textContent=f.detail;
     document.querySelector('[data-paint-swatch]').style.setProperty('--swatch','#'+f.color.toString(16).padStart(6,'0'));
-    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','9');history.replaceState(null,'',url);
+    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','mirror-graphite-v1');history.replaceState(null,'',url);
   }
   updateFinishUI();
   const PRESET = {
@@ -464,7 +464,7 @@ function start(sec) {
     setRamp(0);
     const o = size === '20' ? '16' : '20';
     if (other) {
-      other.dataset.size = o; other.querySelector('img').src = `assets/reserve-viewer/thumb-${o}.webp?v=solidworks-v3`;
+      other.dataset.size = o; other.querySelector('img').src = `assets/original-wrap-finishes-v1/thumb-${o}.webp?v=mirror-graphite-v1`;
       other.querySelector('.rs-other-size').textContent = `${o} ft`;
     }
     orbitView();
@@ -544,8 +544,8 @@ function start(sec) {
   let pending = sec.dataset.open || '';                // the reserve page's rail: go to a size (before the models load: on arrival)
   sec.addEventListener('rs:enter', e => { if (T[e.detail]) enter(e.detail); else pending = e.detail; });
   sec.addEventListener('rs:leave', () => { if (mode === 'viewer') leave(); });
-  sec.addEventListener('paint:wrap', e => { if(paintWraps.select(e.detail)){updateWrapUI();dirty=true;} });
-  sec.addEventListener('paint:finish', e => { if (paintFinishes.select(e.detail)) { updateFinishUI(); dirty=true; } });
+
+
   sec.addEventListener('paint:view', e => { if (!focus) return; radius=e.detail.close ? 7 : (focus==='20'?12.8:11); az = e.detail.az; el = e.detail.el; locked = true; sec.classList.add('is-locked'); orbitView(); dirty = true; });
   for (const b of radios) b.addEventListener('click', () => enter(b.dataset.size));
   for (const a of sec.querySelectorAll('.rs-explore')) a.addEventListener('click', e => { e.preventDefault(); enter(a.closest('.rs-panel').dataset.size); });

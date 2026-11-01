@@ -13,7 +13,6 @@ import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {RectAreaLightUniformsLib} from 'three/addons/lights/RectAreaLightUniformsLib.js';
-import {Reflector} from 'three/addons/objects/Reflector.js';
 import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
 import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
 import {UnrealBloomPass} from 'three/addons/postprocessing/UnrealBloomPass.js';
@@ -29,7 +28,7 @@ if (sec) start(sec);
 
 function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/hybrid-trailer-v4/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = 'assets/original-wrap-finishes-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -101,14 +100,7 @@ function start(sec) {
       new THREE.MeshBasicMaterial({map: new THREE.CanvasTexture(c), transparent: true, depthWrite: false, blending: THREE.AdditiveBlending, toneMapped: false}));
     halo.rotation.x = -Math.PI / 2; halo.position.y = .004;
     g.add(deck, plinth, glow, halo);
-    if (fancy) {                                       // polished top: the trailers stand on their own reflection
-      const mirror = new Reflector(new THREE.CircleGeometry(r - .02, 160), {clipBias: .003, textureWidth: 1024, textureHeight: 1024, color: 0x9aa2a8});
-      mirror.rotation.x = -Math.PI / 2; mirror.position.y = .2105;
-      const gloss = new THREE.Mesh(new THREE.CircleGeometry(r - .02, 160), new THREE.MeshPhysicalMaterial({
-        color: 0x0a0d0f, roughness: .32, metalness: 0, transparent: true, opacity: .78, clearcoat: .7, clearcoatRoughness: .08, envMapIntensity: .15}));
-      gloss.rotation.x = -Math.PI / 2; gloss.position.y = .2125; gloss.receiveShadow = true;
-      g.add(mirror, gloss);
-    }
+    // Mirror Graphite uses the approved paint study platform; the older planar mirror creates duplicate clipped silhouettes.
     g.userData.glow = glow; return g;
   }
   const deckGroup = stage(6.4); scene.add(deckGroup);
@@ -163,7 +155,23 @@ function start(sec) {
   }
   function buildEnv(kind) {
     const env = new THREE.Scene();
-    if (kind === 'white') {                            // a white cyclorama studio: black paint on white, the Tesla-configurator look
+    if (kind === 'paint') {
+      env.add(gradientSphere(50, [[-1,[.025,.04,.06]],[0,[.07,.10,.14]],[1,[.10,.14,.19]]]));
+      // Recognizable showroom window frames in the reflection map. Their
+      // dark mullions stay sharp and travel over the paint as the view turns.
+      const paneMaterial = new THREE.MeshBasicMaterial({color:new THREE.Color(.5,.62,.75),side:THREE.DoubleSide,toneMapped:false});
+      for(let i=0;i<8;i++) {
+        const angle=i*Math.PI/4,window=new THREE.Group();
+        window.position.set(Math.cos(angle)*18,-1.4,Math.sin(angle)*18);window.lookAt(0,-1.4,0);
+        for(const x of [-3.0,0,3.0])for(const y of [-3.0,0,3.0]) {
+          const pane=new THREE.Mesh(new THREE.PlaneGeometry(2.65,2.35),paneMaterial);pane.position.set(x,y,0);window.add(pane);
+        }
+        env.add(window);
+      }
+      for(const x of [-4,4])for(const z of [-4,4]) {
+        const pane=new THREE.Mesh(new THREE.PlaneGeometry(2.8,6.8),paneMaterial);pane.position.set(x,14,z);pane.rotation.x=Math.PI/2;env.add(pane);
+      }
+    } else if (kind === 'white') {                            // a white cyclorama studio: black paint on white, the Tesla-configurator look
       // the walls the paint mirrors are dimmer than the backdrop it stands in front of, so the body stays charcoal on white
       env.add(gradientSphere(40, [[-1, [.3, .31, .32]], [-.02, [.4, .41, .42]], [0, [.5, .51, .52]], [.4, [.56, .57, .58]], [1, [.62, .63, .64]]]));
       env.add(softbox(22, 11, 3.2, [0, 15, 0], [0, 0, 0]));               // a big soft ceiling box: the roof goes bright white
@@ -238,6 +246,9 @@ function start(sec) {
     if (/[?&]debug3d/.test(location.search)) window.__env = env;
   }
 
+  // Keep the selected finish's crisp reflections without replacing the visible scene.
+  scene.environment = pmrem.fromScene(buildEnv('paint'), 0).texture;
+
   // ---- finishes for the v2 trailer's 'Marvel <finish>' materials
   const flake = (() => {                               // metallic flake: every texel a tiny mirror tilted a little, any way
     const n = 256, c = document.createElement('canvas'); c.width = c.height = n;
@@ -279,6 +290,8 @@ function start(sec) {
     if (!mat) return mat;
     const id = mat.uuid + (uv ? '' : '/nouv');
     if (made.has(id)) return made.get(id);
+    // Owner-approved Mirror Graphite is authored in the model. Never replace it with the legacy satin finish.
+    if ((mat.name || '').startsWith('Livery /')) { mat.envMapIntensity = 1.35; made.set(id,mat); return mat; }
     let key = (mat.name || '').replace(/^Marvel /, '').replace(/\.\d+$/, '');
     for (const [re, k] of FILM) if (re.test(mat.name || '')) { key = k; break; }
     let out = mat;
@@ -416,7 +429,7 @@ function start(sec) {
     setRamp(0);
     const o = size === '20' ? '16' : '20';
     if (other) {
-      other.dataset.size = o; other.querySelector('img').src = `assets/hybrid-trailer-v4/thumb-${o}.webp?v=hybrid-v4`;
+      other.dataset.size = o; other.querySelector('img').src = `assets/original-wrap-finishes-v1/thumb-${o}.webp?v=mirror-graphite-v1`;
       other.querySelector('.rs-other-size').textContent = `${o} ft`;
     }
     orbitView();

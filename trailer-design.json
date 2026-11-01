@@ -1,0 +1,12 @@
+{
+  "revision": "mirror-graphite-v1",
+  "wrap": "Original",
+  "finish": "Mirror Graphite",
+  "modelBase": "assets/original-wrap-finishes-v1/",
+  "models": {
+    "16": "trailer-16-original-wrap.glb",
+    "20": "trailer-20-original-wrap.glb"
+  },
+  "alternatives": false,
+  "filmUpdate": "Rendering the same approved model into the existing scenes"
+}
