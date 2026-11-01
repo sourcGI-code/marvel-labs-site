@@ -2,6 +2,11 @@
 .offer-v2 .masthead .desktop-nav { gap: clamp(14px, 1.5vw, 25px); }
 .offer-v2 .masthead .desktop-nav a { white-space: nowrap; }
 @media (max-width: 1100px) {
+  .offer-v2 #mobile-menu {
+    max-height: calc(100svh - 100px);
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
   .offer-v2 .masthead .desktop-nav,
   .offer-v2 .masthead .contact-link { display: none; }
   .offer-v2 .masthead .menu-button {

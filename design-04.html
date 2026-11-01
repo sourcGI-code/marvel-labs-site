@@ -17,7 +17,7 @@
 <script>try{const p=new URLSearchParams(location.search).get('palette');if(['charcoal','ivory','burgundy','midnight'].includes(p))document.documentElement.dataset.palette=p;}catch{}</script>
 <script>if((!location.hash||location.hash==='#top')&&!new URLSearchParams(location.search).has('edit')&&!matchMedia('(prefers-reduced-motion: reduce)').matches){const root=document.documentElement,aspect=innerWidth/innerHeight,film=innerWidth<=760?.5:1.6;root.style.setProperty('--arrival-film-scale',Math.max(aspect/film,film/aspect));}</script>
 
-<link rel="stylesheet" href="company-links.css?v=1">
+<link rel="stylesheet" href="company-links.css?v=home-app-nav-v1">
 <link rel="stylesheet" href="text-selection.css?v=1">
 <style>.tour-chapters button{font:inherit;color:inherit;background:none;border:0;padding:4px 2px;cursor:pointer}.tour-chapters button:focus-visible{outline:2px solid currentColor;outline-offset:4px}</style>
 <link rel="stylesheet" href="route-quotes.css?v=2">
@@ -37,11 +37,11 @@
 <a class="skip-link" href="#inside">Skip the animated introduction</a>
 <header class="masthead">
  <a class="brand" href="#top" aria-label="Marvel Labs home"><span class="brand-wordmark" aria-hidden="true"></span></a>
- <nav class="desktop-nav" aria-label="Main"><a href="#sizes">The trailers</a><a href="#story">The numbers</a><a href="#inside">See it work</a><a href="#app">Marvel Crew</a></nav>
+ <nav class="desktop-nav" aria-label="Main"><a href="#top">Home</a><a href="#sizes">The trailers</a><a href="#story">The numbers</a><a href="#inside">See it work</a><a href="#app">Marvel Crew</a></nav>
 
  <button class="menu-button" aria-expanded="false" aria-controls="mobile-menu">Menu <span>+</span></button>
 </header>
-<nav id="mobile-menu" aria-label="Mobile navigation" hidden><a href="#sizes">The trailers ↗</a><a href="#story">The numbers ↗</a><a href="#inside">See it work ↗</a><a href="#app">Marvel Crew ↗</a><a href="reserve.html?v=mirror-graphite-v1">Reserve your trailer ↗</a></nav>
+<nav id="mobile-menu" aria-label="Mobile navigation" hidden><a href="#top">Home ↗</a><a href="#sizes">The trailers ↗</a><a href="#story">The numbers ↗</a><a href="#inside">See it work ↗</a><a href="#app">Marvel Crew ↗</a><a href="reserve.html?v=mirror-graphite-v1">Reserve your trailer ↗</a></nav>
 <main><section id="top" class="scroll-track hero-track" data-scroll-length="2600" aria-labelledby="hero-title">
  <div class="pin hero-pin platform-pin">
   <div class="hero-visual scene-host" id="hero-visual"><picture class="arrival-poster" aria-hidden="true"><source media="(prefers-reduced-motion:reduce)" srcset="assets/true-world-v1/recorded/cargo/desktop-poster.webp?v=hqworld4"><source data-opening-mobile media="(max-width:760px), (orientation:portrait)" srcset="assets/marvel-v4/opening-film/mobile-poster.webp?v=hqgloss1"><img src="assets/true-world-v1/opening-film/desktop-poster.webp?v=hqworld4" alt="" fetchpriority="high"></picture><div class="scene-fallback"><picture><source media="(max-width:760px), (orientation:portrait)" srcset="assets/marvel-v4/recorded/cargo/mobile-poster.webp?v=hqgloss1"><img src="assets/true-world-v1/recorded/cargo/desktop-poster.webp?v=hqworld4" alt="Closed 20-foot Autonomous Microfactories trailer concept"></picture></div><canvas id="hero-canvas" aria-label="Truck arrival and impact camera lift, followed by the Ford pickup delivering and unhitching a separate 16-foot trailer beside the parked 20-foot trailer. After the pickup leaves, the camera holds on the delivered trailers. The front microfactory stays enclosed."></canvas></div>
