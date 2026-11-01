@@ -86,11 +86,10 @@ if (section) {
     });
   });
 
-  function settle() {
+  function settle(still = false) {
     clearTimeout(entranceTimer);
     entrance.pause();
-    phone.style.opacity = '1';
-    phone.style.transform = 'none';
+    if (still === true) section.dataset.phoneStill = 'true';
     phone.inert = false;
     section.dataset.phoneState = 'ready';
   }
@@ -100,20 +99,20 @@ if (section) {
     sizePhone();
     selectRoute('trailer');
     section.dataset.phoneState = 'entering';
-    if (reduced.matches) { settle(); return; }
-    // These are the original rendered frames, at their original 30 fps.
-    // The file ends after two seconds; it never replays on feature changes.
+    if (reduced.matches) { settle(true); return; }
+    // Original 3D handset: the unchanged entrance, then a short turn to zero
+    // yaw/pitch/roll. Hold that exact final frame beneath the interactive screen.
     entrance.src = entrance.dataset.src;
     entrance.muted = true;
-    entrance.play().catch(settle);
-    entranceTimer = setTimeout(settle, 12000);
+    entrance.play().catch(() => settle(true));
+    entranceTimer = setTimeout(() => settle(true), 12000);
   }
-  entrance.addEventListener('ended', settle);
-  entrance.addEventListener('error', settle);
+  entrance.addEventListener('ended', () => settle());
+  entrance.addEventListener('error', () => settle(true));
   entrance.addEventListener('playing', () => {
     clearTimeout(entranceTimer);
     // A failed/stalled stream must still leave the app reachable.
-    entranceTimer = setTimeout(settle, 8000);
+    entranceTimer = setTimeout(() => settle(true), 8000);
   });
   buttons.forEach(button => button.addEventListener('click', () => {
     enter();
@@ -127,6 +126,6 @@ if (section) {
   new IntersectionObserver(entries => {
     if (!document.documentElement.classList.contains('immersive') && entries.some(entry => entry.isIntersecting)) enter();
   }, { threshold: .25 }).observe(section);
-  reduced.addEventListener('change', () => { if (reduced.matches && entered) settle(); });
+  reduced.addEventListener('change', () => { if (reduced.matches && entered) settle(true); });
   active();
 }

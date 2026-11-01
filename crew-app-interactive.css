@@ -17,28 +17,19 @@
 #app .crew-note a span{color:#4dd8e8}
 #app :is(button,a):focus-visible{outline:2px solid #4dd8e8;outline-offset:4px}
 #app .crew-phone-stage{position:relative;width:100%;height:100%;min-height:410px;display:flex;align-items:center;justify-content:center;perspective:1200px}
-#app .crew-phone-entrance{position:absolute;z-index:2;left:50%;top:50%;height:calc(var(--phone-height,680px) * 1920 / 1828);width:calc(var(--phone-height,680px) * 960 / 1828);max-width:none;transform:translate(-50%,-48.83%);pointer-events:none;opacity:1;transition:opacity .18s linear}
-#app[data-phone-state="ready"] .crew-phone-entrance{opacity:0;visibility:hidden;transition:opacity .18s linear,visibility 0s .18s}
-#app .crew-phone-stage::before{content:"";position:absolute;inset:5% -12%;background:radial-gradient(ellipse at 50% 50%,#4dd8e80a,transparent 65%);pointer-events:none}
-#app .crew-phone{--phone-height:680px;position:relative;height:var(--phone-height);width:calc(var(--phone-height) / 2.04);flex:none;padding:6px;border-radius:clamp(30px,4.8svh,48px);background:linear-gradient(105deg,#939a9e 0%,#232a2d 2%,#06090a 6%,#171d20 92%,#6c9b9f 97%,#151a1c 100%);border:1px solid #919b9f;box-shadow:0 0 0 1px #000,0 0 0 2px #293236,0 24px 65px #0009,1px 0 16px #4dd8e81a;opacity:0;transform:none;transition:opacity .18s linear}
-#app .crew-phone::before,#app .crew-phone::after{content:"";position:absolute;background:linear-gradient(90deg,#242c30,#8c969b,#232b2e);width:3px;border-radius:2px}
-#app .crew-phone::before{left:-4px;top:22%;height:42px;box-shadow:0 52px 0 #4c565c}
-#app .crew-phone::after{right:-4px;top:28%;height:64px}
-#app .crew-phone-glass{position:relative;display:flex;flex-direction:column;width:100%;height:100%;overflow:hidden;border:3px solid #020405;border-radius:inherit;background:#0a0e10}
-#app .crew-phone-top{position:relative;display:flex;align-items:center;justify-content:space-between;height:35px;flex:none;padding:5px 18px 0;font:600 10px/1 system-ui,sans-serif;color:#f2f3f2}
-#app .crew-phone-island{position:absolute;top:7px;left:50%;transform:translateX(-50%);width:29%;height:23px;border-radius:20px;background:#010203;box-shadow:inset 0 0 1px #72787b}
-#app .crew-phone-island::after{content:"";position:absolute;right:8px;top:8px;width:6px;height:6px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#183449,#07121b 45%,#020407 70%)}
-#app .crew-phone-signals{display:flex;align-items:center;gap:4px}
-#app .crew-phone-signals svg{width:13px;height:12px;fill:currentColor}
-#app .crew-phone-battery{position:relative;width:17px;height:8px;border:1px solid #f2f3f27f;border-radius:2px;box-shadow:2px 0 0 -1px #f2f3f2}
-#app .crew-phone-battery::after{content:"";position:absolute;inset:1px 3px 1px 1px;background:#f2f3f2;border-radius:1px}
-#app .crew-phone iframe{display:block;width:100%;flex:1;min-height:0;border:0;background:#0a0e10;opacity:0;color-scheme:dark}
+/* The saved Blender handset remains visible; only its measured screen gets HTML. */
+#app .crew-phone{--phone-height:680px;position:relative;height:calc(var(--phone-height) * 1920 / 1828);width:calc(var(--phone-height) * 960 / 1828);flex:none;transform:none}
+#app .crew-phone-entrance,#app .crew-phone-still{position:absolute;inset:0;width:100%;height:100%;display:block;object-fit:contain;pointer-events:none}
+#app .crew-phone-still{visibility:hidden}
+#app[data-phone-still="true"] .crew-phone-still{visibility:visible}
+#app[data-phone-still="true"] .crew-phone-entrance{visibility:hidden}
+#app .crew-phone-screen{position:absolute;left:6.855515%;top:6.801410%;width:84.955645%;height:87.050334%;overflow:hidden;border-radius:0 0 9% 9% / 0 0 4.5% 4.5%;background:#0a0e10;opacity:0;pointer-events:none}
+#app[data-phone-state="ready"] .crew-phone-screen{opacity:1;pointer-events:auto}
+#app .crew-phone iframe{display:block;width:100%;height:100%;border:0;background:#0a0e10;opacity:0;color-scheme:dark}
 #app[data-app-loaded="true"] .crew-phone iframe{opacity:1}
-#app .crew-phone-loading{position:absolute;inset:35px 0 19px;display:grid;place-content:center;text-align:center;gap:9px;padding:20px;color:#a4adb0;background:#0a0e10;font:12px/1.6 system-ui,sans-serif;pointer-events:none}
+#app .crew-phone-loading{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:9px;padding:20px;color:#a4adb0;background:#0a0e10;font:12px/1.6 system-ui,sans-serif;pointer-events:none}
 #app .crew-phone-loading strong{font-size:15px;color:#4dd8e8;letter-spacing:.15em}
 #app[data-app-loaded="true"] .crew-phone-loading{display:none}
-#app .crew-phone-home{height:16px;flex:none;display:grid;place-items:center;background:#0a0e10}
-#app .crew-phone-home::after{content:"";width:31%;height:3px;border-radius:3px;background:#f2f3f2}
 #app .crew-phone-caption{position:absolute;left:0;right:0;bottom:0;text-align:center;margin:0;font-size:11px;color:#a4adb0}
 #app .crew-phone-status{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media(max-height:760px) and (min-width:761px){
@@ -70,4 +61,4 @@
 @media(max-height:540px) and (min-width:761px){
  #app.crew-app{overflow-y:auto;grid-template-rows:minmax(440px,1fr)}
 }
-@media(prefers-reduced-motion:reduce){#app .crew-phone-entrance{display:none}#app .crew-phone{opacity:1;transform:none;transition:none}#app .crew-beats button{transition:none}}
+@media(prefers-reduced-motion:reduce){#app .crew-phone-entrance{visibility:hidden}#app .crew-phone-still{visibility:visible}#app .crew-beats button{transition:none}}
