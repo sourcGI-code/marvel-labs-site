@@ -10,7 +10,7 @@
 // (data-page="reserve"): the stage fills the left column, the size cards and checkout sit in a rail on the right; the
 // rail and the stage talk through two events on the section: 'rs:enter' (go to a size) and 'rs:size' (size shown).
 import * as THREE from 'three';
-import {finishes, prepareFinishUV, createFinishManager} from './paint-finishes.js?v=1';
+import {finishes, prepareFinishUV, createFinishManager} from './paint-finishes.js?v=2';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {RectAreaLightUniformsLib} from 'three/addons/lights/RectAreaLightUniformsLib.js';
@@ -30,7 +30,7 @@ if (sec) start(sec);
 
 function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/graphite-cyan-finish-v2/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = 'assets/original-wrap-finishes-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -56,7 +56,7 @@ function start(sec) {
     document.querySelector('[data-finish-label]').textContent=f.label;
     document.querySelector('[data-finish-detail]').textContent=f.detail;
     document.querySelector('[data-paint-swatch]').style.setProperty('--swatch','#'+f.color.toString(16).padStart(6,'0'));
-    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','7');history.replaceState(null,'',url);
+    const url=new URL(location.href);url.searchParams.delete('scene');url.searchParams.delete('light');url.searchParams.set('finish',id);url.searchParams.set('v','8');history.replaceState(null,'',url);
   }
   updateFinishUI();
   const PRESET = {
@@ -330,6 +330,7 @@ function start(sec) {
         emissive: new THREE.Color(1, 1, 1), emissiveMap: mat.map, emissiveIntensity: PRESET.vinyl ?? (/lettering|wordmark/i.test(mat.name) ? .3 : .18),
         polygonOffset: true, polygonOffsetFactor: -2, polygonOffsetUnits: -2});
     } else if ('envMapIntensity' in mat) mat.envMapIntensity = 1.15;
+    if (/wordmark|lettering/i.test(out.name || '')) paintFinishes.register(out);
     made.set(id, out); return out;
   }
 

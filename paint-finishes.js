@@ -2,10 +2,7 @@
 // locally and mapped in metres; door positions and all vertex positions stay intact.
 export const finishes = {
   graphite:{label:'Mirror graphite',detail:'Smooth lacquer · sharp reflections',color:0x263c4a,rough:.045,metal:.72,coat:.018},
-  flake:{label:'Midnight metallic',detail:'Fine metallic flake · gloss clearcoat',color:0x244454,rough:.2,metal:.82,coat:.022,texture:'flake'},
   titanium:{label:'Brushed titanium',detail:'Directional metal grain · polished clearcoat',color:0xb2bec6,rough:.36,metal:.94,coat:.022,texture:'brushed',darkLogo:true},
-  carbon:{label:'Carbon weave',detail:'Woven carbon texture · deep gloss',color:0x53616a,rough:.26,metal:.32,coat:.018,texture:'carbon'},
-  pearl:{label:'Pearl white',detail:'Pearlescent paint · glossy cyan graphics',color:0xe4edf0,rough:.12,metal:.22,coat:.02,darkLogo:true}
 };
 const bodyNames=new Set(['Livery / Graphite pearl','Livery / Deep graphite']);
 export function prepareFinishUV(T,mesh) {
@@ -32,20 +29,12 @@ export function createFinishManager(T,initial='graphite') {
     const rows=Array.from({length:N},()=>random());
     for(let y=0;y<N;y++)for(let x=0;x<N;x++) {
       let v=1,q=1;
-      if(kind==='flake') {const f=random();v=f>.965?1:.54+f*.2;q=f>.965?.25:.72+f*.2;}
-      else if(kind==='brushed') {v=.67+rows[y]*.25+Math.sin(x*.013+y*.21)*.035;q=.42+rows[y]*.5;}
-      else {
-        const cell=128,cx=Math.floor(x/cell),cy=Math.floor(y/cell),horizontal=((cx-cy+4)%4)<2;
-        const a=horizontal?y%cell:x%cell,b=horizontal?x%cell:y%cell;
-        const crown=Math.pow(Math.sin(Math.PI*(a+.5)/cell),.45),strand=.5+.5*Math.cos(a*Math.PI/4);
-        const edge=.72+.28*Math.sin(Math.PI*(b+.5)/cell);
-        v=(.19+.52*crown)*edge+strand*.065;q=.45+.35*(1-crown);
-      }
+      v=.67+rows[y]*.25+Math.sin(x*.013+y*.21)*.035;q=.42+rows[y]*.5;
       const i=(y*N+x)*4,value=Math.round(v*255);img.data[i]=value;img.data[i+1]=value;img.data[i+2]=value;img.data[i+3]=255;
       rough.data[i]=rough.data[i+1]=rough.data[i+2]=Math.round(q*255);rough.data[i+3]=255;
     }
     ctx.putImageData(img,0,0);rx.putImageData(rough,0,0);
-    const tile=kind==='carbon'?.06:kind==='brushed'?.25:.12;
+    const tile=.25;
     const make=(canvas,color)=>{const t=new T.CanvasTexture(canvas);t.wrapS=t.wrapT=T.RepeatWrapping;t.repeat.set(1/tile,1/tile);t.anisotropy=4;t.colorSpace=color?T.SRGBColorSpace:T.NoColorSpace;return t;};
     const maps={map:make(c,true),roughnessMap:make(r,false)};textures.set(kind,maps);return maps;
   }
@@ -56,9 +45,8 @@ export function createFinishManager(T,initial='graphite') {
       mat.roughness=f.rough;mat.metalness=f.metal;mat.clearcoat=1;mat.clearcoatRoughness=f.coat;
       if(f.texture)Object.assign(mat,surface(f.texture));
       // The smooth clearcoat remains separate from the grain beneath it.
-      if(current==='pearl'){mat.iridescence=.16;mat.iridescenceIOR=1.3;mat.iridescenceThicknessRange=[180,260];}
     }
-    if(mat.name==='Livery / Pearl white wordmark'&&f.darkLogo){mat.color.setHex(0x142a34);mat.metalness=.1;}
+    if(/wordmark|lettering/i.test(mat.name)&&f.darkLogo){mat.color.setHex(0x142a34);mat.metalness=.1;if(mat.emissive){mat.emissive.setHex(0x000000);mat.emissiveIntensity=0;}}
     mat.needsUpdate=true;
   }
   return {

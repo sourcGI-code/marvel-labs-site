@@ -10,10 +10,7 @@
 .paint-finishes button:hover,.paint-finishes button[aria-pressed="true"]{border-color:#70dce5;background:#14313b;color:#fff}
 .finish-chip{width:24px;height:28px;flex:none;border:1px solid #ffffff24;background:#172633}
 .finish-chip.graphite{background:linear-gradient(125deg,#122533 15%,#9daeb8 40%,#263c4a 52%,#101e28)}
-.finish-chip.flake{background:radial-gradient(#a9c5cc 12%,transparent 18%) 0 0/4px 4px,linear-gradient(135deg,#152c3c,#477583,#142531)}
 .finish-chip.titanium{background:repeating-linear-gradient(0deg,#92a3ab 0 1px,#b4c3cb 1px 2px,#73858e 2px 3px)}
-.finish-chip.carbon{background:repeating-conic-gradient(#49525a 0 25%,#172127 0 50%) 0 0/8px 8px}
-.finish-chip.pearl{background:linear-gradient(125deg,#c8dcdf,#fff 40%,#c7cfdf 70%,#ebf3f1)}
 .paint-note strong{color:#c6d4da;font-weight:400}.paint-swatches{margin:1rem 0 1.2rem}.paint-views{margin:.7rem 0 .3rem;flex-wrap:wrap;gap:.8rem}
 @media(min-width:861px) and (max-height:790px){.paint-finishes{margin-top:8px;gap:6px}.paint-finishes button{min-height:38px;padding:6px 8px}.paint-copy{margin:0 0 .4rem}.paint-swatches{margin:.65rem 0 .85rem}.paint-swatches i{width:1.6rem;height:1.6rem}.paint-note{margin:.7rem 0}.paint-sizes button{padding:.7rem}.rv[data-variant] .rv-rail h1{margin:.5rem 0 .8rem}}
 @media(max-width:860px){.paint-finishes{margin-top:16px}.paint-finishes button{min-height:48px}.paint-copy{max-width:36ch}}
