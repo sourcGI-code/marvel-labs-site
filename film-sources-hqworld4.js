@@ -1,25 +1,26 @@
 // One atomic manifest selects complete scene timelines. During a desktop-first
 // rollout, each viewport keeps its own complete timeline until the pair is ready.
 // A later cargo correction cannot replace a newer neighborhood/operator film.
-const fallback={"version":1,"cargo":{"base":"assets/marvel-v4/recorded/cargo","revision":"hqgloss1","desktop":{"base":"assets/true-world-v1/recorded/cargo","revision":"sleek20-review-v1","kind":"desktop","trueWorld":{"version":1,"nativeWidth":2560,"nativeHeight":1600,"renderWidth":4608,"renderHeight":2048,"cropX":1328,"cropY":224},"videoFile":"desktop.mp4","quality":"draft","nativeVideo":{"file":"desktop.mp4","width":2304,"height":1024,"framerate":30,"codec":"avc1.640032","bitrate":1208831},"compatibilityVideo":{"file":"desktop.mp4","width":2304,"height":1024,"framerate":30,"linearResolution":0.25,"codec":"avc1.640032","bitrate":1208831,"verticalResolution":0.25},"motionFps":10.036968576709796}},"field":{"base":"assets/how-it-works-v1/recorded/field","revision":"hiw-crew1","neighborhood":true,"operator":true,"timelineFrames":2836,"operatorStartFrame":0,"howItWorks":{"fieldLeadFrames":1164,"deliveryStartFrame":336,"deliveryFrames":828}},"opening":{"base":"assets/marvel-v4/opening-film","revision":"hqgloss1","desktop":{"base":"assets/true-world-v1/opening-film","revision":"sleek20-review-v1","kind":"desktop","trueWorld":{"version":1,"nativeWidth":2560,"nativeHeight":1600,"renderWidth":4608,"renderHeight":2048,"cropX":1328,"cropY":224},"videoFile":"desktop.mp4","quality":"draft","nativeVideo":{"file":"desktop.mp4","width":2304,"height":1024,"framerate":84,"codec":"avc1.640033","bitrate":2100553},"compatibilityVideo":{"file":"desktop.mp4","width":2304,"height":1024,"framerate":84,"linearResolution":0.25,"codec":"avc1.640033","bitrate":2100553,"verticalResolution":0.25},"motionFps":30.071428571428573}}};
+const fallback={"version":1,"cargo":{"base":"assets/shared-solidworks-mobile-fleet-v3","revision":"solidworks-mobile-v3","desktop":{"base":"assets/shared-solidworks-fleet-v3","revision":"solidworks-fleet-v3","kind":"desktop","trueWorld":{"version":1,"nativeWidth":2560,"nativeHeight":1600,"renderWidth":4608,"renderHeight":2048,"cropX":1328,"cropY":224},"videoFile":"desktop.mp4","quality":"final","nativeVideo":{"file":"desktop.mp4","width":3840,"height":1706,"framerate":30,"bitrate":7361640,"codec":"avc1.640033"},"compatibilityVideo":{"file":"desktop.mp4","width":3840,"height":1706,"framerate":30,"bitrate":7361640,"codec":"avc1.640033","linearResolution":1,"verticalResolution":1},"motionFps":30}},"field":{"base":"assets/how-it-works-v2/recorded/field","revision":"hiw-gloss4k","neighborhood":true,"operator":true,"timelineFrames":3088,"operatorStartFrame":0,"howItWorks":{"fieldLeadFrames":1416,"deliveryStartFrame":300,"deliveryFrames":1116},"mediaBase":"https://github.com/sourcGI-code/marvel-labs-site/releases/download/films"},"opening":{"base":"assets/shared-solidworks-mobile-opening-v3","revision":"solidworks-mobile-v3","desktop":{"base":"assets/intro-mirror-graphite-v1","revision":"mirror-graphite-intro-v1","kind":"desktop","trueWorld":{"version":1,"nativeWidth":2560,"nativeHeight":1600,"renderWidth":4608,"renderHeight":2048,"cropX":1328,"cropY":224},"videoFile":"desktop.mp4","quality":"final","nativeVideo":{"width":3840,"height":1706,"framerate":42.0,"bitrate":9285272,"codec":"avc1.640034","file":"desktop.mp4"},"compatibilityVideo":{"width":3840,"height":1706,"framerate":42.0,"bitrate":9285272,"codec":"avc1.640034","file":"desktop.mp4","linearResolution":1,"verticalResolution":1},"motionFps":30}}};
 let sources=fallback,pending;
 const validEntry=value=>value&&typeof value.base==='string'&&/^assets\/[a-zA-Z0-9_/-]+$/.test(value.base)&&!value.base.split('/').includes('..')&&typeof value.revision==='string'&&(value.mediaBase===undefined||(typeof value.mediaBase==='string'&&/^https:\/\/[a-zA-Z0-9._/-]+$/.test(value.mediaBase)));   // 10-29: mediaBase = where the big .mp4 lives (GitHub Pages caps files at 100 MB); the timeline json and stills stay under base
 const validField=value=>validEntry(value)&&typeof value.neighborhood==='boolean'&&typeof value.operator==='boolean'&&Number.isInteger(value.timelineFrames)&&value.timelineFrames>=2&&(!value.operator||(Number.isInteger(value.operatorStartFrame)&&value.operatorStartFrame>=0&&value.operatorStartFrame<value.timelineFrames));
+const forViewport=(manifest,kind)=>({...manifest,opening:manifest.opening??fallback.opening,field:manifest.fieldMobile&&kind==='mobile'?manifest.fieldMobile:manifest.field});
 const initialFieldKind=()=>typeof innerWidth!=='undefined'&&(innerWidth<=760||(innerWidth<=1024&&typeof innerHeight!=='undefined'&&innerHeight>innerWidth))?'mobile':'desktop';
 export function loadFilmSources(){
  return pending??=(async()=>{
   const fieldKind=initialFieldKind();
   const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),2500);
   try{
-   const response=await fetch(new URL('film-sources-hqworld4.json?v=sleek20-review-v1',import.meta.url),{cache:'no-store',signal:controller.signal});
+   const response=await fetch(new URL('film-sources-hqworld4.json?v=fuller-presentation-v1',import.meta.url),{cache:'no-store',signal:controller.signal});
    if(!response.ok)throw Error('Film manifest unavailable');
    const next=await response.json();
    if(next.version!==1||!validEntry(next.cargo)||!validField(next.field))throw Error('Invalid film manifest');
    if(next.opening!==undefined&&!validEntry(next.opening))throw Error('Invalid opening film');
    const split=next.fieldMobile!==undefined;
    if(split?(!validField(next.fieldMobile)||next.field.kind!=='desktop'||next.fieldMobile.kind!=='mobile'):next.field.kind!==undefined)throw Error('Invalid viewport film pair');
-   sources={...next,opening:next.opening??fallback.opening,field:split&&fieldKind==='mobile'?next.fieldMobile:next.field};
-  }catch{sources=fallback;}
+   sources=forViewport(next,fieldKind);
+  }catch{sources=forViewport(fallback,fieldKind);}
   finally{clearTimeout(timeout);}
   await chooseDesktopFilms();
   if(typeof document!=='undefined'&&document.body){
