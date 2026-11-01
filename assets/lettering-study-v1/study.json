@@ -1,0 +1,27 @@
+{
+  "revision": "lettering-study-v1",
+  "mode": "preview only",
+  "model": "original-wrap-finishes-v1",
+  "finish": "Mirror Graphite",
+  "sizes": [
+    16,
+    20
+  ],
+  "content": "AUTONOMOUS MICROFACTORY",
+  "options": [
+    "balanced",
+    "signature",
+    "bold"
+  ],
+  "preserved": [
+    "geometry",
+    "cyan stripes",
+    "rear wordmark",
+    "paint",
+    "camera rig",
+    "background",
+    "production render inputs"
+  ],
+  "textureResolutionWidth": 4096,
+  "source": "lettering-study.js"
+}
