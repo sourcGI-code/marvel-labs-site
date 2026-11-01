@@ -1,0 +1,91 @@
+/* Launch-style preorder preview. The approved trailer stage stays untouched. */
+.rv-rail [hidden],.rd-dialog [hidden]{display:none!important}
+.rd-demo{font:9px/1.5 ui-monospace,monospace;letter-spacing:.12em;color:var(--accent);margin:0 0 24px;display:flex;align-items:center;gap:9px}
+.rd-demo>span{width:5px;height:5px;background:var(--accent);border-radius:50%}
+.rv-rail .eyebrow{font-size:9px;letter-spacing:.18em;color:var(--muted)}
+.rv-rail #rv-title{outline:none;scroll-margin-top:calc(var(--reserve-header-height) + 32px)}
+.rd-steps{list-style:none;display:flex;justify-content:space-between;padding:0;margin:28px 0 4px;gap:12px;border-bottom:1px solid var(--line)}
+.rd-steps li{padding:0 0 12px;font-size:11px;color:var(--muted);border-bottom:1px solid transparent;margin-bottom:-1px}
+.rd-steps li span{font:9px ui-monospace,monospace;margin-right:6px;opacity:.6}
+.rd-steps [aria-current]{border-color:var(--accent);color:var(--ink)}
+.rd-steps [data-done]{color:var(--accent)}
+.rv .rd-small{font-size:11px;line-height:1.65;color:var(--offer-muted,#b6bfc1);margin:14px 0 0}
+.rd-finish{display:grid;gap:5px;margin-top:24px}
+.rd-finish>span{font:9px ui-monospace,monospace;letter-spacing:.13em;color:var(--muted)}
+.rd-finish strong{font-size:14px;font-weight:400}
+.rd-finish small{font-size:11px;color:var(--muted)}
+.rv[data-variant] .rv-due small,.rv[data-variant] .rv-plan small{display:block}
+.rv[data-variant] .rv-plan small{font-size:11px}
+.rd-panel-head{display:flex;align-items:baseline;justify-content:space-between;gap:12px;margin-top:24px}
+.rv-rail h2{font-size:26px;letter-spacing:-.035em;line-height:1.1;margin:0}
+.rv-rail h3{font-size:14px;margin:0;letter-spacing:0}
+.rd-text-button,.rd-back{border:0;background:none;padding:0;color:var(--muted);font-size:11px;cursor:pointer;text-align:left}
+.rd-text-button:hover,.rd-back:hover{color:var(--accent)}
+.rv .rv-field span{display:block;margin-bottom:7px;font-size:11px}
+.rv-field small{color:var(--muted);font-size:10px;margin-left:4px}
+.rv .rv-field input{border-radius:3px;background:rgba(255,255,255,.025)}
+.rd-order{margin:24px 0 10px;padding:0;font-size:12px;line-height:1.5}
+.rd-order>div{display:flex;justify-content:space-between;gap:18px;padding:9px 0;border-bottom:1px solid var(--line)}
+.rd-order dt{color:var(--muted);flex:0 0 42%}
+.rd-order dd{margin:0;text-align:right;overflow-wrap:anywhere}
+.rd-order:after{content:'* Preview pricing. Final taxes, delivery and plan terms are confirmed separately.';display:block;font-size:10px;color:var(--muted);line-height:1.6;margin-top:12px}
+.rd-contact{white-space:pre-line;font-size:12px;line-height:1.7;color:var(--offer-muted,#b6bfc1);margin:12px 0 0;overflow-wrap:anywhere}
+.rd-payment{border:0;border-top:1px solid var(--line);padding:16px 0 0;margin:26px 0 0;min-width:0}
+.rd-payment legend{padding:0 8px 0 0;font-size:12px}
+.rd-payment legend span{font:8px ui-monospace,monospace;color:var(--accent);margin-left:8px;letter-spacing:.06em}
+.rd-payment-options{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.rd-payment-options label{position:relative;text-align:center;border:1px solid var(--line);border-radius:3px;padding:12px 4px;font-size:11px;cursor:pointer}
+.rd-payment-options input{position:absolute;opacity:0;width:1px;height:1px}
+.rd-payment-options label:has(input:checked){border-color:var(--accent);background:rgba(77,216,232,.06)}
+.rd-payment-options label:has(input:focus-visible){outline:2px solid var(--accent);outline-offset:3px}
+.rd-payment-detail{font:11px/1.5 ui-monospace,monospace;margin-top:14px;color:var(--offer-muted,#b6bfc1)}
+.rd-consent{display:flex;align-items:flex-start;gap:10px;margin-top:22px;font-size:11px;line-height:1.65;color:var(--offer-muted,#b6bfc1)}
+.rd-consent input{flex:0 0 auto;margin:4px 0 0;accent-color:var(--accent);width:15px;height:15px}
+.rd-consent a{text-decoration:underline;text-underline-offset:3px}
+.rd-controls{display:flex;align-items:center;gap:20px;margin-top:20px}
+.rd-controls .rv-submit{margin:0;flex:1;border-radius:3px;min-height:48px;font-size:13px}
+.rv .rv-pay-note{display:block;text-align:center;font-size:10px;line-height:1.6}
+.rd-policies{display:flex;justify-content:center;flex-wrap:wrap;gap:14px;margin-top:26px;padding-top:20px;border-top:1px solid var(--line);font-size:10px;color:var(--muted)}
+.rd-policies a:hover{color:var(--ink)}
+.rd-check{width:46px;height:46px;display:grid;place-items:center;border:1px solid var(--accent);border-radius:50%;color:var(--accent);font-size:22px;margin:28px 0 20px}
+.rd-reference{font:10px/1.4 ui-monospace,monospace;letter-spacing:.12em;color:var(--accent);margin:18px 0 12px}
+.rd-confirm-copy{font-size:12px;line-height:1.7;color:var(--offer-muted,#b6bfc1);margin-top:14px}
+.rd-next{padding:0;margin:26px 0;list-style:none}
+.rd-next li{display:flex;gap:16px;margin-top:20px}
+.rd-next li>span{font:9px/1.5 ui-monospace,monospace;color:var(--accent);padding-top:2px}
+.rd-next b{display:block;font-size:12px;font-weight:400}
+.rd-next small{display:block;font-size:11px;line-height:1.65;color:var(--muted);margin-top:4px}
+.rd-actions{display:grid;gap:10px;margin:24px 0 14px}
+.rd-secondary{box-sizing:border-box;display:block;width:100%;background:transparent;border:1px solid var(--line);border-radius:3px;padding:13px 16px;text-align:center;font-size:12px;color:var(--ink);cursor:pointer;text-decoration:none;line-height:1.5}
+.rd-secondary:hover{border-color:var(--accent)}
+.rd-cancel{color:#c8b8b5}
+.rd-error{color:#ffb2a6;font-size:12px;line-height:1.6;margin-top:16px}
+.rd-dialog{max-width:440px;width:calc(100% - 32px);padding:32px;color:var(--ink);background:#101719;border:1px solid var(--line);border-radius:5px}
+.rd-dialog::backdrop{background:#000a;backdrop-filter:blur(6px)}
+.rd-dialog h2{font-size:28px;margin:0 0 16px;line-height:1.15}
+.rd-dialog p:not(.rd-demo){font-size:13px;line-height:1.7;color:var(--muted);margin-bottom:24px}
+.rd-dialog .rd-secondary+.rd-secondary{margin-top:10px}
+.rv:not([data-order-step="configure"]) .rs-3d{pointer-events:none}
+.rv:not([data-order-step="configure"]) .rs-back,.rv:not([data-order-step="configure"]) .rs-3d-bar{visibility:hidden}
+@media(min-width:861px){
+ .rv[data-variant] .rv-rail{padding:30px 30px 36px;max-width:440px;margin-bottom:36px;border-radius:4px}
+ .rv[data-variant] .rv-rail h1{font-size:36px}
+ .rv[data-variant] .rv-card{padding:12px 14px;border-radius:3px}
+ .rv[data-variant] .rv-card b{font-size:22px}
+ .rv[data-variant] .rv-group{margin-top:24px}
+}
+@media(max-width:860px){
+ .rd-demo{margin-bottom:20px}
+ .rv-rail{padding-bottom:36px}
+ .rd-policies{gap:16px}
+}
+@media print{
+ body.reserve-page{background:white!important;color:black!important}
+ .masthead,.rv-show,.site-footer,.rd-demo,.rd-steps,.rd-controls,.rd-policies,.rd-actions,.rd-dialog,.rv-pay-note,.rv-when,.rv-rail>.eyebrow{display:none!important}
+ section.rv{display:block!important;min-height:0!important;background:white!important}
+ .rv[data-variant] .rv-rail,.rv-rail{display:block!important;margin:0!important;padding:20px!important;width:100%!important;max-width:none!important;min-height:0!important;background:white!important;border:0!important;backdrop-filter:none!important;color:black!important}
+ .rv-rail h1 em,.rd-reference,.rd-order dt,.rd-confirm-copy,.rd-next small,.rd-small{color:#333!important}
+ .rd-order>div{break-inside:avoid;border-color:#ccc!important}
+ .rd-check{color:#333;border-color:#333}
+ .rv-rail:before{content:'MARVEL LABS · DEMO CONFIRMATION · NO PAYMENT TAKEN';display:block;font:11px monospace;margin-bottom:28px}
+}
