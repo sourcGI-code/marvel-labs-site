@@ -78,8 +78,9 @@
 .rd-dialog h2{font-size:28px;margin:0 0 16px;line-height:1.15}
 .rd-dialog p:not(.rd-demo){font-size:13px;line-height:1.7;color:var(--muted);margin-bottom:24px}
 .rd-dialog .rd-secondary+.rd-secondary{margin-top:10px}
-.rv:not([data-order-step="configure"]) .rs-3d{pointer-events:none}
-.rv:not([data-order-step="configure"]) .rs-back,.rv:not([data-order-step="configure"]) .rs-3d-bar{visibility:hidden}
+.rv:is([data-order-step="details"],[data-order-step="review"]) .rs-3d{pointer-events:none}
+.rv:is([data-order-step="details"],[data-order-step="review"]) .rs-3d-bar{visibility:hidden}
+.rv:not([data-order-step="configure"]) .rs-back{visibility:hidden}
 @media(min-width:861px){
  .rv[data-variant] .rv-rail{padding:30px 30px 36px;max-width:440px;margin-bottom:36px;border-radius:4px}
  .rv[data-variant] .rv-rail h1{font-size:36px}
