@@ -1,11 +1,10 @@
-import {createReservationEmail, emailDraft} from './reservation-email.js?v=resend-demo-v1';
-import {installEmailDelivery} from './reservation-email-delivery.js?v=resend-demo-v1';
+import {createReservationEmail, emailDraft} from './reservation-email.js?v=reservation-preview-v2';
 const STORAGE = 'marvel-reservation-demo-v1';
 const money = value => new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: value % 1 ? 2 : 0}).format(value);
 const price = size => size === '16' ? 44999 : 49999.99;
 const planName = plan => plan === 'buy' ? 'Buy · 75% profit share' : 'Lease · 25% profit share';
 
-// Payment remains simulated. Optional email delivery uses the configured server endpoint.
+// Entirely local demonstration: no fetch, Stripe SDK, mail submission or card fields.
 export function installReservationDemo({sec, form, selection, restore}) {
   let step = 'configure', record = null, busy = false;
   const panels = [...form.querySelectorAll('[data-panel]')];
@@ -18,7 +17,6 @@ export function installReservationDemo({sec, form, selection, restore}) {
   const emailDialog = sec.querySelector('.rd-email-dialog');
   let message = null;
   const value = name => form.querySelector(`[name="${name}"]`)?.value.trim() || '';
-  const delivery = installEmailDelivery({form,getRecord:()=>record,getContact:()=>({name:value('name'),email:value('email')})});
   const method = () => form.querySelector('[name="payment"]:checked')?.value || 'card';
   const methodNames = {card: 'Demo Visa ···· 4242', apple: 'Apple Pay · demo wallet', google: 'Google Pay · demo wallet'};
 
@@ -52,7 +50,9 @@ export function installReservationDemo({sec, form, selection, restore}) {
     const cancelled = record.status === 'cancelled';
     for (const el of form.querySelectorAll('.rd-reference')) el.textContent = `Reservation number · ${record.id}`;
     form.querySelector('[data-action="email-preview"]').textContent = cancelled ? 'View cancellation email' : 'View confirmation email';
-    delivery.update();
+    form.querySelector('.rd-email-note').textContent = value('email')
+      ? `Email preview ready for ${value('email')}. Nothing has been sent.`
+      : 'Your confirmation email is available to preview. Nothing has been sent.';
     form.querySelector('.rd-confirm-title').textContent = cancelled ? 'Cancelled. Fully refunded.' : 'You’re on the list.';
     form.querySelector('.rd-confirm-copy').textContent = cancelled
       ? 'Your demo reservation is cancelled and the $100 refund is simulated. No money was charged or refunded.'
@@ -123,7 +123,7 @@ export function installReservationDemo({sec, form, selection, restore}) {
     record = {id: record?.status === 'reserved' ? record.id : `DEMO-${crypto.randomUUID().slice(0, 8).toUpperCase()}`,
       size: choice.size, plan: choice.plan, payment: method(), status: 'reserved',
       createdAt: record?.createdAt || new Date().toISOString(), termsVersion: 'demo-2026-11-01'};
-    save(); busy = false; submit.disabled = false; go('complete'); void delivery.send();
+    save(); busy = false; submit.disabled = false; go('complete');
   });
   form.addEventListener('change', event => {
     if (event.target.name === 'payment') form.querySelector('.rd-payment-detail').textContent = methodNames[method()];
@@ -165,7 +165,7 @@ export function installReservationDemo({sec, form, selection, restore}) {
   });
   dialog.addEventListener('close', () => {
     if (dialog.returnValue !== 'refund' || !record || record.status === 'cancelled') return;
-    record.status = 'cancelled'; save(); go('complete'); void delivery.send();
+    record.status = 'cancelled'; save(); go('complete');
   });
   emailDialog.querySelector('[data-email-close]').addEventListener('click', () => emailDialog.close());
   emailDialog.querySelector('[data-email-download]').addEventListener('click', () => {

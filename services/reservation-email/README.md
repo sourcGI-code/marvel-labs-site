@@ -1,6 +1,6 @@
 # Marvel Labs demo confirmation email
 
-Prepared November 1, 2026. **Not deployed or connected to Resend yet.** GitHub Pages stays the website host. Payments, reservations, cancellation and refunds remain simulated.
+Prepared November 1, 2026. **Email setup deferred by the owner. Do not deploy, connect or change DNS unless requested again.** The website uses browser-only confirmation previews. The prepared delivery module is not imported by the active reservation flow. GitHub Pages stays the website host. Payments, reservations, cancellation and refunds remain simulated.
 
 ## What is ready
 

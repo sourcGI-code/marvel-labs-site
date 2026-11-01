@@ -1,4 +1,4 @@
-import {installReservationDemo} from './reserve-demo.js?v=resend-demo-v1';
+import {installReservationDemo} from './reserve-demo.js?v=reservation-preview-v2';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 

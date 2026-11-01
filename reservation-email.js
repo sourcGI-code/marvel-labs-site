@@ -21,7 +21,7 @@ export function createReservationEmail(record, contact = {}) {
     ['Status', cancelled ? 'Cancelled · demo' : 'Reserved · demo']
   ];
   const agreement = `${SITE}reservation-agreement.html?size=${encodeURIComponent(record.size)}&plan=${encodeURIComponent(record.plan)}`;
-  const preview = `${SITE}reserve.html?v=resend-demo-v1`;
+  const preview = `${SITE}reserve.html?v=reservation-preview-v2`;
   const next = cancelled
     ? 'You can return to the website to try another configuration.'
     : 'In the proposed live process, the deposit would be credited toward your trailer’s final price. Final specifications, delivery timing and Buy or Lease terms would be confirmed separately. No automatic balance payment is authorized.';
