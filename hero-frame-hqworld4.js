@@ -91,7 +91,7 @@ export async function installHeroFrame(){
  if(!host||!story||!track)return;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  let data=null;
- try{const response=await fetch(new URL('hero-framing-mirror-graphite-v1/desktop-frame.json?v=mirror-graphite-intro-v1',import.meta.url));if(response.ok)data=await response.json();}catch{}
+ try{const response=await fetch(new URL('hero-framing-fuller-graphite-v1/desktop-frame.json?v=fuller-graphite-intro-v1',import.meta.url));if(response.ok)data=await response.json();}catch{}
  let plan=null,pendingBuild=true,lastTranslate='',lastScale='';
  let visual={shift:0,scale:1},wasComparing=false,release=null,releaseStart=0,releaseFrom=null;
  let anim=null,animFrom=0,animRate=1,animPlan=null,checkedAt=0,est=null,estWall=0,lastDecodedTime=0;
