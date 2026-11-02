@@ -51,7 +51,8 @@
    "deliveryStartFrame": 300,
    "deliveryFrames": 1116
   },
-  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films"
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films",
+  "kind": "desktop"
  },
  "opening": {
   "base": "assets/shared-solidworks-mobile-opening-v3",
@@ -91,5 +92,19 @@
    },
    "motionFps": 30
   }
+ },
+ "fieldMobile": {
+  "base": "assets/how-it-works-v2/recorded/field",
+  "revision": "hiw-mobile-recovery-v1",
+  "neighborhood": true,
+  "operator": true,
+  "timelineFrames": 3088,
+  "operatorStartFrame": 0,
+  "howItWorks": {
+   "fieldLeadFrames": 1416,
+   "deliveryStartFrame": 300,
+   "deliveryFrames": 1116
+  },
+  "kind": "mobile"
  }
 }
