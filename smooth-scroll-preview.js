@@ -1,15 +1,17 @@
-// First gesture plays, second boosts, third unlocks bounded, smooth scrubbing.
-// Once unlocked it stays unlocked across sections and pauses. Release always
-// resumes the current film at its normal rate, from the selected position.
+// Scrolling builds speed; continued input can move through play, boost and fast
+// travel without requiring artificial pauses between wheel gestures. Releasing
+// drops the accumulated boost and resumes normal playback at the current frame.
 import {DELIVERY_END} from './intro-timing.js?v=1';
 
 export function installBeatScroll({stage,playback,getActive,readProgress}) {
   const params=new URLSearchParams(location.search);
   if(params.has('freescroll')||params.has('edit'))return null;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
-  const QUIET_MS=350,RELEASE_MS=220,SWIPE_PX=28,SECONDS_PER_NOTCH=6,MAX_TRAVEL_RATE=32,MAX_LEAD_SECONDS=6;
+  const QUIET_MS=350,RELEASE_MS=220,SWIPE_PX=28,PHASE_DISTANCE=80,PHASE_MS=80;
+  const SECONDS_PER_NOTCH=2,BASE_TRAVEL_RATE=8,MAX_INTENSITY=7;
   let step=0,rate=1,wheel=null,touch=null,heldKey=null;
-  let pending=0,releaseTimer=0,epoch=0,scrubbing=false,scrollFrame=0,queued=0,burst=null,follow=null;
+  let pending=0,releaseTimer=0,epoch=0,scrubbing=false,scrollFrame=0,follow=null;
+  let intensity=1,lastDirection=0;
   body.dataset.beatScroll='1';
   const sections=()=>[...document.querySelectorAll('main > section, body > .site-footer')];
   const chapters=()=>sections().map(section=>({section,start:section.id==='top'||section.id==='inside'?0:.15,
@@ -18,12 +20,13 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   function mark() {
     body.dataset.scrollStep=String(step);
     body.dataset.scrollFast=String(step>=3);
+    body.dataset.scrollSpeed=(scrubbing?BASE_TRAVEL_RATE*intensity:rate).toFixed(2);
     body.dataset.scrollChapter=current()?.key||'';
   }
   function cancelPending() {epoch++;clearTimeout(pending);pending=0;}
   function halt({capture=true}={}) {
     cancelPending();clearTimeout(releaseTimer);releaseTimer=0;
-    cancelAnimationFrame(scrollFrame);scrollFrame=0;queued=0;burst=null;follow=null;scrubbing=false;
+    cancelAnimationFrame(scrollFrame);scrollFrame=0;follow=null;scrubbing=false;intensity=1;lastDirection=0;
     playback.pause({capture});rate=1;playback.setRate(1);mark();
   }
   function play(chapter) {
@@ -67,12 +70,23 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   function release() {
     releaseTimer=0;
     if(touch?.used||heldKey)return;
-    cancelAnimationFrame(scrollFrame);scrollFrame=0;queued=0;burst=null;follow=null;scrubbing=false;rate=1;playback.setRate(1);
+    cancelAnimationFrame(scrollFrame);scrollFrame=0;follow=null;scrubbing=false;intensity=1;lastDirection=0;rate=1;playback.setRate(1);
     const chapter=current(),mode=playback.inspect().mode;
     if(chapter?.kind==='film'&&!['playing','loading'].includes(mode))play(chapter);
     mark();
   }
   function releaseSoon() {clearTimeout(releaseTimer);releaseTimer=setTimeout(release,RELEASE_MS);}
+  function crossed(source) {
+    if(source){source.crossed=true;source.crossedAt=performance.now();source.afterCross=0;}
+  }
+  function crossing(source,px) {
+    if(!source?.crossed)return false;
+    source.afterCross=(source.afterCross||0)+Math.abs(px);
+    // Consume a transition's immediate tail, but let sustained scrolling keep
+    // going. A long wheel gesture must not lock the newly entered section.
+    if(performance.now()-source.crossedAt<300||source.afterCross<160)return true;
+    source.crossed=false;return false;
+  }
   function flush(now=performance.now()) {
     scrollFrame=0;
     if(!scrubbing||!follow)return;
@@ -94,7 +108,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     if(video?.seeking){scrollFrame=requestAnimationFrame(flush);return;}
     // Preserve elapsed time while decoding so slow seeks do not reduce scroll speed.
     follow.at=now;
-    const distance=Math.sign(delta)*Math.min(Math.abs(delta)*(1-Math.exp(-dt/.07)),MAX_TRAVEL_RATE*dt);
+    const distance=Math.sign(delta)*Math.min(Math.abs(delta)*(1-Math.exp(-dt/.07)),BASE_TRAVEL_RATE*intensity*dt);
     follow.position=Math.max(0,Math.min(clock.total,follow.position+distance));
     const next=Math.max(chapter.start,Math.min(chapter.end,clock.progress(follow.position)));
     stage.seekProgress(chapter.section,next);
@@ -102,11 +116,11 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     mark();scrollFrame=requestAnimationFrame(flush);
   }
   function fastScroll(px,source) {
-    if(source?.crossed){releaseSoon();return;}
+    if(crossing(source,px)){releaseSoon();return;}
     const chapter=current();if(!chapter)return;
     const direction=Math.sign(px),p=stage.progress(chapter.section);
     if(chapter.kind==='reading'||(direction>0?p>=chapter.end-.0001:p<=chapter.start+.0001)){
-      if(move(nextFrom(chapter,direction),direction<0)&&source)source.crossed=true;
+      if(move(nextFrom(chapter,direction),direction<0))crossed(source);
       releaseSoon();return;
     }
     cancelPending();
@@ -116,19 +130,36 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
       follow={chapter,clock,position,target:position,at:performance.now()};
     }
     if(!follow)return;
-    const seconds=Math.max(-240,Math.min(240,px))/120*SECONDS_PER_NOTCH;
+    if(lastDirection!==direction)intensity=1;
+    lastDirection=direction;
+    // Each new bit of scrolling adds speed. More input builds it faster, while
+    // both travel speed and unconsumed distance remain bounded.
+    const input=Math.max(-240,Math.min(240,px));
+    intensity=Math.min(MAX_INTENSITY,intensity+Math.abs(input)/180);
+    const seconds=input/120*SECONDS_PER_NOTCH*intensity;
+    const lead=Math.max(2,intensity*1.25);
     // Reversing cancels any unconsumed movement immediately.
     if(Math.sign(follow.target-follow.position)!==direction)follow.target=follow.position;
     follow.target=Math.max(0,Math.min(follow.clock.total,
-      Math.max(follow.position-MAX_LEAD_SECONDS,Math.min(follow.position+MAX_LEAD_SECONDS,follow.target+seconds))));
+      Math.max(follow.position-lead,Math.min(follow.position+lead,follow.target+seconds))));
     if(!scrollFrame){follow.at=performance.now();scrollFrame=requestAnimationFrame(flush);}
+    mark();releaseSoon();
+  }
+  function continueGesture(source,px) {
+    if(crossing(source,px)){releaseSoon();return;}
+    if(step>=3){fastScroll(px,source);return;}
+    source.phaseDistance=(source.phaseDistance||0)+px;
+    if(Math.abs(source.phaseDistance)>=PHASE_DISTANCE&&performance.now()-(source.phaseAt||0)>=PHASE_MS){
+      const distance=source.phaseDistance;source.phaseDistance=0;source.phaseAt=performance.now();
+      gesture(Math.sign(distance),distance,source);
+    }
     releaseSoon();
   }
   function gesture(direction,px=direction*120,source={}) {
     if(step>=3){fastScroll(px,source);return;}
     const chapter=current();if(!chapter)return;
-    if(direction<0){move(nextFrom(chapter,-1)||{...chapter,start:0});return;}
-    if(chapter.kind==='reading'){move(nextFrom(chapter,1));return;}
+    if(direction<0){if(move(nextFrom(chapter,-1)||{...chapter,start:0}))crossed(source);return;}
+    if(chapter.kind==='reading'){if(move(nextFrom(chapter,1)))crossed(source);return;}
     step=Math.min(3,step+1);mark();
     if(step===3){fastScroll(px,source);return;}
     rate=step===2?2:1;playback.setRate(rate);
@@ -150,16 +181,29 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     if(reduced.matches||event.ctrlKey||inField(event.target)||Math.abs(event.deltaX)>Math.abs(event.deltaY)||!event.deltaY)return;
     const now=performance.now(),px=event.deltaY*(event.deltaMode===1?16:event.deltaMode===2?innerHeight:1);
     if(!wheel||now-wheel.at>=QUIET_MS||Math.sign(px)!==wheel.direction)
-      wheel={at:now,direction:Math.sign(px),native:!!scroller(event.target,Math.sign(px)),distance:0,used:false,crossed:false};
+      wheel={at:now,direction:Math.sign(px),native:!!scroller(event.target,Math.sign(px)),distance:0,used:false,crossed:false,samples:[],inertia:false,lastMagnitude:0};
     wheel.at=now;
     if(wheel.native){if(!scroller(event.target,Math.sign(px)))event.preventDefault();return;}
     event.preventDefault();
+    const magnitude=Math.abs(px),previous=wheel.lastMagnitude;wheel.lastMagnitude=magnitude;
+    // Trackpads keep emitting a shrinking tail after the fingers lift. That
+    // tail should release the film, not keep building acceleration.
+    if(wheel.inertia){
+      if(magnitude<=Math.max(6,previous*1.6))return;
+      wheel.inertia=false;wheel.samples=[];
+    }
+    wheel.samples.push([now,magnitude]);wheel.samples=wheel.samples.slice(-6);
+    const tail=wheel.samples;
+    if(step>=3&&tail.length===6&&now-tail[0][0]<=350&&now-tail[0][0]>=70&&
+      magnitude<tail[0][1]*.35&&tail.slice(1).every((s,i)=>s[1]<=tail[i][1]*1.05)){
+      wheel.inertia=true;release();return;
+    }
     if(step>=3){fastScroll(px,wheel);return;}
-    // The first two gestures each trigger once, but their full duration keeps
-    // the temporary boost alive. After gesture three, every packet moves film.
-    if(wheel.used){releaseSoon();return;}
+    // A held wheel/trackpad must accelerate too: do not discard every packet
+    // after the first until the visitor waits 350 ms and starts another gesture.
+    if(wheel.used){continueGesture(wheel,px);return;}
     wheel.distance+=px;if(Math.abs(wheel.distance)<4)return;
-    wheel.used=true;gesture(Math.sign(wheel.distance),wheel.distance,wheel);
+    wheel.used=true;wheel.phaseAt=now;gesture(Math.sign(wheel.distance),wheel.distance,wheel);
   },{passive:false});
   addEventListener('touchstart',event=>{
     if(event.touches.length!==1){touch=null;return;}
@@ -173,8 +217,8 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     if(touch.native===null&&Math.abs(dy)>=6)touch.native=!!scroller(event.target,Math.sign(dy));
     if(touch.native){if(!scroller(event.target,Math.sign(dy)))event.preventDefault();return;}
     event.preventDefault();
-    if(!touch.used&&Math.abs(dy)>=SWIPE_PX){touch.used=true;gesture(Math.sign(dy),dy,touch);}
-    else if(touch.used&&step>=3&&delta)fastScroll(delta,touch);
+    if(!touch.used&&Math.abs(dy)>=SWIPE_PX){touch.used=true;touch.phaseAt=performance.now();gesture(Math.sign(dy),dy,touch);}
+    else if(touch.used&&delta)continueGesture(touch,delta);
   },{passive:false});
   function touchEnd(){const used=touch?.used;touch=null;if(used)release();}
   addEventListener('touchend',touchEnd,{passive:true});
@@ -189,8 +233,9 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     event.preventDefault();
     const reading=scroller(event.target,direction)||scroller(current()?.section,direction);
     if(reading){reading.scrollBy({top:direction*(event.code.startsWith('Arrow')?60:reading.clientHeight*.8),behavior:'smooth'});return;}
-    if(event.repeat&&step<3)return;
     if(heldKey?.code!==event.code)heldKey={code:event.code,crossed:false};
+    if(event.repeat&&performance.now()-(heldKey.phaseAt||0)<PHASE_MS)return;
+    heldKey.phaseAt=performance.now();
     gesture(direction,direction*(event.code.startsWith('Arrow')?60:120),heldKey);
   });
   addEventListener('keyup',event=>{if(event.code===heldKey?.code){heldKey=null;release();}});
@@ -200,6 +245,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   reduced.addEventListener('change',()=>{touch=null;heldKey=null;halt();});
   addEventListener('resize',()=>{touch=null;heldKey=null;halt();});
   const api={request:()=>gesture(1),back:()=>gesture(-1),chapters,current,next:()=>nextFrom(current(),1),
-    get step(){return step;},get rate(){return rate;},get fast(){return step>=3;}};
+    get step(){return step;},get rate(){return rate;},get fast(){return step>=3;},
+    get scrollSpeed(){return scrubbing?BASE_TRAVEL_RATE*intensity:rate;}};
   window.__beats=api;mark();return api;
 }
