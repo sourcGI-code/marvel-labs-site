@@ -1,0 +1,110 @@
+{
+ "version": 1,
+ "cargo": {
+  "base": "assets/shared-solidworks-mobile-fleet-v3",
+  "revision": "solidworks-mobile-v3",
+  "desktop": {
+   "base": "assets/fuller-graphite-fleet-v1",
+   "revision": "fuller-graphite-fleet-v1",
+   "kind": "desktop",
+   "trueWorld": {
+    "version": 1,
+    "nativeWidth": 2560,
+    "nativeHeight": 1600,
+    "renderWidth": 4608,
+    "renderHeight": 2048,
+    "cropX": 1328,
+    "cropY": 224
+   },
+   "videoFile": "desktop.mp4",
+   "quality": "balanced",
+   "nativeVideo": {
+    "file": "desktop.mp4",
+    "width": 2304,
+    "height": 1024,
+    "framerate": 30,
+    "bitrate": 1841492,
+    "codec": "avc1.640032"
+   },
+   "compatibilityVideo": {
+    "file": "desktop.mp4",
+    "width": 2304,
+    "height": 1024,
+    "framerate": 30,
+    "bitrate": 1841492,
+    "codec": "avc1.640032",
+    "linearResolution": 1,
+    "verticalResolution": 1
+   },
+   "motionFps": 30
+  }
+ },
+ "field": {
+  "base": "assets/launch-review-field-v1",
+  "revision": "fuller-graphite-review-v1",
+  "neighborhood": true,
+  "operator": true,
+  "timelineFrames": 3088,
+  "operatorStartFrame": 0,
+  "howItWorks": {
+   "fieldLeadFrames": 1416,
+   "deliveryStartFrame": 300,
+   "deliveryFrames": 1116
+  },
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/launch-review-20261102",
+  "kind": "desktop"
+ },
+ "opening": {
+  "base": "assets/shared-solidworks-mobile-opening-v3",
+  "revision": "solidworks-mobile-v3",
+  "desktop": {
+   "base": "assets/intro-fuller-graphite-spotlight-v1",
+   "revision": "fuller-graphite-spotlight-v1",
+   "kind": "desktop",
+   "trueWorld": {
+    "version": 1,
+    "nativeWidth": 2560,
+    "nativeHeight": 1600,
+    "renderWidth": 4608,
+    "renderHeight": 2048,
+    "cropX": 1328,
+    "cropY": 224
+   },
+   "videoFile": "desktop.mp4",
+   "quality": "balanced",
+   "nativeVideo": {
+    "file": "desktop.mp4",
+    "width": 2304,
+    "height": 1024,
+    "framerate": 42,
+    "bitrate": 2674084,
+    "codec": "avc1.640032"
+   },
+   "compatibilityVideo": {
+    "file": "desktop.mp4",
+    "width": 2304,
+    "height": 1024,
+    "framerate": 42,
+    "bitrate": 2674084,
+    "codec": "avc1.640032",
+    "linearResolution": 1,
+    "verticalResolution": 1
+   },
+   "motionFps": 30
+  }
+ },
+ "fieldMobile": {
+  "base": "assets/how-it-works-v2/recorded/field",
+  "revision": "hiw-mobile-recovery-v1",
+  "neighborhood": true,
+  "operator": true,
+  "timelineFrames": 3088,
+  "operatorStartFrame": 0,
+  "howItWorks": {
+   "fieldLeadFrames": 1416,
+   "deliveryStartFrame": 300,
+   "deliveryFrames": 1116
+  },
+  "kind": "mobile"
+ }
+}
