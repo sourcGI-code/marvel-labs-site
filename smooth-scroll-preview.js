@@ -8,7 +8,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   if(params.has('freescroll')||params.has('edit'))return null;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
   const QUIET_MS=350,RELEASE_MS=220,SWIPE_PX=28,PHASE_DISTANCE=80,PHASE_MS=80;
-  const SECONDS_PER_NOTCH=2,BASE_TRAVEL_RATE=8,MAX_INTENSITY=7;
+  const SCROLL_SCALE=.95,SECONDS_PER_NOTCH=2*SCROLL_SCALE,BASE_TRAVEL_RATE=8*SCROLL_SCALE,MAX_INTENSITY=7;
   let step=0,rate=1,wheel=null,touch=null,heldKey=null;
   let pending=0,releaseTimer=0,epoch=0,scrubbing=false,scrollFrame=0,follow=null;
   let intensity=1,lastDirection=0;
@@ -76,11 +76,12 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     mark();
   }
   function releaseSoon() {clearTimeout(releaseTimer);releaseTimer=setTimeout(release,RELEASE_MS);}
-  function crossed(source) {
-    if(source){source.crossed=true;source.crossedAt=performance.now();source.afterCross=0;}
+  function crossed(source,direction) {
+    if(source){source.crossed=true;source.crossedDirection=direction;source.crossedAt=performance.now();source.afterCross=0;}
   }
   function crossing(source,px) {
     if(!source?.crossed)return false;
+    if(Math.sign(px)!==source.crossedDirection){source.crossed=false;return false;}
     source.afterCross=(source.afterCross||0)+Math.abs(px);
     // Consume a transition's immediate tail, but let sustained scrolling keep
     // going. A long wheel gesture must not lock the newly entered section.
@@ -120,7 +121,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     const chapter=current();if(!chapter)return;
     const direction=Math.sign(px),p=stage.progress(chapter.section);
     if(chapter.kind==='reading'||(direction>0?p>=chapter.end-.0001:p<=chapter.start+.0001)){
-      if(move(nextFrom(chapter,direction),direction<0))crossed(source);
+      if(move(nextFrom(chapter,direction),direction<0))crossed(source,direction);
       releaseSoon();return;
     }
     cancelPending();
@@ -137,7 +138,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     const input=Math.max(-240,Math.min(240,px));
     intensity=Math.min(MAX_INTENSITY,intensity+Math.abs(input)/180);
     const seconds=input/120*SECONDS_PER_NOTCH*intensity;
-    const lead=Math.max(2,intensity*1.25);
+    const lead=Math.max(2,intensity*1.25)*SCROLL_SCALE;
     // Reversing cancels any unconsumed movement immediately.
     if(Math.sign(follow.target-follow.position)!==direction)follow.target=follow.position;
     follow.target=Math.max(0,Math.min(follow.clock.total,
@@ -158,11 +159,11 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   function gesture(direction,px=direction*120,source={}) {
     if(step>=3){fastScroll(px,source);return;}
     const chapter=current();if(!chapter)return;
-    if(direction<0){if(move(nextFrom(chapter,-1)||{...chapter,start:0}))crossed(source);return;}
-    if(chapter.kind==='reading'){if(move(nextFrom(chapter,1)))crossed(source);return;}
+    if(direction<0){if(move(nextFrom(chapter,-1)||{...chapter,start:0}))crossed(source,direction);return;}
+    if(chapter.kind==='reading'){if(move(nextFrom(chapter,1)))crossed(source,direction);return;}
     step=Math.min(3,step+1);mark();
     if(step===3){fastScroll(px,source);return;}
-    rate=step===2?2:1;playback.setRate(rate);
+    rate=step===2?2*SCROLL_SCALE:1;playback.setRate(rate);
     if(step===1||!['playing','loading'].includes(playback.inspect().mode))play(chapter);
     releaseSoon();
   }
@@ -183,7 +184,10 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     if(!wheel||now-wheel.at>=QUIET_MS||Math.sign(px)!==wheel.direction)
       wheel={at:now,direction:Math.sign(px),native:!!scroller(event.target,Math.sign(px)),distance:0,used:false,crossed:false,samples:[],inertia:false,lastMagnitude:0};
     wheel.at=now;
-    if(wheel.native){if(!scroller(event.target,Math.sign(px)))event.preventDefault();return;}
+    // Re-check each packet: a reading panel owns input only while it can move.
+    // At either edge, the same continuing gesture must reach the next scene.
+    if(scroller(event.target,Math.sign(px))){wheel.native=true;return;}
+    if(wheel.native){wheel.native=false;wheel.distance=0;wheel.used=false;}
     event.preventDefault();
     const magnitude=Math.abs(px),previous=wheel.lastMagnitude;wheel.lastMagnitude=magnitude;
     // Trackpads keep emitting a shrinking tail after the fingers lift. That
@@ -214,10 +218,13 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     const t=event.touches[0],dy=touch.y-t.clientY,dx=touch.x-t.clientX,delta=touch.lastY-t.clientY;
     touch.lastY=t.clientY;
     if(Math.abs(dx)>Math.abs(dy))return;
-    if(touch.native===null&&Math.abs(dy)>=6)touch.native=!!scroller(event.target,Math.sign(dy));
-    if(touch.native){if(!scroller(event.target,Math.sign(dy)))event.preventDefault();return;}
+    if(Math.abs(dy)<6)return;
+    const direction=Math.sign(delta||dy);
+    if(scroller(event.target,direction)){touch.native=true;return;}
+    if(touch.native){touch.native=false;touch.used=false;touch.y=t.clientY+delta;}
     event.preventDefault();
-    if(!touch.used&&Math.abs(dy)>=SWIPE_PX){touch.used=true;touch.phaseAt=performance.now();gesture(Math.sign(dy),dy,touch);}
+    const travel=touch.y-t.clientY;
+    if(!touch.used&&Math.abs(travel)>=SWIPE_PX){touch.used=true;touch.phaseAt=performance.now();gesture(Math.sign(travel),travel,touch);}
     else if(touch.used&&delta)continueGesture(touch,delta);
   },{passive:false});
   function touchEnd(){const used=touch?.used;touch=null;if(used)release();}
