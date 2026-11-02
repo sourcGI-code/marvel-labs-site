@@ -85,14 +85,14 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
     // Recorded films: the poster stays until the opening has a decodable frame (phones that refused autoplay).
     liveMode='opening';if(!recorded||reduced.matches||film.ready)host.classList.add('scene-ready');
    }
-   copy('THE AUTONOMOUS MICROFACTORY TRAILER','Your next trailer.<br><em>A factory inside.</em>','More than a place for your mowers and equipment. Your trailer turns grass, leaves, and food waste into products, creating a new source of income for your business with every product it produces.');
+   copy('FOR LANDSCAPING CREWS','Your next trailer.<br><em>A factory inside.</em>','Haul your mowers like any trailer. The factory inside turns your bagged clippings into sinks, and you share the profit.');
    $('platform-story').style.opacity='1';
    fleetLabels.update({inFleet:false,frameReady:false});$('capacity-summary').hidden=true;
   }else{
    opening?.draw(1,false);
    const progress=t;
    state=recorded?recorded.draw(progress):cargo.draw(progress*(540/1079),canvas.clientWidth,canvas.clientHeight);liveMode='cargo';host.classList.add('scene-ready');
-   if(t<11.52/18)copy('THE 16 FT MODEL · 7 FT WIDE','Same 6 ft factory.<br><em>Smaller trailer.</em>','The 16 ft carries the same 6 ft factory with a 10 ft cargo bay for your mowers. A smaller rig to tow, the same sinks out the side.');
+   if(t<11.52/18)copy('THE 16 FT MODEL · 7 FT WIDE','Same 6 ft factory.<br><em>Smaller trailer.</em>','Same factory, same sinks. A 10 ft cargo bay and a smaller rig to tow.');
    else copy('TWO SIZES · ONE 6 FT FACTORY','Choose by<br><em>what you haul.</em>','');
    $('platform-story').style.opacity='1';
    host.closest('.pin').dataset.deliveryPhase=t<11.52/18?'arrival':'fleet';

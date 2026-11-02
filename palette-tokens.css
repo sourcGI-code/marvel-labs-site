@@ -1,0 +1,33 @@
+/* Copy pass v1 — palette tokens. Colour only: no layout, size, motion or opacity changes.
+   Contrast on --bg #0a0e10: ink 17.4:1 · ink-2 12.7:1 · muted 8.5:1 · accent 11.4:1 · accent-soft 13.9:1 (4.8:1 at the 55% dimmed state) */
+:root,[data-experience=official] .official-tour{
+ --bg:#0a0e10;            /* one background everywhere (was #0a0c0d in atlas.css, #0a0e10 elsewhere) */
+ --surface:#11181b;       /* cards / glass base */
+ --ink:#f2f3f2;           /* primary text */
+ --ink-2:#c8d3d6;         /* secondary text (replaces #b6bfc1 / #c9e6e7 / #d0dcdc one-offs) */
+ --muted:#a4adb0;         /* captions, labels */
+ --accent:#4dd8e8;        /* brand teal: CTAs, highlights */
+ --accent-soft:#8fe9f3;   /* accent text that sits in a dimmed state */
+ --accent-ink:#dffbfd;    /* text on teal-tinted panels */
+ --success:#b5efbf;       /* selected / confirmed */
+ --rule:#819093;          /* hairlines, diagram strokes (non-text) */
+ --offer-muted:var(--ink-2)
+}
+html[data-palette=charcoal]:has(body[data-experience=official]){--bg:#0a0e10}
+/* Fixes for the two AA failures found in the audit (colour only). */
+#app .crew-note{color:var(--muted)}                 /* was ink @45% = 4.2:1 -> 8.5:1 */
+#app .crew-beats small{color:var(--ink-2)}          /* dimmed rows were 3.3:1 -> 4.4:1 at 55% */
+#app .crew-beats li:not(.is-current) small{color:var(--ink)} /* 5.7:1 while dimmed */
+#app .crew-beats span{color:var(--accent-soft)}     /* dimmed numbers 4.1:1 -> 4.8:1 */
+#app .crew-beats li.is-current span{color:var(--accent)}
+/* One-off greys mapped onto tokens */
+.route-scope{color:var(--ink-2)}
+.route-quote-history span{color:var(--ink-2)}
+.route-quote-card{color:var(--ink)}
+.route-fact{color:var(--ink)}
+.route-fact span{color:var(--accent-soft)}
+.route-fact a,.delivery-terms{color:var(--ink-2)}
+.route-quote-card[data-selected=true]{border-color:var(--success)}
+.route-box[data-selected=true],.route-panel[data-selected=true] .route-panel-head,.route-panel-note{color:var(--accent-ink)}
+.route-panel[data-selected=true]{border-left-color:var(--accent-ink)}
+.offer-v2,.pricing-page{--offer-muted:var(--ink-2)}

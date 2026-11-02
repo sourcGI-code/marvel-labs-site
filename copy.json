@@ -1,0 +1,304 @@
+{
+ "_note": "Copy pass v1 — every reader-facing string, grouped as Shopify sections → settings / blocks. Strings under 'film_captions' are currently set from JS (platform-hqworld4.js, official-journey-hqworld4.js); in a theme, render them into a <script type=\"application/json\"> from section blocks and have the JS read that instead of literals. <br>/<em> mark the two-line headline styling.",
+ "settings_global": {
+  "brand": "Marvel Labs",
+  "deposit_label": "$100",
+  "deposit_terms": "Fully refundable · credited toward the final price",
+  "delivery": "Spring 2027 delivery target",
+  "availability": "Limited availability",
+  "contact_email": "hello@marvellabs.com"
+ },
+ "seo": {
+  "home_title": "Microfactory Trailer for Landscaping Crews — Marvel Labs",
+  "home_description": "A landscaping trailer with a factory inside that turns your clippings into sinks. 16 ft or 20 ft, buy or lease. $100 refundable deposit.",
+  "og_title": "Your next trailer. A factory inside. — Marvel Labs",
+  "og_description": "A trailer for landscaping crews that turns clippings into sinks. 16 ft or 20 ft. Spring 2027 delivery.",
+  "og_image": "assets/og-1200x630.jpg"
+ },
+ "sections": {
+  "header": {
+   "nav": [
+    [
+     "Home",
+     "#top"
+    ],
+    [
+     "Specs & pricing",
+     "#sizes"
+    ],
+    [
+     "The numbers",
+     "#story"
+    ],
+    [
+     "How it works",
+     "#inside"
+    ],
+    [
+     "App",
+     "#app"
+    ],
+    [
+     "FAQ",
+     "#faq"
+    ]
+   ],
+   "mobile_cta": "Reserve · $100 refundable ↗"
+  },
+  "hero": {
+   "id": "top",
+   "ga_section": "hero",
+   "eyebrow": "FOR LANDSCAPING CREWS",
+   "heading": "Your next trailer.<br><em>A factory inside.</em>",
+   "lead": "Haul your mowers like any trailer. The factory inside turns your bagged clippings into sinks, and you share the profit.",
+   "cta_primary": {
+    "label": "Reserve for $100",
+    "ga": "reserve_click/hero_primary"
+   },
+   "cta_secondary": {
+    "label": "See the numbers ↓",
+    "href": "#story"
+   },
+   "stage_label": "FULLY REFUNDABLE · SPRING 2027 DELIVERY · LIMITED AVAILABILITY",
+   "film_captions": [
+    {
+     "kicker": "THE 16 FT MODEL · 7 FT WIDE",
+     "title": "Same 6 ft factory.<br><em>Smaller trailer.</em>",
+     "copy": "Same factory, same sinks. A 10 ft cargo bay and a smaller rig to tow."
+    },
+    {
+     "kicker": "TWO SIZES · ONE 6 FT FACTORY",
+     "title": "Choose by<br><em>what you haul.</em>",
+     "copy": ""
+    }
+   ],
+   "size_labels": [
+    [
+     "20 ft",
+     "14 FT REAR CARGO"
+    ],
+    [
+     "16 ft",
+     "10 FT REAR CARGO"
+    ]
+   ],
+   "film_text_equivalent": "see index.html #hero-film-summary"
+  },
+  "workday": {
+   "id": "story",
+   "ga_section": "workday",
+   "eyebrow": "01 / THE NUMBERS",
+   "tag": "ILLUSTRATION · 20 SINKS × $15",
+   "heading": "Mow as usual.<br><em>Earn on every sink.</em>",
+   "lead": "You already bag the clippings. Tip them into the hopper. The factory makes and boxes sinks while you mow.",
+   "stats": [
+    [
+     "20",
+     "sinks sold in one illustrative day"
+    ],
+    [
+     "$300",
+     "illustrative gross earnings per day"
+    ]
+   ],
+   "equation": "20 sales × $15 gross operator earnings = $300 / day",
+   "disclaimer": "Illustration only: all 20 sinks sell at $15 gross operator earnings each, before your expenses. It is not a projection for either plan. Actual earnings depend on sales, costs and the agreed profit calculation; production and earnings are not guaranteed.",
+   "ctas": [
+    "See how it works ↓",
+    "Price the 16 ft",
+    "Price the 20 ft"
+   ]
+  },
+  "how_it_works": {
+   "id": "inside",
+   "ga_section": "how_it_works",
+   "eyebrow": "02 / HOW IT WORKS",
+   "cta": "Reserve for $100 ↘",
+   "note": "Illustrative equipment and workflow · the 6 ft front factory stays enclosed",
+   "film_captions": [
+    [
+     "GRASS IN · THE HOPPER",
+     "Grass in.",
+     "The chute folds out. Tip in the bagged clippings and the factory starts a sink."
+    ],
+    [
+     "GRASS IN · FACTORY RUNNING",
+     "Chute shut.<br><em>Back to the truck.</em>",
+     "The chute folds away. The factory makes the sink on its own while you work."
+    ],
+    [
+     "PRODUCT OUT · BOXED SINK",
+     "Sink out.",
+     "Open the side hatch. A boxed sink rides out, ready to ship."
+    ],
+    [
+     "GRASS IN · PRODUCT OUT",
+     "Grass goes in.<br><em>Sinks come out.</em>",
+     ""
+    ],
+    [
+     "DROP IT OFF · THE UPS STORE",
+     "On your route.<br><em>No extra trip.</em>",
+     "The boxed sink rides along to The UPS Store, on the way to your next job."
+    ],
+    [
+     "AT THE UPS STORE",
+     "Park.<br><em>Hatch open.</em>",
+     "At The UPS Store, the hatch opens and the boxed sink rolls out."
+    ],
+    [
+     "HAND IT OVER",
+     "Into the store.<br><em>Onto the counter.</em>",
+     "Carry it in. The clerk scans the box and it ships."
+    ],
+    [
+     "MARVEL CREW APP",
+     "Dropped off.<br><em>Confirmed on your phone.</em>",
+     "Marvel Crew confirms the hand-off on your phone. Nothing to write down."
+    ],
+    [
+     "BACK ON THE ROUTE",
+     "Shipped.<br><em>Next yard.</em>",
+     "The sink ships. You drive on to the next yard and the next bag of clippings."
+    ],
+    [
+     "YOUR EQUIPMENT · 10 OR 14 FT CARGO BAY",
+     "Your mowers<br><em>ride in the back.</em>",
+     "The ramp drops. Zero-turn, push mower and trimmers ride in the rear bay. The factory stays sealed up front."
+    ],
+    [
+     "CAMERAS MEASURE THE YARD",
+     "Cameras measure.<br><em>You set the price.</em>",
+     "Trailer cameras measure lawn, edging, hedges, beds and tree rings. Your quote starts from numbers, not a guess."
+    ],
+    [
+     "RTK · SURVEY-GRADE GPS",
+     "Every measurement<br><em>pinned to the lot.</em>",
+     "Survey-grade GPS (RTK) ties each measurement to the property, so it lines up next visit."
+    ],
+    [
+     "AUTO QUOTE · YOU APPROVE IT",
+     "The survey becomes<br><em>a quote draft.</em>",
+     "The scope becomes a quote email with before-and-after views. Nothing is sent until you approve the price."
+    ],
+    [
+     "MOW & BAG THE CLIPPINGS",
+     "Mow like always.<br><em>Bag the clippings.</em>",
+     "Mow the way you always do. The clippings you bag become the next sink."
+    ]
+   ],
+   "film_text_equivalent": "see index.html #tour-film-summary"
+  },
+  "specs": {
+   "id": "sizes",
+   "ga_section": "specs",
+   "eyebrow": "03 / SPECS & PRICING",
+   "tag": "SAME 6 FT FACTORY IN BOTH",
+   "heading": "Two sizes.<br><em>Buy or lease.</em>",
+   "blocks": [
+    {
+     "size": "16 ft",
+     "line": "A smaller rig to tow.<br>Same factory, same sinks.",
+     "width": "7 ft",
+     "factory": "6 ft",
+     "cargo": "10 ft",
+     "buy": "$44,999",
+     "buy_share": "75% profit share",
+     "lease": "Lease · $100 to reserve",
+     "lease_share": "25% profit share",
+     "cta": "Reserve the 16 ft"
+    },
+    {
+     "size": "20 ft",
+     "line": "4 ft more cargo.<br>Room for more mowers.",
+     "width": "8.5 ft",
+     "factory": "6 ft",
+     "cargo": "14 ft",
+     "buy": "$49,999.99",
+     "buy_share": "75% profit share",
+     "lease": "Lease · $100 to reserve",
+     "lease_share": "25% profit share",
+     "cta": "Reserve the 20 ft"
+    }
+   ],
+   "note": "Profit shares are the operator’s share of profit on sinks sold. Preview pricing; final specification, profit calculation and plan terms are confirmed before participation."
+  },
+  "app": {
+   "id": "app",
+   "ga_section": "app",
+   "eyebrow": "04 / MARVEL CREW",
+   "heading": "Your trailer.<br><em>In your pocket.</em>",
+   "lead": "One app for your trailer and your crews. It launches with the trailer.",
+   "blocks": [
+    [
+     "Trailer status + production",
+     "Lights, battery and the sink in production."
+    ],
+    [
+     "Live storage camera",
+     "See the finished cartons behind the side door."
+    ],
+    [
+     "Auto quotes",
+     "Quotes show customers their yard before and after."
+    ],
+    [
+     "Map, schedule + money",
+     "Crews, yards, your calendar and earnings."
+    ]
+   ],
+   "cta": "Reserve for $100",
+   "note": "App screens shown with example data.",
+   "link": "Try the app"
+  },
+  "faq": {
+   "id": "faq",
+   "ga_section": "faq",
+   "eyebrow": "05 / FAQ",
+   "tag": "STRAIGHT ANSWERS",
+   "heading": "Questions,<br><em>answered.</em>",
+   "blocks": [
+    {
+     "q": "What is the Marvel Labs microfactory trailer?",
+     "a": "An equipment trailer for landscaping crews with a 6 ft enclosed factory at the front. Mowers ride in the rear cargo bay. The factory turns bagged grass clippings into boxed sinks. It is a concept with a Spring 2027 delivery target."
+    },
+    {
+     "q": "Who is it for?",
+     "a": "Landscaping crews and lawn-care operators who already mow and bag clippings on their routes."
+    },
+    {
+     "q": "How does it work?",
+     "a": "Tip bagged clippings into the hopper. The enclosed factory makes and boxes a sink while you work. The boxed sink comes out of the side hatch, you drop it at The UPS Store on your route, and the Marvel Crew app confirms the hand-off."
+    },
+    {
+     "q": "What sizes are there?",
+     "a": "Two sizes with the same 6 ft enclosed factory. The 16 ft is 7 ft wide with a 10 ft rear cargo bay. The 20 ft is 8.5 ft wide with a 14 ft rear cargo bay."
+    },
+    {
+     "q": "How much does it cost?",
+     "a": "Preview Buy pricing is $44,999 for the 16 ft and $49,999.99 for the 20 ft, with a 75% operator profit share. Lease comes with a 25% operator profit share; lease terms are set in a separate agreement. Taxes, delivery and registration are not included."
+    },
+    {
+     "q": "What is the profit share?",
+     "a": "The operator's share of profit on sinks sold, not a share of the selling price. The site's example of 20 sinks at $15 each ($300 a day) is an illustration, not a projection. Earnings are not guaranteed."
+    },
+    {
+     "q": "Is the $100 deposit refundable?",
+     "a": "Yes. The $100 reservation deposit is fully refundable with no cancellation fee, and it is credited toward the trailer's final price. It is not a monthly lease payment. The reservation on this site is currently a demo and takes no payment."
+    },
+    {
+     "q": "When will trailers be delivered?",
+     "a": "Spring 2027 is the delivery target. It is not a guaranteed date, and availability is limited. Final availability, service area and delivery are confirmed before the trailer agreement."
+    }
+   ]
+  },
+  "footer": {
+   "links": [
+    "FAQ",
+    "Privacy",
+    "Credits"
+   ],
+   "legal": "© 2026 MARVEL LABS INC. · AUTONOMOUS MICROFACTORY TRAILERS"
+  }
+ }
+}

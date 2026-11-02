@@ -1,0 +1,23 @@
+/* Copy pass v1 — additions only (FAQ scene + accessible text equivalents). Uses palette tokens; no changes to existing animation. */
+.sr-only{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap;border:0}
+.faq-section{display:flex;flex-direction:column;justify-content:center;gap:38px;color:var(--ink);background:var(--bg)}
+.faq-grid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:6vw;align-items:start}
+.faq-grid h2{font-size:clamp(38px,4.2vw,60px);line-height:1.05;letter-spacing:-.05em;margin:0;font-weight:400}
+.faq-grid h2 em{font-style:normal;color:var(--accent)}
+.faq-list{border-top:1px solid var(--line)}
+.faq-list details{border-bottom:1px solid var(--line)}
+.faq-list summary{list-style:none;cursor:pointer;display:flex;justify-content:space-between;align-items:center;gap:18px;padding:14px 0}
+.faq-list summary::-webkit-details-marker{display:none}
+.faq-list summary::after{content:"+";color:var(--accent);font-size:20px;line-height:1;transition:transform .25s}
+.faq-list details[open] summary::after{transform:rotate(45deg)}
+.faq-list summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.faq-list h3{font-size:16px;font-weight:600;line-height:1.35;margin:0;color:var(--ink)}
+.faq-list p{margin:0 0 16px;max-width:62ch;font-size:14px;line-height:1.55;color:var(--ink-2)}
+@media(max-width:760px){
+ .faq-section{gap:18px;justify-content:flex-start;padding-top:104px}
+ .faq-grid{grid-template-columns:1fr;gap:16px}
+ .faq-grid h2{font-size:34px}
+ .faq-list summary{padding:10px 0}
+ .faq-list h3{font-size:14px}
+ .faq-list p{font-size:13px;margin-bottom:12px}
+}

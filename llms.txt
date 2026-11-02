@@ -1,0 +1,26 @@
+# Marvel Labs
+
+> Marvel Labs makes the autonomous microfactory trailer: an equipment trailer for landscaping crews with a 6 ft enclosed factory at the front that turns bagged grass clippings into boxed sinks. Concept in development; Spring 2027 delivery target.
+
+Key facts (from the live site, November 2026):
+- Who it's for: landscaping crews and lawn-care operators who already mow and bag clippings.
+- How it works: tip bagged clippings into the hopper; the enclosed factory makes and boxes a sink while you work; drop the boxed sink at The UPS Store on your route; the Marvel Crew app confirms the hand-off.
+- Sizes: 16 ft (7 ft wide, 10 ft rear cargo) and 20 ft (8.5 ft wide, 14 ft rear cargo); both carry the same 6 ft enclosed factory.
+- Preview pricing: Buy 16 ft $44,999 or 20 ft $49,999.99 with a 75% operator profit share; Lease with a 25% operator profit share (lease terms in a separate agreement).
+- Profit share = the operator's share of profit on sinks sold. The $300/day figure (20 sinks × $15) is an illustration, not a projection; earnings are not guaranteed.
+- Reservation: $100 deposit, fully refundable, no cancellation fee, credited toward the final price. The reservation flow on the current site is a demo and takes no payment.
+- Delivery: Spring 2027 target, not guaranteed; limited availability.
+- Contact: hello@marvellabs.com
+
+## Pages
+- [Home](https://sourcgi-code.github.io/marvel-labs-site/): the trailer, how it works, specs, app, FAQ
+- [16 ft trailer](https://sourcgi-code.github.io/marvel-labs-site/trailer-16.html)
+- [20 ft trailer](https://sourcgi-code.github.io/marvel-labs-site/trailer-20.html)
+- [Reserve](https://sourcgi-code.github.io/marvel-labs-site/reserve.html)
+- [Reservation help](https://sourcgi-code.github.io/marvel-labs-site/reservation-help.html)
+- [Refunds & cancellation](https://sourcgi-code.github.io/marvel-labs-site/reservation-refunds.html)
+
+## Optional
+- [Reservation agreement (draft)](https://sourcgi-code.github.io/marvel-labs-site/reservation-agreement.html)
+- [Terms](https://sourcgi-code.github.io/marvel-labs-site/terms.html)
+- [Privacy](https://sourcgi-code.github.io/marvel-labs-site/privacy.html)
