@@ -16,7 +16,7 @@ export function createReservationEmail(record, contact = {}) {
     ['Reservation number', record.id],
     ['Trailer', `${record.size} ft · Mirror Graphite`],
     ['Plan', record.plan === 'buy' ? 'Buy · 75% operator profit share' : 'Lease · 25% operator profit share'],
-    ['Factory / rear cargo', record.size === '16' ? '6 ft / 10 ft' : '6 ft / 14 ft'],
+    ['Factory / rear cargo', record.size === '16' ? '6 ft 2½ in / 9 ft 9½ in' : '6 ft 2½ in / 13 ft 9½ in'],
     [cancelled ? 'Refund preview' : 'Deposit preview', '$100 USD · fully refundable'],
     ['Status', cancelled ? 'Cancelled · demo' : 'Reserved · demo']
   ];

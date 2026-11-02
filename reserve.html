@@ -4,7 +4,7 @@
 <script type="importmap">{"imports":{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}</script>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="theme-color" content="#0a0e10">
 <title>Reserve your trailer — Marvel Labs</title>
-<meta name="description" content="Preview reserving a Marvel Labs autonomous microfactory trailer: 20 ft × 8.5 ft or 16 ft × 7 ft, both with a 6 ft enclosed factory. $100 fully refundable deposit. Spring 2027 delivery.">
+<meta name="description" content="Preview reserving a Marvel Labs autonomous microfactory trailer: 20 ft × 8.5 ft or 16 ft × 7 ft, both with a 6 ft 2½ in enclosed factory. $100 fully refundable deposit. Spring 2027 delivery.">
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml"><link rel="icon" href="favicon.ico" sizes="any"><link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="preload" href="assets/lato-regular.woff2" as="font" type="font/woff2" crossorigin>
 <link rel="preload" href="assets/lato-bold.woff2" as="font" type="font/woff2" crossorigin>
@@ -28,7 +28,7 @@
   <div class="rv-fade"></div>
   <button type="button" class="rs-back">← See both trailers</button>
   <div class="rs-3d-bar"><span class="rs-3d-hint"><span class="in-overview"><span class="hover">Hover a trailer</span><span class="tap">Tap a trailer</span></span><span class="in-viewer"><span class="hover">Move to look around · Click to lock</span><span class="tap">Drag to turn it</span></span></span><button type="button" class="rs-lock">Locked · click to unlock</button><button type="button" class="rs-ramp-btn">Open the ramp</button></div>
-  <div class="rv-metrics" aria-live="polite"><p class="rv-metrics-size">20 ft</p><dl><div><dt>Trailer width</dt><dd data-k="width">8.5 ft</dd></div><div><dt>Enclosed factory</dt><dd data-k="factory">6 ft</dd></div><div><dt>Rear cargo length</dt><dd data-k="cargo">14 ft</dd></div></dl></div>
+  <div class="rv-metrics" aria-live="polite"><p class="rv-metrics-size">20 ft</p><dl><div><dt>Trailer width</dt><dd data-k="width">8.5 ft</dd></div><div><dt>Enclosed factory</dt><dd data-k="factory">6 ft 2½ in</dd></div><div><dt>Rear cargo length</dt><dd data-k="cargo">13 ft 9½ in</dd></div></dl></div>
  </div>
  <form class="rv-rail" novalidate aria-label="Trailer reservation preview">
   <p class="rd-demo"><span></span> PREORDER PREVIEW · NO CHARGE</p>
@@ -38,9 +38,9 @@
   <ol class="rd-steps" aria-label="Reservation steps"><li data-step="configure" aria-current="step"><span>01</span> Trailer</li><li data-step="details"><span>02</span> Details</li><li data-step="review"><span>03</span> Review</li></ol>
   <div data-panel="configure">
   <fieldset class="rv-group"><legend>Size</legend><div class="rv-cards">
-   <label class="rv-card"><input type="radio" name="size" value="20" checked><span><b>20 ft</b><small>8.5 ft wide · 14 ft rear cargo<br>Room for more mowers.</small></span><span class="rv-price">$49,999.99<small>or $100 now</small></span></label>
-   <label class="rv-card"><input type="radio" name="size" value="16"><span><b>16 ft</b><small>7 ft wide · 10 ft rear cargo<br>Compact. Same factory, same sinks.</small></span><span class="rv-price">$44,999<small>or $100 now</small></span></label>
-  </div><p class="rv-fine">Both carry the same 6 ft enclosed factory. <span class="hover">Hover a size to see it on the stage.</span><span class="tap">Tap a size to see it on the stage.</span></p></fieldset>
+   <label class="rv-card"><input type="radio" name="size" value="20" checked><span><b>20 ft</b><small>8.5 ft wide · 13 ft 9½ in rear cargo<br>Room for more mowers.</small></span><span class="rv-price">$49,999.99<small>or $100 now</small></span></label>
+   <label class="rv-card"><input type="radio" name="size" value="16"><span><b>16 ft</b><small>7 ft wide · 9 ft 9½ in rear cargo<br>Compact. Same factory, same sinks.</small></span><span class="rv-price">$44,999<small>or $100 now</small></span></label>
+  </div><p class="rv-fine">Both carry the same enclosed factory. Layout lengths are nominal; usable clearance is confirmed in the final specification. <span class="hover">Hover a size to see it on the stage.</span><span class="tap">Tap a size to see it on the stage.</span></p></fieldset>
 <fieldset class="rv-group"><legend>Plan</legend><div class="rv-cards two">
    <label class="rv-card rv-plan"><input type="radio" name="plan" value="buy" checked><b>Buy</b><span data-buy-price>$49,999.99</span><small>75% profit share</small></label>
    <label class="rv-card rv-plan"><input type="radio" name="plan" value="free"><b>Lease</b><span>$100 now</span><small>25% profit share</small></label>
@@ -112,7 +112,7 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidd
 
 </script>
 <script src="reserve-config.js?v=reservation-preview-v2"></script>
-<script type="module" src="reserve-page.js?v=reservation-preview-v2"></script>
-<script type="module" src="reserve-3d.js?v=fuller-graphite-v1"></script>
+<script type="module" src="reserve-page.js?v=package-access-v1"></script>
+<script type="module" src="reserve-3d.js?v=package-access-v1"></script>
 <script type="module" src="editor-runtime.js?v=fuller-graphite-spotlight-v1"></script>
 </body></html>

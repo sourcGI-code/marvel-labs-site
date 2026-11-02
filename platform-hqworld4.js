@@ -92,8 +92,8 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
    opening?.draw(1,false);
    const progress=t;
    state=recorded?recorded.draw(progress):cargo.draw(progress*(540/1079),canvas.clientWidth,canvas.clientHeight);liveMode='cargo';host.classList.add('scene-ready');
-   if(t<11.52/18)copy('THE 16 FT MODEL · 7 FT WIDE','Same 6 ft factory.<br><em>Smaller trailer.</em>','The 16 ft carries the same 6 ft factory with a 10 ft cargo bay for your mowers. A smaller rig to tow, the same sinks out the side.');
-   else copy('TWO SIZES · ONE 6 FT FACTORY','Choose by<br><em>what you haul.</em>','');
+   if(t<11.52/18)copy('THE 16 FT MODEL · 7 FT WIDE','Same factory.<br><em>Smaller trailer.</em>','The 16 ft carries the same enclosed factory with a 9 ft 9½ in cargo bay for your mowers. A smaller rig to tow, the same sinks out the side.');
+   else copy('TWO SIZES · ONE FACTORY','Choose by<br><em>what you haul.</em>','');
    $('platform-story').style.opacity='1';
    host.closest('.pin').dataset.deliveryPhase=t<11.52/18?'arrival':'fleet';
    const nativeLabels=recorded?.video.dataset.timelinePlaying==='true'&&!recorded.video.seeking&&recorded.video.readyState>=2;

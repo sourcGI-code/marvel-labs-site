@@ -1,11 +1,11 @@
-import {installReservationDemo} from './reserve-demo.js?v=reservation-preview-v2';
+import {installReservationDemo} from './reserve-demo.js?v=package-access-v1';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 
 function start(sec) {
   const SPEC = {
-    '20': {width: '8.5 ft', factory: '6 ft', cargo: '14 ft', buy: '$49,999.99'},
-    '16': {width: '7 ft', factory: '6 ft', cargo: '10 ft', buy: '$44,999'}
+    '20': {width: '8.5 ft', factory: '6 ft 2½ in', cargo: '13 ft 9½ in', buy: '$49,999.99'},
+    '16': {width: '7 ft', factory: '6 ft 2½ in', cargo: '9 ft 9½ in', buy: '$44,999'}
   };
   const form = sec.querySelector('.rv-rail'), sizes = [...form.querySelectorAll('input[name="size"]')];
   const plans = [...form.querySelectorAll('input[name="plan"]')];

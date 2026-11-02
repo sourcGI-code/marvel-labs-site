@@ -1,4 +1,4 @@
-import {createReservationEmail, emailDraft} from './reservation-email.js?v=reservation-preview-v2';
+import {createReservationEmail, emailDraft} from './reservation-email.js?v=package-access-v1';
 const STORAGE = 'marvel-reservation-demo-v1';
 const money = value => new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: value % 1 ? 2 : 0}).format(value);
 const price = size => size === '16' ? 44999 : 49999.99;
@@ -32,7 +32,7 @@ export function installReservationDemo({sec, form, selection, restore}) {
       ['Trailer', `${choice.size} ft · Mirror Graphite`],
       ['Plan', planName(choice.plan)],
       ['Footprint', choice.size === '16' ? '16 ft × 7 ft' : '20 ft × 8.5 ft'],
-      ['Factory / cargo', choice.size === '16' ? '6 ft / 10 ft' : '6 ft / 14 ft'],
+      ['Factory / cargo', choice.size === '16' ? '6 ft 2½ in / 9 ft 9½ in' : '6 ft 2½ in / 13 ft 9½ in'],
       ...(choice.plan === 'buy' ? [
         ['Trailer price', money(price(choice.size))],
         ['After deposit*', money(price(choice.size) - (cancelled ? 0 : 100))]

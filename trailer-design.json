@@ -1,13 +1,19 @@
 {
-  "revision": "fuller-graphite-v1",
+  "revision": "package-access-v1",
   "wrap": "Original / Fuller",
   "finish": "Mirror Graphite",
-  "modelBase": "assets/fuller-graphite-v1/",
+  "modelBase": "assets/package-access-v1/",
   "models": {
-    "16": "trailer-16-fuller-graphite.glb",
-    "20": "trailer-20-fuller-graphite.glb"
+    "16": "trailer-16-package-access.glb",
+    "20": "trailer-20-package-access.glb"
   },
   "alternatives": false,
-  "filmUpdate": "Rendering the approved Fuller design into the existing scenes",
-  "approvedOption": 2
+  "filmUpdate": "Updated package-access geometry complete; matching scene proofs and films pending",
+  "approvedOption": 2,
+  "packageExit": {
+    "widthInches": 24,
+    "heightInches": 17.732424060190755,
+    "placement": "Owner-selected center on the flat side wall",
+    "partitionShiftInches": -2.5
+  }
 }
