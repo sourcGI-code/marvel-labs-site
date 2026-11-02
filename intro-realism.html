@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex"><meta name="theme-color" content="#0a0e10">
+<title>Intro realism studies — Marvel Labs</title>
+<meta name="description" content="Compare lighting, paint and edge detail on the actual Marvel Labs intro trailer.">
+<link rel="icon" href="assets/mark.svg" type="image/svg+xml">
+<link rel="stylesheet" href="intro-realism.css?v=1">
+<script type="module" src="intro-realism.js?v=1"></script>
+</head>
+<body>
+<header><a class="brand" href="index.html">MARVEL LABS</a><span>INTRO / REALISM STUDIES</span><a href="index.html">Return to the website ↗</a></header>
+<main>
+<div class="review-heading"><div><p class="eyebrow">THE SAME ARRIVAL. A CLOSER LOOK.</p><h1>Refining the finish.</h1></div><p>Two lighting and surface treatments on the actual Blender trailer. The main website hasn’t changed.</p></div>
+<div class="variants" role="group" aria-label="Choose a realism treatment">
+<button type="button" data-variant="baseline" aria-pressed="false"><span>00 / REFERENCE</span><strong>Current lighting</strong><small>Same model, original finish</small></button>
+<button type="button" data-variant="soft" aria-pressed="true"><span>01 / SOFT STUDIO</span><strong>Clean graphite</strong><small>Broad highlights · softer edges</small></button>
+<button type="button" data-variant="automotive" aria-pressed="false"><span>02 / AUTOMOTIVE</span><strong>Polished graphite</strong><small>Strip reflections · deeper gloss</small></button>
+</div>
+<section class="intro" aria-label="Intro scene preview">
+<div class="world"><img id="scene-image" src="assets/intro-realism-v1/soft-672.webp" alt="Graphite Marvel Labs trailer in the original intro scene"><video id="scene-video" muted playsinline loop preload="none" hidden aria-label="Short trailer arrival lighting preview"></video></div>
+<div class="original-copy"><p class="eyebrow">THE AUTONOMOUS MICROFACTORY TRAILER</p><h2>Your next trailer.<br><em>A factory inside.</em></h2><p>More than a place for your mowers and equipment. Your trailer turns grass, leaves, and food waste into products, creating a new source of income for your business with every product it produces.</p></div>
+<div class="scene-footer"><span id="scene-label">01 / CLEAN GRAPHITE</span><span>EXISTING INTRO · PREVIEW ONLY</span></div>
+</section>
+<div class="toolbar"><div role="group" aria-label="Choose an intro moment"><button type="button" data-frame="168" aria-pressed="false">Approach</button><button type="button" data-frame="336" aria-pressed="false">Side view</button><button type="button" data-frame="672" aria-pressed="true">Presentation</button><button type="button" id="motion" aria-pressed="false">▶ Play short clip</button></div><p id="media-note" role="status">Still frame · the original camera and background</p></div>
+<section class="detail-section" aria-labelledby="detail-title"><div class="detail-heading"><div><p class="eyebrow">THE DETAILS THAT MAKE THE DIFFERENCE</p><h2 id="detail-title">Look closer.</h2></div><p id="treatment-description">Small manufactured edge radii, corrected panel shading, and broad softbox reflections across the graphite paint.</p></div>
+<div class="comparison"><img id="detail-after" src="assets/intro-realism-v1/soft-detail.webp" alt="Close-up of the proposed clean graphite trailer"><div class="before-layer" id="before-layer"><img src="assets/intro-realism-v1/baseline-detail.webp" alt="Close-up with the original lighting and finish"></div><div class="divider" id="divider"></div><span class="compare-label before">Original finish</span><span class="compare-label after" id="after-label">Clean graphite</span></div>
+<label class="compare-control" for="compare">Compare original and proposed <input id="compare" type="range" min="0" max="100" value="50"><span>Drag to reveal the difference</span></label>
+<div class="notes"><p><strong>What stays.</strong> Trailer dimensions, door placement, wheels, hitch, approved lettering, truck movement, intro camera and background.</p><p><strong>What this tests.</strong> Rounded edge highlights, flatter panel shading, clear coat and controlled reflections. The motion samples are short 15 fps drafts; final resolution and animation come after choosing the look.</p></div>
+</section>
+<footer>Real Blender renders · independent preview <a href="index.html">Back to the current website ↗</a></footer>
+</main>
+</body>
+</html>
