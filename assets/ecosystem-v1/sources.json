@@ -1,5 +1,6 @@
 {
   "clips": "Extracted from existing scene renders; not new final-quality renders",
   "pickup": "Updated package-access draft, 640px / 10fps",
-  "sinkImage": "Existing repository design reference; not evidence of grass-based production"
+  "sinkImage": "Existing repository design reference; not evidence of grass-based production",
+  "trailerStills": "Rendered directly from the existing package-access-v1 GLB models in the preview viewer, at 1700 \u00d7 1062 px. Original Mirror Graphite materials, broad studio reflections, transparent background."
 }

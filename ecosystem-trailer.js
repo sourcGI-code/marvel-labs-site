@@ -10,9 +10,12 @@ export async function createProductViewer(stage){
  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;host.append(renderer.domElement);
  const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(32,1,.1,90),pmrem=new THREE.PMREMGenerator(renderer);
  const room=new THREE.Scene();room.background=new THREE.Color(.075,.10,.14);
- const panelGeometry=new THREE.PlaneGeometry(2.65,2.35),panelMaterial=new THREE.MeshBasicMaterial({color:new THREE.Color(.5,.62,.75),side:THREE.DoubleSide,toneMapped:false});
- for(let i=0;i<8;i++){const a=i*Math.PI/4,window=new THREE.Group();window.position.set(Math.cos(a)*18,-1.4,Math.sin(a)*18);window.lookAt(0,-1.4,0);for(const x of [-3,0,3])for(const y of [-3,0,3]){const pane=new THREE.Mesh(panelGeometry,panelMaterial);pane.position.set(x,y,0);window.add(pane);}room.add(window);}
- scene.environment=pmrem.fromScene(room,.02).texture;panelGeometry.dispose();panelMaterial.dispose();pmrem.dispose();
+ const softbox=document.createElement('canvas');softbox.width=256;softbox.height=128;
+ const context=softbox.getContext('2d'),gradient=context.createRadialGradient(128,64,15,128,64,128);
+ gradient.addColorStop(0,'rgba(255,255,255,1)');gradient.addColorStop(.62,'rgba(255,255,255,.95)');gradient.addColorStop(1,'rgba(255,255,255,0)');context.fillStyle=gradient;context.fillRect(0,0,256,128);
+ const lightTexture=new THREE.CanvasTexture(softbox),panelMaterial=new THREE.MeshBasicMaterial({map:lightTexture,color:new THREE.Color(1.1,1.25,1.4),side:THREE.DoubleSide,transparent:true,depthWrite:false,toneMapped:false});
+ for(const [w,h,x,y,z] of [[16,9,-12,-5,-10],[16,9,12,-5,7],[18,5,0,12,0],[12,8,1,-5,15],[12,8,-1,-5,-15]]){const panel=new THREE.Mesh(new THREE.PlaneGeometry(w,h),panelMaterial);panel.position.set(x,y,z);panel.lookAt(0,1,0);room.add(panel);}
+ scene.environment=pmrem.fromScene(room,.015).texture;room.traverse(o=>o.geometry?.dispose());panelMaterial.dispose();lightTexture.dispose();pmrem.dispose();
  scene.add(new THREE.HemisphereLight(0xe6f5ff,0x344752,2.4));
  const key=new THREE.DirectionalLight(0xffffff,4);key.position.set(-4,9,-7);key.castShadow=true;key.shadow.mapSize.set(2048,2048);key.shadow.camera.left=-7;key.shadow.camera.right=7;key.shadow.camera.top=7;key.shadow.camera.bottom=-7;key.shadow.normalBias=.035;scene.add(key);
  const fill=new THREE.DirectionalLight(0x8cdbe8,2.3);fill.position.set(6,4,5);scene.add(fill);
@@ -21,12 +24,12 @@ export async function createProductViewer(stage){
  let size='20',currentYaw=-2.25,currentElevation=.26,visible=false,dirty=true,last=0,drag=null;
  const loader=new GLTFLoader(),draco=new DRACOLoader();draco.setDecoderPath('vendor/three/addons/libs/draco/gltf/');loader.setDRACOLoader(draco);
  await Promise.all(['16','20'].map(async key=>{const gltf=await loader.loadAsync(`assets/package-access-v1/trailer-${key}-package-access.glb`);const root=gltf.scene;
-  root.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;const materials=Array.isArray(o.material)?o.material:[o.material];materials.forEach(m=>{m.envMapIntensity=1.05;if(m.isMeshStandardMaterial)m.roughness=Math.max(.17,m.roughness);});});
+  root.traverse(o=>{if(!o.isMesh)return;o.castShadow=true;o.receiveShadow=true;const materials=Array.isArray(o.material)?o.material:[o.material];materials.forEach(m=>{m.envMapIntensity=1.05;});});
   const box=new THREE.Box3().setFromObject(root),center=box.getCenter(new THREE.Vector3());root.position.set(-center.x,-box.min.y,-center.z);root.visible=key===size;scene.add(root);models[key]={root,extent:box.getSize(new THREE.Vector3())};
  }));draco.dispose();
  stage.classList.add('is-ready');const lockButton=stage.querySelector('#model-lock'),status=stage.querySelector('#model-status');
- function sync(){const locked=views[size].locked;lockButton.setAttribute('aria-pressed',String(locked));lockButton.innerHTML=locked?'View locked <span>⊙</span>':'Lock view <span>⊙</span>';status.textContent=locked?'Click Lock view to resume movement':'Move to look around · Drag on touch';stage.querySelector('#model-name').textContent=`${size} FT / MIRROR GRAPHITE`;stage.querySelectorAll('[data-model]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.model===size)));dirty=true;}
- function select(next){if(next===size)return;size=next;Object.entries(models).forEach(([key,m])=>m.root.visible=key===size);sync();}
+ function sync(){const locked=views[size].locked;lockButton.setAttribute('aria-pressed',String(locked));lockButton.innerHTML=locked?'View locked <span>⊙</span>':'Lock view <span>⊙</span>';status.textContent=locked?'Click Lock view to resume movement':'Move to look around · Drag on touch';stage.querySelector('#model-name').textContent=`${size} FT / MIRROR GRAPHITE`;document.querySelector('#model-footprint').textContent=`${size} ft × ${size==='16'?'7':'8.5'} ft`;const explore=document.querySelector('#model-explore');explore.textContent=`Explore ${size} ft ↗`;explore.href=`trailer-${size}.html?v=package-access-v1`;document.querySelector('#model-reserve').href=`reserve.html?size=${size}&v=package-access-v1`;stage.querySelectorAll('[data-model]').forEach(b=>b.setAttribute('aria-pressed',String(b.dataset.model===size)));dirty=true;}
+ function select(next){if(next===size||!models[next])return;size=next;Object.entries(models).forEach(([key,m])=>m.root.visible=key===size);sync();}
  stage.querySelectorAll('[data-model]').forEach(button=>button.addEventListener('click',()=>select(button.dataset.model)));
  lockButton.addEventListener('click',()=>{views[size].locked=!views[size].locked;sync();});
  renderer.domElement.addEventListener('click',()=>{if(drag?.moved)return;views[size].locked=!views[size].locked;sync();});
