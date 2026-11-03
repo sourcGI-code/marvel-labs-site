@@ -1,11 +1,11 @@
 {
  "version": 1,
  "cargo": {
-  "base": "assets/shared-solidworks-mobile-fleet-v3",
-  "revision": "solidworks-mobile-v3",
+  "base": "assets/intro-master-fleet-fast-v1",
+  "revision": "intro-master-fleet-fast-v1",
   "desktop": {
-   "base": "assets/fuller-graphite-fleet-v1",
-   "revision": "fuller-graphite-fleet-v1",
+   "base": "assets/intro-master-fleet-fast-v1",
+   "revision": "intro-master-fleet-fast-v1",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -17,13 +17,13 @@
     "cropY": 224
    },
    "videoFile": "desktop.mp4",
-   "quality": "balanced",
+   "quality": "native-30fps",
    "nativeVideo": {
     "file": "desktop.mp4",
     "width": 2304,
     "height": 1024,
     "framerate": 30,
-    "bitrate": 1841492,
+    "bitrate": 3876200,
     "codec": "avc1.640032"
    },
    "compatibilityVideo": {
@@ -31,12 +31,33 @@
     "width": 2304,
     "height": 1024,
     "framerate": 30,
-    "bitrate": 1841492,
+    "bitrate": 3876200,
     "codec": "avc1.640032",
     "linearResolution": 1,
     "verticalResolution": 1
    },
    "motionFps": 30
+  },
+  "videoFile": "mobile.mp4",
+  "quality": "native-30fps",
+  "motionFps": 30,
+  "nativeVideo": {
+   "file": "mobile.mp4",
+   "width": 1080,
+   "height": 2160,
+   "framerate": 30,
+   "bitrate": 3482999,
+   "codec": "avc1.640032"
+  },
+  "compatibilityVideo": {
+   "file": "mobile.mp4",
+   "width": 1080,
+   "height": 2160,
+   "framerate": 30,
+   "bitrate": 3482999,
+   "codec": "avc1.640032",
+   "linearResolution": 1,
+   "verticalResolution": 1
   }
  },
  "field": {
