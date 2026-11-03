@@ -475,7 +475,7 @@ async function start(sec) {
   const onMove = (e, fromPage) => {
     if (!meta) return;
     const r = renderer.domElement.getBoundingClientRect();
-    if (drag && !fromPage) {                           // touch / pen, or dragging while locked: turn it by hand
+    if (drag && !fromPage && mode === 'viewer' && T[focus]) { // touch / pen, or dragging while locked: turn it by hand
       az += (e.clientX - drag.x) * .008; el = Math.min(1.42, Math.max(.04, el + (e.clientY - drag.y) * .006));
       drag.x = e.clientX; drag.y = e.clientY; drag.moved = true; orbitView(); return;
     }
@@ -497,7 +497,7 @@ async function start(sec) {
   // 10-30 owner: everywhere, on every page). Phones keep the drag
   window.addEventListener('pointermove', e => { if (e.target !== renderer.domElement && !matchMedia('(max-width:860px)').matches) onMove(e, true); });
   renderer.domElement.addEventListener('pointerdown', e => {
-    if (e.pointerType !== 'mouse' || locked) drag = {x: e.clientX, y: e.clientY, moved: false};
+    if (mode === 'viewer' && (e.pointerType !== 'mouse' || locked)) drag = {x: e.clientX, y: e.clientY, moved: false};
     renderer.domElement.setPointerCapture?.(e.pointerId);
   });
   renderer.domElement.addEventListener('pointerup', e => {
@@ -506,6 +506,8 @@ async function start(sec) {
     if (mode === 'overview') { const s = pick(e); if (s) enter(s); return; }
     if (e.pointerType === 'mouse' && !overCopy(e)) { locked = !locked; sec.classList.toggle('is-locked', locked); }
   });
+  renderer.domElement.addEventListener('pointercancel', () => { drag = null; });
+  renderer.domElement.addEventListener('lostpointercapture', () => { drag = null; });
   renderer.domElement.addEventListener('pointerleave', () => { if (mode === 'overview') { light(null); clearTimeout(intent); } });
   back?.addEventListener('click', leave);
   other?.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') enter(other.dataset.size); });   // hover = switch

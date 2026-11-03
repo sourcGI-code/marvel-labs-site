@@ -103,12 +103,15 @@ section.rv{display:grid;grid-template-columns:minmax(0,1fr) var(--rail);min-heig
  .reserve-page .masthead{right:0;height:var(--reserve-header-height)}
  body.reserve-page main{padding-top:var(--reserve-header-height)}
  section.rv{grid-template-columns:1fr}
- .rv-show{position:relative;top:auto;height:46svh;min-height:300px;z-index:3}
+ .rv-show{position:relative;top:auto;height:54svh;min-height:400px;z-index:3}
+ .rv .rs-3d{bottom:164px}
  .rv .rs-back{top:12px}
- .rv .rs-3d-bar{bottom:88px;gap:10px}.rv .rs-3d-hint{font-size:8px}
- .rv-metrics{padding:0 var(--gutter,22px) 16px;gap:12px;grid-template-columns:auto repeat(3,minmax(0,1fr))}
- .rv-metrics-size{font-size:36px}.rv-metrics dd{font-size:20px}.rv-metrics dt{font-size:8px;margin-top:5px}
- .rv-metrics dl>div{padding-left:10px}
+ .rv .rs-3d-bar{bottom:116px;gap:12px;width:max-content;max-width:calc(100% - 44px);white-space:normal}.rv .rs-3d-hint{font-size:8px;white-space:nowrap}
+ .rv .rs-ramp-btn{min-height:44px;box-sizing:border-box;display:inline-flex;align-items:center;white-space:nowrap}
+ .rv-metrics{padding:0 var(--gutter,22px) 16px;gap:8px;grid-template-columns:repeat(3,minmax(0,1fr))}
+ .rv-metrics-size{grid-column:1/-1;font-size:26px;margin-bottom:4px}.rv-metrics dd{font-size:clamp(16px,4.6vw,20px);white-space:nowrap}.rv-metrics dt{font-size:8px;margin-top:6px;line-height:1.4}
+ .rv-metrics dl>div{padding-left:8px}
+ .rv[data-mode="overview"] .rs-3d canvas{touch-action:pan-y}
  .rv-rail{padding:26px var(--gutter,22px) 44px;border-left:0;border-top:1px solid var(--line)}
  .rv-rail h1{font-size:32px}
 }

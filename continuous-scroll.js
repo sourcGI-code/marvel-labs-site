@@ -128,7 +128,9 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     mark();scrollFrame=requestAnimationFrame(flush);
   }
   function fastScroll(px,source) {
-    if(handoff)return;
+    // The section slide already absorbs its gesture tail. Count that input
+    // while it is moving so the new section does not absorb the same tail again.
+    if(handoff){crossing(source,px);releaseSoon();return;}
     if(crossing(source,px)){releaseSoon();return;}
     const chapter=current();if(!chapter)return;
     const direction=Math.sign(px),p=stage.progress(chapter.section);
