@@ -33,6 +33,8 @@ export function createRouteQuotes(host){
  const root=html('div','route-quotes');root.hidden=true;
  const boxes=svg('svg','route-boxes'),defs=svg('defs'),grad=svg('linearGradient',null,{id:'route-scan-grad',x1:0,y1:0,x2:0,y2:1});
  grad.append(svg('stop',null,{offset:0,'stop-opacity':0}),svg('stop',null,{offset:1,'stop-opacity':.3}));defs.append(grad);boxes.append(defs);
+ const copyMask=svg('mask',null,{id:'route-copy-mask',maskUnits:'userSpaceOnUse'}),maskBase=svg('rect',null,{fill:'white'}),maskCopy=svg('rect',null,{fill:'black'});
+ copyMask.append(maskBase,maskCopy);defs.append(copyMask);
  const panels=html('div','route-panels');
  const feed=html('div','route-feed','<span>CAM 01 / DRIVE-BY · PROPERTY SCAN</span><strong></strong><i></i>');
  const ledger=html('div','route-ledger');ledger.hidden=true;ledger.setAttribute('aria-label','Properties measured so far');
@@ -41,7 +43,7 @@ export function createRouteQuotes(host){
  const nodes=new Map(),scopes=new Map();let ledgerKey='';
  function node(id){
   if(nodes.has(id))return nodes.get(id);
-  const g=svg('g','route-box'),frame=svg('rect','rb-frame',{pathLength:1,rx:1}),band=svg('rect','rb-band',{fill:'url(#route-scan-grad)'}),sweep=svg('line','rb-sweep'),corners=svg('path','rb-corners'),reticle=svg('g','rb-reticle'),leader=svg('path','rb-leader'),tag=svg('text','rb-tag');
+  const g=svg('g','route-box',{mask:'url(#route-copy-mask)'}),frame=svg('rect','rb-frame',{pathLength:1,rx:1}),band=svg('rect','rb-band',{fill:'url(#route-scan-grad)'}),sweep=svg('line','rb-sweep'),corners=svg('path','rb-corners'),reticle=svg('g','rb-reticle'),leader=svg('path','rb-leader'),tag=svg('text','rb-tag');
   reticle.append(svg('circle',null,{r:3}),svg('path',null,{d:'M-10,0H-5 M5,0H10 M0,-10V-5 M0,5V10'}));
   g.append(frame,band,sweep,corners,reticle,leader,tag);boxes.append(g);
   const panel=html('div','route-panel','<div class="route-panel-head"><span class="route-panel-kicker"></span><span class="route-panel-state"></span></div><div class="route-panel-note">Selected stop · the job</div><dl class="route-panel-rows"></dl><div class="route-panel-quote"><span>Auto quote</span><strong></strong></div>');
@@ -57,7 +59,10 @@ export function createRouteQuotes(host){
   if(state.playback==='recorded'&&Math.abs(state.videoTime-state.videoTarget)>.16){root.hidden=true;return;}
   const w=width,h=height,s=clamp(Math.min(w/1920,h/1200)**.8,.85,2);   // the HUD grows with the film, gently
   root.style.setProperty('--hud',s.toFixed(3));
-  boxes.setAttribute('viewBox',`0 0 ${w} ${h}`);
+  boxes.setAttribute('viewBox',`0 0 ${w} ${h}`);boxes.style.overflow='hidden';
+  maskBase.setAttribute('width',w);maskBase.setAttribute('height',h);
+  const copy=rectOf(host.querySelector('.tour-copy'))||{x:0,y:0,w:0,h:0};
+  for(const [key,value] of Object.entries({x:copy.x,y:copy.y,width:copy.w,height:copy.h}))maskCopy.setAttribute(key,value);
   const jobs=state.vision?.jobs,margin=18*s,PW=PANEL_W*s,PH=PANEL_H*s,top=h*.11,bottom=h*.86;
   // Keep the panels off the chapter copy, the fact card, the feed line and the page chrome bands.
   const exclusions=[rectOf(host.querySelector('.tour-copy')),rectOf(host.querySelector('#route-fact')||document.getElementById('route-fact')),rectOf(feed),{x:0,y:0,w,h:top},{x:0,y:bottom,w,h:h-bottom}].filter(Boolean);

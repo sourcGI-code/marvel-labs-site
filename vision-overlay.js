@@ -14,10 +14,10 @@ export function createVisionOverlay(pin){
  const transcript=document.createElement('ul');transcript.className='vision-transcript';transcript.setAttribute('aria-label','Landscaping tasks');summary.append(transcript);
  const clip=svg('clipPath',{id:'landscape-scope-clip',clipPathUnits:'userSpaceOnUse'}),clipRect=svg('rect');clip.append(clipRect);geometry.append(clip);
  const copyMask=svg('mask',{id:'landscape-copy-mask',maskUnits:'userSpaceOnUse'}),maskBase=svg('rect',{fill:'white'}),maskCopy=svg('rect',{fill:'black'}),maskSummary=svg('rect',{fill:'black'});copyMask.append(maskBase,maskCopy,maskSummary);geometry.append(copyMask);
- const nodes=new Map();let summaryKey='',transcriptKey='',layoutKey='',layoutBounds={};
+ const nodes=new Map();let summaryKey='',transcriptKey='';
  function node(item){
   if(nodes.has(item.id))return nodes.get(item.id);
-  const group=svg('g',{'clip-path':'url(#landscape-scope-clip)',mask:'url(#landscape-copy-mask)'}),shape=svg('path',{'class':'vision-area'}),bounds=svg('rect',{'class':'vision-box',rx:1}),leader=svg('path',{'class':'vision-connector'});group.append(shape,bounds,leader);geometry.append(group);
+  const group=svg('g',{'clip-path':'url(#landscape-scope-clip)',mask:'url(#landscape-copy-mask)','data-feature':item.id}),shape=svg('path',{'class':'vision-area'}),bounds=svg('rect',{'class':'vision-box',rx:1}),leader=svg('path',{'class':'vision-connector'});group.append(shape,bounds,leader);geometry.append(group);
   const label=document.createElement('div');label.className='vision-label';label.innerHTML='<b></b><strong></strong><span></span>';labels.append(label);
   const n={group,shape,bounds,leader,label};nodes.set(item.id,n);return n;
  }
@@ -39,30 +39,36 @@ export function createVisionOverlay(pin){
   summary.dataset.measured=String(measuring);
   for(const n of nodes.values()){n.group.style.display='none';n.label.hidden=true;}
   const placed=[],margin=mobile?14:24;
-  const nextLayout=[w,h,summaryKey,data.stage,measuring,complete].join(':');
-  if(nextLayout!==layoutKey){layoutKey=nextLayout;layoutBounds={top:mobile?header.getBoundingClientRect().bottom+10:h*.24,bottom:mobile?summary.getBoundingClientRect().top-8:h*.80};}
-  const labelTop=layoutBounds.top,labelBottom=layoutBounds.bottom;
-  for(const [k,v] of Object.entries({x:margin,y:labelTop,width:w-margin*2,height:Math.max(0,labelBottom-labelTop)}))clipRect.setAttribute(k,v);
+  const pinRect=pin.getBoundingClientRect();
+  const labelTop=mobile?header.getBoundingClientRect().bottom-pinRect.top+10:h*.24;
+  const labelBottom=mobile?summary.getBoundingClientRect().top-pinRect.top-8:h*.80;
+  // Clip to the film viewport only. Label-safe bands must not cut the surveyed
+  // lawn, beds or tree outlines, or move their boundaries away from the film.
+  for(const [k,v] of Object.entries({x:0,y:0,width:w,height:h}))clipRect.setAttribute(k,v);
   // Keep labels off the page copy and controls; connectors retain their real
   // projected anchors when a label is moved to avoid another annotation.
-  const rect=element=>{const r=element.getBoundingClientRect();return {x:r.x-8,y:r.y-8,w:r.width+16,h:r.height+16};};
+  const rect=element=>{if(!element)return {x:0,y:0,w:0,h:0};const r=element.getBoundingClientRect();return {x:r.x-pinRect.x-8,y:r.y-pinRect.y-8,w:r.width+16,h:r.height+16};};
   const exclusions=mobile?[{x:0,y:0,w,h:labelTop},{x:0,y:labelBottom,w,h:h-labelBottom}]:[rect(pin.querySelector('.tour-copy')),rect(summary),{x:0,y:0,w,h:h*.18},{x:0,y:h*.84,w,h:h*.16}];
   maskBase.setAttribute('width',w);maskBase.setAttribute('height',h);
-  [maskCopy,maskSummary].forEach((mask,i)=>{const r=exclusions[i];for(const [key,value] of Object.entries({x:r.x,y:r.y,width:r.w,height:r.h}))mask.setAttribute(key,value);});
+  // Protect only the actual copy and scope panel, never entire horizontal
+  // bands. Trees and lawn elsewhere remain visible right to the viewport edge.
+  [maskCopy,maskSummary].forEach((mask,i)=>{const r=rect(i?summary:pin.querySelector('.tour-copy'));for(const [key,value] of Object.entries({x:r.x,y:r.y,width:r.w,height:r.h}))mask.setAttribute(key,value);});
   const ordered=data.observations;
   for(const item of ordered){
    const n=node(item),index=data.observations.indexOf(item),context=false;
-   const left=margin;
-   const x=clamp(item.box.x,left,w-margin),y=clamp(item.box.y,h*.24,h*.80),right=clamp(item.box.x+item.box.width,left,w-margin),bottom=clamp(item.box.y+item.box.height,h*.24,h*.80);
+   const actual=item.box;
+   const x=clamp(actual.x,0,w),y=clamp(actual.y,0,h),right=clamp(actual.x+actual.width,0,w),bottom=clamp(actual.y+actual.height,0,h);
    if(right<=x||bottom<=y)continue;
-   n.group.style.display='';n.bounds.style.display=(item.polygons?.length||0)>1?'none':'';n.group.dataset.context=String(context);n.group.dataset.active=String(item.id===data.activeId);
-   for(const [k,v] of Object.entries({x,y,width:right-x,height:bottom-y}))n.bounds.setAttribute(k,v);
+   n.group.style.display='';n.bounds.style.display=item.polygons?.length?'none':'';n.group.dataset.context=String(context);n.group.dataset.active=String(item.id===data.activeId);
+   // Keep the real projected rectangle; SVG clips any off-screen part. Clamping
+   // each edge would invent new tree/hedge edges along the screen boundary.
+   for(const [k,v] of Object.entries(actual))n.bounds.setAttribute(k,v);
    n.shape.setAttribute('d',(item.polygons||[]).map(p=>'M'+p.map(v=>`${v.x},${v.y}`).join(' L')+' Z').join(' '));
    // On a narrow screen, keep the landscape labels and their projected boxes.
    // Put the work measurements together in the scope below the image.
-   const showSize=!mobile&&index<Math.ceil(data.measuring*data.total),labelW=mobile?112:155,labelH=mobile?24:showSize?36:24;
+   const showSize=!mobile&&index<Math.ceil(data.measuring*data.total),labelW=mobile?112:155,labelH=mobile?(item.label.length>15?37:27):showSize?38:27;
    const candidates=[{x,y:y-labelH-5},{x:right-labelW,y:y-labelH-5},{x:right+8,y},{x:x-labelW-8,y},{x,y:bottom+5},{x:right-labelW,y:bottom+5}];
-   if(mobile)for(let yy=labelTop;yy<labelBottom-labelH;yy+=25)for(const xx of [margin,w-labelW-margin])candidates.push({x:xx,y:yy});
+   if(mobile)for(let yy=labelTop;yy<labelBottom-labelH;yy+=30)for(const xx of [margin,w-labelW-margin])candidates.push({x:xx,y:yy});
    else for(let yy=h*.26;yy<h*.8;yy+=46)candidates.push({x:w-labelW-margin,y:yy});
    let best;
    for(const candidate of candidates){const r={x:clamp(candidate.x,margin,w-labelW-margin),y:clamp(candidate.y,labelTop,labelBottom-labelH),w:labelW,h:labelH};const cost=[...placed,...exclusions].reduce((s,a)=>s+overlap(r,a)*25,0)+Math.hypot(r.x-x,r.y-y);if(!best||cost<best.cost)best={...r,cost};}

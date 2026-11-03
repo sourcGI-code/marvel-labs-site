@@ -1,7 +1,7 @@
-import {createRouteQuotes} from './route-quotes.js?v=v4-1030';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=photographic-site-v2';
+import {createRouteQuotes} from './route-quotes.js?v=yard-coverage-v1';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=yard-coverage-v1';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
-import {createVisionOverlay} from './vision-overlay.js?v=9';
+import {createVisionOverlay} from './vision-overlay.js?v=yard-coverage-v1';
 import {createScrollMotion} from './scroll-motion.js';
 import {setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=7';
 const clamp=v=>Math.max(0,Math.min(1,v));
@@ -56,9 +56,9 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
   const i=Math.min(4,workflowStops.findLastIndex(s=>workflowP>=s)),local=clamp((workflowP-workflowStops[i])/(workflowStops[i+1]-workflowStops[i]));
   const operator=state?.operator,operatorActive=!!operator?.active,operatorCopy=operatorActive&&operatorCaptions[operator.stage];
   const delivery=state?.segment==='delivery'?(state.delivery||{shot:'A'}):null,deliveryCopy=delivery&&deliveryCaptions[delivery.shot];
-  const routeActive=!!state?.route?.active,pitchActive=!operatorActive&&!delivery&&(routeActive||workflowP<.07),captionKey=operatorCopy?'operator-'+operatorCopy[1]:deliveryCopy?'delivery-'+deliveryCopy[1]:pitchActive?-2:i;
-  const [tag,title,copy,key,value]=operatorCopy||deliveryCopy||(pitchActive?captions[0]:captions[i]);
-  const fact=$('route-fact');if(fact)fact.hidden=!pitchActive;
+  const routeActive=!!state?.route?.active,pitchActive=!operatorActive&&!delivery&&(routeActive||workflowP<.07),captionKey=operatorCopy?'operator-'+operatorCopy[1]:deliveryCopy?'delivery-'+deliveryCopy[1]:routeActive?'route':pitchActive?-2:i;
+  const [tag,title,copy,key,value]=operatorCopy||deliveryCopy||(routeActive?['DRIVE-BY · AUTO QUOTES',captions[1][1],captions[1][2],'CONCEPT DEMONSTRATION','Review the scope. Set your price.']:pitchActive?captions[0]:captions[i]);
+  const fact=$('route-fact');if(fact)fact.hidden=!pitchActive||routeActive;
   if(captionKey!==lastCaption){
    const direction=p<lastP?-1:1;
    $('tour-kicker').textContent=tag;setAnimatedTitle($('tour-title'),title,{direction});$('tour-copy').textContent=copy;$('tour-copy').hidden=!copy;
