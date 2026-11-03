@@ -10,7 +10,7 @@
 // (data-page="reserve"): the stage fills the left column, the size cards and checkout sit in a rail on the right; the
 // rail and the stage talk through two events on the section: 'rs:enter' (go to a size) and 'rs:size' (size shown).
 import * as THREE from 'three';
-import {createFullerGraphiteFinish} from './fuller-graphite-finish.js?v=fuller-graphite-v1';
+import {createPhotographicFinish} from './photographic-finish.js?v=photographic-site-v1';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {RectAreaLightUniformsLib} from 'three/addons/lights/RectAreaLightUniformsLib.js';
@@ -27,9 +27,9 @@ import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 const sec = document.querySelector('section.reserve-stage');
 if (sec) start(sec);
 
-function start(sec) {
+async function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/package-access-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = 'assets/photographic-reserve-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -68,7 +68,7 @@ function start(sec) {
   }[LIGHT];
 
   const renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
-  const approvedFinish=createFullerGraphiteFinish(renderer);
+  const approvedFinish=await createPhotographicFinish(renderer);
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.AgXToneMapping; renderer.toneMappingExposure = PRESET.exposure;
@@ -294,6 +294,7 @@ function start(sec) {
     if (made.has(id)) return made.get(id);
     // Owner-approved Mirror Graphite is authored in the model. Never replace it with the legacy satin finish.
     if ((mat.name || '').startsWith('Livery /')) { mat.envMapIntensity = 1.35; made.set(id,mat); return approvedFinish(mat); }
+    if ((mat.name || '').startsWith('Photographic /') || (mat.name || '').startsWith('Proof /')) { made.set(id,mat); return approvedFinish(mat); }
     let key = (mat.name || '').replace(/^Marvel /, '').replace(/\.\d+$/, '');
     for (const [re, k] of FILM) if (re.test(mat.name || '')) { key = k; break; }
     let out = mat;
