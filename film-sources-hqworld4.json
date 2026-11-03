@@ -36,35 +36,7 @@
     "linearResolution": 1,
     "verticalResolution": 1
    },
-   "motionFps": 30,
-   "endFrame": {
-    "file": "assets/intro-master-fleet-hold-v1/desktop-end.webp",
-    "revision": "intro-master-fleet-hold-v1",
-    "labels": {
-     "large": {
-      "x": 704.7293,
-      "y": 487.5579
-     },
-     "small": {
-      "x": 966.3908,
-      "y": 604.5451
-     }
-    }
-   }
-  },
-  "endFrame": {
-   "file": "assets/intro-master-fleet-hold-v1/mobile-end.webp",
-   "revision": "intro-master-fleet-hold-v1",
-   "labels": {
-    "large": {
-     "x": 210.9787,
-     "y": 586.7247
-    },
-    "small": {
-     "x": 356.2034,
-     "y": 682.6746
-    }
-   }
+   "motionFps": 30
   }
  },
  "field": {

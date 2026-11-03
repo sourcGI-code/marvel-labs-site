@@ -1,6 +1,6 @@
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
-import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=fleet-demo-sharp-v1';
+import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=photographic-site-v2';
 import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=fleet-labels-v1';
 const clamp=v=>Math.max(0,Math.min(1,v));
 // 10-30 owner: the drive-by auto quote must "act like live camera recognition": the box draws itself, the measurements
@@ -50,14 +50,11 @@ export function interpolateRecordedState(a,b,t){
 export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSeconds=Infinity}){
  await loadFilmSources();
  let filmSource=sceneFilmSource(name),revision=filmSource.revision;
- const host=canvas.parentElement,video=document.createElement('video'),still=new Image(),endFrame=new Image();
+ const host=canvas.parentElement,video=document.createElement('video'),still=new Image();
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  video.className='recorded-scene';video.muted=video.defaultMuted=true;video.playsInline=true;video.preload='auto';video.disablePictureInPicture=true;video.tabIndex=-1;video.setAttribute('aria-hidden','true');
  still.className='recorded-scene recorded-still';still.alt='';still.setAttribute('aria-hidden','true');
- endFrame.className='recorded-scene recorded-end-frame';endFrame.alt='';endFrame.setAttribute('aria-hidden','true');
- host.append(video,still,endFrame);canvas.style.visibility='hidden';
- let endReady=false;
- const showEnd=()=>name==='cargo'&&endReady&&wanted>=.999;
+ host.append(video,still);canvas.style.visibility='hidden';
  let metadata,kind='',wanted=0,enabled=true,visible=true,shown=false,failed=false,loading=0,frame=0,objectURL=null,localPending=false,lastSeek=0;
  let mediaURL='',generation=0,controller,stillFile='',pendingStill='',lastPresentedTime=0;
  // Cover fit + optional push-in (film-framing.js). The video and still are placed with the same transform the
@@ -70,12 +67,12 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   const f=placeFilm(w,h,metadata.width,metadata.height,framing,time,frameWindow);lastPlace=f;
   const key=[w,h,f.cover,f.zoom,f.dx,f.dy].map(v=>v.toFixed(3)).join();
   if(key!==placed){placed=key;const width=`${metadata.width*f.cover}px`,height=`${metadata.height*f.cover}px`,transform=`translate3d(${f.dx}px,${f.dy}px,0) scale(${f.zoom})`;
-   for(const el of [video,still,endFrame])Object.assign(el.style,f.media?{left:f.media.left+'px',top:f.media.top+'px',right:'auto',bottom:'auto',width:f.media.width+'px',height:f.media.height+'px',transformOrigin:'0 0',transform:'none'}:{left:'0',top:'0',right:'auto',bottom:'auto',width,height,transformOrigin:'0 0',transform});
+   for(const el of [video,still])Object.assign(el.style,f.media?{left:f.media.left+'px',top:f.media.top+'px',right:'auto',bottom:'auto',width:f.media.width+'px',height:f.media.height+'px',transformOrigin:'0 0',transform:'none'}:{left:'0',top:'0',right:'auto',bottom:'auto',width,height,transformOrigin:'0 0',transform});
    // Zoomed out below cover (film-framing.js minZoom): feather the film's edges into the page, in proportion.
    const feather=f.feather===false?0:Math.max(0,Math.min(14,(1-f.zoom)*70));host.style.setProperty('--film-feather',feather.toFixed(2)+'%');host.classList.toggle('film-contained',f.feather!==false&&f.zoom<.999);}
   return f;
  }
- function unplace(){placed='';lastPlace=null;host.classList.remove('film-contained');for(const el of [video,still,endFrame])for(const k of ['left','top','right','bottom','width','height','transformOrigin','transform'])el.style[k]='';}
+ function unplace(){placed='';lastPlace=null;host.classList.remove('film-contained');for(const el of [video,still])for(const k of ['left','top','right','bottom','width','height','transformOrigin','transform'])el.style[k]='';}
  const changed=()=>onChange();
  const matches=()=>metadata&&Math.abs(video.currentTime-targetTime())<.075;
  const playbackDuration=()=>metadata?Math.min(maxSeconds,(metadata.playbackDuration??metadata.duration)-1/metadata.fps):0;
@@ -85,7 +82,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  const targetTime=()=>metadata?Math.min(wanted*playbackDuration(),Math.max(0,video.duration-.001)):0;
  const usingStill=()=>reduced.matches||failed;
  const chapterStill=()=>metadata?.stills?.findLast(s=>sourceProgress()>=s.start)||metadata?.stills?.[0];
- function updateVisibility(){const end=showEnd();video.style.visibility=visible&&shown&&!usingStill()&&!end?'visible':'hidden';still.style.visibility=visible&&shown&&usingStill()&&!end?'visible':'hidden';endFrame.style.visibility=visible&&end?'visible':'hidden';}
+ function updateVisibility(){video.style.visibility=visible&&shown&&!usingStill()?'visible':'hidden';still.style.visibility=visible&&shown&&usingStill()?'visible':'hidden';}
  function requestSeek(){if(enabled&&video.paused&&!video.dataset.timelinePlaying&&!frame)frame=requestAnimationFrame(seek);}
  function seek(){
   frame=0;if(!metadata||!enabled||!video.paused||video.dataset.timelinePlaying)return;
@@ -121,11 +118,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   // metadata. Resizing may change fit, but never the navigation's timeline.
   const next=name==='cargo'?introFilmKind():filmSource.kind??(innerWidth<=760||portraitField?'mobile':'desktop');
   if(next===kind)return;kind=next;filmSource=sceneFilmSource(name,kind);revision=filmSource.revision;const current=++generation;unplace();
-  controller?.abort();controller=new AbortController();loading++;shown=false;failed=false;metadata=null;stillFile=pendingStill='';endReady=false;updateVisibility();
-  if(name==='cargo'&&filmSource.endFrame?.file){
-   const image=new Image();image.src=filmSource.endFrame.file+'?v='+filmSource.endFrame.revision;
-   image.decode().then(()=>{if(current!==generation)return;endFrame.src=image.src;endReady=true;updateVisibility();changed();}).catch(()=>{});
-  }
+  controller?.abort();controller=new AbortController();loading++;shown=false;failed=false;metadata=null;stillFile=pendingStill='';updateVisibility();
   if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}localPending=false;
   const base=`${filmSource.base}/${kind}`;mediaURL=`${filmSource.mediaBase||filmSource.base}/${filmSource.videoFile||(document.body.dataset.filmVariant?kind+'-'+document.body.dataset.filmVariant+'.mp4':kind+'.mp4')}?v=${revision}`;   // 10-30: a test page may ask for a variant of the film (body data-film-variant, e.g. 'static' = still phone shots)   // 10-29: the movie may live off GitHub Pages (mediaBase); json + stills stay herevideo.dataset.filmQuality=filmSource.quality||'original';
   // A deep link waits for its actual frame, never an unrelated first-frame still.
@@ -144,7 +137,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  reduced.addEventListener('change',()=>{kind='';source();});
 
  function draw(p){
-  wanted=clamp(p);updateVisibility();requestSeek();if(!metadata)return {p:wanted,loading:true};
+  wanted=clamp(p);requestSeek();if(!metadata)return {p:wanted,loading:true};
   const originalP=sourceProgress();
   // Cargo's stage and overlays follow the displayed movie during native playback.
   // A pending scrub retains the last decoded camera; its sought frame changes both
@@ -159,7 +152,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   const w=canvas.clientWidth||host.clientWidth,h=canvas.clientHeight||host.clientHeight;
   const {scale,dx,dy}=place(w,h,sampleP*(metadata.frames-1)/metadata.fps);
   const point=v=>({...v,x:v.x*scale+dx,y:v.y*scale+dy});
-  if(state.labels)state.labels=state.labels.map(label=>point(showEnd()&&filmSource.endFrame?.labels?.[label.id]?{...label,...filmSource.endFrame.labels[label.id]}:label));
+  if(state.labels)state.labels=state.labels.map(point);
   if(state.annotation)state.annotation=point(state.annotation);
   if(state.route?.properties)state.route.properties=state.route.properties.map(v=>{const q=point(v);if(v.box)q.box={x0:v.box.x0*scale+dx,y0:v.box.y0*scale+dy,x1:v.box.x1*scale+dx,y1:v.box.y1*scale+dy};const sc=routeScan[v.id];if(sc)q.scan={...sc,t:clamp((sampleP-sc.start)/(sc.end-sc.start))};return q;})   // 10-29: house boxes (auto-quote); 10-30: scan clock t per house, a pure function of the film frame
   const workflowP=state.workflowP??sampleP;
