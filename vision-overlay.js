@@ -40,7 +40,7 @@ export function createVisionOverlay(pin){
   for(const n of nodes.values()){n.group.style.display='none';n.label.hidden=true;}
   const placed=[],margin=mobile?14:24;
   const pinRect=pin.getBoundingClientRect();
-  const labelTop=mobile?header.getBoundingClientRect().bottom-pinRect.top+10:h*.24;
+  const labelTop=mobile?Math.max(header.getBoundingClientRect().bottom,pin.querySelector('.tour-copy')?.getBoundingClientRect().bottom||pinRect.top)-pinRect.top+10:h*.24;
   const labelBottom=mobile?summary.getBoundingClientRect().top-pinRect.top-8:h*.80;
   // Clip to the film viewport only. Label-safe bands must not cut the surveyed
   // lawn, beds or tree outlines, or move their boundaries away from the film.

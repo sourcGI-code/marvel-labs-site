@@ -61,8 +61,8 @@
   }
  },
  "field": {
-  "base": "assets/how-it-works-v2/recorded/field",
-  "revision": "hiw-gloss4k",
+  "base": "assets/intro-master-workday-mvp-v1",
+  "revision": "intro-master-workday-mvp-v1",
   "neighborhood": true,
   "operator": true,
   "timelineFrames": 3088,
@@ -72,8 +72,10 @@
    "deliveryStartFrame": 300,
    "deliveryFrames": 1116
   },
-  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films",
-  "kind": "desktop"
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-intro-master-workday-mvp-20261103",
+  "kind": "desktop",
+  "videoFile": "desktop.mp4",
+  "motionFps": 30
  },
  "opening": {
   "base": "assets/intro-photographic-v1",
@@ -115,8 +117,8 @@
   }
  },
  "fieldMobile": {
-  "base": "assets/how-it-works-v2/recorded/field",
-  "revision": "hiw-mobile-recovery-v1",
+  "base": "assets/intro-master-workday-mvp-v1",
+  "revision": "intro-master-workday-mvp-v1",
   "neighborhood": true,
   "operator": true,
   "timelineFrames": 3088,
@@ -126,6 +128,42 @@
    "deliveryStartFrame": 300,
    "deliveryFrames": 1116
   },
-  "kind": "mobile"
+  "kind": "mobile",
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-intro-master-workday-mvp-20261103",
+  "videoFile": "mobile.mp4",
+  "motionFps": 30
+ },
+ "fieldVariants": {
+  "static": {
+   "field": {
+    "base": "assets/how-it-works-v2/recorded/field",
+    "revision": "hiw-gloss4k",
+    "neighborhood": true,
+    "operator": true,
+    "timelineFrames": 3088,
+    "operatorStartFrame": 0,
+    "howItWorks": {
+     "fieldLeadFrames": 1416,
+     "deliveryStartFrame": 300,
+     "deliveryFrames": 1116
+    },
+    "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films",
+    "kind": "desktop"
+   },
+   "fieldMobile": {
+    "base": "assets/how-it-works-v2/recorded/field",
+    "revision": "hiw-mobile-recovery-v1",
+    "neighborhood": true,
+    "operator": true,
+    "timelineFrames": 3088,
+    "operatorStartFrame": 0,
+    "howItWorks": {
+     "fieldLeadFrames": 1416,
+     "deliveryStartFrame": 300,
+     "deliveryFrames": 1116
+    },
+    "kind": "mobile"
+   }
+  }
  }
 }

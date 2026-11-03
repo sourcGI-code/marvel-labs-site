@@ -75,13 +75,19 @@ export function filmFraming(base, kind, metadata) {
  }
  if(base==='assets/marvel-v4/recorded/cargo')return {position:[.5,.5],maxZoom:1,minZoom:1,window:[0,0,1,1],keys:[],oldDeliveryStage:true,mobileCover:kind==='mobile'};
  const f = metadata?.framing || FILM_FRAMING[base]?.[kind] || {};
- return {position: f.position || [.5, .5], maxZoom: f.maxZoom ?? 1.6, minZoom: f.minZoom ?? 1, window: f.window || [.25, .25, .75, .75], keys: Array.isArray(f.keys) ? f.keys : []};
+ return {fit:f.fit, position: f.position || [.5, .5], maxZoom: f.maxZoom ?? 1.6, minZoom: f.minZoom ?? 1, window: f.window || [.25, .25, .75, .75], keys: Array.isArray(f.keys) ? f.keys : []};
 }
 
 // w,h: host box in CSS px. W,H: film timeline size. time: source-film seconds.
 // frameWindow: {x0,y0,x1,y1} in host px, or null for the fallback fractions.
 // Returns {scale, dx, dy, cover, zoom}: a film point (x,y) is drawn at (x*scale+dx, y*scale+dy).
 export function placeFilm(w, h, W, H, framing, time = 0, frameWindow = null) {
+  if(framing.fit==='contain'){
+   const [left,top,right,bottom]=framing.window;
+   const box=frameWindow||{x0:left*w,y0:top*h,x1:right*w,y1:bottom*h};
+   const scale=Math.min((box.x1-box.x0)/W,Math.max(1,box.y1-box.y0)/H),cover=Math.max(w/W,h/H);
+   return {scale,cover,dx:box.x0+((box.x1-box.x0)-W*scale)/2,dy:box.y0+((box.y1-box.y0)-H*scale)/2,zoom:scale/cover,feather:false};
+  }
   if(framing.trueWorld)return placeTrueWorldFilm(w,h,W,H);
   if(framing.oldDeliveryStage){
    const cover=Math.max(w/W,h/H),scale=framing.mobileCover||w<=760?cover:Math.min(w/W,h/H);

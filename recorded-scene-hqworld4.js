@@ -1,7 +1,7 @@
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
-import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=intro-master-fleet-fast-v1';
-import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=fleet-labels-v1';
+import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=intro-master-workday-mvp-v1';
+import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=intro-master-workday-mvp-v1';
 const clamp=v=>Math.max(0,Math.min(1,v));
 // 10-30 owner: the drive-by auto quote must "act like live camera recognition": the box draws itself, the measurements
 // count up, the estimate comes last. Each house gets a scan clock that is a pure function of the film frame (scrubbing
@@ -64,7 +64,20 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  // popout.css --hold-zoom is the single switch for every push-in: its value caps the zoom (1 = plain cover).
  function capFraming(){const cap=parseFloat(getComputedStyle(host).getPropertyValue('--hold-zoom'));if(Number.isFinite(cap)&&cap>=1)framing={...framing,maxZoom:Math.min(framing.maxZoom,cap)};}
  function place(w,h,time){
-  const f=placeFilm(w,h,metadata.width,metadata.height,framing,time,frameWindow);lastPlace=f;
+  let window=frameWindow;
+  const pin=host.closest('.pin');
+  if(framing.fit==='contain'&&pin){
+   pin.dataset.filmFit='contain';
+   const origin=host.getBoundingClientRect().top,copy=pin.querySelector('.tour-copy');
+   let top=Math.max(100,(copy?.getBoundingClientRect().bottom||origin)-origin+18),bottom=h-80;
+   const summary=pin.querySelector('#vision-summary');
+   if(summary&&!summary.hidden){
+    bottom=Math.min(bottom,summary.getBoundingClientRect().top-origin-14);
+    const feed=pin.querySelector('.vision-feed');if(feed)top=Math.max(top,feed.getBoundingClientRect().bottom-origin+14);
+   }
+   window={x0:0,y0:top,x1:w,y1:Math.max(top+1,bottom)};
+  }else if(pin)delete pin.dataset.filmFit;
+  const f=placeFilm(w,h,metadata.width,metadata.height,framing,time,window);lastPlace=f;
   const key=[w,h,f.cover,f.zoom,f.dx,f.dy].map(v=>v.toFixed(3)).join();
   if(key!==placed){placed=key;const width=`${metadata.width*f.cover}px`,height=`${metadata.height*f.cover}px`,transform=`translate3d(${f.dx}px,${f.dy}px,0) scale(${f.zoom})`;
    for(const el of [video,still])Object.assign(el.style,f.media?{left:f.media.left+'px',top:f.media.top+'px',right:'auto',bottom:'auto',width:f.media.width+'px',height:f.media.height+'px',transformOrigin:'0 0',transform:'none'}:{left:'0',top:'0',right:'auto',bottom:'auto',width,height,transformOrigin:'0 0',transform});
