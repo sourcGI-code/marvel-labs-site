@@ -1,3 +1,4 @@
+import {TRAILER_MODEL_BASE,TRAILER_MODEL_REVISION} from './trailer-model-source.js?v=intro-trailer-master-v1';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
@@ -32,7 +33,7 @@ async function start(sec){
   const m=new THREE.Mesh(new THREE.PlaneGeometry(width,depth),new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(canvas),transparent:true,opacity,depthWrite:false,toneMapped:false}));m.rotation.x=-Math.PI/2;m.position.y=.001;m.renderOrder=2;return m;
  };
  const loader=new GLTFLoader(),draco=new DRACOLoader();draco.setDecoderPath('vendor/three/addons/libs/draco/gltf/');loader.setDRACOLoader(draco);
- const base='assets/photographic-reserve-v1/';const meta=await fetch(base+'viewer.json').then(r=>{if(!r.ok)throw Error('Model metadata unavailable');return r.json()});
+ const base=TRAILER_MODEL_BASE;const meta=await fetch(base+'viewer.json').then(r=>{if(!r.ok)throw Error('Model metadata unavailable');return r.json()});
  const T={};let focus=sec.dataset.open||'20',mode='viewer',locked=reduced,az=-2.4,el=.035,wantRadius=12,radius=12,dirty=true,ramp=0,rampTo=0;
  let currentAz=az,currentEl=el,curLook=new THREE.Vector3(0,1.32,0),wantLook=curLook.clone(),last=performance.now(),lastPointer=null,drag=null;
  const selected=()=>T[focus];

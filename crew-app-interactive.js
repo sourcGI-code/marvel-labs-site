@@ -53,6 +53,7 @@ if (section) {
       const route = path.split('/trailer-app/')[1]?.split('/')[0] || '';
       const group = ['trailer', 'production', 'diagnostics'].includes(route) ? 'trailer'
         : route === 'camera' ? 'camera'
+        : route === 'assistant' ? 'assistant'
         : ['quotes', 'pricing', 'create'].includes(route) ? 'quotes'
         : ['trailers', 'schedule', 'earnings', 'impact', 'invoices'].includes(route) ? 'trailers' : '';
       buttons.forEach(button => {

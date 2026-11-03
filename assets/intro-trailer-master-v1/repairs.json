@@ -1,0 +1,74 @@
+{
+  "16": {
+    "source": "assets/photographic-reserve-v1/trailer-16-photographic.glb",
+    "sourceSha256": "10f6aca9a8e6e4edd26e1d3fc2da3dd3b1132bdd2eb6553edc4cde30bd6f7e1a",
+    "geometryBinaryUnchanged": true,
+    "trimmedRails": [
+      {
+        "name": "Proof / Lower rail gasket",
+        "oldFront": -2.1350000119459764,
+        "newFront": -1.6959700820922854,
+        "rear": 3.1558000064146654
+      },
+      {
+        "name": "Proof / Lower rail gasket.001",
+        "oldFront": -2.1350000119459764,
+        "newFront": -1.6959700820922854,
+        "rear": 3.1558000064146654
+      },
+      {
+        "name": "Proof / Roof rail lower gasket",
+        "oldFront": -2.1350000119459764,
+        "newFront": -1.6959700820922854,
+        "rear": 3.1558000064146654
+      },
+      {
+        "name": "Proof / Roof rail lower gasket.001",
+        "oldFront": -2.1350000119459764,
+        "newFront": -1.6959700820922854,
+        "rear": 3.1558000064146654
+      }
+    ],
+    "rampAttachments": [
+      "license_plate_bracket",
+      "license_plate_light"
+    ],
+    "outputSha256": "2f3811753d9505e9250d2bc97d9b4c2b18e57e72ec6f1fac559532ae6d474f16"
+  },
+  "20": {
+    "source": "assets/photographic-reserve-v1/trailer-20-photographic.glb",
+    "sourceSha256": "76e754681f88509828df3eae126660dfface35b2dd3a19ba364132af0a9ba6e5",
+    "geometryBinaryUnchanged": true,
+    "trimmedRails": [
+      {
+        "name": "Proof / Lower rail gasket",
+        "oldFront": -2.1350001096725464,
+        "newFront": -1.6959699478149415,
+        "rear": 4.3750001192092896
+      },
+      {
+        "name": "Proof / Lower rail gasket.001",
+        "oldFront": -2.1350001096725464,
+        "newFront": -1.6959699478149415,
+        "rear": 4.3750001192092896
+      },
+      {
+        "name": "Proof / Roof rail lower gasket",
+        "oldFront": -2.1350001096725464,
+        "newFront": -1.6959699478149415,
+        "rear": 4.3750001192092896
+      },
+      {
+        "name": "Proof / Roof rail lower gasket.001",
+        "oldFront": -2.1350001096725464,
+        "newFront": -1.6959699478149415,
+        "rear": 4.3750001192092896
+      }
+    ],
+    "rampAttachments": [
+      "license_plate_bracket",
+      "license_plate_light"
+    ],
+    "outputSha256": "1f956a0697e24cc0ab532faa95eeb564fd51ef3bf02cc3a350bb759a3cdae39b"
+  }
+}

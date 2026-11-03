@@ -1,3 +1,4 @@
+import {TRAILER_MODEL_BASE,TRAILER_MODEL_REVISION} from './trailer-model-source.js?v=intro-trailer-master-v1';
 // Shared approved hybrid trailer with smooth running gear and clean panel finish,
 // with spherical camera travel to avoid cutting through the trailer on a wide cursor move.
 // Reserve stage in real 3D (v3 test, Claude 10-28). Owner: "i want people to lock this onto an axis and truly see all of
@@ -29,7 +30,7 @@ if (sec) start(sec);
 
 async function start(sec) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
-  const A = 'assets/photographic-reserve-v1/', BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
+  const A = TRAILER_MODEL_BASE, BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
   const radios = [...sec.querySelectorAll('.rs-switch button')], back = sec.querySelector('.rs-back');
   const other = sec.querySelector('.rs-other'), rampBtn = sec.querySelector('.rs-ramp-btn');
@@ -432,7 +433,7 @@ async function start(sec) {
     setRamp(0);
     const o = size === '20' ? '16' : '20';
     if (other) {
-      other.dataset.size = o; other.querySelector('img').src = `assets/package-access-v1/thumb-${o}.webp?v=package-access-v1`;
+      other.dataset.size = o; other.querySelector('img').src = `${TRAILER_MODEL_BASE}thumb-${o}.png?v=${TRAILER_MODEL_REVISION}`;
       other.querySelector('.rs-other-size').textContent = `${o} ft`;
     }
     orbitView();
@@ -529,7 +530,7 @@ async function start(sec) {
   // ---- load, then run (only while the section is on screen)
   let visible = true;
   new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) dirty = true; }).observe(sec);
-  fetch(A + 'viewer.json?v=' + (sec.dataset.rev || '1'), {cache:'no-store'}).then(r => r.json()).then(async m => {
+  fetch(A + 'viewer.json?v=' + TRAILER_MODEL_REVISION, {cache:'no-store'}).then(r => r.json()).then(async m => {
     meta = m;
     const c = m.camera, hfov = 2 * Math.atan(c.sensor / 2 / c.lens);
     filmFov = hfov; filmShift = c.shift[0];

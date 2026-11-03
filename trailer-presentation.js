@@ -7,9 +7,10 @@ export function syncTrailerPosters(sources) {
   set('.arrival-poster img',poster(entry('opening','desktop'),'desktop'));
   set('.arrival-poster [data-opening-mobile]',poster(entry('opening','mobile'),'mobile'),'srcset');
   const reducedKind=portrait?'mobile':'desktop';
-  set('.arrival-poster source[media*="prefers-reduced-motion"]',poster(entry('cargo',reducedKind),reducedKind),'srcset');
-  set('#hero-visual .scene-fallback img',poster(entry('cargo','desktop'),'desktop'));
-  set('#hero-visual .scene-fallback source',poster(entry('cargo','mobile'),'mobile'),'srcset');
+  const heroReference=document.body.dataset.trailerModel==='intro-trailer-master-v1'?'opening':'cargo';
+  set('.arrival-poster source[media*="prefers-reduced-motion"]',poster(entry(heroReference,reducedKind),reducedKind),'srcset');
+  set('#hero-visual .scene-fallback img',poster(entry(heroReference,'desktop'),'desktop'));
+  set('#hero-visual .scene-fallback source',poster(entry(heroReference,'mobile'),'mobile'),'srcset');
   const field=sources.field;
   const fieldKind=field.kind||(innerWidth<=760||(innerWidth<=1024&&innerHeight>innerWidth)?'mobile':'desktop');
   set('#tour-visual .scene-fallback img',poster(field,fieldKind));

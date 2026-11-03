@@ -22,7 +22,8 @@ export function createStage() {
   tail.className = 'scene-tail'; tail.style.height = '100svh'; tail.setAttribute('aria-hidden', 'true');
   document.body.append(tail);
   root.classList.add('immersive');
-  let viewport = innerHeight, active = null;
+  let viewport = innerHeight, active = null, transitionFrame = 0, finishTransition = null;
+  function cancelTransition(){cancelAnimationFrame(transitionFrame);transitionFrame=0;const done=finishTransition;finishTransition=null;done?.(false);}
   function measure() {
     viewport = tail.getBoundingClientRect().height;
     for (const scene of scenes) { scene.start = scene.slot.offsetTop; scene.length = scene.slot.offsetHeight; }
@@ -72,6 +73,7 @@ export function createStage() {
     return clamp((scrollY - scene.start - inset) / (scene.length - inset - viewport * (HANDOFF_VIEWPORTS/2)));
   }
   function navigate(hash, focus = false) {
+    cancelTransition();
     let target; try { target = document.getElementById(decodeURIComponent(hash.slice(1))); } catch { return false; }
     const scene = target && find(target); if (!scene) return false;
     // Stop an autoplaying scene before it can write its old playhead back to scroll.
@@ -98,12 +100,26 @@ export function createStage() {
     }
   });
   addEventListener('hashchange', () => navigate(location.hash));
-  addEventListener('resize', () => { measure(); update(); });
+  addEventListener('resize', () => { cancelTransition();measure(); update(); });
   measure(); update();
   if (location.hash) requestAnimationFrame(() => navigate(location.hash));
   addEventListener('pageshow', () => { measure(); update(); });
   return {
     update,
+    cancelTransition,
+    transitionTo(element,p){
+      cancelTransition();const scene=find(element);if(!scene)return Promise.resolve(false);
+      const inset=scene.index===0?0:viewport*(HANDOFF_VIEWPORTS/2);
+      const end=scene.start+inset+clamp(p)*(scene.length-inset-viewport*(HANDOFF_VIEWPORTS/2));
+      if(reduced.matches){scrollTo({top:end,behavior:'instant'});update();return Promise.resolve(true);}
+      const start=scrollY,at=performance.now(),duration=620;
+      return new Promise(resolve=>{
+        finishTransition=resolve;
+        function tick(now){const p=clamp((now-at)/duration),ease=p*p*(3-2*p);scrollTo({top:start+(end-start)*ease,behavior:'instant'});update();
+          if(p<1)transitionFrame=requestAnimationFrame(tick);else{transitionFrame=0;finishTransition=null;resolve(true);}}
+        transitionFrame=requestAnimationFrame(tick);
+      });
+    },
     progress: liveProgress,
     seekProgress(element,p,{refresh=false}={}){if(refresh)measure();const scene=find(element);if(!scene)return;const inset=scene.index===0?0:viewport*(HANDOFF_VIEWPORTS/2);scrollTo({top:scene.start+inset+clamp(p)*(scene.length-inset-viewport*(HANDOFF_VIEWPORTS/2)),behavior:'instant'});update();},
     visible: element => (find(element)?.opacity || 0) > .001,

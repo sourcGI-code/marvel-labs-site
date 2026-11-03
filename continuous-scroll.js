@@ -9,7 +9,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
   const QUIET_MS=350,RELEASE_MS=220,SWIPE_PX=28,PHASE_DISTANCE=80,PHASE_MS=80;
   const SCROLL_SCALE=.95,SECONDS_PER_NOTCH=2*SCROLL_SCALE,BASE_TRAVEL_RATE=8*SCROLL_SCALE,MAX_INTENSITY=7;
-  let step=0,rate=1,wheel=null,touch=null,heldKey=null;
+  let step=0,rate=1,wheel=null,touch=null,heldKey=null,handoff=null;
   let pending=0,releaseTimer=0,epoch=0,scrubbing=false,scrollFrame=0,follow=null;
   let intensity=1,lastDirection=0;
   body.dataset.beatScroll='1';
@@ -25,6 +25,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   }
   function cancelPending() {epoch++;clearTimeout(pending);pending=0;}
   function halt({capture=true}={}) {
+    stage.cancelTransition?.();handoff=null;delete body.dataset.sectionTransition;
     cancelPending();clearTimeout(releaseTimer);releaseTimer=0;
     cancelAnimationFrame(scrollFrame);scrollFrame=0;follow=null;scrubbing=false;intensity=1;lastDirection=0;
     playback.pause({capture});rate=1;playback.setRate(1);mark();
@@ -48,9 +49,18 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   }
   function move(target,back=false) {
     if(!target)return false;
+    const source=current();
     halt();
     document.dispatchEvent(new CustomEvent('stage:navigate',{detail:{hash:'#'+target.key,beat:true}}));
-    stage.seekProgress(target.section,back&&target.kind==='film'?target.end:target.start);
+    const at=back&&target.kind==='film'?target.end:target.start;
+    if(body.dataset.sectionTransitions==='slide'&&stage.transitionTo&&source?.key!==target.key){
+      // Start at the finished scene's edge: its final film frame holds while
+      // the next complete section travels upward, with no extra title drift.
+      const reverse=sections().indexOf(target.section)<sections().indexOf(source.section);
+      stage.seekProgress(source.section,reverse?0:1);
+      const ticket={target};handoff=ticket;body.dataset.sectionTransition='true';
+      stage.transitionTo(target.section,at).then(done=>{if(handoff!==ticket)return;handoff=null;delete body.dataset.sectionTransition;mark();if(done)releaseSoon();});
+    }else stage.seekProgress(target.section,at);
     mark();return true;
   }
   const duration=(video,fallback)=>Number.isFinite(video?.duration)&&video.duration>0?video.duration:fallback;
@@ -69,6 +79,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   }
   function release() {
     releaseTimer=0;
+    if(handoff){releaseTimer=setTimeout(release,100);return;}
     if(touch?.used||heldKey)return;
     cancelAnimationFrame(scrollFrame);scrollFrame=0;follow=null;scrubbing=false;intensity=1;lastDirection=0;rate=1;playback.setRate(1);
     const chapter=current(),mode=playback.inspect().mode;
@@ -117,6 +128,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     mark();scrollFrame=requestAnimationFrame(flush);
   }
   function fastScroll(px,source) {
+    if(handoff)return;
     if(crossing(source,px)){releaseSoon();return;}
     const chapter=current();if(!chapter)return;
     const direction=Math.sign(px),p=stage.progress(chapter.section);
@@ -157,10 +169,12 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     releaseSoon();
   }
   function gesture(direction,px=direction*120,source={}) {
+    if(handoff)return;
     if(step>=3){fastScroll(px,source);return;}
     const chapter=current();if(!chapter)return;
     if(direction<0){if(move(nextFrom(chapter,-1)||{...chapter,start:0}))crossed(source,direction);return;}
     if(chapter.kind==='reading'){if(move(nextFrom(chapter,1)))crossed(source,direction);return;}
+    if(stage.progress(chapter.section)>=chapter.end-.0001){if(move(nextFrom(chapter,1)))crossed(source,direction);releaseSoon();return;}
     step=Math.min(3,step+1);mark();
     if(step===3){fastScroll(px,source);return;}
     rate=step===2?2*SCROLL_SCALE:1;playback.setRate(rate);

@@ -5,6 +5,7 @@ const titles = new WeakMap();
 const running = new Map();
 const ease = 'cubic-bezier(.16,1,.3,1)';
 const enabled = () => !reduce.matches && !document.body.classList.contains('motion-paused');
+const stableTitles = () => document.body.dataset.stableTitles === 'true';
 const visible = el => el && !el.closest('[hidden], [aria-hidden="true"], [inert]');
 
 function cancel(el) {
@@ -28,6 +29,7 @@ function animate(el, frames, options = {}) {
 
 function prepareTitle(el) {
   if (!el) return [];
+  if (stableTitles()) return [];
   const record = titles.get(el);
   if (record && record.words.every(word => el.contains(word))) return record.words;
   const source = el.innerHTML;
@@ -53,6 +55,7 @@ function prepareTitle(el) {
 }
 
 export function revealTitle(el, {direction = 1, delay = 0} = {}) {
+  if (stableTitles()) { if(el){cancel(el);el.style.removeProperty('--title-drift');} return; }
   const words = prepareTitle(el);
   words.forEach(cancel);
   if (!visible(el) || !enabled()) return;
@@ -133,7 +136,7 @@ export function createEditorialMotion() {
     }
     const p = Number(next.dataset.sceneProgress || 0);
     // Small depth offset while scrubbing, followed by a stable reading hold.
-    const drift = enabled() && next.id !== 'top' ? (0.5 - p) * 8 : 0;
+    const drift = !stableTitles() && enabled() && next.id !== 'top' ? (0.5 - p) * 8 : 0;
     next.querySelectorAll('.motion-title').forEach(el => el.style.setProperty('--title-drift', `${drift.toFixed(2)}px`));
   }
 

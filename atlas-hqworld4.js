@@ -1,13 +1,13 @@
 import {fieldProgress} from './neighborhood-timing.js?v=4-hiw-crew1';
 import {loadFilmSources} from './film-sources-hqworld4.js?v=photographic-site-v2';
-import {syncTrailerPosters} from './trailer-presentation.js?v=fuller-presentation-v1';
+import {syncTrailerPosters} from './trailer-presentation.js?v=intro-trailer-master-v1';
 syncTrailerPosters(await loadFilmSources());
 const {installDisplayFramework}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework-hqworld4.js?v=photographic-site-v2':'./display-framework.js?v=4');
 import {installScenePlayback} from './scene-playback.js?v=15-rate';
-import { createStage } from './atlas-stage.js?v=9';
+import { createStage } from './atlas-stage.js?v=stable-slides-v1';
 import {setupGrassEconomics} from './grass-economics.js?v=2';
 import {createAmbientSpace} from './ambient-space.js?v=4';
-import {createEditorialMotion,setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=7';
+import {createEditorialMotion,setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=stable-slides-v1';
 const $ = selector => document.querySelector(selector);
 const $$ = selector => [...document.querySelectorAll(selector)];
 const clamp = x => Math.max(0, Math.min(1, x));
@@ -148,7 +148,7 @@ addEventListener('scroll',requestUpdate,{passive:true});addEventListener('resize
 installDisplayFramework({stage,refresh:update});
 if(official)import('./hero-frame-hqworld4.js?v=photographic-site-v2').then(m=>m.installHeroFrame()).catch(e=>console.warn('Hero framing unavailable.',e.message));
 // Main site: third gesture unlocks fast scrubbing; release resumes normal playback. Archives retain their original controller.
-if(manualPlayback&&official&&playback)import(document.body.dataset.scrollBehavior==='continuous-after-third'?'./continuous-scroll.js?v=scroll-edges-v4':document.body.dataset.fastSectionSkip==='true'?'./three-step-scroll.js?v=interactive-phone-v1':'./beat-scroll-hqworld4.js?v=photographic-site-v2').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
+if(manualPlayback&&official&&playback)import(document.body.dataset.scrollBehavior==='continuous-after-third'?'./continuous-scroll.js?v=stable-slides-v1':document.body.dataset.fastSectionSkip==='true'?'./three-step-scroll.js?v=interactive-phone-v1':'./beat-scroll-hqworld4.js?v=photographic-site-v2').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
 async function loadTrailer(state,canvas,single=false){
  if(!state)return;
  if(official){
