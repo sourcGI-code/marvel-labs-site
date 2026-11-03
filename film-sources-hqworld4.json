@@ -55,11 +55,11 @@
   "kind": "desktop"
  },
  "opening": {
-  "base": "assets/shared-solidworks-mobile-opening-v3",
-  "revision": "solidworks-mobile-v3",
+  "base": "assets/intro-photographic-v1",
+  "revision": "photographic-site-v2",
   "desktop": {
    "base": "assets/intro-photographic-v1",
-   "revision": "photographic-site-v1",
+   "revision": "photographic-site-v2",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
