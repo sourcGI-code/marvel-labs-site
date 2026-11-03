@@ -13,5 +13,5 @@ export async function createStudioFinish(renderer){
  source.needsUpdate=true;source.mapping=THREE.EquirectangularReflectionMapping;
  const pmrem=new THREE.PMREMGenerator(renderer),environment=pmrem.fromEquirectangular(source);environment.texture.name='Neutral photographic studio reflections';
  source.dispose();pmrem.dispose();
- return material=>{if('envMap'in material){material.envMap=environment.texture;material.envMapIntensity=.85;material.needsUpdate=true;}return material;};
+ return material=>{if('envMap'in material){material.envMap=environment.texture;material.envMapIntensity=1.05;material.needsUpdate=true;}return material;};
 }

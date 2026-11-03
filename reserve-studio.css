@@ -38,7 +38,7 @@ body.reserve-studio main{padding-top:76px}
 .reserve-studio .rv-submit:hover{background:#fff}
 .reserve-studio .rv-pay-note{color:#849699;font-size:11px;margin-top:10px;display:block}
 .reserve-studio .rd-policies{font-size:10px;padding-top:18px;margin-top:20px;gap:16px;justify-content:flex-start;border-color:#ffffff0d}
-.reserve-studio .rv-fade{background:linear-gradient(0deg,#111617 0%,#11161700 25%);pointer-events:none}
+.reserve-studio .rv-fade{background:linear-gradient(0deg,#111617 0%,#11161700 25%),linear-gradient(180deg,#111617 0%,#11161700 17%),linear-gradient(90deg,#111617 0%,#11161700 6%,#11161700 96%,#111617 100%);pointer-events:none}
 .studio-caption{position:absolute;z-index:2;top:6px;left:30px;pointer-events:none}
 .studio-caption>span{font:9px/1.4 ML,sans-serif;letter-spacing:.17em;color:#77898d}
 .studio-caption p{display:flex;align-items:center;gap:16px;margin:10px 0 0}
