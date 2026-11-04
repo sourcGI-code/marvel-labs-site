@@ -1,6 +1,6 @@
 import {createFleetLabelMotion} from './fleet-label-motion.js?v=2-nodip';
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=workday-no-push-mower-v1';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=screen-fit-v1';
 import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.js?v=workday-no-push-mower-v1';
 import {loadFilmSources} from './film-sources-hqworld4.js?v=workday-no-push-mower-v1';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';

@@ -1,5 +1,5 @@
 import {displays,displayById} from './display-framework.js?v=4';
-import {createStage} from './atlas-stage.js';
+import {createStage} from './atlas-stage.js?v=screen-fit-v1';
 import {installDisplayFramework} from './display-framework.js?v=4';
 export function installCinema(){
  document.documentElement.classList.add('cinematic');document.body.dataset.experience='official';

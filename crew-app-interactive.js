@@ -26,11 +26,23 @@ if (section) {
 
   function sizePhone() {
     const available = stage.getBoundingClientRect();
-    const height = Math.max(380, Math.min(790, available.height - 30, (available.width - 28) * 2.04));
+    const height = Math.max(180, Math.min(790, (available.height - 18) * 1828 / 1920, (available.width - 20) * 1828 / 960));
     phone.style.setProperty('--phone-height', `${height}px`);
     stage.style.setProperty('--phone-height', `${height}px`);
   }
   new ResizeObserver(sizePhone).observe(stage);
+  // Keep the app at a real phone viewport as the showcase handset scales.
+  // Otherwise narrow showcases reflow its navigation into 100-pixel columns.
+  const screen = section.querySelector('.crew-phone-screen');
+  new ResizeObserver(() => {
+    const width = screen.clientWidth, height = screen.clientHeight;
+    if (!width || !height) return;
+    const scale = width / 390;
+    Object.assign(frame.style, {
+      width: '390px', height: `${height / scale}px`,
+      transformOrigin: '0 0', transform: `scale(${scale})`
+    });
+  }).observe(screen);
 
   function selectRoute(route) {
     currentRoute = route;

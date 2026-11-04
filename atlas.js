@@ -3,7 +3,7 @@ import {loadFilmSources} from './film-sources.js?v=3';
 await loadFilmSources();
 const {installDisplayFramework}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework.js?v=15-hiw-crew1':'./display-framework.js?v=4');
 import {installScenePlayback} from './scene-playback.js?v=15-rate';
-import { createStage } from './atlas-stage.js?v=9';
+import { createStage } from './atlas-stage.js?v=screen-fit-v1';
 import {setupGrassEconomics} from './grass-economics.js?v=2';
 import {createAmbientSpace} from './ambient-space.js?v=4';
 import {createEditorialMotion,setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=7';

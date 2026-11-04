@@ -75,7 +75,14 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
     bottom=Math.min(bottom,summary.getBoundingClientRect().top-origin-14);
     const feed=pin.querySelector('.vision-feed');if(feed)top=Math.max(top,feed.getBoundingClientRect().bottom-origin+14);
    }
-   window={x0:0,y0:top,x1:w,y1:Math.max(top+1,bottom)};
+   if(w>h&&h<=540){
+    // A phone rotated sideways keeps its existing film. Put that contained
+    // view beside the copy instead of squeezing it below a tall text panel.
+    const box=copy?.getBoundingClientRect(),hostBox=host.getBoundingClientRect();
+    const left=Math.min(w*.52,(box?.right??w*.4)-hostBox.left+18);
+    const header=document.querySelector('.masthead')?.getBoundingClientRect();
+    window={x0:left,y0:Math.max(72,(header?.bottom??60)-origin+12),x1:w-16,y1:h-46};
+   }else window={x0:0,y0:top,x1:w,y1:Math.max(top+1,bottom)};
   }else if(pin)delete pin.dataset.filmFit;
   const f=placeFilm(w,h,metadata.width,metadata.height,framing,time,window);lastPlace=f;
   const key=[w,h,f.cover,f.zoom,f.dx,f.dy].map(v=>v.toFixed(3)).join();

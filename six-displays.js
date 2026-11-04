@@ -1,5 +1,5 @@
 import {calculateEarnings,pilotEmail} from './six-display-logic.js?v=3';
-import {installCinema} from './six-cinema.js?v=4';
+import {installCinema} from './six-cinema.js?v=screen-fit-v1';
 import {installLiveScrollScenes} from './live-scroll-scenes.js?v=7';
 const $=s=>document.querySelector(s);
 installCinema();

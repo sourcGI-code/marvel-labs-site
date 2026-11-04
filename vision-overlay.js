@@ -11,6 +11,12 @@ export function createVisionOverlay(pin){
  const header=document.createElement('div');header.className='vision-feed';header.innerHTML='<span>CAM 02 / LANDSCAPING SCOPE</span><strong></strong><i></i>';layer.append(header);pin.append(layer);
  const summary=document.createElement('aside');summary.id='vision-summary';summary.hidden=true;summary.setAttribute('aria-label','Illustrative site classification and job measurements');
  summary.innerHTML='<p class="eyebrow">MARVEL LABS / VISION STUDY</p><h3>Reading the landscape</h3><p class="vision-current"></p><dl></dl><small>Illustrative model output. Size estimates use this 3D scene; no live model is connected.</small>';pin.append(summary);
+ const shortLandscape=matchMedia('(orientation:landscape) and (max-height:540px)');
+ function placeSummary(){
+  const copy=pin.querySelector('.tour-copy');
+  (shortLandscape.matches&&copy?copy:pin).append(summary);
+ }
+ placeSummary();shortLandscape.addEventListener('change',placeSummary);
  const transcript=document.createElement('ul');transcript.className='vision-transcript';transcript.setAttribute('aria-label','Landscaping tasks');summary.append(transcript);
  const clip=svg('clipPath',{id:'landscape-scope-clip',clipPathUnits:'userSpaceOnUse'}),clipRect=svg('rect');clip.append(clipRect);geometry.append(clip);
  const copyMask=svg('mask',{id:'landscape-copy-mask',maskUnits:'userSpaceOnUse'}),maskBase=svg('rect',{fill:'white'}),maskCopy=svg('rect',{fill:'black'}),maskSummary=svg('rect',{fill:'black'});copyMask.append(maskBase,maskCopy,maskSummary);geometry.append(copyMask);
@@ -24,7 +30,7 @@ export function createVisionOverlay(pin){
  function update(state,w,h){
   const data=state?.vision,visible=!!data?.visible;layer.hidden=summary.hidden=!visible;pin.dataset.vision=String(visible);
   if(!visible)return;
-  const mobile=w<=760,compact=mobile&&pin.dataset.filmFit==='contain',measuring=data.measuring>0,complete=data.measured;
+  const mobile=w<=760,compact=(mobile&&pin.dataset.filmFit==='contain')||(w>h&&h<=540),measuring=data.measuring>0,complete=data.measured;
   layer.dataset.compact=String(compact);
   layer.style.opacity=data.mix;geometry.setAttribute('viewBox',`0 0 ${w} ${h}`);
   reference.style.display=data.stage==='localize'?'':'none';reference.setAttribute('transform',`translate(${data.origin.x},${data.origin.y})`);

@@ -1,7 +1,7 @@
 import {createRouteQuotes} from './route-quotes.js?v=yard-coverage-v1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=workday-no-push-mower-v1';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=screen-fit-v1';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
-import {createVisionOverlay} from './vision-overlay.js?v=mvp-polish-20261104';
+import {createVisionOverlay} from './vision-overlay.js?v=screen-fit-v1';
 import {createScrollMotion} from './scroll-motion.js';
 import {setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=7';
 const clamp=v=>Math.max(0,Math.min(1,v));

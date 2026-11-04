@@ -100,7 +100,18 @@ export function createStage() {
     }
   });
   addEventListener('hashchange', () => navigate(location.hash));
-  addEventListener('resize', () => { cancelTransition();measure(); update(); });
+  addEventListener('resize', () => {
+    // Screen rotation and browser zoom change every scroll spacer's height.
+    // Keep the current scene and playhead instead of interpreting the old
+    // pixel offset as a different section of the website.
+    const scene = active, progress = scene?.progress ?? 0;
+    cancelTransition(); measure();
+    if (scene) {
+      const inset = scene.index === 0 ? 0 : viewport * (HANDOFF_VIEWPORTS / 2);
+      scrollTo({top:scene.start + inset + progress * (scene.length - inset - viewport * (HANDOFF_VIEWPORTS / 2)),behavior:'instant'});
+    }
+    update();
+  });
   measure(); update();
   if (location.hash) requestAnimationFrame(() => navigate(location.hash));
   addEventListener('pageshow', () => { measure(); update(); });

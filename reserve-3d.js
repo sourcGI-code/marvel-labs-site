@@ -377,13 +377,36 @@ async function start(sec) {
     want.pos.copy(b2t(c.position)); want.look.copy(b2t(c.target)); want.shift = filmShift;
   }
   function rvShift() {                                  // 10-29 full-screen variants: data-shift (-.15) moves the trailers right of the floating rail
-    return rv && !matchMedia('(max-width:860px)').matches ? (parseFloat(sec.dataset.shift || '0') || 0) : 0;
+    if (!rv || matchMedia('(max-width:860px)').matches) return 0;
+    const rail = sec.querySelector('.rv-rail'), bounds = host.getBoundingClientRect();
+    if (!rail || !bounds.width) return parseFloat(sec.dataset.shift || '0') || 0;
+    // Center the model in the space beside the actual form, at every width.
+    const occupied = rail.getBoundingClientRect().right - bounds.left + 24;
+    return -Math.min(.35, Math.max(0, occupied / (2 * bounds.width)));
   }
   function orbitView() {
     const t = T[focus], target = new THREE.Vector3(t.group.position.x, LIFT + 1.25, t.group.position.z);   // its resting height: when it was the other one it is still rising
+    const shift = rv ? rvShift() : matchMedia('(max-width:760px)').matches ? 0 : -.16;
+    const direction = new THREE.Vector3(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az));
+    let distance = radius;
+    if (rv && t.bounds) {
+      const right = new THREE.Vector3().crossVectors(new THREE.Vector3(0, 1, 0), direction).normalize();
+      const up = new THREE.Vector3().crossVectors(direction, right);
+      const tanY = Math.tan(THREE.MathUtils.degToRad(camera.fov) / 2);
+      const bottom = innerWidth > 860 ? (sec.querySelector('.rv-metrics')?.offsetHeight || 90) + 12 : 14;
+      const vertical = Math.max(.35, 1 - 2 * bottom / host.clientHeight);
+      const horizontal = Math.max(.2, 1 - 2 * Math.abs(shift)) * .92;
+      for (const x of [t.bounds.min.x, t.bounds.max.x])
+        for (const y of [t.bounds.min.y, t.bounds.max.y])
+          for (const z of [t.bounds.min.z, t.bounds.max.z]) {
+            const point = new THREE.Vector3(x * 1.08, y * 1.08 - 1.25, z * 1.08);
+            const depth = point.dot(direction);
+            distance = Math.max(distance, depth + Math.abs(point.dot(right)) / (tanY * camera.aspect * horizontal), depth + Math.abs(point.dot(up)) / (tanY * vertical));
+          }
+    }
     want.look.copy(target);
-    want.pos.copy(target).add(new THREE.Vector3(Math.cos(el) * Math.cos(az), Math.sin(el), Math.cos(el) * Math.sin(az)).multiplyScalar(radius));
-    want.shift = rv ? rvShift() : matchMedia('(max-width:760px)').matches ? 0 : -.16;   // the trailer sits right of the copy
+    want.pos.copy(target).addScaledVector(direction, distance);
+    want.shift = shift;
   }
 
   let composer = null;
@@ -402,6 +425,7 @@ async function start(sec) {
     camera.fov = THREE.MathUtils.radToDeg(camera.aspect > meta.camera.aspect ? 2 * Math.atan(Math.tan(vf / 2) * meta.camera.aspect / camera.aspect) : vf);
     camera.updateProjectionMatrix(); dirty = true;
     if (rv && mode === 'overview') filmView();
+    else if (rv && focus) orbitView();
   }
 
   function setPanel(size) {
@@ -551,7 +575,7 @@ async function start(sec) {
       // the ramp: the old rigs carry a 'Ramp hinge' node turned about Z; the owner's new 20 ft names its own (ramp_door, axis in meta)
       const hinge = (t.hingeNode && g.scene.getObjectByName(t.hingeNode)) || g.scene.getObjectByName(`Ramp_hinge_${size}`) || g.scene.getObjectByName(`Ramp hinge ${size}`);
       scene.add(group);
-      T[size] = {group, hinge, base: hinge ? hinge.quaternion.clone() : null, axis: new THREE.Vector3(...(t.rampAxis || [0, 0, 1])),
+      T[size] = {group, hinge, bounds: new THREE.Box3().setFromObject(group).translate(group.position.clone().negate()), base: hinge ? hinge.quaternion.clone() : null, axis: new THREE.Vector3(...(t.rampAxis || [0, 0, 1])),
                  open: t.rampAxis ? t.rampOpen : -t.rampOpen, ramp: 0, rampTo: 0, scale: 1, scaleTo: 1, show: true, fade: 1};
       ok();
     }, undefined, bad))));
