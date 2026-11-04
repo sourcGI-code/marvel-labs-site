@@ -13,5 +13,6 @@ export function syncTrailerPosters(sources) {
   set('#hero-visual .scene-fallback source',poster(entry(heroReference,'mobile'),'mobile'),'srcset');
   const field=sources.field;
   const fieldKind=field.kind||(innerWidth<=760||(innerWidth<=1024&&innerHeight>innerWidth)?'mobile':'desktop');
-  set('#tour-visual .scene-fallback img',poster(field,fieldKind));
+  // Workday releases publish chapter stills, not a separate *-poster.webp.
+  set('#tour-visual .scene-fallback img',`${field.base}/${fieldKind}-step-0.webp?v=${field.revision}`);
 }

@@ -94,12 +94,16 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  const sourceProgress=()=>metadata?wanted*playbackDuration()*metadata.fps/(metadata.frames-1):0;
  const targetTime=()=>metadata?Math.min(wanted*playbackDuration(),Math.max(0,video.duration-.001)):0;
  const usingStill=()=>reduced.matches||failed;
+ const presentingStill=()=>usingStill()||(!shown&&!!stillFile);
+ const hasPresentation=()=>shown||!!stillFile;
  const chapterStill=()=>metadata?.stills?.findLast(s=>sourceProgress()>=s.start)||metadata?.stills?.[0];
- function updateVisibility(){video.style.visibility=visible&&shown&&!usingStill()?'visible':'hidden';still.style.visibility=visible&&shown&&usingStill()?'visible':'hidden';}
+ function updateVisibility(){const showVideo=visible&&shown&&!usingStill(),showStill=visible&&!!stillFile&&!showVideo;video.style.visibility=showVideo?'visible':'hidden';still.style.visibility=showStill?'visible':'hidden';host.dataset.filmFrame=showVideo?'video':showStill?'still':'loading';}
  function requestSeek(){if(enabled&&video.paused&&!video.dataset.timelinePlaying&&!frame)frame=requestAnimationFrame(seek);}
  function seek(){
   frame=0;if(!metadata||!enabled||!video.paused||video.dataset.timelinePlaying)return;
   if(usingStill()){loadStill();return;}
+  // A decoded chapter image remains visible while a video is blocked or loading.
+  if(name==='field'&&!shown)loadStill();
   if(video.readyState<2||video.seeking)return;
   const target=targetTime();
   if(Math.abs(video.currentTime-target)<1/(metadata.fps*2)){if(!shown){shown=true;updateVisibility();changed();}return;}
@@ -113,7 +117,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   const chapter=chapterStill();if(!chapter||chapter.file===stillFile||chapter.file===pendingStill)return;
   const file=chapter.file,current=generation;pendingStill=file;
   const image=new Image();image.src=`${filmSource.base}/${file}?v=${revision}`;
-  try{await image.decode();if(current!==generation||file!==chapterStill()?.file)return;still.src=image.src;stillFile=file;shown=true;updateVisibility();changed();}
+  try{await image.decode();if(current!==generation||file!==chapterStill()?.file)return;still.src=image.src;stillFile=file;updateVisibility();changed();}
   catch{if(current===generation)changed();}
   finally{if(pendingStill===file)pendingStill='';}
  }
@@ -122,7 +126,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  async function localCopy(){
   if(localPending||objectURL||failed)return;localPending=true;const current=generation;
   try{const response=await fetch(mediaURL,{cache:'force-cache',signal:controller.signal});if(!response.ok)throw Error('Film unavailable');const blob=await response.blob();if(current!==generation)return;objectURL=URL.createObjectURL(blob);video.src=objectURL;video.load();}
-  catch(error){if(current===generation&&error.name!=='AbortError'){failed=true;changed();}}
+  catch(error){if(current===generation&&error.name!=='AbortError'){failed=true;requestSeek();changed();}}
   finally{if(current===generation)localPending=false;}
  }
  async function source(){
@@ -157,7 +161,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   // film and host framing together on seeked. Other scene clocks stay unchanged.
   const decodedCargo=name==='cargo'&&shown&&!usingStill();
   if(decodedCargo&&!video.seeking)lastPresentedTime=video.currentTime;
-  const sampleP=usingStill()?(chapterStill()?.p??originalP):decodedCargo?
+  const sampleP=presentingStill()?(chapterStill()?.p??originalP):decodedCargo?
    clamp(lastPresentedTime*metadata.fps/(metadata.frames-1)):originalP;
   const samples=metadata.samples,frameIndex=sampleP*(metadata.frames-1)/3,index=Math.min(samples.length-2,Math.floor(frameIndex));
   const a=samples[Math.max(0,index)],b=samples[Math.max(0,index)+1]||a;
@@ -176,8 +180,8 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
    state.vision={...full,visible:workflowP>=.20&&workflowP<.46&&!state.route?.active,mix:1,count,classification,measuring,measured:measuring>=1,stage:workflowP>=.34?'localize':measuring>0?'measure':'classify',activeId:full.observations[Math.min(count-1,full.total-1)]?.id,origin:point(full.origin),observations:full.observations.slice(0,count).map(o=>({...o,box:{...point(o.box),width:o.box.width*scale,height:o.box.height*scale},polygons:o.polygons?.map(poly=>poly.map(point))}))};
    state.yardReveal=1;
   }
-  return {...state,p:wanted,workflowP,sourceProgress:sampleP,playback:usingStill()?'still':'recorded',videoTime:video.currentTime,presentationTime:sampleP*(metadata.frames-1)/metadata.fps,videoTarget:targetTime(),videoReady:shown,loading:!shown,frameReused:true,webglFrames:0};
+  return {...state,p:wanted,workflowP,sourceProgress:sampleP,playback:presentingStill()?'still':'recorded',videoTime:video.currentTime,presentationTime:sampleP*(metadata.frames-1)/metadata.fps,videoTarget:targetTime(),videoReady:shown,loading:!hasPresentation(),frameReused:true,webglFrames:0};
  }
  await source();
- return {draw,async retry(){if(failed||video.error){kind='';await source();}return !failed;},resize(){placed='';source();requestSeek();},setFrameWindow(rect){frameWindow=rect||null;},get framing(){return lastPlace;},setPalette(){},setActive(value){enabled=value;if(value)requestSeek();},setVisible(value){visible=value;updateVisibility();},get ready(){return shown;},get atTarget(){return shown&&(usingStill()?stillFile===chapterStill()?.file:!video.seeking&&matches());},get failed(){return failed;},get duration(){return playbackDuration();},inspect:()=>({playback:usingStill()?'still':'recorded',kind,zoom:lastPlace?.zoom,ready:shown,failed,loading:!!loading,videoTime:video.currentTime,videoTarget:targetTime()}),video};
+ return {draw,async retry(){if(failed||video.error){kind='';await source();}return !failed;},resize(){placed='';source();requestSeek();},setFrameWindow(rect){frameWindow=rect||null;},get framing(){return lastPlace;},setPalette(){},setActive(value){enabled=value;if(value)requestSeek();},setVisible(value){visible=value;updateVisibility();},get ready(){return hasPresentation();},get atTarget(){return hasPresentation()&&(presentingStill()?stillFile===chapterStill()?.file:!video.seeking&&matches());},get failed(){return failed;},get duration(){return playbackDuration();},inspect:()=>({playback:presentingStill()?'still':'recorded',kind,zoom:lastPlace?.zoom,ready:hasPresentation(),failed,loading:!!loading,videoTime:video.currentTime,videoTarget:targetTime()}),video};
 }

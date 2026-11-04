@@ -1,5 +1,5 @@
 import {createRouteQuotes} from './route-quotes.js?v=yard-coverage-v1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=intro-master-workday-mvp-v1';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=snapshot-ready-v1';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
 import {createVisionOverlay} from './vision-overlay.js?v=mvp-polish-20261104';
 import {createScrollMotion} from './scroll-motion.js';

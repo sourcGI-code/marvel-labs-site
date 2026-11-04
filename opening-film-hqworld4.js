@@ -50,7 +50,12 @@ export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
    const image=poster.querySelector('img');if(image)image.src=`${desktop.base}/desktop-poster.webp?v=${encodeURIComponent(desktop.revision)}`;
   }
   video.dataset.filmQuality=selected.quality||'original';
-  mediaURL=`${selected.base}/${selected.videoFile||kind+'.mp4'}?v=${revision}`;video.src=mediaURL;video.load();
+  // A review link changes only the opening's encode, preserving its framing,
+  // ten-second timeline and the normal films everywhere else on the site.
+  const smoothPreview=new URLSearchParams(location.search).get('fps')==='60';
+  mediaURL=smoothPreview?`assets/motion-preview-60-v1/${kind}.mp4?v=smooth-intro-v1`:`${selected.base}/${selected.videoFile||kind+'.mp4'}?v=${revision}`;
+  if(smoothPreview)video.dataset.filmQuality='interpolated-60fps-preview';
+  video.src=mediaURL;video.load();
   return true;
  }
  video.addEventListener('loadeddata',()=>{presentedTime=video.currentTime;ready=true;seek();notify();});
