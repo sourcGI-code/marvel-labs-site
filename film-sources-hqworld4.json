@@ -61,8 +61,8 @@
   }
  },
  "field": {
-  "base": "assets/intro-master-workday-mvp-v1",
-  "revision": "intro-master-workday-mvp-v1",
+  "base": "assets/workday-no-push-mower-v1",
+  "revision": "workday-no-push-mower-v1",
   "neighborhood": true,
   "operator": true,
   "timelineFrames": 3088,
@@ -72,7 +72,7 @@
    "deliveryStartFrame": 300,
    "deliveryFrames": 1116
   },
-  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-intro-master-workday-mvp-20261103",
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-workday-no-push-mower-20261104",
   "kind": "desktop",
   "videoFile": "desktop.mp4",
   "motionFps": 30
@@ -117,8 +117,8 @@
   }
  },
  "fieldMobile": {
-  "base": "assets/intro-master-workday-mvp-v1",
-  "revision": "intro-master-workday-mvp-v1",
+  "base": "assets/workday-no-push-mower-v1",
+  "revision": "workday-no-push-mower-v1",
   "neighborhood": true,
   "operator": true,
   "timelineFrames": 3088,
@@ -129,7 +129,7 @@
    "deliveryFrames": 1116
   },
   "kind": "mobile",
-  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-intro-master-workday-mvp-20261103",
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-workday-no-push-mower-20261104",
   "videoFile": "mobile.mp4",
   "motionFps": 30
  },

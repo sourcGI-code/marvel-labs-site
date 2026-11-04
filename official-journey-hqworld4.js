@@ -1,5 +1,5 @@
 import {createRouteQuotes} from './route-quotes.js?v=yard-coverage-v1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=snapshot-ready-v1';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=workday-no-push-mower-v1';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
 import {createVisionOverlay} from './vision-overlay.js?v=mvp-polish-20261104';
 import {createScrollMotion} from './scroll-motion.js';
@@ -24,7 +24,7 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
  function pinPlayback(value){p=motion.snap(value);playbackTarget={value,read:readProgress()};request();}
  const captions=[
   // #tour-count carries the chapter number ("0n / 05"); the kickers are labels only.
-  ['YOUR EQUIPMENT · REAR EQUIPMENT BAY','Your mowers<br><em>ride in the back.</em>','The ramp drops. Zero-turn, push mower and trimmers ride in the rear bay, like any equipment trailer. The factory sits sealed up front.','THE WORKING DAY','Haul → measure → quote → mow → make'],
+  ['YOUR EQUIPMENT · REAR EQUIPMENT BAY','Your mowers<br><em>ride in the back.</em>','The ramp drops. Your zero-turn mower and trimmers ride in the rear bay, like any equipment trailer. The factory sits sealed up front.','THE WORKING DAY','Haul → measure → quote → mow → make'],
   ['CAMERAS MEASURE THE YARD','Cameras measure.<br><em>You set the price.</em>','The trailer’s cameras turn the lawn, edging, hedges, beds and tree rings into a measured scope, so the estimate starts from numbers, not a guess.','CONCEPT DEMONSTRATION','A measured scope before you price'],
   ['RTK · SURVEY-GRADE GPS','Every measurement<br><em>pinned to the lot.</em>','Survey-grade GPS (RTK) ties each measurement to the property, so the scope still lines up the next time you pull up.','CONCEPT DEMONSTRATION','Site context you can return to'],
   ['AUTO QUOTE · YOU APPROVE IT','The survey becomes<br><em>a quote draft.</em>','The measured scope becomes an estimate and an email that shows the customer their yard before and after. Nothing goes out until you approve the price.','VISUAL DEMONSTRATION','No email is sent'],

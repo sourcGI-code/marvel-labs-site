@@ -83,7 +83,7 @@ async function start(){
   queued=true;requestAnimationFrame(()=>{queued=false;apply();});
  });observer.observe(document.body,{subtree:true,childList:true,characterData:true});
  if(local&&new URLSearchParams(location.search).has('edit')){
-  const editor=await import('./editor-ui.js?v=intro-master-workday-mvp-v1');editor.openEditor({describe,update,reset,save,textOf,getDesign,setDesign,page});
+  const editor=await import('./editor-ui.js?v=workday-no-push-mower-v1');editor.openEditor({describe,update,reset,save,textOf,getDesign,setDesign,page});
  }else if(local&&!document.body.hasAttribute('data-trailer-studio')){
   const link=document.createElement('a');link.id='local-page-editor-link';const url=new URL(location.href);url.searchParams.set('edit','1');link.href=url.href;link.textContent='Edit this page';
   const css=document.createElement('style');css.textContent='#local-page-editor-link{position:fixed;bottom:16px;left:16px;z-index:10000;padding:10px 15px;background:#eff5f2;color:#18392f;border:1px solid #52746c;border-radius:30px;font:600 12px system-ui;box-shadow:0 3px 18px #0003;text-decoration:none}#local-page-editor-link:focus-visible{outline:3px solid #4dd8e8;outline-offset:3px}';document.head.append(css);document.body.append(link);
