@@ -3,11 +3,16 @@ body[data-page-flow-preview][data-experience="official"]{--gutter:clamp(22px,4.5
 html.immersive body[data-page-flow-preview] .masthead{height:var(--screen-header);box-sizing:border-box}
 body[data-page-flow-preview] .masthead :is(.brand,.desktop-nav){flex-shrink:0}
 body[data-page-flow-preview] .masthead .desktop-nav{gap:clamp(16px,1.7vw,28px)}
-body[data-page-flow-preview] #top .platform-pin #platform-story{top:clamp(112px,17svh,180px);max-width:min(44vw,540px)}
-body[data-page-flow-preview] #top .platform-pin #hero-title{font-size:clamp(32px,min(4.5vw,7.5svh),66px)}
-body[data-page-flow-preview] #top .platform-pin .offer-actions{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:12px 18px;margin-top:18px}
+body[data-page-flow-preview] #top .platform-pin #platform-story{top:calc(var(--screen-header) + clamp(18px,3svh,32px));max-width:min(40vw,460px)}
+body[data-page-flow-preview] #top .platform-pin #hero-title{font-size:clamp(22px,min(3.1vw,5.8svh),56px);line-height:1.04}
+body[data-page-flow-preview] #top .platform-pin .offer-actions{display:flex;flex-direction:row;align-items:center;flex-wrap:wrap;gap:10px 14px;margin-top:12px}
 body[data-page-flow-preview] #top .platform-pin .offer-actions a{flex-shrink:0;white-space:nowrap}
-body[data-page-flow-preview] #top .platform-pin #hero-description{max-width:min(340px,100%)}
+body[data-page-flow-preview] #top .platform-pin #hero-description{max-width:min(310px,100%);font-size:clamp(11px,min(1vw,1.75svh),13px);line-height:1.5;margin-top:12px}
+body[data-page-flow-preview] #top .platform-pin #platform-tag{font-size:clamp(7px,.65vw,9px);line-height:1.4;letter-spacing:.12em;margin-bottom:10px}
+body[data-page-flow-preview] #top .platform-pin .offer-actions .offer-button{font-size:clamp(10.5px,.9vw,12px);min-height:38px;padding:9px 12px;gap:12px}
+body[data-page-flow-preview] #top .platform-pin .offer-button span{font-size:15px}
+body[data-page-flow-preview] #top .platform-pin .offer-text-link{font-size:clamp(10px,.85vw,12px)}
+body[data-page-flow-preview] #top .platform-pin .offer-stage-label{font-size:clamp(7px,.58vw,8px);margin-top:8px;line-height:1.4}
 body[data-page-flow-preview] #top .platform-pin .hero-base{bottom:24px}
 body[data-page-flow-preview] #top .platform-pin #capacity-labels strong{font-size:clamp(23px,min(2.5vw,4.5svh),34px)}
 body[data-page-flow-preview] :is(#story,#sizes) :is(.daily-pitch,.size-options){min-width:0}
@@ -34,14 +39,14 @@ body[data-page-flow-preview] #app .crew-beats{margin-bottom:16px}
  body[data-page-flow-preview][data-experience="official"]{--screen-header:72px}
  body[data-page-flow-preview] .masthead .desktop-nav{display:none}
  body[data-page-flow-preview] .masthead .menu-button{display:flex}
- body[data-page-flow-preview] #top .platform-pin #platform-story{top:calc(var(--screen-header) + 24px);left:var(--gutter);right:var(--gutter);max-width:none;width:auto}
- body[data-page-flow-preview] #top .platform-pin #hero-title{font-size:clamp(28px,8.2vw,40px);line-height:1.04}
- body[data-page-flow-preview] #top .platform-pin #platform-tag{font-size:8px;line-height:1.4;margin-bottom:10px}
- body[data-page-flow-preview] #top .platform-pin #hero-description{position:static;width:auto;max-width:360px;font-size:12px;line-height:1.5;margin-top:12px}
- body[data-page-flow-preview] #top .platform-pin .offer-actions{display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;margin-top:14px;align-items:center}
- body[data-page-flow-preview] #top .platform-pin .offer-actions .offer-button{font-size:12px;padding:10px 12px;min-height:42px;gap:10px}
- body[data-page-flow-preview] #top .platform-pin .offer-text-link{font-size:11px}
- body[data-page-flow-preview] #top .platform-pin .offer-stage-label{font-size:9px;line-height:1.4;margin-top:10px}
+ body[data-page-flow-preview] #top .platform-pin #platform-story{top:calc(var(--screen-header) + 16px);left:var(--gutter);right:var(--gutter);max-width:none;width:auto}
+ body[data-page-flow-preview] #top .platform-pin #hero-title{font-size:clamp(22px,min(6.6vw,4.4svh),34px);line-height:1.04}
+ body[data-page-flow-preview] #top .platform-pin #platform-tag{font-size:clamp(7px,1.9vw,8px);line-height:1.4;letter-spacing:.1em;margin-bottom:8px}
+ body[data-page-flow-preview] #top .platform-pin #hero-description{position:static;width:auto;max-width:320px;font-size:clamp(10.5px,min(2.85vw,1.8svh),12px);line-height:1.5;margin-top:10px}
+ body[data-page-flow-preview] #top .platform-pin .offer-actions{display:flex;flex-direction:row;flex-wrap:nowrap;gap:10px;margin-top:10px;align-items:center}
+ body[data-page-flow-preview] #top .platform-pin .offer-actions .offer-button{font-size:11px;padding:8px 10px;min-height:38px;gap:10px}
+ body[data-page-flow-preview] #top .platform-pin .offer-text-link{font-size:10px}
+ body[data-page-flow-preview] #top .platform-pin .offer-stage-label{font-size:7px;line-height:1.4;margin-top:8px}
  body[data-page-flow-preview] #top .platform-pin #capacity-labels strong{font-size:24px}
  body[data-page-flow-preview] #top .platform-pin #capacity-labels span{font-size:8px}
  body[data-page-flow-preview] #top .platform-pin .hero-base{bottom:20px}
@@ -77,7 +82,7 @@ body[data-page-flow-preview] #app .crew-beats{margin-bottom:16px}
  body[data-page-flow-preview] #app .crew-phone-caption{bottom:-14px}
 }
 @media(max-width:360px){
- body[data-page-flow-preview] #top .platform-pin #hero-description{font-size:11px}
+ body[data-page-flow-preview] #top .platform-pin #hero-description{font-size:10.5px}
  body[data-page-flow-preview] #top .platform-pin .offer-actions .offer-button{font-size:11px;padding:9px 10px;gap:8px}
  body[data-page-flow-preview] #top .platform-pin .offer-text-link{font-size:10px}
  body[data-page-flow-preview] #app .crew-copy h2{font-size:28px}
@@ -88,13 +93,13 @@ body[data-page-flow-preview] #app .crew-beats{margin-bottom:16px}
 @media(orientation:landscape) and (max-height:540px){
  body[data-page-flow-preview][data-experience="official"]{--screen-header:60px}
  html.immersive body[data-page-flow-preview] .masthead{height:60px}
- body[data-page-flow-preview] #top .platform-pin #platform-story{top:78px;max-width:42vw}
- body[data-page-flow-preview] #top .platform-pin #hero-title{font-size:28px;line-height:1.03}
+ body[data-page-flow-preview] #top .platform-pin #platform-story{top:74px;max-width:42vw}
+ body[data-page-flow-preview] #top .platform-pin #hero-title{font-size:clamp(20px,5.8svh,28px);line-height:1.04}
  body[data-page-flow-preview] #top .platform-pin #platform-tag{font-size:8px;margin-bottom:8px}
- body[data-page-flow-preview] #top .platform-pin #hero-description{font-size:11px;line-height:1.45;margin-top:10px;max-width:300px}
+ body[data-page-flow-preview] #top .platform-pin #hero-description{font-size:10.5px;line-height:1.4;margin-top:8px;max-width:300px}
  body[data-page-flow-preview] #top .platform-pin .offer-actions{margin-top:12px;gap:12px}
  body[data-page-flow-preview] #top .platform-pin .offer-button{font-size:11px;min-height:36px;padding:8px 10px;gap:8px}
- body[data-page-flow-preview] #top .platform-pin .offer-text-link{font-size:11px}
+ body[data-page-flow-preview] #top .platform-pin .offer-text-link{font-size:10px}
  body[data-page-flow-preview] #top .platform-pin .offer-stage-label{font-size:8px;margin-top:8px}
  body[data-page-flow-preview] #top .platform-pin .hero-base{bottom:14px}
  html.immersive body[data-page-flow-preview] :is(#story,#sizes){padding:80px var(--gutter) 28px}
@@ -161,4 +166,9 @@ body.reserve-page .rd-dialog{max-height:calc(100svh - 32px);overflow-y:auto}
  body[data-page-flow-preview] #inside .tour-copy #vision-summary dd{font-size:10px}
  body[data-page-flow-preview] #inside .tour-copy #vision-summary small{font-size:10px;line-height:1.5}
  body[data-page-flow-preview] #inside .official-tour .tour-copy{padding-bottom:18px}
+}
+
+/* Compact visible buttons keep a comfortable touch target. */
+@media(pointer:coarse){
+ body[data-page-flow-preview] #top .platform-pin .offer-actions a{min-height:44px;display:inline-flex;align-items:center}
 }
