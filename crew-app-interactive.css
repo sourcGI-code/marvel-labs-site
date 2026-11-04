@@ -33,6 +33,10 @@ body[data-stable-titles="true"] #app .crew-copy{align-self:start;max-height:calc
 #app .crew-phone-loading{position:absolute;inset:0;display:grid;place-content:center;text-align:center;gap:9px;padding:20px;color:#a4adb0;background:#0a0e10;font:12px/1.6 system-ui,sans-serif;pointer-events:none}
 #app .crew-phone-loading strong{font-size:15px;color:#4dd8e8;letter-spacing:.15em}
 #app[data-app-loaded="true"] .crew-phone-loading{display:none}
+#app .crew-app-retry{display:none}
+#app[data-app-error="true"] .crew-phone-loading{pointer-events:auto}
+#app[data-app-error="true"] .crew-phone-loading strong{font-size:14px;letter-spacing:0;line-height:1.4}
+#app[data-app-error="true"] .crew-app-retry{display:block;min-height:44px;margin:10px 0 0;padding:10px 12px;border:1px solid #4dd8e8;border-radius:5px;background:#102329;color:#f2f3f2;font:inherit;cursor:pointer}
 #app .crew-phone-caption{position:absolute;left:0;right:0;bottom:0;text-align:center;margin:0;font-size:11px;color:#a4adb0}
 #app .crew-phone-status{position:absolute;width:1px;height:1px;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media(max-height:760px) and (min-width:761px){

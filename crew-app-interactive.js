@@ -8,7 +8,21 @@ if (section) {
   const status = section.querySelector('.crew-phone-status');
   const buttons = [...section.querySelectorAll('[data-app-route]')];
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
-  let entered = false, loaded = false, loadTimer, entranceTimer;
+  const loading = section.querySelector('.crew-phone-loading');
+  const retry = document.createElement('button');
+  retry.type = 'button';
+  retry.className = 'crew-app-retry';
+  retry.textContent = 'Try again';
+  loading.append(retry);
+  let entered = false, loaded = false, loadTimer, entranceTimer, currentRoute = 'trailer';
+
+  function loadError() {
+    if (loaded) return;
+    section.dataset.appError = 'true';
+    loading.querySelector('strong').textContent = 'App preview unavailable';
+    loading.querySelector('span').textContent = 'Check your connection, then try again.';
+    status.textContent = 'The app preview could not load. Try again or use Open the app.';
+  }
 
   function sizePhone() {
     const available = stage.getBoundingClientRect();
@@ -19,8 +33,12 @@ if (section) {
   new ResizeObserver(sizePhone).observe(stage);
 
   function selectRoute(route) {
+    currentRoute = route;
     loaded = false;
     section.dataset.appLoaded = 'false';
+    section.dataset.appError = 'false';
+    loading.querySelector('strong').textContent = 'MARVEL CREW';
+    loading.querySelector('span').textContent = 'Opening your trailer…';
     status.textContent = 'Opening Marvel Crew…';
     const url = new URL(`crew/trailer-app/${route}/`, document.baseURI);
     url.searchParams.set('view', 'phone');
@@ -31,10 +49,10 @@ if (section) {
       button.setAttribute('aria-pressed', String(selected));
     });
     clearTimeout(loadTimer);
-    loadTimer = setTimeout(() => {
-      if (!loaded) status.textContent = 'Still loading. You can also use “Open the app” below.';
-    }, 15000);
+    loadTimer = setTimeout(loadError, 15000);
   }
+  retry.addEventListener('click', () => selectRoute(currentRoute));
+  frame.addEventListener('error', loadError);
 
   // Same-origin app content is rendered at the screen's actual resolution.
   // Wait for its React root, not just the empty exported HTML document.
@@ -67,6 +85,7 @@ if (section) {
       loaded = true;
       clearTimeout(loadTimer);
       section.dataset.appLoaded = 'true';
+      section.dataset.appError = 'false';
       status.textContent = 'Try the app on the phone. Example data.';
       return true;
     }

@@ -1,4 +1,4 @@
-import {installReservationDemo} from './reserve-demo.js?v=package-access-v1';
+import {installReservationDemo} from './reserve-demo.js?v=mvp-polish-20261104';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 

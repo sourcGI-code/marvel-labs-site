@@ -24,16 +24,18 @@ export function createVisionOverlay(pin){
  function update(state,w,h){
   const data=state?.vision,visible=!!data?.visible;layer.hidden=summary.hidden=!visible;pin.dataset.vision=String(visible);
   if(!visible)return;
-  const mobile=w<=760,measuring=data.measuring>0,complete=data.measured;
+  const mobile=w<=760,compact=mobile&&pin.dataset.filmFit==='contain',measuring=data.measuring>0,complete=data.measured;
+  layer.dataset.compact=String(compact);
   layer.style.opacity=data.mix;geometry.setAttribute('viewBox',`0 0 ${w} ${h}`);
   reference.style.display=data.stage==='localize'?'':'none';reference.setAttribute('transform',`translate(${data.origin.x},${data.origin.y})`);
   header.querySelector('strong').textContent=data.stage==='localize'?'RTK / SITE SCALE':complete?'SCOPE ESTIMATED':measuring?'ESTIMATING DIMENSIONS':`CLASSIFYING / ${String(data.count).padStart(2,'0')} OF ${data.total}`;
   header.querySelector('i').style.transform=`scaleX(${measuring?data.measuring:data.classification})`;
   summary.querySelector('h3').textContent=complete?'A measured job scope':measuring?'Estimate the work':'Identify the landscape work';
   const active=data.observations.find(o=>o.id===data.activeId);
-  summary.querySelector('.vision-current').textContent=complete?`${data.count} landscape regions · ready for the quote`:active?`${active.label} → ${active.task}`:'Finding lawn, edges, hedges, beds and trees';
-  const shownJobs=data.jobs.slice(0,Math.ceil(data.measuring*data.jobs.length)),nextSummary=JSON.stringify(shownJobs);
-  if(nextSummary!==summaryKey){summaryKey=nextSummary;summary.querySelector('dl').replaceChildren(...shownJobs.map(job=>{const row=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=job.label;dd.textContent=job.value;row.append(dt,dd);return row;}));}
+  summary.querySelector('.vision-current').textContent=complete?(compact?'Numbered areas · measured job scope':`${data.count} landscape regions · ready for the quote`):active?`${compact?String(data.observations.indexOf(active)+1).padStart(2,'0')+' ':''}${active.label} → ${active.task}`:'Finding lawn, edges, hedges, beds and trees';
+  const compactJobs={'Mow lawn':'01 Lawn','Lawn edging':'02 Edging','Trim hedge':'03 Hedge','Refresh mulch':'04 Beds','Tree rings':'05–08 Trees'};
+  const shownJobs=data.jobs.slice(0,Math.ceil(data.measuring*data.jobs.length)),nextSummary=JSON.stringify([compact,shownJobs]);
+  if(nextSummary!==summaryKey){summaryKey=nextSummary;summary.querySelector('dl').replaceChildren(...shownJobs.map(job=>{const row=document.createElement('div'),dt=document.createElement('dt'),dd=document.createElement('dd');dt.textContent=compact?(compactJobs[job.label]||job.label):job.label;dt.title=job.label;dd.textContent=job.value;row.append(dt,dd);return row;}));}
   const nextTranscript=data.observations.map(item=>item.id).join(',')+complete;
   if(nextTranscript!==transcriptKey){transcriptKey=nextTranscript;transcript.replaceChildren(...data.observations.map(item=>{const li=document.createElement('li');li.textContent=`${item.label}: ${item.task}${complete?'; '+item.measurement+'; '+item.detail:''}`;return li;}));}
   summary.dataset.measured=String(measuring);
@@ -66,8 +68,9 @@ export function createVisionOverlay(pin){
    n.shape.setAttribute('d',(item.polygons||[]).map(p=>'M'+p.map(v=>`${v.x},${v.y}`).join(' L')+' Z').join(' '));
    // On a narrow screen, keep the landscape labels and their projected boxes.
    // Put the work measurements together in the scope below the image.
-   const showSize=!mobile&&index<Math.ceil(data.measuring*data.total),labelW=mobile?112:155,labelH=mobile?(item.label.length>15?37:27):showSize?38:27;
+   const showSize=!mobile&&index<Math.ceil(data.measuring*data.total),labelW=compact?24:mobile?112:155,labelH=compact?24:mobile?(item.label.length>15?37:27):showSize?38:27;
    const candidates=[{x,y:y-labelH-5},{x:right-labelW,y:y-labelH-5},{x:right+8,y},{x:x-labelW-8,y},{x,y:bottom+5},{x:right-labelW,y:bottom+5}];
+   if(compact)candidates.unshift({x:(x+right-labelW)/2,y:(y+bottom-labelH)/2});
    if(mobile)for(let yy=labelTop;yy<labelBottom-labelH;yy+=30)for(const xx of [margin,w-labelW-margin])candidates.push({x:xx,y:yy});
    else for(let yy=h*.26;yy<h*.8;yy+=46)candidates.push({x:w-labelW-margin,y:yy});
    let best;

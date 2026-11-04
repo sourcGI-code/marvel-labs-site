@@ -1,4 +1,4 @@
-import {createReservationEmail, emailDraft} from './reservation-email.js?v=package-access-v1';
+import {createReservationEmail, emailDraft} from './reservation-email.js?v=mvp-polish-20261104';
 const STORAGE = 'marvel-reservation-demo-v1';
 const money = value => new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: value % 1 ? 2 : 0}).format(value);
 const price = size => size === '16' ? 44999 : 49999.99;

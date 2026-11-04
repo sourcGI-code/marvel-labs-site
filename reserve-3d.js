@@ -520,13 +520,10 @@ async function start(sec) {
   rampBtn.addEventListener('click', () => { if (focus) setRamp(T[focus].rampTo ? 0 : 1); });
   lockChip?.addEventListener('click', () => { locked = false; sec.classList.remove('is-locked'); });
 
-  // reserve: $100 fully refundable deposit credited toward the trailer (owner 10-28); a mailto until checkout exists
+  // Every unconfigured reserve link opens the current no-charge demo.
   for (const a of sec.querySelectorAll('.rs-reserve')) {
-    const s = a.closest('.rs-panel').dataset.size, link = sec.dataset['checkout' + s];
-    if (link) { a.href = link; continue; }
-    const subject = `Reserve a ${s} ft Marvel Labs trailer ($100 refundable deposit)`;
-    const body = `Hi Marvel Labs,\n\nI'd like to reserve a ${s} ft autonomous microfactory trailer with the $100 fully refundable deposit.\n\nName:\nBusiness / service area:\nPhone:\n\nThanks!`;
-    a.href = `mailto:hello@marvellabs.com?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    const size = a.closest('.rs-panel').dataset.size, link = sec.dataset['checkout' + size];
+    a.href = link || `reserve.html?size=${encodeURIComponent(size)}`;
   }
 
   // ---- load, then run (only while the section is on screen)
