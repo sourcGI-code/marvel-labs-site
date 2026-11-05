@@ -1,4 +1,4 @@
-import {TRAILER_MODEL_BASE,TRAILER_MODEL_REVISION} from './trailer-model-source.js?v=clean-corners-v3';
+import {TRAILER_MODEL_BASE,TRAILER_MODEL_REVISION} from './trailer-model-source.js?v=owner-approved-all-scenes-v3';
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';

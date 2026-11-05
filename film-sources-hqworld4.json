@@ -63,8 +63,8 @@
   "modelRevision": "owner-approved-trailer-v1"
  },
  "field": {
-  "base": "assets/workday-no-push-mower-v1",
-  "revision": "workday-no-push-mower-v1",
+  "base": "assets/owner-approved-workday-v1",
+  "revision": "owner-approved-trailer-v1",
   "neighborhood": true,
   "operator": true,
   "timelineFrames": 3088,
@@ -74,10 +74,11 @@
    "deliveryStartFrame": 300,
    "deliveryFrames": 1116
   },
-  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-workday-no-push-mower-20261104",
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-owner-approved-trailer-20261104",
   "kind": "desktop",
   "videoFile": "desktop.mp4",
-  "motionFps": 30
+  "motionFps": 30,
+  "modelRevision": "owner-approved-trailer-v1"
  },
  "opening": {
   "base": "assets/owner-approved-intro-smooth60-v4",
@@ -142,8 +143,8 @@
   "quality": "interpolated-60fps"
  },
  "fieldMobile": {
-  "base": "assets/workday-no-push-mower-v1",
-  "revision": "workday-no-push-mower-v1",
+  "base": "assets/owner-approved-workday-v1",
+  "revision": "owner-approved-trailer-v1",
   "neighborhood": true,
   "operator": true,
   "timelineFrames": 3088,
@@ -154,9 +155,10 @@
    "deliveryFrames": 1116
   },
   "kind": "mobile",
-  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-workday-no-push-mower-20261104",
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-owner-approved-trailer-20261104",
   "videoFile": "mobile.mp4",
-  "motionFps": 30
+  "motionFps": 30,
+  "modelRevision": "owner-approved-trailer-v1"
  },
  "fieldVariants": {
   "static": {

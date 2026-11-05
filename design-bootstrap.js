@@ -15,7 +15,7 @@ try {
 
 // Keep non-video fallbacks on the same trailer as the chosen film.
 try {
-  const {loadFilmSources, sceneFilmSource, introFilmKind} = await import('./film-sources-hqworld4.js?v=smooth60-v4');
+  const {loadFilmSources, sceneFilmSource, introFilmKind} = await import('./film-sources-hqworld4.js?v=owner-approved-all-scenes-v3');
   const sources = await loadFilmSources();
   const kind = introFilmKind();
   const opening = sceneFilmSource('opening', kind), cargo = sceneFilmSource('cargo', kind);
@@ -30,7 +30,7 @@ try {
   document.querySelector('#tour-visual .scene-fallback img').src = poster(sources.field, fieldKind);
 } catch (error) { console.warn('Film poster selection unavailable.', error.message); }
 
-const entry = live?.querySelector('script[src^="atlas-hqworld4.js?v=smooth60-v4"]')?.getAttribute('src') || 'atlas-hqworld4.js?v=smooth60-v4';
+const entry = live?.querySelector('script[src^="atlas-hqworld4.js?v=owner-approved-all-scenes-v3"]')?.getAttribute('src') || 'atlas-hqworld4.js?v=owner-approved-all-scenes-v3';
 await import('./' + entry);
 const crew = live?.querySelector('script[src^="crew-app.js"]')?.getAttribute('src') || 'crew-app.js?v=v4-1030c';
 await import('./' + crew);

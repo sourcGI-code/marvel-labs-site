@@ -1,4 +1,4 @@
-import {TRAILER_MODEL_BASE,TRAILER_MODEL_REVISION} from './trailer-model-source.js?v=clean-corners-v3';
+import {TRAILER_MODEL_BASE,TRAILER_MODEL_REVISION} from './trailer-model-source.js?v=owner-approved-all-scenes-v3';
 // Shared approved hybrid trailer with smooth running gear and clean panel finish,
 // with spherical camera travel to avoid cutting through the trailer on a wide cursor move.
 // Reserve stage in real 3D (v3 test, Claude 10-28). Owner: "i want people to lock this onto an axis and truly see all of

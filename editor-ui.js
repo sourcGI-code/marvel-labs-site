@@ -1,4 +1,4 @@
-const {displays,displayById}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework-hqworld4.js?v=smooth60-v4':'./display-framework.js?v=4');
+const {displays,displayById}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework-hqworld4.js?v=owner-approved-all-scenes-v3':'./display-framework.js?v=4');
 import {palettes,frameFor,defaultFrame,frameViewport} from './page-design.js?v=1';
 export function openEditor(api){
  document.body.setAttribute('data-page-editor','');

@@ -2,7 +2,7 @@ import * as THREE from './assets/three.module.js';
 import {GLTFLoader} from './assets/GLTFLoader.js';
 import {suppliedTrailerURL,prepareSuppliedMaterials,suppliedTireFloor} from './supplied-trailer-body.js?v=11';
 import {palettes} from './page-design.js?v=1';
-import {ready,getDesign,setDesign,save} from './editor-runtime.js?v=smooth60-v4';
+import {ready,getDesign,setDesign,save} from './editor-runtime.js?v=owner-approved-all-scenes-v3';
 const $=id=>document.getElementById(id),defaults={finish:'charcoal',rotation:0,x:0,z:0,zoom:1};
 await ready;
 let settings={...defaults,...getDesign().studio},model,renderer,dirty=false;
