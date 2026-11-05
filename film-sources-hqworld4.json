@@ -63,8 +63,8 @@
   "modelRevision": "owner-approved-trailer-v1"
  },
  "field": {
-  "base": "assets/owner-approved-workday-v1",
-  "revision": "owner-approved-trailer-v1",
+  "base": "assets/owner-package-workday-v2",
+  "revision": "owner-package-v2",
   "neighborhood": true,
   "operator": true,
   "timelineFrames": 3088,
@@ -74,11 +74,12 @@
    "deliveryStartFrame": 300,
    "deliveryFrames": 1116
   },
-  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-owner-approved-trailer-20261104",
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-owner-package-20261105",
   "kind": "desktop",
   "videoFile": "desktop.mp4",
   "motionFps": 30,
-  "modelRevision": "owner-approved-trailer-v1"
+  "modelRevision": "owner-approved-trailer-v1",
+  "packageRevision": "owner-package-v2"
  },
  "opening": {
   "base": "assets/owner-approved-intro-smooth60-v4",
@@ -143,8 +144,8 @@
   "quality": "interpolated-60fps"
  },
  "fieldMobile": {
-  "base": "assets/owner-approved-workday-v1",
-  "revision": "owner-approved-trailer-v1",
+  "base": "assets/owner-package-workday-v2",
+  "revision": "owner-package-v2",
   "neighborhood": true,
   "operator": true,
   "timelineFrames": 3088,
@@ -155,10 +156,11 @@
    "deliveryFrames": 1116
   },
   "kind": "mobile",
-  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-owner-approved-trailer-20261104",
+  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-owner-package-20261105",
   "videoFile": "mobile.mp4",
   "motionFps": 30,
-  "modelRevision": "owner-approved-trailer-v1"
+  "modelRevision": "owner-approved-trailer-v1",
+  "packageRevision": "owner-package-v2"
  },
  "fieldVariants": {
   "static": {

@@ -2,7 +2,7 @@
 // Keep the interactive entry points out of that mode: no hidden scenes,
 // huge scroll spacers, video autoplay or blank embedded-app loading state.
 if (!document.documentElement.hasAttribute('data-snapshot')) {
-  import('./atlas-hqworld4.js?v=owner-approved-all-scenes-v3').catch(error => {
+  import('./atlas-hqworld4.js?v=owner-package-v2').catch(error => {
     console.warn('Showing the static website because the presentation did not load.', error);
     document.documentElement.classList.remove('immersive', 'enhanced', 'arrival-quiet');
     document.documentElement.dataset.snapshot = 'true';
@@ -15,7 +15,7 @@ if (!document.documentElement.hasAttribute('data-snapshot')) {
     });
   });
   import('./crew-app-interactive.js?v=screen-fit-v1').catch(console.warn);
-  import('./editor-runtime.js?v=owner-approved-all-scenes-v3').catch(console.warn);
+  import('./editor-runtime.js?v=owner-package-v2').catch(console.warn);
 } else {
   document.querySelectorAll('img').forEach(img => img.loading = 'eager');
   const menu = document.querySelector('#mobile-menu');

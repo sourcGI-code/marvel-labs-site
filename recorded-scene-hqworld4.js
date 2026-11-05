@@ -1,6 +1,6 @@
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
-import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=owner-approved-all-scenes-v3';
+import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=owner-package-v2';
 import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=intro-master-workday-mvp-v1';
 const clamp=v=>Math.max(0,Math.min(1,v));
 // 10-30 owner: the drive-by auto quote must "act like live camera recognition": the box draws itself, the measurements
