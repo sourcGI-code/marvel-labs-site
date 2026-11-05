@@ -21,7 +21,7 @@
 // chapter at the film's own pace instead. Chapters: the hero arrival (0-.25) and delivery (.25-DELIVERY_END), the
 // tour's parts, the sections after it. Off with ?freescroll=1, ?edit=1 or reduced motion.
 import {DELIVERY_END} from './intro-timing.js?v=1';
-import {displays} from './original-display-framework-hqworld4.js?v=workday-no-push-mower-v1';
+import {displays} from './original-display-framework-hqworld4.js?v=owner-approved-trailer-v1';
 const HANDOFF=.75;                       // atlas-stage.js: hand-offs take 1.5 screens, the inset is half of that
 const GLIDE_VH_S=2.8, GLIDE_ACCEL_VH=8, GLIDE_DECEL_VH=6, GESTURE_GAP_MS=400, REQUEST_GAP_MS=700, START_WINDOW_MS=350, RELEASE_MS=220, SPEED_WINDOW_MS=250;
 const FOLLOW_GAIN=.45, FOLLOW_MAX_PX_S=1125, FOLLOW_TAU=.08, FOLLOW_LEAD_S=.25, RATE_UP_TAU=.08, RATE_DOWN_TAU=.5;

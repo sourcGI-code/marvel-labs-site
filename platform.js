@@ -1,5 +1,5 @@
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene.js?v=workday-no-push-mower-v1';
+import {createRecordedScene} from './recorded-scene.js?v=owner-approved-trailer-v1';
 import {createOpeningFilm,filmPose,filmDuration} from './opening-film.js?v=26';
 import {loadFilmSources} from './film-sources.js?v=3';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';

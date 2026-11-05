@@ -1,19 +1,27 @@
 {
-  "revision": "package-access-v1",
+  "revision": "owner-approved-trailer-v1",
   "wrap": "Original / Fuller",
   "finish": "Mirror Graphite",
-  "modelBase": "assets/package-access-v1/",
+  "modelBase": "assets/owner-approved-trailer-v1/",
   "models": {
-    "16": "trailer-16-package-access.glb",
-    "20": "trailer-20-package-access.glb"
+    "16": "trailer-16-approved.glb",
+    "20": "trailer-20-approved.glb"
   },
   "alternatives": false,
-  "filmUpdate": "Updated package-access geometry complete; matching scene proofs and films pending",
+  "filmUpdate": "Approved trailer in intro, fleet and viewers; workday render pending",
   "approvedOption": 2,
   "packageExit": {
     "widthInches": 24,
     "heightInches": 17.732424060190755,
     "placement": "Owner-selected center on the flat side wall",
     "partitionShiftInches": -2.5
+  },
+  "grassChute": {
+    "placement": "Approved flat side wall beside the package exit",
+    "centre20ft": [
+      5.484180927276611,
+      -1.2958999872207642,
+      1.2007226943969727
+    ]
   }
 }

@@ -1,4 +1,3 @@
-// Current production viewers share the approved intro trailer. Historical
-// design previews keep their archived references for comparison.
-export const TRAILER_MODEL_BASE='assets/intro-trailer-master-v1/';
-export const TRAILER_MODEL_REVISION='intro-trailer-master-v1';
+// Owner-approved trailer geometry shared by all current viewers and films.
+export const TRAILER_MODEL_BASE='assets/owner-approved-trailer-v1/';
+export const TRAILER_MODEL_REVISION='owner-approved-trailer-v1';

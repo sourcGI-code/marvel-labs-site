@@ -1,5 +1,5 @@
 import {createRouteQuotes} from './route-quotes.js?v=2';
-import {createRecordedScene} from './recorded-scene.js?v=workday-no-push-mower-v1';
+import {createRecordedScene} from './recorded-scene.js?v=owner-approved-trailer-v1';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
 import {createVisionOverlay} from './vision-overlay.js?v=screen-fit-v1';
 import {createScrollMotion} from './scroll-motion.js';
