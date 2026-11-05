@@ -80,11 +80,11 @@
   "motionFps": 30
  },
  "opening": {
-  "base": "assets/owner-approved-intro-neutral-v2",
-  "revision": "neutral-graphite-v2",
+  "base": "assets/owner-approved-intro-clean-corners-v3",
+  "revision": "clean-corners-v3",
   "desktop": {
-   "base": "assets/owner-approved-intro-neutral-v2",
-   "revision": "neutral-graphite-v2",
+   "base": "assets/owner-approved-intro-clean-corners-v3",
+   "revision": "clean-corners-v3",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -102,7 +102,7 @@
     "width": 2304,
     "height": 1024,
     "framerate": 30,
-    "bitrate": 3037429,
+    "bitrate": 3031921,
     "codec": "avc1.640032"
    },
    "compatibilityVideo": {
@@ -110,7 +110,7 @@
     "width": 2304,
     "height": 1024,
     "framerate": 30,
-    "bitrate": 3037429,
+    "bitrate": 3031921,
     "codec": "avc1.640032",
     "linearResolution": 1,
     "verticalResolution": 1
@@ -126,7 +126,7 @@
    "width": 720,
    "height": 1440,
    "framerate": 30,
-   "bitrate": 2522372,
+   "bitrate": 2492924,
    "codec": "avc1.640020"
   },
   "compatibilityVideo": {
@@ -134,7 +134,7 @@
    "width": 720,
    "height": 1440,
    "framerate": 30,
-   "bitrate": 2522372,
+   "bitrate": 2492924,
    "codec": "avc1.640020",
    "linearResolution": 1,
    "verticalResolution": 1

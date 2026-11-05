@@ -1,5 +1,5 @@
 import {createRouteQuotes} from './route-quotes.js?v=yard-coverage-v1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=neutral-graphite-v2';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=clean-corners-v3';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
 import {createVisionOverlay} from './vision-overlay.js?v=screen-fit-v1';
 import {createScrollMotion} from './scroll-motion.js';

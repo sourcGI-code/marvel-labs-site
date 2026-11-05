@@ -1,7 +1,7 @@
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
 import {loadFilmSources,sceneFilmSource} from './film-sources.js?v=3';
-import {loadFilmSources as loadHqSources} from './film-sources-hqworld4.js?v=neutral-graphite-v2';   // 10-29: the manifest that carries field.mediaBase
+import {loadFilmSources as loadHqSources} from './film-sources-hqworld4.js?v=clean-corners-v3';   // 10-29: the manifest that carries field.mediaBase
 import {filmFraming,placeFilm} from './film-framing.js?v=3';
 const clamp=v=>Math.max(0,Math.min(1,v));
 const mix=(a,b,t)=>a+(b-a)*t;

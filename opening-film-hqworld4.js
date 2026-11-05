@@ -1,4 +1,4 @@
-import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=neutral-graphite-v2';
+import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=clean-corners-v3';
 const clamp=v=>Math.max(0,Math.min(1,v));
 export const filmDuration=10;
 // The fast approach/impact is retained; the reveal settles sooner for the handoff.
