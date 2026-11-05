@@ -1,11 +1,11 @@
 {
  "version": 1,
  "cargo": {
-  "base": "assets/owner-approved-fleet-v1",
-  "revision": "owner-approved-trailer-v1",
+  "base": "assets/owner-approved-fleet-neutral-v2",
+  "revision": "neutral-graphite-v2",
   "desktop": {
-   "base": "assets/owner-approved-fleet-v1",
-   "revision": "owner-approved-trailer-v1",
+   "base": "assets/owner-approved-fleet-neutral-v2",
+   "revision": "neutral-graphite-v2",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -23,7 +23,7 @@
     "width": 2304,
     "height": 1024,
     "framerate": 30,
-    "bitrate": 2967244,
+    "bitrate": 3020363,
     "codec": "avc1.640032"
    },
    "compatibilityVideo": {
@@ -31,7 +31,7 @@
     "width": 2304,
     "height": 1024,
     "framerate": 30,
-    "bitrate": 2967244,
+    "bitrate": 3020363,
     "codec": "avc1.640032",
     "linearResolution": 1,
     "verticalResolution": 1
@@ -47,7 +47,7 @@
    "width": 1080,
    "height": 2160,
    "framerate": 30,
-   "bitrate": 2656263,
+   "bitrate": 2730767,
    "codec": "avc1.640032"
   },
   "compatibilityVideo": {
@@ -55,7 +55,7 @@
    "width": 1080,
    "height": 2160,
    "framerate": 30,
-   "bitrate": 2656263,
+   "bitrate": 2730767,
    "codec": "avc1.640032",
    "linearResolution": 1,
    "verticalResolution": 1
@@ -80,11 +80,11 @@
   "motionFps": 30
  },
  "opening": {
-  "base": "assets/owner-approved-intro-v1",
-  "revision": "owner-approved-trailer-v1",
+  "base": "assets/owner-approved-intro-neutral-v2",
+  "revision": "neutral-graphite-v2",
   "desktop": {
-   "base": "assets/owner-approved-intro-v1",
-   "revision": "owner-approved-trailer-v1",
+   "base": "assets/owner-approved-intro-neutral-v2",
+   "revision": "neutral-graphite-v2",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -102,7 +102,7 @@
     "width": 2304,
     "height": 1024,
     "framerate": 30,
-    "bitrate": 3086170,
+    "bitrate": 3037429,
     "codec": "avc1.640032"
    },
    "compatibilityVideo": {
@@ -110,7 +110,7 @@
     "width": 2304,
     "height": 1024,
     "framerate": 30,
-    "bitrate": 3086170,
+    "bitrate": 3037429,
     "codec": "avc1.640032",
     "linearResolution": 1,
     "verticalResolution": 1
@@ -126,7 +126,7 @@
    "width": 720,
    "height": 1440,
    "framerate": 30,
-   "bitrate": 2531484,
+   "bitrate": 2522372,
    "codec": "avc1.640020"
   },
   "compatibilityVideo": {
@@ -134,7 +134,7 @@
    "width": 720,
    "height": 1440,
    "framerate": 30,
-   "bitrate": 2531484,
+   "bitrate": 2522372,
    "codec": "avc1.640020",
    "linearResolution": 1,
    "verticalResolution": 1
