@@ -1,4 +1,4 @@
-import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=clean-corners-v3';
+import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=smooth60-v4';
 const clamp=v=>Math.max(0,Math.min(1,v));
 export const filmDuration=10;
 // The fast approach/impact is retained; the reveal settles sooner for the handoff.
@@ -50,11 +50,9 @@ export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
    const image=poster.querySelector('img');if(image)image.src=`${desktop.base}/desktop-poster.webp?v=${encodeURIComponent(desktop.revision)}`;
   }
   video.dataset.filmQuality=selected.quality||'original';
-  // A review link changes only the opening's encode, preserving its framing,
-  // ten-second timeline and the normal films everywhere else on the site.
-  const smoothPreview=new URLSearchParams(location.search).get('fps')==='60';
-  mediaURL=smoothPreview?`assets/motion-preview-60-v1/${kind}.mp4?v=smooth-intro-v1`:`${selected.base}/${selected.videoFile||kind+'.mp4'}?v=${revision}`;
-  if(smoothPreview)video.dataset.filmQuality='interpolated-60fps-preview';
+  // The current manifest includes the approved 60 fps intro. Older ?fps=60
+  // preview links must use this same trailer, not the retired preview film.
+  mediaURL=`${selected.base}/${selected.videoFile||kind+'.mp4'}?v=${revision}`;
   video.src=mediaURL;video.load();
   return true;
  }

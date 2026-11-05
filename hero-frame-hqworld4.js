@@ -1,4 +1,4 @@
-import {introFilmKind} from './film-sources-hqworld4.js?v=clean-corners-v3';
+import {introFilmKind} from './film-sources-hqworld4.js?v=smooth60-v4';
 // Preview only. Preserve the original glide over one genuinely expanded movie.
 // Restore the original right/left glide over the unchanged HQ
 // films. Projection is centered CONTAIN; there is no arrival zoom or tail dip.

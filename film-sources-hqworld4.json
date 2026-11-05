@@ -80,11 +80,11 @@
   "motionFps": 30
  },
  "opening": {
-  "base": "assets/owner-approved-intro-clean-corners-v3",
-  "revision": "clean-corners-v3",
+  "base": "assets/owner-approved-intro-smooth60-v4",
+  "revision": "smooth60-v4",
   "desktop": {
-   "base": "assets/owner-approved-intro-clean-corners-v3",
-   "revision": "clean-corners-v3",
+   "base": "assets/owner-approved-intro-smooth60-v4",
+   "revision": "smooth60-v4",
    "kind": "desktop",
    "trueWorld": {
     "version": 1,
@@ -96,49 +96,50 @@
     "cropY": 224
    },
    "videoFile": "desktop.mp4",
-   "quality": "native-30fps",
+   "quality": "interpolated-60fps",
    "nativeVideo": {
     "file": "desktop.mp4",
     "width": 2304,
     "height": 1024,
-    "framerate": 30,
-    "bitrate": 3031921,
+    "framerate": 60,
+    "bitrate": 3459698,
     "codec": "avc1.640032"
    },
    "compatibilityVideo": {
     "file": "desktop.mp4",
     "width": 2304,
     "height": 1024,
-    "framerate": 30,
-    "bitrate": 3031921,
+    "framerate": 60,
+    "bitrate": 3459698,
     "codec": "avc1.640032",
     "linearResolution": 1,
     "verticalResolution": 1
    },
-   "motionFps": 30,
+   "motionFps": 60,
    "modelRevision": "owner-approved-trailer-v1"
   },
   "modelRevision": "owner-approved-trailer-v1",
   "videoFile": "mobile.mp4",
-  "motionFps": 30,
+  "motionFps": 60,
   "nativeVideo": {
    "file": "mobile.mp4",
    "width": 720,
    "height": 1440,
-   "framerate": 30,
-   "bitrate": 2492924,
-   "codec": "avc1.640020"
+   "framerate": 60,
+   "bitrate": 3103290,
+   "codec": "avc1.640028"
   },
   "compatibilityVideo": {
    "file": "mobile.mp4",
    "width": 720,
    "height": 1440,
-   "framerate": 30,
-   "bitrate": 2492924,
-   "codec": "avc1.640020",
+   "framerate": 60,
+   "bitrate": 3103290,
+   "codec": "avc1.640028",
    "linearResolution": 1,
    "verticalResolution": 1
-  }
+  },
+  "quality": "interpolated-60fps"
  },
  "fieldMobile": {
   "base": "assets/workday-no-push-mower-v1",
