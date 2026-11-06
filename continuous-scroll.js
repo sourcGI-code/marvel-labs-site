@@ -183,7 +183,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     if(step===1||!['playing','loading'].includes(playback.inspect().mode))play(chapter);
     releaseSoon();
   }
-  const inField=target=>!!target.closest?.('input,textarea,select,[contenteditable="true"],dialog[open]');
+  const inField=target=>!!target.closest?.('input,textarea,select,[contenteditable="true"],dialog[open],#mobile-menu,.menu-button')||!!document.querySelector('#mobile-menu:not([hidden])');
   function scroller(target,direction) {
     const active=current()?.section;
     for(let node=target;node&&node!==body;node=node.parentElement){

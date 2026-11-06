@@ -500,7 +500,12 @@ async function start(sec) {
     if (!meta) return;
     const r = renderer.domElement.getBoundingClientRect();
     if (drag && !fromPage && mode === 'viewer' && T[focus]) { // touch / pen, or dragging while locked: turn it by hand
-      az += (e.clientX - drag.x) * .008; el = Math.min(1.42, Math.max(.04, el + (e.clientY - drag.y) * .006));
+      if(drag.horizontal&&!drag.moved){
+        const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
+        if(Math.abs(dx)<8||Math.abs(dy)>Math.abs(dx))return;
+      }
+      az += (e.clientX - drag.x) * .008;
+      if(!drag.horizontal)el = Math.min(1.42, Math.max(.04, el + (e.clientY - drag.y) * .006));
       drag.x = e.clientX; drag.y = e.clientY; drag.moved = true; orbitView(); return;
     }
     if (e.pointerType !== 'mouse') return;
@@ -521,7 +526,7 @@ async function start(sec) {
   // 10-30 owner: everywhere, on every page). Phones keep the drag
   window.addEventListener('pointermove', e => { if (e.target !== renderer.domElement && !matchMedia('(max-width:860px)').matches) onMove(e, true); });
   renderer.domElement.addEventListener('pointerdown', e => {
-    if (mode === 'viewer' && (e.pointerType !== 'mouse' || locked)) drag = {x: e.clientX, y: e.clientY, moved: false};
+    if (mode === 'viewer' && (e.pointerType !== 'mouse' || locked)) drag = {x: e.clientX, y: e.clientY, moved: false, horizontal:e.pointerType==='touch'&&matchMedia('(max-width:860px)').matches};
     renderer.domElement.setPointerCapture?.(e.pointerId);
   });
   renderer.domElement.addEventListener('pointerup', e => {

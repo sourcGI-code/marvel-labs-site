@@ -1,6 +1,6 @@
 import {createFleetLabelMotion} from './fleet-label-motion.js?v=2-nodip';
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=owner-package-v2';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=mobile-layout-v1';
 import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.js?v=owner-package-v2';
 import {loadFilmSources} from './film-sources-hqworld4.js?v=owner-package-v2';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';

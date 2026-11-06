@@ -66,13 +66,15 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  function place(w,h,time){
   let window=frameWindow;
   const pin=host.closest('.pin');
-  if(framing.fit==='contain'&&pin){
+  const phonePortrait=w<=1100&&h>w;
+  const viewportFraming=name==='field'&&w>h&&w<=1000&&h<=540?{...framing,fit:'contain'}:framing;
+  if(viewportFraming.fit==='contain'&&pin){
    pin.dataset.filmFit='contain';
    const origin=host.getBoundingClientRect().top,copy=pin.querySelector('.tour-copy');
    let top=Math.max(100,(copy?.getBoundingClientRect().bottom||origin)-origin+18),bottom=h-80;
    const summary=pin.querySelector('#vision-summary');
    if(summary&&!summary.hidden){
-    bottom=Math.min(bottom,summary.getBoundingClientRect().top-origin-14);
+    bottom=phonePortrait?bottom-summary.getBoundingClientRect().height-16:Math.min(bottom,summary.getBoundingClientRect().top-origin-14);
     const feed=pin.querySelector('.vision-feed');if(feed)top=Math.max(top,feed.getBoundingClientRect().bottom-origin+14);
    }
    if(w>h&&h<=540){
@@ -82,9 +84,15 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
     const left=Math.min(w*.52,(box?.right??w*.4)-hostBox.left+18);
     const header=document.querySelector('.masthead')?.getBoundingClientRect();
     window={x0:left,y0:Math.max(72,(header?.bottom??60)-origin+12),x1:w-16,y1:h-46};
-   }else window={x0:0,y0:top,x1:w,y1:Math.max(top+1,bottom)};
+   }else {
+    // On phones keep the complete frame immediately below the text. The
+    // yard labels share this placement, so their measurements stay attached.
+    if(phonePortrait)bottom=Math.min(bottom,top+w*metadata.height/metadata.width);
+    window={x0:0,y0:top,x1:w,y1:Math.max(top+1,bottom)};
+   }
   }else if(pin)delete pin.dataset.filmFit;
-  const f=placeFilm(w,h,metadata.width,metadata.height,framing,time,window);lastPlace=f;
+  const f=placeFilm(w,h,metadata.width,metadata.height,viewportFraming,time,window);lastPlace=f;
+  if(phonePortrait&&pin&&viewportFraming.fit==='contain')pin.style.setProperty('--mobile-film-bottom',`${f.dy+metadata.height*f.scale}px`);
   const key=[w,h,f.cover,f.zoom,f.dx,f.dy].map(v=>v.toFixed(3)).join();
   if(key!==placed){placed=key;const width=`${metadata.width*f.cover}px`,height=`${metadata.height*f.cover}px`,transform=`translate3d(${f.dx}px,${f.dy}px,0) scale(${f.zoom})`;
    for(const el of [video,still])Object.assign(el.style,f.media?{left:f.media.left+'px',top:f.media.top+'px',right:'auto',bottom:'auto',width:f.media.width+'px',height:f.media.height+'px',transformOrigin:'0 0',transform:'none'}:{left:'0',top:'0',right:'auto',bottom:'auto',width,height,transformOrigin:'0 0',transform});

@@ -13,6 +13,7 @@
 <link rel="stylesheet" href="reserve-page.css?v=reserve-touch-v2"><link rel="stylesheet" href="reserve-variants.css?v=preorder-demo-v1">
 <link rel="stylesheet" href="reserve-demo.css?v=confirmation-lock-v2">
 <link rel="stylesheet" href="responsive-layout.css?v=restore-intro-type-v3">
+<link rel="stylesheet" href="mobile-layout.css?v=mobile-layout-v1">
 </head>
 <body class="reserve-page" data-trailer-size="20" data-variant="c">
 <header class="masthead">
@@ -28,7 +29,7 @@
   <p class="rv-loading" aria-hidden="true">Bringing the trailers out</p>
   <div class="rv-fade"></div>
   <button type="button" class="rs-back">← See both trailers</button>
-  <div class="rs-3d-bar"><span class="rs-3d-hint"><span class="in-overview"><span class="hover">Hover a trailer</span><span class="tap">Tap a trailer</span></span><span class="in-viewer"><span class="hover">Move to look around · Click to lock</span><span class="tap">Drag to turn it</span></span></span><button type="button" class="rs-lock">Locked · click to unlock</button><button type="button" class="rs-ramp-btn">Open the ramp</button></div>
+  <div class="rs-3d-bar"><span class="rs-3d-hint"><span class="in-overview"><span class="hover">Hover a trailer</span><span class="tap">Tap a trailer</span></span><span class="in-viewer"><span class="hover">Move to look around · Click to lock</span><span class="tap">Swipe sideways to rotate</span></span></span><button type="button" class="rs-lock">Locked · click to unlock</button><button type="button" class="rs-ramp-btn">Open the ramp</button></div>
   <div class="rv-metrics" aria-live="polite"><p class="rv-metrics-size">20 ft</p><dl><div><dt>Trailer width</dt><dd data-k="width">8.5 ft</dd></div><div><dt>Enclosed factory</dt><dd data-k="factory">6 ft 2½ in</dd></div><div><dt>Rear cargo length</dt><dd data-k="cargo">13 ft 9½ in</dd></div></dl></div>
  </div>
  <form class="rv-rail" novalidate aria-label="Trailer reservation preview">
@@ -114,6 +115,6 @@ document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidd
 </script>
 <script src="reserve-config.js?v=reservation-preview-v2"></script>
 <script type="module" src="reserve-page.js?v=mvp-polish-20261104"></script>
-<script type="module" src="reserve-3d.js?v=owner-approved-all-scenes-v3"></script>
+<script type="module" src="reserve-3d.js?v=mobile-layout-v1"></script>
 <script type="module" src="editor-runtime.js?v=owner-package-v2"></script>
 </body></html>
