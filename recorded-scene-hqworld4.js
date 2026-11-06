@@ -95,7 +95,13 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   if(phonePortrait&&pin&&viewportFraming.fit==='contain')pin.style.setProperty('--mobile-film-bottom',`${f.dy+metadata.height*f.scale}px`);
   const key=[w,h,f.cover,f.zoom,f.dx,f.dy].map(v=>v.toFixed(3)).join();
   if(key!==placed){placed=key;const width=`${metadata.width*f.cover}px`,height=`${metadata.height*f.cover}px`,transform=`translate3d(${f.dx}px,${f.dy}px,0) scale(${f.zoom})`;
-   for(const el of [video,still])Object.assign(el.style,f.media?{left:f.media.left+'px',top:f.media.top+'px',right:'auto',bottom:'auto',width:f.media.width+'px',height:f.media.height+'px',transformOrigin:'0 0',transform:'none'}:{left:'0',top:'0',right:'auto',bottom:'auto',width,height,transformOrigin:'0 0',transform});
+   // Lay out phone media at its final pixel size. An oversized still can be
+   // clamped by the global image max-width before it is scaled, leaving a
+   // narrow strip while overlays span the full frame (seen in WebKit fallback).
+   // Video, stills and overlays now use the same final dimensions.
+   const media=f.media||(viewportFraming.fit==='contain'&&(phonePortrait||(w<=1000&&h<=540))?
+    {left:f.dx,top:f.dy,width:metadata.width*f.scale,height:metadata.height*f.scale}:null);
+   for(const el of [video,still])Object.assign(el.style,media?{left:media.left+'px',top:media.top+'px',right:'auto',bottom:'auto',width:media.width+'px',height:media.height+'px',transformOrigin:'0 0',transform:'none'}:{left:'0',top:'0',right:'auto',bottom:'auto',width,height,transformOrigin:'0 0',transform});
    // Zoomed out below cover (film-framing.js minZoom): feather the film's edges into the page, in proportion.
    const feather=f.feather===false?0:Math.max(0,Math.min(14,(1-f.zoom)*70));host.style.setProperty('--film-feather',feather.toFixed(2)+'%');host.classList.toggle('film-contained',f.feather!==false&&f.zoom<.999);}
   return f;

@@ -7,7 +7,8 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   const params=new URLSearchParams(location.search);
   if(params.has('freescroll')||params.has('edit'))return null;
   const reduced=matchMedia('(prefers-reduced-motion: reduce)'),body=document.body;
-  const QUIET_MS=350,RELEASE_MS=220,SWIPE_PX=28,PHASE_DISTANCE=80,PHASE_MS=80;
+  const touchFirst=matchMedia('(hover:none) and (pointer:coarse)');
+  const QUIET_MS=350,RELEASE_MS=220,PHASE_DISTANCE=80,PHASE_MS=80;
   const SCROLL_SCALE=.95,SECONDS_PER_NOTCH=2*SCROLL_SCALE,BASE_TRAVEL_RATE=8*SCROLL_SCALE,MAX_INTENSITY=7;
   let step=0,rate=1,wheel=null,touch=null,heldKey=null,handoff=null;
   let pending=0,releaseTimer=0,epoch=0,scrubbing=false,scrollFrame=0,follow=null;
@@ -128,6 +129,9 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     mark();scrollFrame=requestAnimationFrame(flush);
   }
   function fastScroll(px,source) {
+    // One touch gesture may enter one new section; its trailing motion must
+    // not immediately skip the section that just came into view.
+    if(source?.touch&&source.crossed){releaseSoon();return;}
     // The section slide already absorbs its gesture tail. Count that input
     // while it is moving so the new section does not absorb the same tail again.
     if(handoff){crossing(source,px);releaseSoon();return;}
@@ -152,7 +156,7 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
     const input=Math.max(-240,Math.min(240,px));
     intensity=Math.min(MAX_INTENSITY,intensity+Math.abs(input)/180);
     const seconds=input/120*SECONDS_PER_NOTCH*intensity;
-    const lead=Math.max(2,intensity*1.25)*SCROLL_SCALE;
+    const lead=source?.touch?Math.max(8,follow.clock.total*.22):Math.max(2,intensity*1.25)*SCROLL_SCALE;
     // Reversing cancels any unconsumed movement immediately.
     if(Math.sign(follow.target-follow.position)!==direction)follow.target=follow.position;
     follow.target=Math.max(0,Math.min(follow.clock.total,
@@ -227,23 +231,41 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   },{passive:false});
   addEventListener('touchstart',event=>{
     if(event.touches.length!==1){touch=null;return;}
-    const t=event.touches[0];touch={x:t.clientX,y:t.clientY,lastY:t.clientY,used:false,native:null,crossed:false};
+    const t=event.touches[0];touch={x:t.clientX,y:t.clientY,lastY:t.clientY,used:false,native:null,axis:null,crossed:false,touch:true};
   },{passive:true});
   addEventListener('touchmove',event=>{
     if(!touch||event.touches.length!==1||reduced.matches||inField(event.target))return;
     const t=event.touches[0],dy=touch.y-t.clientY,dx=touch.x-t.clientX,delta=touch.lastY-t.clientY;
     touch.lastY=t.clientY;
-    if(Math.abs(dx)>Math.abs(dy))return;
-    if(Math.abs(dy)<6)return;
+    if(!touch.axis){
+      if(Math.max(Math.abs(dx),Math.abs(dy))<6)return;
+      touch.axis=Math.abs(dx)>Math.abs(dy)?'x':'y';
+    }
+    if(touch.axis==='x')return;
     const direction=Math.sign(delta||dy);
-    if(scroller(event.target,direction)){touch.native=true;return;}
-    if(touch.native){touch.native=false;touch.used=false;touch.y=t.clientY+delta;}
+    // Safari commits a gesture to a native scrolling panel. Never steal it
+    // halfway through: reaching its edge is followed by a new page swipe.
+    if(touch.native===null)touch.native=!!scroller(event.target,direction);
+    if(touch.native||!event.cancelable)return;
     event.preventDefault();
-    const travel=touch.y-t.clientY;
-    if(!touch.used&&Math.abs(travel)>=SWIPE_PX){touch.used=true;touch.phaseAt=performance.now();gesture(Math.sign(travel),travel,touch);}
-    else if(touch.used&&delta)continueGesture(touch,delta);
+    // Touch controls the film immediately; the three-step wheel behavior is
+    // only for a mouse/trackpad. A long swipe covers more of the film.
+    const travel=touch.used?delta:dy;
+    touch.used=true;
+    if(travel)fastScroll(travel*1.5,touch);
   },{passive:false});
-  function touchEnd(){const used=touch?.used;touch=null;if(used)release();}
+  function touchEnd(){
+    const used=touch?.used;touch=null;
+    if(!used)return;
+    // Finish at the finger's requested frame even when a phone decoder could
+    // not present every intermediate seek. Then resume at normal speed.
+    if(scrubbing&&follow&&current()?.key===follow.chapter.key){
+      cancelAnimationFrame(scrollFrame);scrollFrame=0;
+      const p=follow.clock.progress(follow.target);
+      stage.seekProgress(follow.chapter.section,p);getActive()?.view?.setPlaybackProgress?.(p);
+    }
+    release();
+  }
   addEventListener('touchend',touchEnd,{passive:true});
   addEventListener('touchcancel',touchEnd,{passive:true});
   const keyDirection=event=>['ArrowUp','PageUp'].includes(event.code)||(event.code==='Space'&&event.shiftKey)?-1:
@@ -266,7 +288,14 @@ export function installBeatScroll({stage,playback,getActive,readProgress}) {
   document.addEventListener('motion:playback',event=>{if(event.detail?.mode==='playing')playback.setRate(rate);});
   document.addEventListener('visibilitychange',()=>{if(document.hidden){touch=null;heldKey=null;halt();}});
   reduced.addEventListener('change',()=>{touch=null;heldKey=null;halt();});
-  addEventListener('resize',()=>{touch=null;heldKey=null;halt();});
+  let viewportWidth=innerWidth;
+  addEventListener('resize',()=>{
+    const widthChanged=Math.abs(innerWidth-viewportWidth)>1;viewportWidth=innerWidth;
+    // Safari's address bar changes height during a swipe. It is not a new
+    // screen orientation and must not cancel touch input or stop the film.
+    if(touchFirst.matches&&!widthChanged)return;
+    touch=null;heldKey=null;halt();
+  });
   const api={request:()=>gesture(1),back:()=>gesture(-1),chapters,current,next:()=>nextFrom(current(),1),
     get step(){return step;},get rate(){return rate;},get fast(){return step>=3;},
     get scrollSpeed(){return scrubbing?BASE_TRAVEL_RATE*intensity:rate;}};

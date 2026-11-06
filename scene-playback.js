@@ -140,7 +140,9 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  addEventListener('pointerdown',event=>{if(event.clientX>=document.documentElement.clientWidth)interrupt();});
  document.addEventListener('stage:navigate',interrupt);
  document.addEventListener('visibilitychange',()=>{if(document.hidden)interrupt();});
- addEventListener('resize',interrupt);reduced.addEventListener('change',()=>{interrupt();sync();});
+ let viewportWidth=innerWidth;
+ addEventListener('resize',()=>{const widthChanged=Math.abs(innerWidth-viewportWidth)>1;viewportWidth=innerWidth;if(!touchFirst.matches||widthChanged)interrupt();});
+ reduced.addEventListener('change',()=>{interrupt();sync();});
  sync();return {pause,toggle,sync,setRate(boost){
   rateBoost=Math.max(.25,Math.min(MAX_RATE,boost||1));
   if(segment&&mode==='playing'){const r=playRate(baseRate,rateBoost);if(Math.abs(segment.video.playbackRate-r)>=.02||(rateBoost===1&&segment.video.playbackRate!==r))segment.video.playbackRate=r;}

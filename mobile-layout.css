@@ -1,4 +1,11 @@
 /* Phone presentation. The approved desktop composition stays in the existing sheets. */
+@media (hover:none) and (pointer:coarse) and (max-width:1100px) {
+ html {-webkit-text-size-adjust:100%;text-size-adjust:100%}
+ /* Follow Safari's visible viewport instead of leaving a short fixed stage
+    behind when its browser bars collapse. The stage uses the same ruler. */
+ html.immersive body[data-page-flow-preview] .stage-scene {height:100dvh!important}
+ html.immersive body[data-page-flow-preview]>.scene-tail {height:100dvh!important}
+}
 @media (orientation:portrait) and (max-width:1100px) {
  body[data-page-flow-preview] {--gutter:22px}
  .masthead .menu-button {min-width:76px;min-height:44px;font-size:13px}
