@@ -43,6 +43,6 @@ export function loadFilmSources(){
 }
 // Portrait devices keep the original mobile movie. Portrait desktop windows use
 // that same existing asset; landscape proofs do not authorize a portrait render.
-export const introFilmKind=()=>innerWidth<=760||innerHeight>=innerWidth?'mobile':'desktop';
+export const introFilmKind=()=>innerHeight>=innerWidth?'mobile':'desktop';
 export function sceneFilmSource(name,kind){const entry=sources[name]??fallback[name];return kind==='desktop'&&entry.desktop?entry.desktop:entry;}
 async function chooseDesktopFilms(){if(introFilmKind()==='mobile')return;for(const name of ['opening','cargo']){const entry=sources[name]?.desktop;if(entry){entry.videoFile='desktop.mp4';entry.quality=entry.quality||'draft';if(document.body)document.body.dataset[name+'FilmQuality']=entry.quality;}}}

@@ -1,6 +1,6 @@
 // Keep loading and reduced-motion images on the same completed trailer films.
 export function syncTrailerPosters(sources) {
-  const portrait=innerWidth<=760||innerHeight>=innerWidth;
+  const portrait=innerHeight>=innerWidth;
   const entry=(name,kind)=>kind==='desktop'&&sources[name]?.desktop?sources[name].desktop:sources[name];
   const poster=(item,kind)=>`${item.base}/${kind}-poster.webp?v=${item.revision}`;
   const set=(selector,value,attribute='src')=>document.querySelector(selector)?.setAttribute(attribute,value);

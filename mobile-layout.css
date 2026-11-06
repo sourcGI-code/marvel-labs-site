@@ -1,5 +1,5 @@
 /* Phone presentation. The approved desktop composition stays in the existing sheets. */
-@media (max-width:760px), (orientation:portrait) and (max-width:1100px) {
+@media (orientation:portrait) and (max-width:1100px) {
  body[data-page-flow-preview] {--gutter:22px}
  .masthead .menu-button {min-width:76px;min-height:44px;font-size:13px}
  #mobile-menu {top:76px;max-height:calc(100svh - 92px);overflow-y:auto;overscroll-behavior:contain;padding:12px}
@@ -54,7 +54,7 @@
  body[data-page-flow-preview] #app .crew-open-app {display:inline-flex;align-items:center;gap:12px;min-height:44px;font-size:14px;margin:0}
  body[data-page-flow-preview] #app .crew-phone-caption {font-size:11px;bottom:-20px}
 }
-@media (max-width:450px) and (max-height:720px) {
+@media (orientation:portrait) and (max-width:450px) and (max-height:720px) {
  body[data-page-flow-preview] #top .platform-pin #platform-story {top:88px}
  body[data-page-flow-preview] #top .platform-pin #hero-description {font-size:13px;line-height:1.4;margin-top:10px}
  body[data-page-flow-preview] #top .platform-pin .offer-actions {margin-top:10px;gap:8px}
@@ -74,6 +74,13 @@
  html.immersive body[data-page-flow-preview] #app.crew-app {grid-template-rows:minmax(0,1fr)}
  body[data-page-flow-preview] #app .crew-phone-stage {min-height:0}
  body[data-page-flow-preview] #inside .official-tour .tour-copy {top:100px!important}
+}
+/* A rotated small phone uses the existing wide film, with the same projection
+   as a larger landscape screen. No portrait movie is stretched behind the text. */
+@media (orientation:landscape) and (max-width:760px) {
+ body[data-page-flow-preview][data-experience="official"] .platform-pin #hero-visual {--true-native-width:min(100vw,160svh)}
+ body[data-page-flow-preview][data-experience="official"] .platform-pin :is(.opening-film,.arrival-poster,.scene-fallback img) {position:absolute;inset:auto!important;left:calc(50% - var(--true-native-width)*1.01875)!important;top:calc(50% - var(--true-native-width)*.4)!important;width:calc(var(--true-native-width)*1.8)!important;height:calc(var(--true-native-width)*.8)!important;max-height:none!important}
+ body[data-page-flow-preview][data-experience="official"] .platform-pin :is(.opening-film,.arrival-poster img) {object-fit:contain!important;object-position:50% 50%!important}
 }
 @media (max-width:860px) {
  body.reserve-page .masthead .desktop-nav {display:none}
