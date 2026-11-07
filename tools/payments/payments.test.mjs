@@ -128,6 +128,7 @@ async function fixture(settings = config(), page = 'reserve.html') {
 test('real page selects each product, requires consent, and never fabricates payment or collects contact details', async () => {
   const f = await fixture();
   assert.equal(f.sec.dataset.orderStep, 'configure', 'success URL parameters and old demo records cannot establish payment');
+  assert.equal(window.sessionStorage.getItem('marvel-reservation-demo-v1'), null, 'old demo receipts are cleared');
   assert.equal(f.form.querySelector('[name="email"]'), null);
   assert.equal(f.form.querySelector('[name="payment"]'), null);
   assert.equal(f.form.querySelector('[data-panel="complete"]'), null);
@@ -156,7 +157,29 @@ test('unconfigured checkout cannot submit or fall back to a demo success screen'
   assert.equal(f.submit(), false, 'even an Enter submission is prevented');
   assert.equal(f.destinations.length, 0);
   assert.equal(f.form.querySelector('[data-panel="complete"]'), null);
+  assert.equal(f.form.querySelector('.rd-policies').hidden, true, 'unavailable checkout must not link to an unpublished policy');
+  assert.equal(f.form.querySelector('.rd-demo').textContent, 'RESERVATIONS · CHECKOUT NOT OPEN');
   f.dom.window.close();
+});
+
+test('a stale demo config cannot enable a simulated production reservation', async () => {
+  const f = await fixture({mode: 'demo', deposit: 100, currency: 'USD'});
+  assert.equal(f.form.querySelector('[type="submit"]').disabled, true);
+  assert.equal(window.sessionStorage.getItem('marvel-reservation-demo-v1'), null);
+  assert.equal(f.form.querySelector('[data-panel="complete"]'), null);
+  assert.equal(f.submit(), false);
+  f.dom.window.close();
+  const script = await readFile(new URL('../../reserve-page.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(script, /installReservationDemo|reserve-demo\.js/);
+});
+
+test('production HTML contains no demo success, simulated cards, email preview or cancellation controls', async () => {
+  for (const page of ['reserve.html', 'reserve-studio.html', 'reserve-light-outdoor.html', 'reserve-light-white.html', 'reserve-light-reveal.html', 'trailer-16.html', 'trailer-20.html']) {
+    const html = await readFile(new URL(`../../${page}`, import.meta.url), 'utf8');
+    assert.doesNotMatch(html, /Your demo reservation|Demo Visa|SIMULATED|View confirmation email|Cancel &amp; preview refund/, page);
+    assert.match(html, /class="rv-submit" disabled/, page);
+    assert.match(html, /reserve-page\.js\?v=production-checkout-v2/, page);
+  }
 });
 
 test('all seven reservation pages support the live checkout flow with no demo controls', async () => {

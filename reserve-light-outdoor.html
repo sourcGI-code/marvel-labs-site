@@ -30,12 +30,12 @@
   <div class="rs-3d-bar"><span class="rs-3d-hint"><span class="in-overview"><span class="hover">Hover a trailer</span><span class="tap">Tap a trailer</span></span><span class="in-viewer"><span class="hover">Move to look around · Click to lock</span><span class="tap">Drag to turn it</span></span></span><button type="button" class="rs-lock">Locked · click to unlock</button><button type="button" class="rs-ramp-btn">Open the ramp</button></div>
   <div class="rv-metrics" aria-live="polite"><p class="rv-metrics-size">20 ft</p><dl><div><dt>Trailer width</dt><dd data-k="width">8.5 ft</dd></div><div><dt>Enclosed factory</dt><dd data-k="factory">6 ft 2½ in</dd></div><div><dt>Rear cargo length</dt><dd data-k="cargo">13 ft 9½ in</dd></div></dl></div>
  </div>
- <form class="rv-rail" novalidate aria-label="Trailer reservation preview">
-  <p class="rd-demo"><span></span> PREORDER PREVIEW · NO CHARGE</p>
+ <form class="rv-rail" novalidate aria-label="Trailer reservation">
+  <p class="rd-demo"><span></span> RESERVATIONS · CHECKOUT NOT OPEN</p>
   <p class="eyebrow">YOUR NEXT CHAPTER</p>
   <h1 id="rv-title" tabindex="-1">Reserve your<br><em>trailer.</em></h1>
   <p class="rv-when">Target delivery · Spring 2027</p>
-  <ol class="rd-steps" aria-label="Reservation steps"><li data-step="configure" aria-current="step"><span>01</span> Trailer</li><li data-step="details"><span>02</span> Details</li><li data-step="review"><span>03</span> Review</li></ol>
+  <ol class="rd-steps" aria-label="Reservation steps"><li data-step="configure" aria-current="step"><span>01</span> Trailer</li><li data-step="review"><span>02</span> Review</li><li data-step="payment"><span>03</span> Payment</li></ol>
   <div data-panel="configure">
   <fieldset class="rv-group"><legend>Size</legend><div class="rv-cards">
    <label class="rv-card"><input type="radio" name="size" value="20" checked><span><b>20 ft</b><small>8.5 ft wide · 13 ft 9½ in rear cargo<br>Room for more mowers.</small></span><span class="rv-price">$49,999.99<small>or $100 now</small></span></label>
@@ -50,56 +50,20 @@
   <p class="rv-summary" aria-live="polite"></p>
   <p class="rd-small">Choose your footprint now. Final configuration, delivery and plan terms are confirmed before production.</p>
   </div>
-  <div data-panel="details" hidden>
-   <div class="rd-panel-head"><h2>Your details.</h2><button type="button" class="rd-text-button" data-action="fill-demo">Use demo details ↗</button></div>
-   <p class="rd-small">Try the full experience with example details. Nothing is sent to Marvel Labs.</p>
-   <div class="rv-fields">
-    <label class="rv-field"><span>Full name</span><input name="name" autocomplete="off" placeholder="Full name" maxlength="100" required></label>
-    <label class="rv-field"><span>Email</span><input name="email" type="email" autocomplete="off" placeholder="you@company.com" maxlength="254" required></label>
-    <label class="rv-field"><span>Phone</span><input name="phone" type="tel" autocomplete="off" placeholder="Phone number" maxlength="30" required></label>
-    <label class="rv-field"><span>Company <small>optional</small></span><input name="company" autocomplete="off" placeholder="Your business" maxlength="120"></label>
-    <label class="rv-field"><span>Service area <small>optional</small></span><input name="area" autocomplete="off" placeholder="City and state" maxlength="120"></label>
-   </div>
-  </div>
   <div data-panel="review" hidden>
-   <div class="rd-panel-head"><h2>Make it yours.</h2><button type="button" class="rd-text-button" data-action="edit-trailer">Edit trailer</button></div>
+   <div class="rd-panel-head"><h2>Review your reservation.</h2><button type="button" class="rd-text-button" data-action="edit-trailer">Edit trailer</button></div>
    <dl class="rd-order" data-order></dl>
-   <div class="rd-panel-head"><h3>Your contact</h3><button type="button" class="rd-text-button" data-action="edit-details">Edit</button></div><p class="rd-contact" data-contact></p>
-   <fieldset class="rd-payment"><legend>Payment method <span>SIMULATED</span></legend>
-    <div class="rd-payment-options"><label><input type="radio" name="payment" value="card" checked><span>Card</span></label><label><input type="radio" name="payment" value="apple"><span>Apple Pay</span></label><label><input type="radio" name="payment" value="google"><span>Google Pay</span></label></div>
-    <p class="rd-payment-detail">Demo Visa ···· 4242</p>
-    <p class="rd-small">This checkout is a preview. No card details are collected and no wallet is opened.</p>
-   </fieldset>
-   <div class="rv-due"><div><span>Due today</span><small>Fully refundable reservation deposit</small></div><b>$100</b></div>
-   <label class="rd-consent"><input type="checkbox" name="consent" required><span>I’ve read the <a data-policy="agreement" href="reservation-agreement.html" target="_blank" rel="noopener">Reservation Agreement</a>, <a href="terms.html" target="_blank" rel="noopener">Terms of Use</a> and <a href="privacy.html" target="_blank" rel="noopener">Privacy Policy</a>. I understand this is a demo.</span></label>
-   <p class="rd-small">No further payment is authorized. Final pricing and the Buy or Lease agreement would be reviewed separately.</p>
-  </div>
-  <div data-panel="complete" hidden aria-live="polite">
-   <div class="rd-check" aria-hidden="true">✓</div><p class="rd-reference"></p><h2 class="rd-confirm-title">You’re on the list.</h2><p class="rd-confirm-copy">Your demo reservation is complete. No payment was taken and no real reservation was created.</p>
-   <dl class="rd-order" data-receipt></dl>
-   <ol class="rd-next"><li><span>01</span><div><b>Your configuration</b><small>Your selected trailer and plan are summarized above.</small></div></li><li><span>02</span><div><b>Before production</b><small>Review your equipment needs, final specification and written terms.</small></div></li><li><span>03</span><div><b>Delivery planning</b><small>Confirm timing and any remaining payment. No automatic balance charge.</small></div></li></ol>
-   <div class="rd-actions"><button type="button" class="rd-secondary" data-action="email-preview">View confirmation email</button><button type="button" class="rd-secondary" data-action="print">Save confirmation ↗</button><button type="button" class="rd-secondary" data-action="manage">Manage reservation</button></div>
-   <p class="rd-small rd-email-note" role="status">Your confirmation email is available to preview. Nothing has been sent.</p>
-  </div>
-  <div data-panel="manage" hidden>
-   <h2>Your reservation.</h2><p class="rd-reference"></p><dl class="rd-order" data-manage></dl>
-   <div class="rd-actions"><button type="button" class="rd-secondary" data-action="edit-trailer">Change configuration</button><a class="rd-secondary" data-policy="agreement" href="reservation-agreement.html" target="_blank" rel="noopener">View agreement ↗</a><button type="button" class="rd-secondary rd-cancel" data-action="cancel">Cancel &amp; refund $100</button></div>
-   <p class="rd-small">Cancellation is simulated. The full $100 deposit would be refundable; no money moves in this demo.</p>
-   <button type="button" class="rd-text-button" data-action="confirmation">← Back to confirmation</button>
+   <fieldset class="rd-payment"><legend>Secure checkout</legend><p class="rd-small">Contact and payment details are entered on Stripe after reviewing your selection.</p></fieldset>
+   <div class="rv-due"><div><span>Due at checkout</span><small>Fully refundable reservation deposit</small></div><b>$100 USD</b></div>
+   <label class="rd-consent"><input type="checkbox" name="consent" required><span>Read and accept the reservation terms before continuing to payment.</span></label>
+   <p class="rd-small">Final pricing, specifications and the Buy or Lease agreement are confirmed separately.</p>
   </div>
   <p class="rd-error" role="alert" hidden></p>
-  <div class="rd-controls"><button type="button" class="rd-back" data-action="back" hidden>← Back</button><button type="submit" class="rv-submit">Continue <span>↗</span></button></div>
-  <p class="rv-pay-note">Preview the complete reservation. No charge.</p>
-  <nav class="rd-policies" aria-label="Reservation information"><a data-policy="agreement" href="reservation-agreement.html" target="_blank" rel="noopener">Agreement</a><a href="reservation-refunds.html" target="_blank" rel="noopener">Refunds</a><a href="terms.html" target="_blank" rel="noopener">Terms</a><a href="privacy.html" target="_blank" rel="noopener">Privacy</a><a href="reservation-help.html" target="_blank" rel="noopener">Help</a></nav>
-  <noscript><p>Enable JavaScript to try the reservation demo. No payments are accepted on this page.</p></noscript>
+  <div class="rd-controls"><button type="button" class="rd-back" data-action="back" hidden>← Back</button><button type="submit" class="rv-submit" disabled>Checkout not available yet</button></div>
+  <p class="rv-pay-note">Secure checkout is not open yet. No payment has been collected.</p>
+  <nav class="rd-policies" aria-label="Reservation information" hidden></nav>
+  <noscript><p>Enable JavaScript to view checkout availability. No reservation is created until Stripe confirms successful payment.</p></noscript>
  </form>
- <dialog class="rd-dialog" aria-labelledby="cancel-title"><form method="dialog"><p class="rd-demo">RESERVATION PREVIEW</p><h2 id="cancel-title">Cancel your reservation?</h2><p>The demo will mark your reservation cancelled and show the full $100 refund. No real payment or refund will occur.</p><button value="keep" class="rd-secondary" autofocus>Keep my reservation</button><button value="refund" class="rd-secondary rd-cancel">Cancel &amp; preview refund</button></form></dialog>
- <dialog class="rd-email-dialog" aria-labelledby="email-preview-title">
-  <header class="rd-email-header"><div><p>MESSAGE PREVIEW · NOT SENT</p><h2 id="email-preview-title">Your confirmation email.</h2></div><button type="button" data-email-close aria-label="Close email preview">×</button></header>
-  <dl class="rd-email-meta"><div><dt>To</dt><dd data-email-to></dd></div><div><dt>Subject</dt><dd data-email-subject></dd></div></dl>
-  <iframe title="Marvel Labs confirmation email" sandbox="allow-popups allow-popups-to-escape-sandbox"></iframe>
-  <footer><span>Demo only. No email has been sent.</span><button type="button" data-email-download>Download email draft ↗</button></footer>
- </dialog>
 </section>
 </main>
 <footer class="site-footer"><div class="footer-meta"><span>© 2026 MARVEL LABS INC.</span><a href="index.html">Autonomous Microfactories ↗</a><a href="privacy.html">Privacy</a></div></footer>
@@ -111,8 +75,8 @@ menu.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { close(); toggle.focus(); } });
 
 </script>
-<script src="reserve-config.js?v=reservation-preview-v2"></script>
-<script type="module" src="reserve-page.js?v=mvp-polish-20261104"></script>
+<script src="reserve-config.js?v=production-checkout-v2"></script>
+<script type="module" src="reserve-page.js?v=production-checkout-v2"></script>
 <script type="module" src="reserve-3d-light.js?v=mvp-polish-20261104"></script>
 <script type="module" src="editor-runtime.js?v=owner-package-v2"></script>
 <nav aria-label="Lighting setups" style="position:fixed;left:50%;top:16px;transform:translateX(-50%);z-index:60;display:flex;gap:6px;padding:6px;background:rgba(10,14,16,.88);border:1px solid #243034;border-radius:6px;font:12px/1 Lato,system-ui,sans-serif;letter-spacing:.08em;text-transform:uppercase"><span style="color:#a4adb0;padding:7px 4px 7px 8px">Lighting</span><a href="reserve-light-white.html" style="color:#f2f3f2;text-decoration:none;padding:7px 12px;border:1px solid #243034;border-radius:4px">White studio</a><a href="reserve-light-reveal.html" style="color:#f2f3f2;text-decoration:none;padding:7px 12px;border:1px solid #243034;border-radius:4px">Reveal</a><a href="reserve-light-outdoor.html" style="color:#4dd8e8;text-decoration:none;padding:7px 12px;border:1px solid #4dd8e8;border-radius:4px">Outdoor lot</a><a href="reserve.html?light=film" style="color:#f2f3f2;text-decoration:none;padding:7px 12px;border:1px solid #243034;border-radius:4px">Film studio</a><a href="reserve.html?light=old" style="color:#a4adb0;text-decoration:none;padding:7px 10px">Before</a></nav>

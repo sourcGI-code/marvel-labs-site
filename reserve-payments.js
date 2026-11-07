@@ -11,6 +11,8 @@ export function installReservationPayments({sec, form, selection, navigate = url
   const review = form.querySelector('[data-panel="review"]');
   const test = config?.mode === 'stripe-test';
   const showError = message => { error.textContent = message; error.hidden = false; };
+  // Old demo receipts are not payments and must never be restored in production.
+  try { window.sessionStorage.removeItem('marvel-reservation-demo-v1'); } catch { /* Storage may be disabled. */ }
   form.addEventListener('submit', event => event.preventDefault());
   form.setAttribute('aria-label', test ? 'Test trailer checkout' : 'Trailer reservation');
   let banner = form.querySelector('.rd-demo');
@@ -20,8 +22,8 @@ export function installReservationPayments({sec, form, selection, navigate = url
   for (const panel of form.querySelectorAll('[data-panel="details"], [data-panel="complete"], [data-panel="manage"]')) panel.remove();
   sec.querySelector('.rd-dialog')?.remove();
   sec.querySelector('.rd-email-dialog')?.remove();
-  review.querySelector('[data-contact]').remove();
-  review.querySelector('[data-action="edit-details"]').closest('.rd-panel-head').remove();
+  review.querySelector('[data-contact]')?.remove();
+  review.querySelector('[data-action="edit-details"]')?.closest('.rd-panel-head')?.remove();
   const payment = review.querySelector('.rd-payment');
   payment.replaceChildren();
   const legend = document.createElement('legend'); legend.textContent = 'Secure checkout';
@@ -74,12 +76,16 @@ export function installReservationPayments({sec, form, selection, navigate = url
     if (focus) { form.querySelector('#rv-title').focus({preventScroll: true}); form.scrollTop = 0; }
   }
   go('configure', false);
-  try { validatePaymentConfig(config); } catch (e) {
+  try { validatePaymentConfig(config); } catch {
     submit.disabled = true;
-    submit.textContent = 'Checkout unavailable';
-    showError(`${e.message} Please try again later.`);
+    submit.textContent = 'Checkout not available yet';
+    banner.textContent = 'RESERVATIONS · CHECKOUT NOT OPEN';
+    note.textContent = 'No payment has been collected and no reservation has been created.';
+    policies.hidden = true;
+    showError('Secure payment checkout is not available yet. Please check back soon.');
     return;
   }
+  policies.hidden = false;
   form.addEventListener('submit', event => {
     event.preventDefault();
     if (step === 'configure') { go('review'); return; }

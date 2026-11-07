@@ -7,10 +7,11 @@ records are hosted by Stripe. Marvel reviews paid reservations and processes
 refunds in the Stripe Dashboard. There is no automatic production allocation,
 website refund button, backend or webhook fulfillment in this integration.
 
-**Current state: demo.** No Stripe account, secret key or real payment link was
-available during implementation. `reserve-config.js` stays in demo mode until
-account setup and payment testing are completed. Never describe this as live
-before that work is done.
+**Current state: checkout unavailable.** No connected Stripe account, secret key
+or real payment link was available during implementation. Production no longer
+loads the demo reservation flow or restores old DEMO receipts. Checkout remains
+disabled until real links are connected. Never describe this as accepting live
+payments before account setup and checkout verification are complete.
 
 ## Account and customer settings
 
@@ -27,7 +28,7 @@ before that work is done.
    and the privacy URL to the same page with `#privacy`. Stripe requires a terms
    URL for the required terms checkbox. Generate the policy independently with
    `node prepare-policy.mjs --mode test --support-email OWNER_CONFIRMED_ADDRESS`
-   while checkout remains in demo mode.
+   while checkout remains unavailable.
 4. Enable customer emails for successful payments and refunds, and enable
    merchant notifications for successful payments. Complete receipt branding,
    customer support and statement descriptor settings in Stripe. Do not enable
@@ -87,7 +88,7 @@ cannot be replaced by the local unit tests.
 These tests never contact Stripe or send email. Browser QA uses a connected
 browser when available; no browser was connected during preparation.
 
-To stop new checkout, revert `reserve-config.js` to its demo configuration,
+To stop new checkout, set `reserve-config.js` to `mode: 'unavailable'`,
 bump the reservation page/config cache versions and publish. To also disable
 previously shared payment links, deactivate them in Stripe. Existing payments
 and refund obligations remain in Stripe; changing website mode does not erase
