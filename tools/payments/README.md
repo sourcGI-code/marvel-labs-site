@@ -1,14 +1,10 @@
 # Marvel reservation checkout
 
 The selected provider is **Shopify**, store **cr1bpi-qf.myshopify.com**, owned by
-jaxon@marvellabs.com. The public website stays on GitHub Pages at
-https://sourcgi-code.github.io/marvel-labs-site/.
-
-The owner now wants to prioritize working payments using an available temporary
-address. Use this existing website address and the existing Shopify store domain;
-custom DNS is not a prerequisite. The unlaunched `marvellabs.com` migration is
-preserved at commit `7a622fb` on `feat/stripe-payments-20261107`; do not publish its
-`CNAME` or root-path changes as part of this temporary-address checkout setup.
+jaxon@marvellabs.com. The owner explicitly selected **marvellabs.shop** for the
+trailer website on November 7, 2026. The site stays hosted on GitHub Pages and
+checkout uses **cr1bpi-qf.myshopify.com**. Do not change `marvellabs.com` or buy a
+new domain. The earlier `.com` migration is superseded.
 
 ## Confirmed state
 
@@ -28,6 +24,31 @@ preserved at commit `7a622fb` on `feat/stripe-payments-20261107`; do not publish
   continue product creation in a conversation where Shopify is available.
 - Shopify is the owner's correction to the earlier Stripe assumption. The legacy
   Stripe setup scripts in this directory are unused; do not run them for this store.
+
+## Website domain
+
+The `CNAME`, canonical/share URLs, sitemap, robots rules, 404 routing and embedded
+Crew asset paths target `https://marvellabs.shop/`. Register that custom domain in
+GitHub Pages before changing DNS, then publish this commit to `main`.
+
+The domain uses GoDaddy nameservers `ns21.domaincontrol.com` and
+`ns22.domaincontrol.com`. Before the switch, apex A records were `3.33.130.190`
+and `15.197.148.33`; `www` was a CNAME to `marvellabs.shop`. Public queries returned
+no apex AAAA, MX or TXT records. Preserve any additional records visible in the
+account; do not change nameservers or the domain's renewal/security settings.
+
+Replace the two old apex A records with these four A records:
+`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
+Set `www` CNAME to `sourcgi-code.github.io`. TTL 600 seconds or the provider default
+is suitable. No checkout subdomain is required to use the existing Shopify store.
+
+DNS changes require the owner's GoDaddy account; that admin access is not exposed
+in this conversation. Verify public DNS, the GitHub Pages deployment, HTTPS and
+the trailer homepage before reporting the domain live. Verify Crew assets and
+deep links. Later Crew exports must use `/crew` as the base path.
+
+The domain connection does not enable payments. Keep checkout disabled until the
+Shopify products, payment settings and notifications below are verified.
 
 ## Finish when Shopify admin access is available
 

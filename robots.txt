@@ -1,8 +1,8 @@
 User-agent: *
 Allow: /
-Disallow: /marvel-labs-site/services/
-Disallow: /marvel-labs-site/crew/
-Disallow: /marvel-labs-site/yesterday/
-Disallow: /marvel-labs-site/crew-chat.html
+Disallow: /services/
+Disallow: /crew/
+Disallow: /yesterday/
+Disallow: /crew-chat.html
 
-Sitemap: https://sourcgi-code.github.io/marvel-labs-site/sitemap.xml
+Sitemap: https://marvellabs.shop/sitemap.xml

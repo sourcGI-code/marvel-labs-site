@@ -3,12 +3,12 @@
 > A work trailer and connected platform designed to let landscaping crews carry their own equipment and turn suitable collected grass into manufactured products.
 
 ## Read and capture the website
-- [Main website](https://sourcgi-code.github.io/marvel-labs-site/): animated product presentation.
-- [Readable product overview](https://sourcgi-code.github.io/marvel-labs-site/overview.html): lightweight HTML summary with real product imagery, specifications, business model and links; no animation or JavaScript required.
-- [Full-page screenshot view](https://sourcgi-code.github.io/marvel-labs-site/?snapshot=1): the website in normal document flow with still images. Use this for full-page screenshots; the main animated experience uses scroll-driven scenes.
-- [Specifications](https://sourcgi-code.github.io/marvel-labs-site/#sizes): 16 ft and 20 ft options.
-- [Marvel Crew and website assistant](https://sourcgi-code.github.io/marvel-labs-site/#app): app showcase and an AI sales conversation when the backend is connected. The assistant is separate from the phone mockup.
-- [Reservation options](https://sourcgi-code.github.io/marvel-labs-site/reserve.html): current reservation flow; check the page's payment status and terms before describing it as a live checkout.
+- [Main website](https://marvellabs.shop/): animated product presentation.
+- [Readable product overview](https://marvellabs.shop/overview.html): lightweight HTML summary with real product imagery, specifications, business model and links; no animation or JavaScript required.
+- [Full-page screenshot view](https://marvellabs.shop/?snapshot=1): the website in normal document flow with still images. Use this for full-page screenshots; the main animated experience uses scroll-driven scenes.
+- [Specifications](https://marvellabs.shop/#sizes): 16 ft and 20 ft options.
+- [Marvel Crew and website assistant](https://marvellabs.shop/#app): app showcase and an AI sales conversation when the backend is connected. The assistant is separate from the phone mockup.
+- [Reservation options](https://marvellabs.shop/reserve.html): current reservation flow; check the page's payment status and terms before describing it as a live checkout.
 
 ## Grounding
 Crews bring their own mowers and tools. Marvel's intended offering includes the factory trailer, production inputs, packaging, shipping arrangements, product-buyer coordination and software. Product manufacturing is performed by the trailer factory, not the landscaping tools.
