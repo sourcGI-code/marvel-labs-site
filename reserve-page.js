@@ -1,4 +1,4 @@
-import {installReservationPayments} from './reserve-payments.js?v=production-checkout-v2';
+import {installReservationPayments} from './reserve-payments.js?v=shopify-checkout-v1';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 

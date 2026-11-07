@@ -1,6 +1,7 @@
-// Public configuration only. Never put Stripe secret keys in website files.
-// tools/payments prepares and verifies links before enabling test or live checkout.
+// Public configuration only. Never put Shopify access tokens in website files.
+// Enable Shopify only after verifying its products, payments and notifications.
 window.MARVEL_RESERVE = {
   mode: 'unavailable', deposit: 100, currency: 'USD', termsVersion: 'reservation-2026-11-07',
-  stripePaymentLinks: {'16-buy': '', '16-lease': '', '20-buy': '', '20-lease': ''}
+  provider: 'shopify',
+  shopify: {storeDomain: 'cr1bpi-qf.myshopify.com', variants: {'16-buy': '', '16-lease': '', '20-buy': '', '20-lease': ''}}
 };

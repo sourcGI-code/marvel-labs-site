@@ -178,7 +178,7 @@ test('production HTML contains no demo success, simulated cards, email preview o
     const html = await readFile(new URL(`../../${page}`, import.meta.url), 'utf8');
     assert.doesNotMatch(html, /Your demo reservation|Demo Visa|SIMULATED|View confirmation email|Cancel &amp; preview refund/, page);
     assert.match(html, /class="rv-submit" disabled/, page);
-    assert.match(html, /reserve-page\.js\?v=production-checkout-v2/, page);
+    assert.match(html, /reserve-page\.js\?v=shopify-checkout-v1/, page);
   }
 });
 
@@ -230,4 +230,44 @@ test('activation writes only public fields, generates the policy and refreshes e
       if (page === 'reserve-studio.html') assert.match(html, /reserve-studio-ui\.js\?v=stripe-[a-f0-9]{12}/);
     }
   } finally { await rm(directory, {recursive: true, force: true}); }
+});
+
+const shopifyConfig = () => ({mode: 'shopify-live', provider: 'shopify', deposit: 100, currency: 'USD', termsVersion: TERMS_VERSION,
+  shopify: {storeDomain: 'cr1bpi-qf.myshopify.com', variants: Object.fromEntries(CHOICES.map((key, i) => [key, `1234567890123${i}`]))}});
+
+test('Shopify checkout selects one correct variant and carries the trailer and plan into the order', () => {
+  for (const key of CHOICES) {
+    const [size, plan] = key.split('-');
+    const url = new URL(checkoutURL(shopifyConfig(), {size, plan}));
+    assert.equal(url.origin, 'https://cr1bpi-qf.myshopify.com');
+    assert.equal(url.pathname, `/cart/${shopifyConfig().shopify.variants[key]}:1`);
+    assert.equal(url.searchParams.get('attributes[Trailer]'), `${size} ft · Mirror Graphite`);
+    assert.equal(url.searchParams.get('attributes[Plan]'), plan === 'buy' ? 'Buy' : 'Lease');
+    assert.equal(url.searchParams.get('attributes[Reservation terms]'), TERMS_VERSION);
+    assert.equal(url.searchParams.has('amount'), false);
+  }
+});
+
+test('Shopify checkout refuses an unconnected product or a different store', () => {
+  for (const badDomain of ['evil.example', 'cr1bpi-qf.myshopify.com.evil.example', 'other-store.myshopify.com']) {
+    const cfg = shopifyConfig(); cfg.shopify.storeDomain = badDomain;
+    assert.throws(() => validatePaymentConfig(cfg));
+  }
+  for (const variant of ['', 'abc', '123456:9', 'gid://shopify/ProductVariant/123456']) {
+    const cfg = shopifyConfig(); cfg.shopify.variants['16-buy'] = variant;
+    assert.throws(() => validatePaymentConfig(cfg));
+  }
+});
+
+test('Shopify flow opens the selected checkout and never creates an on-site success or email preview', async () => {
+  const f = await fixture(shopifyConfig());
+  f.choose({size: '16', plan: 'lease'}); f.submit();
+  assert.match(f.form.querySelector('.rd-payment').textContent, /pay on Shopify/);
+  assert.doesNotMatch(f.form.textContent, /Stripe/);
+  assert.equal(f.form.querySelectorAll('.rd-consent a').length, 3);
+  f.form.querySelector('[name="consent"]').checked = true; f.submit();
+  assert.equal(f.destinations[0], checkoutURL(shopifyConfig(), {size: '16', plan: 'lease'}));
+  assert.equal(f.form.querySelector('[data-panel="complete"]'), null);
+  assert.match(f.form.querySelector('[type="submit"]').textContent, /Opening Shopify/);
+  f.dom.window.close();
 });

@@ -1,6 +1,6 @@
-import {checkoutURL, validatePaymentConfig} from './payment-links.js?v=stripe-v1';
+import {checkoutURL, validatePaymentConfig} from './payment-links.js?v=shopify-v1';
 
-// Stripe hosts checkout and its payment confirmation. This page never marks a
+// The payment provider hosts checkout and confirmation. This page never marks a
 // reservation paid, stores card/contact details, or issues simulated refunds.
 export function installReservationPayments({sec, form, selection, navigate = url => window.location.assign(url)}, config = window.MARVEL_RESERVE) {
   let step = 'configure';
@@ -10,6 +10,8 @@ export function installReservationPayments({sec, form, selection, navigate = url
   const note = form.querySelector('.rv-pay-note');
   const review = form.querySelector('[data-panel="review"]');
   const test = config?.mode === 'stripe-test';
+  const shopify = config?.provider === 'shopify' || config?.mode === 'shopify-live';
+  const provider = shopify ? 'Shopify' : 'Stripe';
   const showError = message => { error.textContent = message; error.hidden = false; };
   // Old demo receipts are not payments and must never be restored in production.
   try { window.sessionStorage.removeItem('marvel-reservation-demo-v1'); } catch { /* Storage may be disabled. */ }
@@ -30,18 +32,28 @@ export function installReservationPayments({sec, form, selection, navigate = url
   const description = document.createElement('p'); description.className = 'rd-small';
   description.textContent = test
     ? 'Continue to Stripe’s test checkout to enter example contact details and a test payment method. No real money moves.'
-    : 'Enter your contact details and pay on Stripe. Available cards and wallets are shown at checkout. Only the $100 reservation deposit is due.';
+    : `Enter your contact details and pay on ${provider}. Available cards and wallets are shown at checkout. Only the $100 reservation deposit is due.`;
   payment.append(legend, description);
   const consent = review.querySelector('.rd-consent span');
   consent.replaceChildren(document.createTextNode('I’ve read the '));
   const policyLink = document.createElement('a');
-  policyLink.href = 'payments/reservation.html'; policyLink.target = '_blank'; policyLink.rel = 'noopener';
-  policyLink.textContent = 'reservation terms, refund policy and privacy notice';
-  consent.append(policyLink, document.createTextNode(test ? '. I understand this is a test checkout.' : '. I understand that $100 USD is due now and no further payment is authorized.'));
+  policyLink.href = shopify ? 'https://cr1bpi-qf.myshopify.com/policies/terms-of-service' : 'payments/reservation.html'; policyLink.target = '_blank'; policyLink.rel = 'noopener';
+  policyLink.textContent = shopify ? 'reservation terms' : 'reservation terms, refund policy and privacy notice';
+  consent.append(policyLink);
+  if (shopify) {
+    for (const [label, path] of [['refund policy', 'refund-policy'], ['privacy notice', 'privacy-policy']]) {
+      const a = document.createElement('a'); a.textContent = label; a.href = `https://cr1bpi-qf.myshopify.com/policies/${path}`;
+      a.target = '_blank'; a.rel = 'noopener'; consent.append(document.createTextNode(', '), a);
+    }
+  }
+  consent.append(document.createTextNode(test ? '. I understand this is a test checkout.' : '. I understand that $100 USD is due now and no further payment is authorized.'));
   review.querySelector(':scope > .rd-small').textContent = 'Final pricing, specifications and the Buy or Lease agreement are confirmed separately.';
   const policies = form.querySelector('.rd-policies'); policies.replaceChildren();
-  for (const [label, hash] of [['Agreement', 'agreement'], ['Refunds', 'refunds'], ['Privacy', 'privacy'], ['Help', 'help']]) {
-    const a = document.createElement('a'); a.href = `payments/reservation.html#${hash}`; a.textContent = label;
+  const policyTargets = shopify
+    ? [['Agreement', 'https://cr1bpi-qf.myshopify.com/policies/terms-of-service'], ['Refunds', 'https://cr1bpi-qf.myshopify.com/policies/refund-policy'], ['Privacy', 'https://cr1bpi-qf.myshopify.com/policies/privacy-policy']]
+    : [['Agreement', 'payments/reservation.html#agreement'], ['Refunds', 'payments/reservation.html#refunds'], ['Privacy', 'payments/reservation.html#privacy'], ['Help', 'payments/reservation.html#help']];
+  for (const [label, href] of policyTargets) {
+    const a = document.createElement('a'); a.href = href; a.textContent = label;
     a.target = '_blank'; a.rel = 'noopener'; policies.append(a);
   }
   const steps = form.querySelector('.rd-steps'); steps.replaceChildren();
@@ -71,7 +83,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
     back.hidden = next === 'configure';
     submit.disabled = false;
     submit.textContent = next === 'configure' ? 'Review reservation ↗' : test ? 'Continue to Stripe test checkout ↗' : 'Continue to pay $100 ↗';
-    note.textContent = test ? 'Test mode. Use Stripe test payment details only.' : 'Stripe confirms payment after checkout. Returning here does not confirm or cancel a reservation.';
+    note.textContent = test ? 'Test mode. Use Stripe test payment details only.' : `${provider} confirms your order after checkout. Returning here does not confirm or cancel a reservation.`;
     if (next === 'review') renderOrder();
     if (focus) { form.querySelector('#rv-title').focus({preventScroll: true}); form.scrollTop = 0; }
   }
@@ -93,7 +105,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
     if (!consentInput.reportValidity()) return;
     try {
       const url = checkoutURL(config, selection());
-      submit.disabled = true; submit.textContent = 'Opening Stripe…';
+      submit.disabled = true; submit.textContent = `Opening ${provider}…`;
       navigate(url);
     } catch (e) { submit.disabled = false; showError(e.message); }
   });

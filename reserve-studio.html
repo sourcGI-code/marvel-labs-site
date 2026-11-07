@@ -54,7 +54,7 @@
   <div data-panel="review" hidden>
    <div class="rd-panel-head"><h2>Review your reservation.</h2><button type="button" class="rd-text-button" data-action="edit-trailer">Edit trailer</button></div>
    <dl class="rd-order" data-order></dl>
-   <fieldset class="rd-payment"><legend>Secure checkout</legend><p class="rd-small">Contact and payment details are entered on Stripe after reviewing your selection.</p></fieldset>
+   <fieldset class="rd-payment"><legend>Secure checkout</legend><p class="rd-small">Contact and payment details are entered on Shopify after reviewing your selection.</p></fieldset>
    <div class="rv-due"><div><span>Due at checkout</span><small>Fully refundable reservation deposit</small></div><b>$100 USD</b></div>
    <label class="rd-consent"><input type="checkbox" name="consent" required><span>Read and accept the reservation terms before continuing to payment.</span></label>
    <p class="rd-small">Final pricing, specifications and the Buy or Lease agreement are confirmed separately.</p>
@@ -63,7 +63,7 @@
   <div class="rd-controls"><button type="button" class="rd-back" data-action="back" hidden>← Back</button><button type="submit" class="rv-submit" disabled>Checkout not available yet</button></div>
   <p class="rv-pay-note">Secure checkout is not open yet. No payment has been collected.</p>
   <nav class="rd-policies" aria-label="Reservation information" hidden></nav>
-  <noscript><p>Enable JavaScript to view checkout availability. No reservation is created until Stripe confirms successful payment.</p></noscript>
+  <noscript><p>Enable JavaScript to view checkout availability. No reservation is created until Shopify confirms successful payment.</p></noscript>
  </form>
 </section>
 </main>
@@ -76,8 +76,8 @@ menu.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { close(); toggle.focus(); } });
 
 </script>
-<script src="reserve-config.js?v=production-checkout-v2"></script>
-<script type="module" src="reserve-page.js?v=production-checkout-v2"></script>
+<script src="reserve-config.js?v=shopify-checkout-v1"></script>
+<script type="module" src="reserve-page.js?v=shopify-checkout-v1"></script>
 <script type="module" src="reserve-studio.js?v=owner-approved-all-scenes-v3"></script>
-<script type="module" src="reserve-studio-ui.js?v=production-checkout-v2"></script>
+<script type="module" src="reserve-studio-ui.js?v=shopify-checkout-v1"></script>
 </body></html>
