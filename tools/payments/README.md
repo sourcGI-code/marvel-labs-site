@@ -11,9 +11,14 @@ https://sourcgi-code.github.io/marvel-labs-site/.
 - Checkout is disabled (`mode: 'unavailable'`) until the Shopify account and
   product variants can be verified. Empty IDs must never be replaced with
   guessed IDs, test fixtures or an arbitrary store URL.
-- The storefront currently shows an Opening soon password page, and unauthenticated
-  product listing returns HTTP 401. No Shopify plugin or browser session was
-  connected to the task when this was prepared.
+- The owner confirmed Shopify access to `cr1bpi-qf`, contact email
+  `jaxon@marvellabs.com`, and that its current plan is a trial. A paid plan must
+  be selected before selling and before testing Shopify Payments.
+- The storefront was last verified to show an Opening soon password page;
+  unauthenticated product listing returned HTTP 401. The owner has verified
+  their Shopify connection, but this running conversation currently exposes no
+  Shopify admin tools or browser session. Do not ask them to reconnect the account;
+  continue product creation in a conversation where Shopify is available.
 - Shopify is the owner's correction to the earlier Stripe assumption. The legacy
   Stripe setup scripts in this directory are unused; do not run them for this store.
 
