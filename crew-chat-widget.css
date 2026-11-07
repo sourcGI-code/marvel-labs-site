@@ -1,0 +1,13 @@
+/* Section-scoped website chat; never mounted inside the handset. */
+.crew-page-chat{position:fixed;z-index:100;left:var(--gutter,32px);bottom:24px;color:#edf4f4;font-family:Lato,system-ui,sans-serif}
+.crew-page-chat[hidden],.crew-page-chat [hidden]{display:none!important}
+body:has(#local-page-editor-link) .crew-page-chat{bottom:72px}
+.crew-page-chat .crew-chat-launch{display:flex;align-items:center;gap:8px;min-height:48px;padding:12px 20px;border:1px solid #4dd8e887;border-radius:28px;background:#123039;color:#b2f5fb;font:700 14px/1.4 Lato,system-ui,sans-serif;box-shadow:0 8px 28px #0007;cursor:pointer}
+.crew-page-chat .crew-chat-launch:hover{background:#204752}
+.crew-page-chat .crew-chat-launch:focus-visible{outline:2px solid #4dd8e8;outline-offset:4px}
+.crew-page-chat .crew-chat-panel{width:380px;height:min(620px,calc(100dvh - 124px));overflow:hidden;border:1px solid #36535c;border-radius:20px;background:#0a0e10;box-shadow:0 20px 70px #0009}
+.crew-page-chat iframe{display:block;border:0;width:100%;height:100%;background:#0a0e10;border-radius:inherit;color-scheme:dark}
+@media(max-width:760px),(max-width:1024px) and (orientation:portrait){
+ .crew-page-chat{left:16px;bottom:max(16px,env(safe-area-inset-bottom))}
+ .crew-page-chat .crew-chat-panel{width:min(380px,calc(100vw - 32px));height:min(620px,calc(100dvh - 114px))}
+}

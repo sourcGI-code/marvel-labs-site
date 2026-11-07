@@ -15,6 +15,7 @@ if (!document.documentElement.hasAttribute('data-snapshot')) {
     });
   });
   import('./crew-app-interactive.js?v=screen-fit-v1').catch(console.warn);
+  import('./crew-page-chat.js?v=page-chat-v2').catch(console.warn);
   import('./editor-runtime.js?v=owner-package-v2').catch(console.warn);
 } else {
   document.querySelectorAll('img').forEach(img => img.loading = 'eager');

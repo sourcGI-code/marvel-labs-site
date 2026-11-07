@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0e10">
+  <meta name="robots" content="noindex">
+  <title>Ask Marvel · Trailer assistant demo</title>
+  <link rel="stylesheet" href="crew-chat.css?v=page-chat-v2">
+  <script type="module" src="crew-chat.js?v=page-chat-v2"></script>
+</head>
+<body>
+  <header class="chat-header">
+    <div class="chat-brand"><strong>Ask Marvel</strong><span>YOUR TRAILER. YOUR QUESTIONS.</span></div>
+    <button id="chat-back" type="button" aria-label="Close chat">×</button>
+  </header>
+  <p class="demo-note">Trailer guide · Interactive preview</p>
+  <main id="conversation" tabindex="0" aria-label="Conversation">
+    <div class="chat-welcome">
+      <span class="welcome-mark" aria-hidden="true">✦</span>
+      <h1>Your next trailer.<br><em>Let’s find your fit.</em></h1>
+      <p>Tell me what your crew hauls. We’ll look at the space, the business model and what Marvel brings to your route.</p>
+    </div>
+    <div class="suggestions" aria-label="Suggested questions">
+      <button type="button" data-question="Is it a good trailer for my business?">Why choose this trailer? <span>↗</span></button>
+      <button type="button" data-question="What do I actually earn?">What do I earn? <span>↗</span></button>
+      <button type="button" data-question="What does Marvel supply?">What does Marvel supply? <span>↗</span></button>
+      <button type="button" data-question="How could the marketing agent help my crew?">Help market my business <span>↗</span></button>
+    </div>
+    <div id="messages" role="log" aria-label="Chat messages" aria-live="polite" aria-relevant="additions"></div>
+  </main>
+  <form id="chat-form">
+    <label class="sr-only" for="chat-question">Ask about the trailer or your crew</label>
+    <div class="composer">
+      <textarea id="chat-question" rows="1" maxlength="500" placeholder="Ask about your trailer…" enterkeyhint="send"></textarea>
+      <button id="chat-send" type="submit" aria-label="Send message" disabled>↑</button>
+    </div>
+    <p class="chat-disclosure">Preset answers · No live AI or trailer connection</p>
+  </form>
+  <noscript>Enable JavaScript to try this guided chat.</noscript>
+</body>
+</html>
