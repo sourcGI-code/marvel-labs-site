@@ -15,7 +15,7 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  // stopAt: beat-scroll.js plays the chapter's film to the next beat and no further (owner 10-24: one scroll per thing).
  let stopAt=null;
  // setRate: the stepper's flywheel (owner 10-25: react to the scroll at once, faster for a faster scroll, then settle
- // to the part's own pace) multiplies the part's base rate (the arrival's OPENING_RATE, else 1).
+ // to the part's own pace) multiplies the part's base rate (arrival timing or the section's playback rate).
  let baseRate=1,rateBoost=1;
  // Phones that refuse autoplay (iOS Low Power Mode, data saver, "never auto-play") keep the poster
  // and show the hero's tap-to-play pill: body[data-autoplay-blocked] drives that CSS.
@@ -81,7 +81,8 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
    next.video.dataset.timelinePlaying='true';
    // The arrival plays slower than real time (owner 10-24: "the arrival film itself" is too fast); its progress
    // is read from the decoded time, so captions and the hand-off stay in step.
-   baseRate=(owner.track.id==='top'&&next.end<=.25+1e-6)?OPENING_RATE:1;
+   // Section pacing remains the baseline when the scroll controller releases its boost.
+   baseRate=(owner.track.id==='top'&&next.end<=.25+1e-6)?OPENING_RATE:(Number(owner.track.dataset.playbackRate)||1);
    next.video.playbackRate=playRate(baseRate,rateBoost);
    // Only start once the rest of this part can download faster than it plays (playthrough.js): a first visit used to
    // start at once and stall every half second. The intro's autoplay may wait for it (the poster and headline are up);
