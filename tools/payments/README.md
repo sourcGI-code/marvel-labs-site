@@ -4,6 +4,12 @@ The selected provider is **Shopify**, store **cr1bpi-qf.myshopify.com**, owned b
 jaxon@marvellabs.com. The public website stays on GitHub Pages at
 https://sourcgi-code.github.io/marvel-labs-site/.
 
+The owner now wants to prioritize working payments using an available temporary
+address. Use this existing website address and the existing Shopify store domain;
+custom DNS is not a prerequisite. The unlaunched `marvellabs.com` migration is
+preserved at commit `7a622fb` on `feat/stripe-payments-20261107`; do not publish its
+`CNAME` or root-path changes as part of this temporary-address checkout setup.
+
 ## Confirmed state
 
 - Production no longer installs the local demo reservation module, displays a
@@ -12,17 +18,18 @@ https://sourcgi-code.github.io/marvel-labs-site/.
   product variants can be verified. Empty IDs must never be replaced with
   guessed IDs, test fixtures or an arbitrary store URL.
 - The owner confirmed Shopify access to `cr1bpi-qf`, contact email
-  `jaxon@marvellabs.com`, and that its current plan is a trial. A paid plan must
-  be selected before selling and before testing Shopify Payments.
-- The storefront was last verified to show an Opening soon password page;
-  unauthenticated product listing returned HTTP 401. The owner has verified
+  `jaxon@marvellabs.com`, and reports purchasing a plan on November 7, 2026.
+  This supersedes the earlier no-subscription restriction. Independently verify
+  plan and payment readiness; no further subscription purchase is authorized.
+- The storefront was rechecked after the paid-plan report: it still redirects to
+  `/password`, and unauthenticated product listing returns HTTP 401. The owner has verified
   their Shopify connection, but this running conversation currently exposes no
   Shopify admin tools or browser session. Do not ask them to reconnect the account;
   continue product creation in a conversation where Shopify is available.
 - Shopify is the owner's correction to the earlier Stripe assumption. The legacy
   Stripe setup scripts in this directory are unused; do not run them for this store.
 
-## Finish once Shopify is connected
+## Finish when Shopify admin access is available
 
 1. Inspect the existing store and products before creating anything. Confirm the
    store identity, USD currency, active payment provider, test-mode status and
