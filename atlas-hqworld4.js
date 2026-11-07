@@ -3,7 +3,7 @@ import {loadFilmSources} from './film-sources-hqworld4.js?v=mobile-layout-v2';
 import {syncTrailerPosters} from './trailer-presentation.js?v=mobile-layout-v2';
 syncTrailerPosters(await loadFilmSources());
 const {installDisplayFramework}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework-hqworld4.js?v=mobile-layout-v2':'./display-framework.js?v=4');
-import {installScenePlayback} from './scene-playback.js?v=workday-speed16-v1';
+import {installScenePlayback} from './scene-playback.js?v=safari-touch-v1';
 import { createStage } from './atlas-stage.js?v=screen-fit-v1';
 import {setupGrassEconomics} from './grass-economics.js?v=2';
 import {createAmbientSpace} from './ambient-space.js?v=4';
