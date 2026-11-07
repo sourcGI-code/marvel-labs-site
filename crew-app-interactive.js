@@ -134,6 +134,8 @@ if (section) {
     if (reduced.matches) { settle(true); return; }
     // Original 3D handset: the unchanged entrance, then a short turn to zero
     // yaw/pitch/roll. Hold that exact final frame beneath the interactive screen.
+    section.querySelectorAll('.crew-phone img').forEach(image => image.loading = 'eager');
+    if (entrance.dataset.poster) entrance.poster = entrance.dataset.poster;
     entrance.src = entrance.dataset.src;
     entrance.muted = true;
     entrance.play().catch(() => settle(true));
