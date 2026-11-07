@@ -1,4 +1,5 @@
 import {installReservationDemo} from './reserve-demo.js?v=mvp-polish-20261104';
+import {installReservationPayments} from './reserve-payments.js?v=stripe-v1';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 
@@ -45,12 +46,14 @@ function start(sec) {
   sec.addEventListener('rs:size', e => show(e.detail));   // hovering a trailer on the stage picks it here too
 
   function updatePolicyLinks() {
+    if (window.MARVEL_RESERVE?.mode !== 'demo') return;
     for (const a of form.querySelectorAll('[data-policy="agreement"]')) a.href = `reservation-agreement.html?size=${size()}&plan=${plan() === 'buy' ? 'buy' : 'lease'}`;
   }
   const open = new URLSearchParams(location.search).get('size') || sec.dataset.open;
   show(SPEC[open] ? open : size());
   if (SPEC[open]) { sec.dataset.open = open; sec.dispatchEvent(new CustomEvent('rs:enter', {detail: open})); }
-  installReservationDemo({sec, form, selection: () => ({size: size(), plan: plan() === 'buy' ? 'buy' : 'lease'}), restore: choice => {
+  const install = window.MARVEL_RESERVE?.mode === 'demo' ? installReservationDemo : installReservationPayments;
+  install({sec, form, selection: () => ({size: size(), plan: plan() === 'buy' ? 'buy' : 'lease'}), restore: choice => {
     sec.dataset.orderStep = 'configure';
     for (const input of plans) input.checked = (input.value === 'free' ? 'lease' : input.value) === choice.plan;
     show(choice.size); sec.dataset.open = choice.size; sec.dispatchEvent(new CustomEvent('rs:enter', {detail: choice.size}));

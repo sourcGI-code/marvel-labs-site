@@ -6,7 +6,7 @@ function refresh(){
  sec.querySelector('[data-studio-size]').textContent=`${sec.dataset.size||'20'} ft`;
  if(step==='configure'){
   const button=sec.querySelector('.rv-submit');button.firstChild.textContent=`Continue with ${sec.dataset.size||'20'} ft `;
-  sec.querySelector('.rv-pay-note').textContent='Demo checkout · no payment taken';
+  if(window.MARVEL_RESERVE?.mode==='demo') sec.querySelector('.rv-pay-note').textContent='Demo checkout · no payment taken';
  }
 }
 new MutationObserver(refresh).observe(sec,{attributes:true,attributeFilter:['data-size','data-order-step']});

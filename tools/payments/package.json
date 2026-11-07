@@ -1,0 +1,7 @@
+{
+  "name": "marvel-payment-setup",
+  "private": true,
+  "type": "module",
+  "scripts": {"test": "node payments.test.mjs"},
+  "devDependencies": {"jsdom": "26.1.0"}
+}
