@@ -3,7 +3,7 @@ if (navigator.connection?.saveData) document.documentElement.dataset.snapshot = 
 // Keep the interactive entry points out of that mode: no hidden scenes,
 // huge scroll spacers, video autoplay or blank embedded-app loading state.
 if (!document.documentElement.hasAttribute('data-snapshot')) {
-  import('./atlas-hqworld4.js?v=opening-autoplay-20261108').catch(error => {
+  import('./atlas-hqworld4.js?v=brand-platform-20261108').catch(error => {
     console.warn('Showing the static website because the presentation did not load.', error);
     document.documentElement.classList.remove('immersive', 'enhanced', 'arrival-quiet');
     document.documentElement.dataset.snapshot = 'true';

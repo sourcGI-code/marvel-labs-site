@@ -1,0 +1,57 @@
+/* Corporate identity and the trailer's concrete product story share one page. */
+body.brand-platform[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-title {
+ font-size:clamp(30px,min(3.8vw,6.4svh),56px);
+ line-height:1.02;
+ letter-spacing:-.045em;
+}
+body.brand-platform[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-description {
+ max-width:350px;
+ margin-top:18px;
+}
+.platform-grid {display:grid;grid-template-columns:1fr 1fr;gap:clamp(32px,7vw,112px);margin-top:clamp(28px,4svh,48px);align-items:start}
+.platform-intro .offer-lead {max-width:490px;margin:20px 0;font-size:15px;line-height:1.65}
+.process-label {font:9px/1.5 ui-monospace,monospace;letter-spacing:.08em;color:var(--muted);margin-top:24px}
+.production-path {display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin:12px 0 18px}
+.production-path li {border-top:1px solid var(--line);padding-top:11px;font-size:13px;line-height:1.4}
+.production-path span {display:block;font:10px/1.5 ui-monospace,monospace;color:var(--accent);margin-bottom:7px}
+.platform-layers {margin:0}
+.platform-layers>div {border-top:1px solid var(--line);padding:17px 0 20px}
+.platform-layers>div:first-child {border-color:var(--accent)}
+.platform-layers dt {font-size:25px;line-height:1.2;letter-spacing:-.03em;display:flex;gap:17px;align-items:center}
+.platform-layers dt span {font:10px/1.5 ui-monospace,monospace;color:var(--accent);letter-spacing:0}
+.platform-layers dd {margin:11px 0 0 31px;max-width:470px;color:var(--muted);font-size:14px;line-height:1.65}
+.platform-next {border-top:1px solid var(--line);padding-top:19px;margin-top:28px;display:flex;align-items:center;justify-content:space-between;gap:24px}
+.platform-next p {font-size:14px;max-width:670px;color:var(--ink);line-height:1.6}
+.platform-next a {flex-shrink:0;min-height:44px;display:inline-flex;align-items:center;font-size:12px}
+.platform-development {margin-top:16px;max-width:1000px;color:var(--muted);font-size:11px;line-height:1.65}
+.platform-development a {display:inline-block;text-decoration:underline;text-underline-offset:3px;margin-left:10px;padding:4px 0}
+body.brand-platform .footer-meta {flex-wrap:wrap}
+@media (max-height:820px) and (orientation:landscape) {
+ .platform-grid {gap:5vw;margin-top:24px}
+ .platform-overview #story-title {font-size:clamp(36px,5vw,58px)}
+ .platform-intro .offer-lead {font-size:14px;margin:16px 0}
+ .platform-layers>div {padding:13px 0 16px}
+ .platform-layers dt {font-size:23px}
+ .platform-layers dd {font-size:13px;line-height:1.55;margin-top:9px}
+ .platform-next {margin-top:22px}
+}
+@media (max-width:760px), (orientation:portrait) and (max-width:1100px) {
+ body.brand-platform[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-title {font-size:clamp(28px,7.6vw,38px);line-height:1.02}
+ body.brand-platform[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-description {max-width:380px;margin-top:12px;font-size:13px;line-height:1.45}
+ .platform-grid {grid-template-columns:minmax(0,1fr);gap:28px;margin-top:25px}
+ .platform-overview #story-title {font-size:clamp(38px,10vw,58px)}
+ .platform-intro .offer-lead {font-size:14px;line-height:1.6;margin:17px 0}
+ .production-path {gap:10px}
+ .production-path li {font-size:12px}
+ .platform-layers dt {font-size:24px}
+ .platform-layers dd {font-size:14px}
+ .platform-next {align-items:start;flex-direction:column;gap:8px;margin-top:20px}
+ .platform-next a {font-size:14px}
+ .platform-development {font-size:12px}
+ .platform-development a {margin:0 16px 0 0;min-height:44px;display:inline-flex;align-items:center}
+}
+@media (orientation:landscape) and (max-height:540px) {
+ body.brand-platform[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-title {font-size:23px}
+ body.brand-platform[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-description {font-size:11px;line-height:1.35;margin-top:8px}
+ body.brand-platform[data-page-flow-preview] #top .platform-pin:not(.is-comparing) .offer-actions {margin-top:10px}
+}
