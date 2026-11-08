@@ -15,7 +15,8 @@ export function readSelection(search='') {
   const p=new URLSearchParams(search), pick=(key,values,fallback)=>Object.hasOwn(values,p.get(key))?p.get(key):fallback;
   return {colour:pick('colour',COLOURS,'black'),finish:pick('finish',FINISHES,'matte'),decal:pick('decal',{grey:1,green:1},'grey'),size:p.get('size')==='16'?'16':'20'};
 }
-export function materialRole(materialName='',meshName='') {
+export function materialRole(materialName='',meshName='',authoredRole='') {
+  if(['body','decal','stripe','hardware','rubber','lamp','interior'].includes(authoredRole))return authoredRole;
   const name=materialName.toLowerCase(),mesh=meshName.toLowerCase().replaceAll('_',' ');
   if(/wordmark|lettering/.test(name))return 'decal';
   if(/accent|cyan light/.test(name))return 'stripe';
@@ -41,8 +42,23 @@ export function finishSpec(role,selection) {
   return {opacity:1,transparent:false,depthWrite:true,depthTest:true,transmission:0};
 }
 export function applyFinish(materials,selection) {
-  for(const {material,role} of materials){
-    const spec=finishSpec(role,selection);
+  for(const {material,role,authored} of materials){
+    let spec=finishSpec(role,selection);
+    if(authored){
+      // Restore the pack's material first, so a round trip through any colour
+      // returns to the exact supplied Jet black paint, metals and rubber.
+      material.copy(authored);
+      spec={opacity:1,transparent:false,depthWrite:true,depthTest:true,transmission:0};
+      if(role==='body'){
+        if(selection.colour!=='black')Object.assign(spec,{color:COLOURS[selection.colour].color,metalness:COLOURS[selection.colour].metalness});
+        if(selection.finish==='gloss')Object.assign(spec,FINISHES.gloss);
+      }
+      if(role==='decal'||role==='stripe'){
+        // Grey is the supplied artwork. Green adapts to lighter body colours.
+        if(selection.decal==='green'||['silver','pearl'].includes(selection.colour))spec.color=finishSpec(role,selection).color;
+        if(role==='decal')Object.assign(spec,{alphaTest:.35,alphaToCoverage:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+      }
+    }
     for(const [key,value] of Object.entries(spec)){
       if(material[key]?.isColor)material[key].setHex(value);else material[key]=value;
     }

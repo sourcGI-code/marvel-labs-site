@@ -1,0 +1,25 @@
+{
+  "sourceArchive": "Marvel-Trailers-Realism-Pack.zip",
+  "sourceArchiveSHA256": "80dec2660b9997e0f46c69d1f44758d19cd4407202ab768451ba4d57021a4f4c",
+  "revision": "realism-v2",
+  "models": {
+    "16": {
+      "file": "trailer-16.glb",
+      "sourceFile": "Marvel-Trailer-16ft-Jet-Black-Matte-Grey.glb",
+      "sha256": "0b8c70377e2411e3e9264213264155bd5104c0041b47c57bd3523a8eac083fc1",
+      "bytes": 16376712,
+      "meshNodes": 411,
+      "treadMeshes": 4,
+      "triangles": 655611
+    },
+    "20": {
+      "file": "trailer-20.glb",
+      "sourceFile": "Marvel-Trailer-20ft-Jet-Black-Matte-Grey.glb",
+      "sha256": "a49c838ba4acfa19efb160640c382691f78dfe880d8cc178650c640dcaa7882a",
+      "bytes": 17410448,
+      "meshNodes": 413,
+      "treadMeshes": 4,
+      "triangles": 711977
+    }
+  }
+}

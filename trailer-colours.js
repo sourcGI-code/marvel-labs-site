@@ -1,8 +1,7 @@
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
-import {COLOURS, readSelection, materialRole, applyFinish} from './trailer-colour-materials.js?v=1';
-import {TRAILER_MODEL_BASE} from './trailer-model-source.js?v=owner-approved-all-scenes-v3';
+import {COLOURS, readSelection, materialRole, applyFinish} from './trailer-colour-materials.js?v=realism-v2';
+import {TRAILER_COLOUR_MODELS} from './trailer-colour-source.js?v=realism-v2';
 
 const host=document.querySelector('#canvas-host');
 const loadState=document.querySelector('.load-state');
@@ -10,7 +9,7 @@ const loadMessage=document.querySelector('#load-message');
 const retry=document.querySelector('#retry');
 const note=document.querySelector('#selection-note');
 let selection=readSelection(location.search);
-let renderer,scene,camera,environment,loader,draco,resizeObserver,current;
+let renderer,scene,camera,environment,loader,resizeObserver,current;
 let request=0,scheduled=0,view='hero',zoom=1,azimuth=2.22,elevation=.25;
 const cache=new Map(),pointers=new Map();
 const views={hero:[2.22,.25],side:[Math.PI/2,.12],front:[Math.PI,.20],rear:[0,.20],detail:[2.04,.10]};
@@ -88,18 +87,15 @@ function prepare(gltf){
   root.traverse(mesh=>{
     if(!mesh.isMesh)return;
     const convert=source=>{
-      const role=materialRole(source.name,mesh.name),key=source.uuid+'/'+role;
+      const role=materialRole(source.name,mesh.name,source.userData.colourStudioRole),key=source.uuid+'/'+role;
       if(made.has(key))return made.get(key);
-      const material=new THREE.MeshPhysicalMaterial();
-      THREE.MeshStandardMaterial.prototype.copy.call(material,source);
+      const material=source.isMeshPhysicalMaterial?source.clone():new THREE.MeshPhysicalMaterial();
+      if(!source.isMeshPhysicalMaterial)THREE.MeshStandardMaterial.prototype.copy.call(material,source);
       material.name=source.name;material.side=THREE.DoubleSide;
       material.flatShading=false;material.envMapIntensity=.7;
       material.opacity=1;material.transparent=false;material.transmission=0;material.depthWrite=true;
-      if(role==='body'){
-        // Retain the model's manufactured radii and authored vertex normals.
-        // Keep the flat panels and curved pieces' authored normals separate.
-        material.normalMap=null;material.bumpMap=null;material.roughnessMap=null;material.metalnessMap=null;
-      }
+      // Preserve the supplied normals, texture maps and physical material
+      // extensions, including the separately authored metal and tire finishes.
       if(role==='decal'){
         // Use the exact supplied artwork's alpha as an ink mask. Discard its
         // baked white/cyan RGB so grey or green applies to text AND underline.
@@ -107,7 +103,7 @@ function prepare(gltf){
         material.customProgramCacheKey=()=> 'marvel-single-ink-v1';
       }
       material.userData.colourStudioRole=role;
-      materials.push({material,role});made.set(key,material);return material;
+      materials.push({material,role,authored:material.clone()});made.set(key,material);return material;
     };
     mesh.material=Array.isArray(mesh.material)?mesh.material.map(convert):convert(mesh.material);
     const roles=(Array.isArray(mesh.material)?mesh.material:[mesh.material]).map(m=>m.userData.colourStudioRole);
@@ -128,7 +124,11 @@ async function selectSize(){
   loadMessage.textContent=`Preparing the ${size} ft trailer…`;
   try{
     if(!cache.has(size)){
-      const pending=loader.loadAsync(`${TRAILER_MODEL_BASE}trailer-${size}-approved.glb`).then(prepare).catch(error=>{cache.delete(size);throw error;});
+      const pending=loader.loadAsync(TRAILER_COLOUR_MODELS[size],event=>{
+        if(selection.size!==size||loadState.hidden)return;
+        const progress=event.lengthComputable?`${Math.round(event.loaded/event.total*100)}%`:`${(event.loaded/1e6).toFixed(1)} MB`;
+        loadMessage.textContent=`Loading the ${size} ft trailer… ${progress}`;
+      }).then(prepare).catch(error=>{cache.delete(size);throw error;});
       cache.set(size,pending);
     }
     const model=await cache.get(size);if(id!==request)return;
@@ -190,8 +190,7 @@ function initialize(){
   ground.rotation.x=-Math.PI/2;ground.position.y=-.01;ground.receiveShadow=true;scene.add(ground);
   const stage=new THREE.Mesh(new THREE.CylinderGeometry(5.2,5.2,.06,128),new THREE.MeshStandardMaterial({color:0xcfd2c7,roughness:.84,metalness:0}));
   stage.position.y=.02;stage.receiveShadow=true;scene.add(stage);
-  draco=new DRACOLoader();draco.setDecoderPath('./vendor/three/addons/libs/draco/gltf/');draco.setWorkerLimit(2);
-  loader=new GLTFLoader().setDRACOLoader(draco);
+  loader=new GLTFLoader();
   bindRotation(renderer.domElement);resizeObserver=new ResizeObserver(resize);resizeObserver.observe(host);resize();
   updateUI();selectSize();
 }
