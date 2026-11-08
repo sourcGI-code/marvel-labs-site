@@ -3,7 +3,7 @@ import {loadFilmSources} from './film-sources-hqworld4.js?v=consistency-20261108
 import {syncTrailerPosters} from './trailer-presentation.js?v=mobile-layout-v2';
 syncTrailerPosters(await loadFilmSources());
 const {installDisplayFramework}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework-hqworld4.js?v=showcase-quality-v1':'./display-framework.js?v=4');
-import {installScenePlayback} from './scene-playback.js?v=safari-touch-v1';
+import {installScenePlayback} from './scene-playback.js?v=progressive-scroll-20261108';
 import { createStage } from './atlas-stage.js?v=screen-fit-v1';
 import {setupGrassEconomics} from './grass-economics.js?v=2';
 import {createAmbientSpace} from './ambient-space.js?v=4';
@@ -147,8 +147,8 @@ function requestUpdate(){if(!scrollFrame)scrollFrame=requestAnimationFrame(updat
 addEventListener('scroll',requestUpdate,{passive:true});addEventListener('resize',requestUpdate);update();
 installDisplayFramework({stage,refresh:update});
 if(official)import('./hero-frame-hqworld4.js?v=showcase-quality-v1').then(m=>m.installHeroFrame()).catch(e=>console.warn('Hero framing unavailable.',e.message));
-// Main site: third gesture unlocks fast scrubbing; release resumes normal playback. Archives retain their original controller.
-if(manualPlayback&&official&&playback)import(document.body.dataset.scrollBehavior==='continuous-after-third'?'./continuous-scroll.js?v=safari-touch-v1':document.body.dataset.fastSectionSkip==='true'?'./three-step-scroll.js?v=interactive-phone-v1':'./beat-scroll-hqworld4.js?v=showcase-quality-v1').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
+// Main site: each fresh forward gesture gently increases continuous playback speed. Archives retain their original controller.
+if(manualPlayback&&official&&playback)import(document.body.dataset.scrollBehavior==='continuous-after-third'?'./continuous-scroll.js?v=progressive-scroll-20261108':document.body.dataset.fastSectionSkip==='true'?'./three-step-scroll.js?v=interactive-phone-v1':'./beat-scroll-hqworld4.js?v=showcase-quality-v1').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
 async function loadTrailer(state,canvas,single=false){
  if(!state)return;
  if(official){

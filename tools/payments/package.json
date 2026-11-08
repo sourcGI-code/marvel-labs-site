@@ -2,6 +2,6 @@
   "name": "marvel-payment-setup",
   "private": true,
   "type": "module",
-  "scripts": {"test": "node --test payments.test.mjs public-content.test.mjs"},
+  "scripts": {"test": "node --test payments.test.mjs public-content.test.mjs scroll.test.mjs"},
   "devDependencies": {"jsdom": "26.1.0"}
 }

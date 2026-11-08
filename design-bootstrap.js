@@ -30,7 +30,7 @@ try {
   document.querySelector('#tour-visual .scene-fallback img').src = poster(sources.field, fieldKind);
 } catch (error) { console.warn('Film poster selection unavailable.', error.message); }
 
-const entry = live?.querySelector('script[src^="atlas-hqworld4.js?v=discovery-20261108"]')?.getAttribute('src') || 'atlas-hqworld4.js?v=discovery-20261108';
+const entry = live?.querySelector('script[src^="atlas-hqworld4.js?v=progressive-scroll-20261108"]')?.getAttribute('src') || 'atlas-hqworld4.js?v=progressive-scroll-20261108';
 await import('./' + entry);
 const crew = live?.querySelector('script[src^="crew-app.js"]')?.getAttribute('src') || 'crew-app.js?v=v4-1030c';
 await import('./' + crew);

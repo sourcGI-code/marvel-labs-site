@@ -85,7 +85,7 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
    next.video.playbackRate=playRate(baseRate,rateBoost);
    // Only start once the rest of this part can download faster than it plays (playthrough.js): a first visit used to
    // start at once and stall every half second. The intro's autoplay may wait for it (the poster and headline are up);
-   // a part started by a scroll waits at most 1.2 s (the stepper falls back to scrubbing at 1.5 s).
+   // a part started by a scroll waits at most 1.2 s before attempting playback.
    const until=stopAt!==null?clamp((stopAt-next.start)/(next.end-next.start))*next.duration:next.duration;
    await waitPlayable(next.video,{rate:playRate(baseRate,rateBoost),until,maxWait:autoplayEnd!==null?7000:1200,signal});
    if(token!==generation)return;
@@ -145,7 +145,7 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  reduced.addEventListener('change',()=>{interrupt();sync();});
  sync();return {pause,toggle,sync,setRate(boost){
   rateBoost=Math.max(.25,Math.min(MAX_RATE,boost||1));
-  if(segment&&mode==='playing'){const r=playRate(baseRate,rateBoost);if(Math.abs(segment.video.playbackRate-r)>=.02||(rateBoost===1&&segment.video.playbackRate!==r))segment.video.playbackRate=r;}
+  if(segment&&mode==='playing'){const r=playRate(baseRate,rateBoost);if(segment.video.playbackRate!==r)segment.video.playbackRate=r;}
  },playTo(target){
   // Play the active chapter's film from where it is to `target` (a progress fraction), then pause there.
   const next=getActive();if(!next?.view?.preparePlayback||reduced.matches)return false;
@@ -153,9 +153,10 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
   if(mode!=='paused')pause({capture:false});
   completedOwner=null;autoplayEnd=null;stopAt=target;begin(next,at);return true;
  },extendTo(target){
-  // beat-scroll.js: still scrolling as the film nears its stop, so it runs on to a later stop without pausing.
-  if(stopAt===null||mode==='paused'||!(target>stopAt))return false;
-  stopAt=target;return true;
+  // Adopt an already playing/loading film, including the automatic arrival,
+  // without pausing, seeking or preparing that same segment again.
+  if(mode==='paused'||!owner||getActive()!==owner||!(target>readProgress(owner)))return false;
+  autoplayEnd=null;stopAt=Math.max(stopAt??0,target);return true;
  },autoplay(next,{end=.25}={}){
   if(autoplayed||mode!=='paused'||reduced.matches||!next?.view?.preparePlayback||getActive()!==next||readProgress(next)>.01)return false;
   autoplayed=true;autoplayEnd=end;begin(next,0);
