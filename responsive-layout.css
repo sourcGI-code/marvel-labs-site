@@ -1,7 +1,3 @@
-/* The four-line manufacturing H1 fits the existing opening composition. */
-body[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-title[data-manufacturing-heading]{font-size:clamp(30px,min(3.8vw,6.4svh),56px);line-height:1.02;letter-spacing:-.045em}
-@media(max-width:760px),(orientation:portrait) and (max-width:1100px){body[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-title[data-manufacturing-heading]{font-size:clamp(28px,7.6vw,38px)}}
-@media(orientation:landscape) and (max-height:540px){body[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-title[data-manufacturing-heading]{font-size:23px}}
 /* Shared viewport limits. Keep the approved scenes; reserve space for their copy. */
 body[data-page-flow-preview][data-experience="official"]{--gutter:clamp(22px,4.5vw,100px);--screen-header:90px}
 html.immersive body[data-page-flow-preview] .masthead{height:var(--screen-header);box-sizing:border-box}
