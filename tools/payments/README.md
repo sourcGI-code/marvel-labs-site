@@ -1,92 +1,98 @@
 # Marvel reservation checkout
 
-The selected provider is **Shopify**, store **cr1bpi-qf.myshopify.com**, owned by
-jaxon@marvellabs.com. The owner explicitly selected **marvellabs.shop** for the
-trailer website on November 7, 2026. The site stays hosted on GitHub Pages and
-checkout uses **cr1bpi-qf.myshopify.com**. Do not change `marvellabs.com` or buy a
-new domain. The earlier `.com` migration is superseded.
+The trailer website is **https://marvellabs.shop/**, hosted on GitHub Pages.
+Payments and order confirmations use **cr1bpi-qf.myshopify.com** through Shopify
+Payments. The store name is **Marvel Labs** and its contact is
+**jaxon@marvellabs.com**. The owner selected this domain and purchased a Shopify
+plan on November 7, 2026. Do not buy another domain or plan, change
+`marvellabs.com`, or run the unused legacy Stripe setup scripts.
 
-## Confirmed state
+## Live configuration
 
-- Production no longer installs the local demo reservation module, displays a
-  simulated success or email preview, or restores an old DEMO receipt.
-- Checkout is disabled (`mode: 'unavailable'`) until the Shopify account and
-  product variants can be verified. Empty IDs must never be replaced with
-  guessed IDs, test fixtures or an arbitrary store URL.
-- The owner confirmed Shopify access to `cr1bpi-qf`, contact email
-  `jaxon@marvellabs.com`, and reports purchasing a plan on November 7, 2026.
-  This supersedes the earlier no-subscription restriction. Independently verify
-  plan and payment readiness; no further subscription purchase is authorized.
-- The storefront was rechecked after the paid-plan report: it still redirects to
-  `/password`, and unauthenticated product listing returns HTTP 401. The owner has verified
-  their Shopify connection, but this running conversation currently exposes no
-  Shopify admin tools or browser session. Do not ask them to reconnect the account;
-  continue product creation in a conversation where Shopify is available.
-- Shopify is the owner's correction to the earlier Stripe assumption. The legacy
-  Stripe setup scripts in this directory are unused; do not run them for this store.
+`reserve-config.js` uses `mode: 'shopify-live'` with these real variants of product
+`10419109396726` (Marvel Trailer Reservation Deposit):
 
-## Website domain
+| Choice | Shopify variant ID | Deposit |
+| --- | --- | --- |
+| 16 ft / Buy | 52332951634166 | $100 USD |
+| 16 ft / Lease | 52332951666934 | $100 USD |
+| 20 ft / Buy | 52332951699702 | $100 USD |
+| 20 ft / Lease | 52332951732470 | $100 USD |
 
-The `CNAME`, canonical/share URLs, sitemap, robots rules, 404 routing and embedded
-Crew asset paths target `https://marvellabs.shop/`. Register that custom domain in
-GitHub Pages before changing DNS, then publish this commit to `main`.
+The product is Active and published to Online Store. Each variant has inventory
+tracking and shipping disabled, with no subscription or selling plan. The
+product's default taxable setting is preserved; no tax registration or tax-law
+assumption was made during setup. Shopify determines the final checkout total.
 
-The domain uses GoDaddy nameservers `ns21.domaincontrol.com` and
-`ns22.domaincontrol.com`. Before the switch, apex A records were `3.33.130.190`
-and `15.197.148.33`; `www` was a CNAME to `marvellabs.shop`. Public queries returned
-no apex AAAA, MX or TXT records. Preserve any additional records visible in the
-account; do not change nameservers or the domain's renewal/security settings.
+`checkoutURL()` creates a cart permalink for exactly one selected variant and
+carries trailer, plan and terms-version attributes into the order. Shopify sets
+the price from the variant. The website never accepts card details, creates a
+paid status, or fabricates an order number, email or refund. Old demo receipt
+storage is cleared. The remaining trailer price and purchase/lease agreement are
+separate; this checkout does not authorize an automatic balance charge.
 
-Replace the two old apex A records with these four A records:
-`185.199.108.153`, `185.199.109.153`, `185.199.110.153`, `185.199.111.153`.
-Set `www` CNAME to `sourcgi-code.github.io`. TTL 600 seconds or the provider default
-is suitable. No checkout subdomain is required to use the existing Shopify store.
+## Verified Shopify settings
 
-DNS changes require the owner's GoDaddy account; that admin access is not exposed
-in this conversation. Verify public DNS, the GitHub Pages deployment, HTTPS and
-the trailer homepage before reporting the domain live. Verify Crew assets and
-deep links. Later Crew exports must use `/crew` as the base path.
+- Shopify Payments shows **Accepting payments** and **Receiving payouts**.
+- Test mode is off. Payouts are configured to the owner's Shopify Balance account.
+- The owner completed the required business-address form. Store private mode is
+  off, and Shopify confirms that the online store is open to everyone.
+- Refund, reservation terms, shipping and contact policies are published; the
+  existing automated privacy policy remains published under Marvel Labs.
+- The order-confirmation notification is configured, and its preview renders
+  Marvel Labs branding. No test email or real charge was sent during setup.
+- Sender email is `jaxon@marvellabs.com`. Shopify reports email-domain
+  authentication still needs setup and provides its `shopifyemail.com` backup
+  sender. Custom sender authentication is separate from the website's DNS setup.
 
-The domain connection does not enable payments. Keep checkout disabled until the
-Shopify products, payment settings and notifications below are verified.
+The refundable deposit terms match the existing offer: full refund on cancellation,
+contact the store with the Shopify order number, no physical return, and no
+immediate trailer shipment or promised production/delivery date.
 
-## Finish when Shopify admin access is available
+## Domain
 
-1. Inspect the existing store and products before creating anything. Confirm the
-   store identity, USD currency, active payment provider, test-mode status and
-   customer order-confirmation notifications. Never mark a preview/test transaction
-   as paid, and do not make an actual charge or refund without explicit authorization.
-2. Use or create a $100 USD one-time refundable reservation product with four
-   variants: 16 ft / Buy, 16 ft / Lease, 20 ft / Buy, 20 ft / Lease. Only the deposit
-   is sold at checkout. The trailer's remaining price and any lease agreement are
-   separate. Verify each variant's price and online-store availability, and ensure
-   no trailer shipping charge or recurring payment is added to this deposit.
-3. Confirm the store's reservation/refund terms, privacy policy and monitored
-   customer support contact. The website points to the Shopify policy pages.
-   Make the checkout publicly reachable when ready; cart permalinks cannot bypass
-   a storefront password. Preserve unrelated store settings and products.
-4. Put the exact four numeric variant IDs into `reserve-config.js` under
-   `shopify.variants`, keeping them as strings. Set `mode: 'shopify-live'` only
-   after the real store is ready. The existing `checkoutURL()` creates a Shopify
-   cart permalink for one selected variant and includes trailer, plan and terms
-   version as order attributes. The variant determines the price on Shopify.
-5. Verify each selection reaches the correct $100 product at Shopify checkout.
-   Verify the actual Shopify order confirmation page and customer notification
-   using the store's approved sandbox/test workflow. Check that declined/abandoned
-   checkout never creates a website confirmation. Verify mobile checkout.
-6. Publish the verified config and current frontend together, bumping reservation
-   script URLs to avoid cached demo code. Check the GitHub Pages build's commit
-   and live files. Do not describe the store as live based on local mocks alone.
+GoDaddy DNS was saved and verified against authoritative and public resolvers:
 
-## Verification and rollback
+| Type | Name | Value |
+| --- | --- | --- |
+| A | @ | 185.199.108.153 |
+| A | @ | 185.199.109.153 |
+| A | @ | 185.199.110.153 |
+| A | @ | 185.199.111.153 |
+| CNAME | www | sourcgi-code.github.io |
 
-Run `npm ci && npm test` here. Sixteen tests cover price/link validation, no demo
-fallback, all seven reservation pages, terms consent, Shopify destination and
-variant selection, configuration propagation, and no fabricated on-site success.
-Mocks do not verify real Shopify payment settings, products or email delivery.
+Nameservers remain `ns21.domaincontrol.com` and `ns22.domaincontrol.com`.
+Unrelated records and domain renewal/security settings were preserved.
+GitHub Pages has an approved certificate covering apex and www, with HTTPS
+forced. Strict HTTPS returns 200 for the trailer homepage and reservation page;
+www redirects to `https://marvellabs.shop/`.
+
+Canonical/share URLs, sitemap, robots rules, 404 routing and Crew asset paths use
+this domain. Future Crew exports must use `/crew` as their base path. No checkout
+subdomain is needed; checkout stays on the store's secure Shopify domain.
+
+## Verification and limits
+
+Run `npm ci && npm test` in this directory. Sixteen tests cover link validation,
+selection, consent, all seven reservation pages, and no demo fallback or fabricated
+on-site confirmation. These local tests do not process payments.
+
+The public Shopify product JSON independently confirms the four IDs, $100 prices,
+availability, no shipping, and no selling plans. Public policy pages return 200.
+The hosted checkout was inspected with the reservation selections and displays
+Marvel Labs, the selected deposit and a $100 total with live card/wallet payment
+options. No customer billing data was entered and no transaction was submitted;
+actual charge processing and receipt delivery have not been transaction-tested.
+
+Checkout script cache versions are refreshed together with the real config.
+After publication, verify the Pages build's commit and live configuration, then
+follow a website reservation button through review and consent to Shopify.
+
+## Rollback
 
 Set `mode: 'unavailable'` and publish to stop new website checkouts. This does not
-cancel or refund existing Shopify orders or disable links shared independently.
+cancel or refund existing Shopify orders or disable independently shared Shopify
+links. Never replace missing IDs with guesses or test fixtures.
 
 References: [Shopify cart permalinks](https://shopify.dev/docs/apps/build/checkout/create-cart-permalinks)
 and [checkout links](https://help.shopify.com/en/manual/checkout-settings/cart-permalink).

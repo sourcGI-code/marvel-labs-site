@@ -178,7 +178,7 @@ test('production HTML contains no demo success, simulated cards, email preview o
     const html = await readFile(new URL(`../../${page}`, import.meta.url), 'utf8');
     assert.doesNotMatch(html, /Your demo reservation|Demo Visa|SIMULATED|View confirmation email|Cancel &amp; preview refund/, page);
     assert.match(html, /class="rv-submit" disabled/, page);
-    assert.match(html, /reserve-page\.js\?v=shopify-checkout-v1/, page);
+    assert.match(html, /reserve-page\.js\?v=shopify-checkout-v2/, page);
   }
 });
 
