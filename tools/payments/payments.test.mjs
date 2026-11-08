@@ -241,7 +241,8 @@ test('Shopify checkout selects one correct variant and carries the trailer and p
     const url = new URL(checkoutURL(shopifyConfig(), {size, plan}));
     assert.equal(url.origin, 'https://cr1bpi-qf.myshopify.com');
     assert.equal(url.pathname, `/cart/${shopifyConfig().shopify.variants[key]}:1`);
-    assert.equal(url.searchParams.get('attributes[Trailer]'), `${size} ft · Mirror Graphite`);
+    assert.equal(url.searchParams.get('attributes[Trailer]'), `${size} ft`);
+    assert.equal(url.searchParams.has('attributes[Exterior preview]'), false, 'a caller without a preview must not invent an exterior choice');
     assert.equal(url.searchParams.get('attributes[Plan]'), plan === 'buy' ? 'Buy' : 'Lease');
     assert.equal(url.searchParams.get('attributes[Reservation terms]'), TERMS_VERSION);
     assert.equal(url.searchParams.has('amount'), false);
@@ -266,8 +267,27 @@ test('Shopify flow opens the selected checkout and never creates an on-site succ
   assert.doesNotMatch(f.form.textContent, /Stripe/);
   assert.equal(f.form.querySelectorAll('.rd-consent a').length, 3);
   f.form.querySelector('[name="consent"]').checked = true; f.submit();
-  assert.equal(f.destinations[0], checkoutURL(shopifyConfig(), {size: '16', plan: 'lease'}));
+  assert.equal(f.destinations[0], checkoutURL(shopifyConfig(), {size: '16', plan: 'lease', exteriorPreview: 'jet-black'}));
   assert.equal(f.form.querySelector('[data-panel="complete"]'), null);
   assert.match(f.form.querySelector('[type="submit"]').textContent, /Opening Shopify/);
   f.dom.window.close();
+});
+
+test('the visible exterior preview agrees with Shopify attributes without changing the deposit variant', async () => {
+  for (const [page, preview] of [['reserve.html', 'Jet black · design preview'], ['reserve-studio.html', 'Mirror Graphite · design preview']]) {
+    for (const key of CHOICES) {
+      const [size, plan] = key.split('-');
+      const f = await fixture(shopifyConfig(), page);
+      f.choose({size, plan}); f.submit();
+      const review = [...f.form.querySelectorAll('[data-order] > div')];
+      assert.equal(review.find(row => row.querySelector('dt').textContent === 'Exterior preview').querySelector('dd').textContent, preview);
+      f.form.querySelector('[name="consent"]').checked = true; f.submit();
+      const url = new URL(f.destinations[0]);
+      assert.equal(url.pathname, `/cart/${shopifyConfig().shopify.variants[key]}:1`);
+      assert.equal(url.searchParams.get('attributes[Trailer]'), `${size} ft`);
+      assert.equal(url.searchParams.get('attributes[Exterior preview]'), preview);
+      f.dom.window.close();
+    }
+  }
+  assert.throws(() => checkoutURL(shopifyConfig(), {size: '16', plan: 'buy', exteriorPreview: 'unavailable'}));
 });

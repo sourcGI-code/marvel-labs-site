@@ -1,4 +1,4 @@
-import {installReservationPayments} from './reserve-payments.js?v=site-jetblack-v1';
+import {installReservationPayments} from './reserve-payments.js?v=checkout-preview-20261108';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 

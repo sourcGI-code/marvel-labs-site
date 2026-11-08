@@ -1,5 +1,9 @@
 export const CHOICES = ['16-buy', '16-lease', '20-buy', '20-lease'];
 export const TERMS_VERSION = 'reservation-2026-11-07';
+export const EXTERIOR_PREVIEWS = Object.freeze({
+  'jet-black': 'Jet black · design preview',
+  'mirror-graphite': 'Mirror Graphite · design preview'
+});
 
 export function validatePaymentConfig(config) {
   if (config?.mode === 'shopify-live') {
@@ -38,7 +42,12 @@ export function checkoutURL(config, choice, campaign={}) {
     // Cart attributes retain the chosen configuration in the Shopify order.
     // Shopify's product variant controls the price; no amount is sent by the browser.
     const url = new URL(`https://${config.shopify.storeDomain}/cart/${config.shopify.variants[key]}:1`);
-    url.searchParams.set('attributes[Trailer]', `${choice.size} ft · Mirror Graphite`);
+    url.searchParams.set('attributes[Trailer]', `${choice.size} ft`);
+    if (choice.exteriorPreview != null) {
+      if (!Object.hasOwn(EXTERIOR_PREVIEWS, choice.exteriorPreview)) throw new Error('Choose a supported trailer preview before continuing.');
+      // The artwork is a preview, not a final exterior order or a priced option.
+      url.searchParams.set('attributes[Exterior preview]', EXTERIOR_PREVIEWS[choice.exteriorPreview]);
+    }
     url.searchParams.set('attributes[Plan]', choice.plan === 'buy' ? 'Buy' : 'Lease');
     url.searchParams.set('attributes[Reservation terms]', config.termsVersion);
     const labels={utm_source:'Campaign source',utm_medium:'Campaign medium',utm_campaign:'Campaign',utm_content:'Creative'};

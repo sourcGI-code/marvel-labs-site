@@ -1,4 +1,4 @@
-import {checkoutURL, validatePaymentConfig} from './payment-links.js?v=launch-20261108';
+import {checkoutURL, validatePaymentConfig, EXTERIOR_PREVIEWS} from './payment-links.js?v=checkout-preview-20261108';
 import {readCampaign} from './campaign-attribution.js?v=launch-20261108';
 
 // The payment provider hosts checkout and confirmation. This page never marks a
@@ -13,6 +13,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
   const test = config?.mode === 'stripe-test';
   const shopify = config?.provider === 'shopify' || config?.mode === 'shopify-live';
   const provider = shopify ? 'Shopify' : 'Stripe';
+  const checkoutChoice = () => ({...selection(), exteriorPreview: sec.classList.contains('jetblack-stage') ? 'jet-black' : 'mirror-graphite'});
   const showError = message => { error.textContent = message; error.hidden = false; };
   // Old demo receipts are not payments and must never be restored in production.
   try { window.sessionStorage.removeItem('marvel-reservation-demo-v1'); } catch { /* Storage may be disabled. */ }
@@ -63,9 +64,8 @@ export function installReservationPayments({sec, form, selection, navigate = url
     li.dataset.step = key; number.textContent = `0${i + 1}`; li.append(number, ` ${label}`); steps.append(li);
   }
   function renderOrder() {
-    const {size, plan} = selection();
-    const exterior = sec.classList.contains('jetblack-stage') ? 'Jet black preview' : 'Mirror Graphite';
-    const entries = [['Trailer', `${size} ft · ${exterior}`], ['Plan', plan === 'buy' ? 'Buy · 75% profit share' : 'Lease · $0 monthly lease fee · 25% profit share'],
+    const {size, plan, exteriorPreview} = checkoutChoice();
+    const entries = [['Trailer', `${size} ft`], ['Exterior preview', EXTERIOR_PREVIEWS[exteriorPreview]], ['Plan', plan === 'buy' ? 'Buy · 75% profit share' : 'Lease · $0 monthly lease fee · 25% profit share'],
       ['Reservation deposit', '$100 USD · fully refundable'], ['Tax', 'Applicable tax, if any, calculated at checkout'], ['Payment', test ? 'Stripe test checkout · no real charge' : 'One-time deposit · no automatic balance charge']];
     form.querySelector('[data-order]').replaceChildren(...entries.map(([label, value]) => {
       const row = document.createElement('div'), dt = document.createElement('dt'), dd = document.createElement('dd');
@@ -106,7 +106,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
     const consentInput = review.querySelector('[name="consent"]');
     if (!consentInput.reportValidity()) return;
     try {
-      const url = checkoutURL(config, selection(), readCampaign(window.location.search));
+      const url = checkoutURL(config, checkoutChoice(), readCampaign(window.location.search));
       submit.disabled = true; submit.textContent = `Opening ${provider}…`;
       navigate(url);
     } catch (e) { submit.disabled = false; showError(e.message); }
