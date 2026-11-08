@@ -85,7 +85,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
     // Recorded films: the poster stays until the opening has a decodable frame (phones that refused autoplay).
     liveMode='opening';if(!recorded||reduced.matches||film.ready)host.classList.add('scene-ready');
    }
-   copy('THE AUTONOMOUS MICROFACTORY TRAILER','Your next trailer.<br><em>A factory inside.</em>','A work trailer designed to carry your equipment and turn suitable collected grass into products. Earn a share of profit from products sold, under the agreed plan. The production system is in development.');
+   copy('THE AUTONOMOUS MICROFACTORY TRAILER','Autonomous<br> Microfactories<br> <em>for American<br> Manufacturing</em>','A work trailer designed to carry your equipment and turn suitable collected grass into products. Earn a share of profit from products sold, under the agreed plan. The production system is in development.');
    $('platform-story').style.opacity='1';
    fleetLabels.update({inFleet:false,frameReady:false});$('capacity-summary').hidden=true;
   }else{
