@@ -25,10 +25,7 @@ import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
 // (area light) over the chosen trailer, a polished stage floor that reflects the trailers, a little bloom on the lights,
 // and the lights come up when the page opens. Phones skip the floor mirror and the bloom.
 
-const sec = document.querySelector('section.reserve-stage');
-if (sec) start(sec);
-
-async function start(sec) {
+export async function startReservationViewer(sec, {signal, onReady, onError}) {
   const own = sec.dataset.page === 'trailer', rv = sec.dataset.page === 'reserve';
   const A = TRAILER_MODEL_BASE, BG = 0x0a0e10, ACCENT = 0x4dd8e8, LIFT = .21;
   const host = sec.querySelector('.rs-3d'), panels = [...sec.querySelectorAll('.rs-panel')];
@@ -69,7 +66,19 @@ async function start(sec) {
   }[LIGHT];
 
   const renderer = new THREE.WebGLRenderer({antialias: true, powerPreference: 'high-performance'});
+  let composer = null, modelsReady = false, presented = false;
+  signal.addEventListener('abort', () => {
+    renderer.setAnimationLoop(null);
+    composer?.dispose();
+    renderer.dispose();
+    renderer.domElement.remove();
+  }, {once: true});
+  renderer.domElement.addEventListener('webglcontextlost', event => {
+    event.preventDefault();
+    onError();
+  }, {once: true});
   const approvedFinish=await createPhotographicFinish(renderer);
+  if (signal.aborted) return;
   renderer.setPixelRatio(Math.min(devicePixelRatio || 1, 2));
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   renderer.toneMapping = THREE.AgXToneMapping; renderer.toneMappingExposure = PRESET.exposure;
@@ -409,7 +418,6 @@ async function start(sec) {
     want.shift = shift;
   }
 
-  let composer = null;
   if (fancy) {                                         // a little bloom on the lit lenses and the stage glow; MSAA kept
     composer = new EffectComposer(renderer, new THREE.WebGLRenderTarget(4, 4, {type: THREE.HalfFloatType, samples: 4}));
     composer.addPass(new RenderPass(scene, camera));
@@ -417,6 +425,7 @@ async function start(sec) {
     composer.addPass(new OutputPass());
   }
   function resize() {
+    if (signal.aborted) return;
     const w = host.clientWidth, h = host.clientHeight; if (!w || !h) return;
     renderer.setSize(w, h, false); camera.aspect = w / h;
     if (composer) { composer.setPixelRatio(renderer.getPixelRatio()); composer.setSize(w, h); }
@@ -444,6 +453,7 @@ async function start(sec) {
   }
 
   function enter(size) {
+    if (!modelsReady || signal.aborted || !T[size]) return;
     if (mode === 'viewer' && focus === size) return;
     clearTimeout(intent);
     const from = focus; focus = size; mode = 'viewer'; sec.dataset.mode = 'viewer';
@@ -463,6 +473,7 @@ async function start(sec) {
     orbitView();
   }
   function leave() {
+    if (!modelsReady || signal.aborted) return;
     mode = 'overview'; sec.dataset.mode = 'overview'; focus = null; locked = false; sec.classList.remove('is-locked');
     for (const t of Object.values(T)) t.show = true;
     setRamp(0); light(null); filmView();
@@ -497,7 +508,7 @@ async function start(sec) {
   const overCopy = e => { if (!copy) return false; const r = copy.getBoundingClientRect(); return e.clientX < r.right + 10 && !matchMedia('(max-width:760px)').matches; };
   let drag = null;
   const onMove = (e, fromPage) => {
-    if (!meta) return;
+    if (!modelsReady || signal.aborted) return;
     const r = renderer.domElement.getBoundingClientRect();
     if (drag && !fromPage && mode === 'viewer' && T[focus]) { // touch / pen, or dragging while locked: turn it by hand
       if(drag.horizontal&&!drag.moved){
@@ -542,7 +553,7 @@ async function start(sec) {
   other?.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') enter(other.dataset.size); });   // hover = switch
   other?.addEventListener('click', () => enter(other.dataset.size));
   let pending = sec.dataset.open || '';                // the reserve page's rail: go to a size (before the models load: on arrival)
-  sec.addEventListener('rs:enter', e => { if (T[e.detail]) enter(e.detail); else pending = e.detail; });
+  sec.addEventListener('rs:enter', e => { if (modelsReady && T[e.detail]) enter(e.detail); else pending = e.detail; });
   sec.addEventListener('rs:leave', () => { if (mode === 'viewer') leave(); });
   for (const b of radios) b.addEventListener('click', () => enter(b.dataset.size));
   for (const a of sec.querySelectorAll('.rs-explore')) a.addEventListener('click', e => { e.preventDefault(); enter(a.closest('.rs-panel').dataset.size); });
@@ -557,8 +568,14 @@ async function start(sec) {
 
   // ---- load, then run (only while the section is on screen)
   let visible = true;
-  new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) dirty = true; }).observe(sec);
-  fetch(A + 'viewer.json?v=' + TRAILER_MODEL_REVISION, {cache:'no-store'}).then(r => r.json()).then(async m => {
+  const visibilityObserver = new IntersectionObserver(es => { visible = es[0].isIntersecting; if (visible) dirty = true; });
+  visibilityObserver.observe(sec);
+  signal.addEventListener('abort', () => visibilityObserver.disconnect(), {once: true});
+  fetch(A + 'viewer.json?v=' + TRAILER_MODEL_REVISION, {cache:'no-store', signal}).then(r => {
+    if (!r.ok) throw new Error('Trailer manifest unavailable');
+    return r.json();
+  }).then(async m => {
+    if (signal.aborted) return;
     meta = m;
     const c = m.camera, hfov = 2 * Math.atan(c.sensor / 2 / c.lens);
     filmFov = hfov; filmShift = c.shift[0];
@@ -566,8 +583,12 @@ async function start(sec) {
     if (!still && !own && !pending) {                  // the opening: from further out and lower, gliding in as the lights come up
       const away = cur.pos.clone().sub(cur.look); away.y *= .55; cur.pos.copy(cur.look).addScaledVector(away, 1.45);
     }
-    new ResizeObserver(resize).observe(host);
-    await Promise.all(Object.entries(m.trailers).filter(([size]) => size === '20' || size === '16').map(([size, t]) => new Promise((ok, bad) => loader.load(A + t.file, g => {
+    const sizeObserver = new ResizeObserver(resize);
+    sizeObserver.observe(host);
+    signal.addEventListener('abort', () => sizeObserver.disconnect(), {once: true});
+    await Promise.all(Object.entries(m.trailers).filter(([size]) => size === '20' || size === '16').map(async ([size, t]) => {
+      const g = await loader.loadAsync(A + t.file);
+      if (signal.aborted) return;
       const group = new THREE.Group(); group.userData.size = size; group.add(g.scene);
       group.position.copy(b2t(t.park)).add(new THREE.Vector3(0, LIFT, 0));
       g.scene.traverse(o => {
@@ -582,22 +603,22 @@ async function start(sec) {
       scene.add(group);
       T[size] = {group, hinge, bounds: new THREE.Box3().setFromObject(group).translate(group.position.clone().negate()), base: hinge ? hinge.quaternion.clone() : null, axis: new THREE.Vector3(...(t.rampAxis || [0, 0, 1])),
                  open: t.rampAxis ? t.rampOpen : -t.rampOpen, ramp: 0, rampTo: 0, scale: 1, scaleTo: 1, show: true, fade: 1};
-      ok();
-    }, undefined, bad))));
-    sec.classList.add('rs-live'); dirty = true;
+    }));
+    if (signal.aborted) return;
+    modelsReady = true; dirty = true;
     if (/[?&]debug3d/.test(location.search)) window.__rs3d = {scene, T, renderer, camera, composer, head, frame, LIGHTS,   // 10-30: the QA grid drives the view
       state: () => ({az, el, radius, locked, mode, focus}), enter, leave,
       view: (a, e, snap) => { az = a; el = e; if (focus) { orbitView(); if (snap) { cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift = want.shift; } dirty = true; } },
       lock: v => { locked = v; sec.classList.toggle('is-locked', locked); }};
     if (own) enter(sec.dataset.size || '20');
     else if (pending) enter(pending);
-  });
+  }).catch(onError);
 
   let last = performance.now(), frameNo = 0, shown = true, reveal = still ? 1 : 0;
   const qRamp = new THREE.Quaternion();
   renderer.setAnimationLoop(t => {
     const dt = Math.min(.05, (t - last) / 1000); last = t;
-    if (!meta || !visible) return;
+    if (!modelsReady || signal.aborted || !visible) return;
     if ((frameNo = (frameNo + 1) % 30) === 0) shown = sec.checkVisibility ? sec.checkVisibility({opacityProperty: true, visibilityProperty: true}) : true;
     if (!shown) return;                               // the immersive page keeps every section fixed: skip while hidden
     const k = 1 - Math.exp(-dt * (still ? 60 : 3.2)), kf = 1 - Math.exp(-dt * 7);
@@ -635,6 +656,9 @@ async function start(sec) {
     head.position.copy(cur.pos).add(new THREE.Vector3(0, 3, 0)); head.lookAt(cur.look);
     const w = host.clientWidth, h = host.clientHeight;
     if (Math.abs(cur.shift) > 1e-4) camera.setViewOffset(w, h, cur.shift * w, 0, w, h); else camera.clearViewOffset();   // Blender lens shift: + moves the frame right
-    if (composer) composer.render(); else renderer.render(scene, camera);
+    try {
+      if (composer) composer.render(); else renderer.render(scene, camera);
+      if (!presented && !renderer.getContext().isContextLost()) { presented = true; onReady(); }
+    } catch (error) { onError(error); }
   });
 }
