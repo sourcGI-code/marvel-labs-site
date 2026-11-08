@@ -71,6 +71,22 @@ Canonical/share URLs, sitemap, robots rules, 404 routing and Crew asset paths us
 this domain. Future Crew exports must use `/crew` as their base path. No checkout
 subdomain is needed; checkout stays on the store's secure Shopify domain.
 
+## Returning from Shopify checkout
+
+The checkout logo links to the Shopify storefront's homepage. The active Shopify
+theme, **Marvel Labs checkout return** (`168571207926`), redirects only that
+homepage to `https://marvellabs.shop/`. The redirect includes a no-JavaScript
+fallback and skips the theme editor. Cart, product, policy and checkout routes
+retain their normal behavior.
+
+The source block is in `shopify-storefront-return.liquid`; it is installed just
+after `<head>` in Shopify's `layout/theme.liquid`. Preserve it when changing or
+updating themes. The prior **Horizon** theme (`168561803510`) remains unpublished
+as a rollback copy. Publishing that old theme would remove the return fix.
+The live Reserve → Review → Shopify checkout → logo → trailer homepage path was
+verified in desktop Chromium and mobile-size WebKit. The no-JavaScript homepage
+fallback was also verified. No payment was submitted during these checks.
+
 ## Verification and limits
 
 Run `npm ci && npm test` in this directory. Sixteen tests cover link validation,
