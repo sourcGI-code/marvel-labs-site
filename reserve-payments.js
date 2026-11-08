@@ -1,4 +1,5 @@
-import {checkoutURL, validatePaymentConfig} from './payment-links.js?v=shopify-v1';
+import {checkoutURL, validatePaymentConfig} from './payment-links.js?v=launch-20261108';
+import {readCampaign} from './campaign-attribution.js?v=launch-20261108';
 
 // The payment provider hosts checkout and confirmation. This page never marks a
 // reservation paid, stores card/contact details, or issues simulated refunds.
@@ -104,7 +105,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
     const consentInput = review.querySelector('[name="consent"]');
     if (!consentInput.reportValidity()) return;
     try {
-      const url = checkoutURL(config, selection());
+      const url = checkoutURL(config, selection(), readCampaign(window.location.search));
       submit.disabled = true; submit.textContent = `Opening ${provider}…`;
       navigate(url);
     } catch (e) { submit.disabled = false; showError(e.message); }

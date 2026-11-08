@@ -30,7 +30,7 @@ export function validatePaymentConfig(config) {
   return config;
 }
 
-export function checkoutURL(config, choice) {
+export function checkoutURL(config, choice, campaign={}) {
   validatePaymentConfig(config);
   const key = `${choice.size}-${choice.plan}`;
   if (!CHOICES.includes(key)) throw new Error('Choose a trailer and plan before continuing.');
@@ -41,6 +41,12 @@ export function checkoutURL(config, choice) {
     url.searchParams.set('attributes[Trailer]', `${choice.size} ft · Mirror Graphite`);
     url.searchParams.set('attributes[Plan]', choice.plan === 'buy' ? 'Buy' : 'Lease');
     url.searchParams.set('attributes[Reservation terms]', config.termsVersion);
+    const labels={utm_source:'Campaign source',utm_medium:'Campaign medium',utm_campaign:'Campaign',utm_content:'Creative'};
+    for(const [key,label] of Object.entries(labels)){
+      const value=campaign[key];
+      if(typeof value==='string'&&/^[a-z0-9][a-z0-9._-]{0,79}$/i.test(value))url.searchParams.set(`attributes[${label}]`,value);
+    }
+    if(typeof campaign.utm_source==='string'&&/^[a-z0-9][a-z0-9._-]{0,79}$/i.test(campaign.utm_source))url.searchParams.set('ref',campaign.utm_source);
     return url.href;
   }
   return config.stripePaymentLinks[key];

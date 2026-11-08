@@ -170,3 +170,34 @@ disallowed; public app feature descriptions remain in the overview and homepage.
 
 References: [Shopify cart permalinks](https://shopify.dev/docs/apps/build/checkout/create-cart-permalinks)
 and [checkout links](https://help.shopify.com/en/manual/checkout-settings/cart-permalink).
+
+## Campaign launch update — November 8, 2026
+
+The latest live Admin API check confirms all four $100 variants are active and
+available for sale, with inventory tracking and shipping disabled. This connector
+does not have `read_shopify_payments` / `read_shopify_payments_accounts`, so the
+November 7 payment activation, test-mode and payout checks above were not
+re-confirmed through the current API connection. No payment was submitted.
+
+`campaign-attribution.js` carries only bounded campaign labels (`utm_source`,
+`utm_medium`, `utm_campaign`, `utm_content`) through ordinary internal navigation.
+It uses no cookies, browser storage, click IDs or third-party requests. Do not put
+personal information in campaign labels. `checkoutURL()` adds these labels as
+Shopify cart/order attributes and sends the source as `ref`, following
+[Shopify’s cart-permalink conversion tracking documentation](https://shopify.dev/docs/apps/build/checkout/create-cart-permalinks#step-6-optional-add-conversion-tracking-information).
+The existing cart permalink is retained because reservation attributes are needed.
+Nothing on the marketing site reports a paid order. Count provider-confirmed
+orders once and subtract refunds in Shopify; referral labels are attribution
+hints, not proof that a particular advertisement caused a sale.
+
+Public `media.html` supplies current offer facts, concept imagery and a media
+contact. `partners.html` routes sponsorship and partnership inquiries to the
+existing trailer-team email. These are inquiry paths, not sold sponsorship
+packages or automatic email delivery. Both pages are in the sitemap and llms.txt.
+
+The November 8 scroll rollback restores the previous animation speed controls.
+Reading-panel edge handoff now consumes leftover wheel/swipe input immediately.
+Selecting text stops pending motion; copy uses a plain-text fragment without
+serializing the animated DOM. The owner’s whole-computer freeze still needs
+confirmation on their device; no connected browser/desktop was available for
+manual UI testing in this task.

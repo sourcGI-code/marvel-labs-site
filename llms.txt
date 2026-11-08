@@ -11,6 +11,8 @@ Marvel Labs Inc. develops autonomous microfactories. https://marvellabs.shop/ is
 - [Plans, costs and earnings](https://marvellabs.shop/economics.html)
 - [Development and validation status](https://marvellabs.shop/validation.html)
 - [Company and support](https://marvellabs.shop/about.html)
+- [Partnerships and sponsorship inquiries](https://marvellabs.shop/partners.html)
+- [Media facts and concept images](https://marvellabs.shop/media.html)
 - [Live reservations](https://marvellabs.shop/reserve.html)
 - [Reservation terms](https://cr1bpi-qf.myshopify.com/policies/terms-of-service)
 - [Refund policy](https://cr1bpi-qf.myshopify.com/policies/refund-policy)
