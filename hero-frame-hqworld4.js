@@ -1,4 +1,4 @@
-import {introFilmKind} from './film-sources-hqworld4.js?v=mobile-layout-v2';
+import {introFilmKind} from './film-sources-hqworld4.js?v=showcase-quality-v1';
 // Preview only. Preserve the original glide over one genuinely expanded movie.
 // Restore the original right/left glide over the unchanged HQ
 // films. Projection is centered CONTAIN; there is no arrival zoom or tail dip.

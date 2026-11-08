@@ -14,7 +14,7 @@ if (section) {
   retry.className = 'crew-app-retry';
   retry.textContent = 'Try again';
   loading.append(retry);
-  let entered = false, loaded = false, loadTimer, entranceTimer, currentRoute = 'trailer';
+  let entered = false, loaded = false, loadTimer, entranceTimer, frameObserver, currentRoute = 'trailer';
 
   function loadError() {
     if (loaded) return;
@@ -45,6 +45,7 @@ if (section) {
   }).observe(screen);
 
   function selectRoute(route) {
+    frameObserver?.disconnect();
     currentRoute = route;
     loaded = false;
     section.dataset.appLoaded = 'false';
@@ -54,6 +55,7 @@ if (section) {
     status.textContent = 'Opening Marvel Crew…';
     const url = new URL(`crew/trailer-app/${route}/`, document.baseURI);
     url.searchParams.set('view', 'phone');
+    url.searchParams.set('v', 'ready-demo-v1');
     frame.src = url.href;
     buttons.forEach(button => {
       const selected = button.dataset.appRoute === route;
@@ -93,7 +95,9 @@ if (section) {
       });
     }
     function ready() {
+      if (frame.contentDocument !== doc) return false;
       if (!doc.querySelector('#root')?.textContent.trim()) return false;
+      if (!doc.querySelector('#root [role="heading"], #root h1, #root h2')) return false;
       loaded = true;
       clearTimeout(loadTimer);
       section.dataset.appLoaded = 'true';
@@ -103,7 +107,8 @@ if (section) {
     }
     ready();
     highlightRoute();
-    const observer = new MutationObserver(() => {
+    frameObserver?.disconnect();
+    const observer = frameObserver = new MutationObserver(() => {
       if (!loaded) ready();
       highlightRoute();
     });
