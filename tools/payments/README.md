@@ -91,9 +91,10 @@ fallback was also verified. No payment was submitted during these checks.
 
 Run `npm ci && npm test` in this directory. The payment suite has sixteen tests
 covering link validation, selection, consent, the five reservation forms, and no
-demo fallback or fabricated on-site confirmation. Seven public-content tests cover
+demo fallback or fabricated on-site confirmation. Nine public-content tests cover
 initial HTML, policy redirects, model pages, size/plan deep links, assistant answers,
-connection-aware media selection and the failed-viewer image fallback. These local
+connection-aware media selection, the failed-viewer image fallback, the confirmed
+$0 monthly lease fee and historical-preview exclusions. These local
 tests do not process payments. The model pages now lead to the separate reservation
 form instead of duplicating it.
 
@@ -129,8 +130,10 @@ copy are maintained alongside those pages. Keep the shared Organization identifi
 `https://marvellabs.com/#organization` consistent. No trailer Offer is marked as
 $100; that amount pays only the refundable reservation deposit.
 
-Monthly lease fees, physical operating specifications, production measurements,
-service responsibilities and final profit calculations remain explicitly pending.
+The owner confirmed the $0 monthly lease fee on November 8, 2026. It is separate
+from the $100 refundable reservation deposit, operating costs and other obligations.
+Physical operating specifications, production measurements, service responsibilities
+and final profit calculations remain explicitly pending.
 The delivery wording is a Spring 2027 target, not a commitment. Dated physical
 demonstrations and measured results require actual evidence from the team.
 
@@ -151,8 +154,19 @@ is already minified; another minification pass produced no meaningful saving.
 Follow-up requiring separate access/evidence: the reciprocal corporate-site link
 and matching corporate structured data, Search Console/Bing verification and URL
 inspection, actual Core Web Vitals, and physical production/test documentation.
-The accessible local corporate project did not resolve in Sites, so the current
-corporate deployment was not overwritten with the older local copy.
+The current corporate site is hosted on the separate Shopify store
+`marvellabs.myshopify.com`, with live theme `150427959389`
+(`marvell-labs-website-redesign`), verified November 8, 2026. This is not the
+trailer checkout store `cr1bpi-qf.myshopify.com`. Corporate editing requires access
+to that separate store; the old local Sites project is not the live corporate
+deployment and must not be published over it.
+
+The retired `/marvel/` page redirects to `/about.html`. Historical pages under
+`/test/`, `/yesterday/`, `/yesterday-rounded/` and `/yesterday-rounded-new-trailer/`
+carry an archive notice and `noindex,follow`. Their old privacy notices redirect
+to the current Shopify privacy policy. `/yesterday/` is no longer disallowed in
+robots.txt so crawlers can read its noindex instructions. `/crew/` remains
+disallowed; public app feature descriptions remain in the overview and homepage.
 
 References: [Shopify cart permalinks](https://shopify.dev/docs/apps/build/checkout/create-cart-permalinks)
 and [checkout links](https://help.shopify.com/en/manual/checkout-settings/cart-permalink).

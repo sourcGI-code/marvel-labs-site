@@ -2,7 +2,6 @@ User-agent: *
 Allow: /
 Disallow: /services/
 Disallow: /crew/
-Disallow: /yesterday/
 Disallow: /crew-chat.html
 
 Sitemap: https://marvellabs.shop/sitemap.xml

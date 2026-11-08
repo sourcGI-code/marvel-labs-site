@@ -18,11 +18,11 @@ const topics = [
   ], next:['Explore the 20 ft','Compare Buy and Lease'], action:{label:'Explore the 20 ft',href:'trailer-20.html'}},
   {id:'plans', terms:['compare buy','buy or lease','buy and lease','which plan','two plans'], answer:[
     'Buy is designed for an owner who wants the larger share of product profit: the operator keeps 75%, with Marvel receiving 25%. Preview purchase prices are $44,999 for the 16 ft and $49,999 for the 20 ft.',
-    'The proposed Lease plan removes the upfront trailer purchase. The operator receives 25% of product profit and Marvel receives 75%. Monthly lease charges, duration, maintenance, insurance and return obligations still need to be confirmed in the final written agreement.',
+    'The Lease plan has a $0 monthly lease fee and no upfront trailer purchase. The operator receives 25% of profit from products sold and Marvel receives 75%. The $100 refundable reservation deposit is separate. Operating costs, duration, maintenance, insurance and return obligations are confirmed in the final written agreement.',
     'Which matters more for your business: keeping upfront spending down, or keeping the larger share of product profit?'
   ], next:['Keep upfront spending down','Keep the larger profit share']},
   {id:'lease-fit', terms:['upfront spending down','lower upfront','no upfront','dont have money','cant afford','too expensive'], answer:[
-    'Then the proposed Lease plan is the one to look at first. It is intended to let a crew use the trailer without buying it upfront, while earning 25% of product profit.',
+    'Then the proposed Lease plan is the one to look at first. It has a $0 monthly lease fee and no upfront trailer purchase, with a 25% operator share of profit from products sold. A separate $100 refundable reservation deposit is due to reserve.',
     'That does not mean every operating cost disappears. The final agreement needs to explain supplies, shipping, maintenance and how profit is calculated so you can judge the full cost.',
     'We can compare trailer sizes next, or you can explore the reservation options.'
   ], next:['Compare the trailer sizes','How does the reservation work?'], action:{label:'Explore reservation options',href:'reserve.html'}},
@@ -68,8 +68,8 @@ const topics = [
     'The current design shows a 6 ft 2½ in factory after the approved partition adjustment. Final usable clearances and the equipment layout need verification against the physical trailer.'
   ], next:['How much does the trailer cost?','What does Marvel supply?']},
   {id:'pricing', terms:['cost','price','buy','lease','free','purchase','upfront'], answer:[
-    'Current website preview prices are $44,999 for the 16 ft trailer and $49,999 for the 20 ft trailer. The proposed lease avoids an upfront trailer purchase and uses a different product-profit split.',
-    'Pricing, supplier economics, operating costs and lease terms are still being finalized. Reservations are open through Shopify for a one-time $100 USD fully refundable deposit. It is not the trailer price or a monthly lease payment.'
+    'Current website preview prices are $44,999 for the 16 ft trailer and $49,999 for the 20 ft trailer. The Lease plan has a $0 monthly lease fee, no upfront trailer purchase and a 25% operator share of profit from products sold. The $100 refundable reservation deposit is separate.',
+    'Final Buy pricing, supplier economics, operating costs and the remaining lease obligations are confirmed separately. Reservations are open through Shopify for a one-time $100 USD fully refundable deposit. It is not the trailer price or a monthly lease payment.'
   ], next:['What do I actually earn?','How does the reservation work?']},
   {id:'reservation', terms:['reserv','deposit','refundable','refund','pay','checkout','order now','100'], answer:[
     'The reservation is a one-time, fully refundable $100 USD deposit paid through Shopify. For a purchased trailer, it is intended to count toward the final price, subject to the final agreement.',

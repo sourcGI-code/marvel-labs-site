@@ -1,4 +1,4 @@
-import {installReservationPayments} from './reserve-payments.js?v=consistency-20261108';
+import {installReservationPayments} from './reserve-payments.js?v=lease-20261108';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 
@@ -26,7 +26,7 @@ function start(sec) {
   }
   function summary() {
     const s = size(), buy = plan() === 'buy';
-    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy + ' preview price' : '25% operator profit share'} · $100 refundable deposit`;
+    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy + ' preview price' : '$0 monthly lease fee · 25% operator profit share'} · $100 refundable deposit`;
   }
 
   // a size card: hover (mouse) or choose it, and the stage goes to that trailer

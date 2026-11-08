@@ -63,7 +63,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
   }
   function renderOrder() {
     const {size, plan} = selection();
-    const entries = [['Trailer', `${size} ft · Mirror Graphite`], ['Plan', plan === 'buy' ? 'Buy · 75% profit share' : 'Lease · 25% profit share'],
+    const entries = [['Trailer', `${size} ft · Mirror Graphite`], ['Plan', plan === 'buy' ? 'Buy · 75% profit share' : 'Lease · $0 monthly lease fee · 25% profit share'],
       ['Reservation deposit', '$100 USD · fully refundable'], ['Payment', test ? 'Stripe test checkout · no real charge' : 'One-time deposit · no automatic balance charge']];
     form.querySelector('[data-order]').replaceChildren(...entries.map(([label, value]) => {
       const row = document.createElement('div'), dt = document.createElement('dt'), dd = document.createElement('dd');

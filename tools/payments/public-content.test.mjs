@@ -37,7 +37,7 @@ test('model pages describe distinct products and link to a separate selected res
     assert.equal(product.model,`${size} ft`);
     assert.equal(product.offers,undefined,'a deposit cannot be represented as the trailer sale price');
     assert.match(doc.body.textContent,/GVWR/);
-    assert.match(doc.body.textContent,/Monthly lease charges/);
+    assert.match(doc.body.textContent,/\$0\s+monthly lease fee/);
     assert.ok(doc.querySelector('meta[property="og:image"]'));
     assert.ok(doc.querySelector('meta[name="twitter:card"]'));
   }
@@ -66,6 +66,7 @@ test('all size and plan deep links select the intended live form and review',asy
     form.dispatchEvent(new window.Event('submit',{cancelable:true,bubbles:true}));
     assert.match(form.querySelector('[data-order]').textContent,new RegExp(`${size} ft`));
     assert.match(form.querySelector('[data-order]').textContent,plan==='lease'?/Lease/:/Buy/);
+    if(plan==='lease')assert.match(form.querySelector('[data-order]').textContent,/\$0 monthly lease fee/);
     assert.equal(form.querySelector('[name="consent"]').checked,false);
     dom.window.close();
   }
@@ -95,6 +96,37 @@ test('website assistant acknowledges real payments and distinguishes final lease
     assert.match(answer,/Shopify/);
     assert.doesNotMatch(answer,/no payment is taken|does not collect payment|checkout is a preview/);
   }
+});
+
+test('confirmed zero monthly lease fee stays separate from the reservation and operating costs',async()=>{
+  for(const file of ['index.html','overview.html','reserve.html','trailer-16.html','trailer-20.html','economics.html','reservation-help.html']) {
+    const doc=await documentFor(file),text=doc.body.textContent;
+    assert.match(text,/\$0\s*(?:\/\s*month|monthly lease fee)/,file);
+    assert.match(text,/\$100/,file);
+    assert.match(text,/operating costs/i,file);
+    assert.doesNotMatch(text,/monthly (?:lease )?(?:charges|fees?).{0,80}(?:pending|finalized)/i,file);
+  }
+  const {answerQuestion}=await import('../../crew-chat-answers.mjs');
+  for(const question of ['Compare Buy and Lease','What is the monthly lease cost?']) {
+    assert.match(answerQuestion(question,{}).answer.join(' '),/\$0 monthly lease fee/);
+  }
+});
+
+test('historical previews disclose their status and cannot compete as current search pages',async()=>{
+  for(const folder of ['yesterday','yesterday-rounded','yesterday-rounded-new-trailer']) {
+    for(const file of ['index.html','trailer-16.html','trailer-20.html','marvel/index.html','marvel/sources.html']) {
+      const doc=await documentFor(`${folder}/${file}`);
+      assert.match(doc.querySelector('meta[name="robots"]').content,/noindex/);
+      assert.match(doc.querySelector('[aria-label="Archived design"]').textContent,/does not describe the current offer/);
+    }
+    const doc=await documentFor(`${folder}/privacy.html`);
+    assert.equal(doc.querySelector('link[rel="canonical"]').href,'https://cr1bpi-qf.myshopify.com/policies/privacy-policy');
+  }
+  const company=await documentFor('marvel/index.html');
+  assert.equal(company.querySelector('link[rel="canonical"]').href,'https://marvellabs.shop/about.html');
+  assert.match(company.querySelector('meta[http-equiv="refresh"]').content,/url=https:\/\/marvellabs.shop\/about.html/);
+  assert.doesNotMatch(await read('robots.txt'),/Disallow: \/yesterday\//,'archive HTML must be crawlable to expose noindex');
+  assert.match(await read('robots.txt'),/Disallow: \/crew\//,'interactive app remains excluded');
 });
 
 test('reservation viewer failure keeps the static image and form available',async()=>{

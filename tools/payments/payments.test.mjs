@@ -178,7 +178,7 @@ test('production HTML contains no demo success, simulated cards, email preview o
     const html = await readFile(new URL(`../../${page}`, import.meta.url), 'utf8');
     assert.doesNotMatch(html, /Your demo reservation|Demo Visa|SIMULATED|View confirmation email|Cancel &amp; preview refund/, page);
     assert.match(html, /class="rv-submit" disabled/, page);
-    assert.match(html, /reserve-page\.js\?v=consistency-20261108/, page);
+    assert.match(html, /reserve-page\.js\?v=lease-20261108/, page);
   }
 });
 
