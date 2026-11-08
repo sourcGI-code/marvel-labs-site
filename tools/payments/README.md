@@ -23,6 +23,15 @@ The product is Active and published to Online Store. Each variant has inventory
 tracking and shipping disabled, with no subscription or selling plan. The
 product's default taxable setting is preserved; no tax registration or tax-law
 assumption was made during setup. Shopify determines the final checkout total.
+The public form and consent now say "$100 USD plus applicable tax, if any";
+the payment button does not promise an exact final total. Any displayed Shop Pay
+installment option is described as financing this deposit checkout, separate
+from the $0 monthly trailer lease.
+
+Reservation size changes require an explicit radio choice or stage click/tap.
+Hover only highlights the stage; it must never change the selected Shopify variant.
+The review step locks the selected size until the visitor returns to configuration.
+Both approved trailer images are attached to their matching Shopify variants.
 
 `checkoutURL()` creates a cart permalink for exactly one selected variant and
 carries trailer, plan and terms-version attributes into the order. Shopify sets

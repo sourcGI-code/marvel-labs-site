@@ -9,6 +9,38 @@ const root = new URL('../../', import.meta.url);
 const read = path => readFile(new URL(path, root), 'utf8');
 const documentFor = async path => new JSDOM(await read(path), {url:`https://marvellabs.shop/${path}`}).window.document;
 
+test('hover cannot silently change the selected deposit; explicit choices still work',async()=>{
+  const dom=new JSDOM(await read('reserve.html'),{url:'https://marvellabs.shop/reserve.html?size=16&plan=lease'});
+  Object.assign(globalThis,{window:dom.window,document:dom.window.document,location:dom.window.location,CustomEvent:dom.window.CustomEvent});
+  vm.runInNewContext(await read('reserve-config.js'),{window});
+  await import(new URL('reserve-page.js?test=explicit-selection',root));
+  const form=document.querySelector('form'),sec=document.querySelector('.rv'),other=form.querySelector('[name="size"][value="20"]');
+  const event=new window.Event('pointerenter',{bubbles:true});Object.defineProperty(event,'pointerType',{value:'mouse'});other.closest('label').dispatchEvent(event);
+  await new Promise(resolve=>setTimeout(resolve,220));
+  assert.equal(form.querySelector('[name="size"]:checked').value,'16');
+  assert.match(form.querySelector('.rv-summary').textContent,/16 ft/);
+  other.click();assert.equal(form.querySelector('[name="size"]:checked').value,'20');
+  sec.dispatchEvent(new window.CustomEvent('rs:size',{detail:'16'}));assert.equal(form.querySelector('[name="size"]:checked').value,'16','explicit stage selection is supported');
+  form.dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}));
+  sec.dispatchEvent(new window.CustomEvent('rs:size',{detail:'20'}));assert.equal(form.querySelector('[name="size"]:checked').value,'16','review selection is locked');
+  assert.match(form.querySelector('[data-order]').textContent,/16 ft/);dom.window.close();
+});
+
+test('deposit and applicable tax are clear in initial HTML, review and consent',async()=>{
+  for(const page of ['reserve.html','reserve-studio.html','reserve-light-outdoor.html','reserve-light-white.html','reserve-light-reveal.html']){
+    const doc=await documentFor(page);assert.match(doc.querySelector('[data-panel="configure"] .rv-due').textContent,/applicable tax/i);
+    assert.match(doc.querySelector('[data-panel="review"] .rv-due').textContent,/applicable tax/i);
+  }
+  const dom=new JSDOM(await read('reserve.html'),{url:'https://marvellabs.shop/reserve.html'});
+  Object.assign(globalThis,{window:dom.window,document:dom.window.document,location:dom.window.location,CustomEvent:dom.window.CustomEvent});
+  vm.runInNewContext(await read('reserve-config.js'),{window});await import(new URL('reserve-page.js?test=tax-copy',root));
+  const form=document.querySelector('form');form.dispatchEvent(new window.Event('submit',{bubbles:true,cancelable:true}));
+  assert.match(form.querySelector('.rd-consent').textContent,/\$100 USD plus applicable tax/);
+  assert.match(form.querySelector('[data-order]').textContent,/TaxApplicable tax/);
+  assert.match(form.querySelector('.rd-payment').textContent,/installment.*not the trailer lease/);
+  assert.equal(form.querySelector('[type="submit"]').textContent,'Continue to Shopify checkout ↗');dom.window.close();
+});
+
 test('initial reservation HTML agrees with live checkout without requiring JavaScript to read policies', async () => {
   const context = {window:{}};
   vm.runInNewContext(await read('reserve-config.js'),context);

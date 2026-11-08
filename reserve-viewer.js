@@ -22,7 +22,7 @@ if (section) {
     controller.abort();
   }
   const timeout = setTimeout(fallback, 12000);
-  import('./reserve-3d.js?v=viewer-recovery-v1')
+  import('./reserve-3d.js?v=checkout-clarity-20261108')
     .then(({startReservationViewer}) => {
       if (controller.signal.aborted) return;
       return startReservationViewer(section, {

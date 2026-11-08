@@ -33,7 +33,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
   const description = document.createElement('p'); description.className = 'rd-small';
   description.textContent = test
     ? 'Continue to Stripe’s test checkout to enter example contact details and a test payment method. No real money moves.'
-    : `Enter your contact details and pay on ${provider}. Available cards and wallets are shown at checkout. Only the $100 reservation deposit is due.`;
+    : `Enter your contact details and pay on ${provider}. The reservation deposit is $100 USD, plus applicable tax, if any. Review the final total before paying. Any installment option shown applies to this deposit checkout, not the trailer lease.`;
   payment.append(legend, description);
   const consent = review.querySelector('.rd-consent span');
   consent.replaceChildren(document.createTextNode('I’ve read the '));
@@ -47,7 +47,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
       a.target = '_blank'; a.rel = 'noopener'; consent.append(document.createTextNode(', '), a);
     }
   }
-  consent.append(document.createTextNode(test ? '. I understand this is a test checkout.' : '. I understand that $100 USD is due now and no further payment is authorized.'));
+  consent.append(document.createTextNode(test ? '. I understand this is a test checkout.' : '. I understand that the deposit is $100 USD plus applicable tax, if any, and will review the final total on checkout. No automatic trailer balance or lease payment is authorized.'));
   review.querySelector(':scope > .rd-small').textContent = 'Final pricing, specifications and the Buy or Lease agreement are confirmed separately.';
   const policies = form.querySelector('.rd-policies'); policies.replaceChildren();
   const policyTargets = shopify
@@ -65,7 +65,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
   function renderOrder() {
     const {size, plan} = selection();
     const entries = [['Trailer', `${size} ft · Mirror Graphite`], ['Plan', plan === 'buy' ? 'Buy · 75% profit share' : 'Lease · $0 monthly lease fee · 25% profit share'],
-      ['Reservation deposit', '$100 USD · fully refundable'], ['Payment', test ? 'Stripe test checkout · no real charge' : 'One-time deposit · no automatic balance charge']];
+      ['Reservation deposit', '$100 USD · fully refundable'], ['Tax', 'Applicable tax, if any, calculated at checkout'], ['Payment', test ? 'Stripe test checkout · no real charge' : 'One-time deposit · no automatic balance charge']];
     form.querySelector('[data-order]').replaceChildren(...entries.map(([label, value]) => {
       const row = document.createElement('div'), dt = document.createElement('dt'), dd = document.createElement('dd');
       dt.textContent = label; dd.textContent = value; row.append(dt, dd); return row;
@@ -83,7 +83,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
     }
     back.hidden = next === 'configure';
     submit.disabled = false;
-    submit.textContent = next === 'configure' ? 'Review reservation ↗' : test ? 'Continue to Stripe test checkout ↗' : 'Continue to pay $100 ↗';
+    submit.textContent = next === 'configure' ? 'Review reservation ↗' : test ? 'Continue to Stripe test checkout ↗' : `Continue to ${provider} checkout ↗`;
     note.textContent = test ? 'Test mode. Use Stripe test payment details only.' : `${provider} confirms your order after checkout. Returning here does not confirm or cancel a reservation.`;
     if (next === 'review') renderOrder();
     if (focus) { form.querySelector('#rv-title').focus({preventScroll: true}); form.scrollTop = 0; }

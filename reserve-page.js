@@ -1,4 +1,4 @@
-import {installReservationPayments} from './reserve-payments.js?v=launch-20261108';
+import {installReservationPayments} from './reserve-payments.js?v=checkout-clarity-20261108';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 
@@ -29,19 +29,12 @@ function start(sec) {
     form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy + ' preview price' : '$0 monthly lease fee · 25% operator profit share'} · $100 refundable deposit`;
   }
 
-  // a size card: hover (mouse) or choose it, and the stage goes to that trailer
+  // Only a deliberate radio choice changes the reservation and its preview.
   for (const i of sizes) {
-    const card = i.closest('label');
     i.addEventListener('change', () => { show(i.value); sec.dispatchEvent(new CustomEvent('rs:enter', {detail: i.value})); });
-    let t = 0;
-    card.addEventListener('pointerenter', e => {
-      if (e.pointerType !== 'mouse') return;
-      t = setTimeout(() => { if (!i.checked || sec.dataset.mode !== 'viewer') { show(i.value); sec.dispatchEvent(new CustomEvent('rs:enter', {detail: i.value})); } }, 160);
-    });
-    card.addEventListener('pointerleave', () => clearTimeout(t));
   }
   for (const i of plans) i.addEventListener('change', summary);
-  sec.addEventListener('rs:size', e => show(e.detail));   // hovering a trailer on the stage picks it here too
+  sec.addEventListener('rs:size', e => show(e.detail));   // explicit stage clicks select a size too
 
   const params = new URLSearchParams(location.search);
   const requestedPlan = params.get('plan');

@@ -5,7 +5,7 @@
 // need to hover over the 16ft one for it to transition". The exact film trailers (tools/export_viewer_glb.py), on the
 // round stage, from the fleet film's camera. Hover a trailer: it comes forward under the light and the camera flies to
 // it; then the cursor turns the view all the way round and from low to overhead; a click locks it (again to unlock).
-// The other trailer waits in a small card on the left: hovering it switches.
+// The other trailer waits in a small card on the left: clicking it switches.
 // 10-29 owner: "I want the 3d trailer page to not be on the scroll down part, that should be a new page" -> reserve.html
 // (data-page="reserve"): the stage fills the left column, the size cards and checkout sit in a rail on the right; the
 // rail and the stage talk through two events on the section: 'rs:enter' (go to a size) and 'rs:size' (size shown).
@@ -450,7 +450,7 @@ function start(sec) {
     dirty = true;
   }
 
-  // ---- pointer: hover a trailer to go to it; then the cursor turns the view; click locks
+  // ---- pointer: click a trailer to select it; then the cursor turns the view; click locks
   // 10-30 owner: "I want that to follow everywhere even when off the screen unless clicked off, I want it to follow even
   // when its selecting on the trailer. They have to click when they want a solid move" -> the cursor steers from anywhere
   // on the page (the rail and its cards, the masthead, the trailer itself) on every page and variant, not only variant B;
@@ -481,7 +481,7 @@ function start(sec) {
     if (mode === 'overview') {
       const s = pick(e);
       if (!fromPage) renderer.domElement.style.cursor = s ? 'pointer' : '';
-      if (s !== hover) { light(s); if (s) setPanel(s); clearTimeout(intent); if (s) intent = setTimeout(() => enter(s), 380); }
+      if (s !== hover) light(s); // hover is visual feedback; only a click selects
       return;
     }
     if (locked || overCopy(e)) return;
@@ -506,7 +506,6 @@ function start(sec) {
   });
   renderer.domElement.addEventListener('pointerleave', () => { if (mode === 'overview') { light(null); clearTimeout(intent); } });
   back?.addEventListener('click', leave);
-  other?.addEventListener('pointerenter', e => { if (e.pointerType === 'mouse') enter(other.dataset.size); });   // hover = switch
   other?.addEventListener('click', () => enter(other.dataset.size));
   let pending = sec.dataset.open || '';                // the reserve page's rail: go to a size (before the models load: on arrival)
   sec.addEventListener('rs:enter', e => { if (T[e.detail]) enter(e.detail); else pending = e.detail; });

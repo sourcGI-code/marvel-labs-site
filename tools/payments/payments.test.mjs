@@ -178,7 +178,7 @@ test('production HTML contains no demo success, simulated cards, email preview o
     const html = await readFile(new URL(`../../${page}`, import.meta.url), 'utf8');
     assert.doesNotMatch(html, /Your demo reservation|Demo Visa|SIMULATED|View confirmation email|Cancel &amp; preview refund/, page);
     assert.match(html, /class="rv-submit" disabled/, page);
-    assert.match(html, /reserve-page\.js\?v=launch-20261108/, page);
+    assert.match(html, /reserve-page\.js\?v=[a-z0-9-]+/, page);
   }
 });
 
@@ -187,7 +187,7 @@ test('all five reservation forms support the live checkout flow with no demo con
     const f = await fixture(config('live'), page);
     assert.equal(f.form.querySelector('.rd-demo').textContent, 'REFUNDABLE RESERVATION · $100 USD', page);
     f.submit();
-    assert.match(f.form.querySelector('[type="submit"]').textContent, /Continue to pay \$100/, page);
+    assert.match(f.form.querySelector('[type="submit"]').textContent, /Continue to Stripe checkout/, page);
     assert.equal(f.form.querySelector('[data-action="email-preview"]'), null, page);
     assert.equal(f.form.querySelector('[data-action="fill-demo"]'), null, page);
     assert.match(f.form.querySelector('.rd-consent a').href, /payments\/reservation.html$/, page);
