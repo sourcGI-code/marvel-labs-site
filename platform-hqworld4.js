@@ -17,7 +17,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
  const livePreview=document.body.dataset.sceneSource!=='accepted-films'&&false /* live authoring is local-only */;
  let recorded,deliveryVisible=false,lastMix='';
  let p=readProgress(),active=isActive(),frame=0,auto=false,autoStarted=false,available=true,playRequest=0,state={},lastCopy='',previousP=p;
- let opening,cargo,livePromise,liveReady=false,liveError=false,prepareTimer=0,liveMode='',openedOnce=false;
+ let opening,cargo,livePromise,liveReady=false,liveError=false,liveMode='',openedOnce=false;
  const motion=createScrollMotion(p);
  // Reproject fleet labels during the short intro framing release, including paused seeks.
  host.addEventListener('hero-frame-change',request);
@@ -25,13 +25,11 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
  function pinPlayback(value){p=motion.snap(value);playbackTarget={value,read:readProgress()};request();}
  const film=createOpeningFilm(host,{reduced,enabled:active,onChange(){
   if(film.failed)ensureLive();
-  else if(film.playing&&film.bufferedAhead>=1.8&&!prepareTimer&&!livePromise)prepareTimer=setTimeout(ensureLive,350);
   request();
  }});
  async function ensureLive(){
   if(!active)return;
   if(livePromise||liveError)return livePromise;
-  clearTimeout(prepareTimer);
   livePromise=(async()=>{
    if(!livePreview){
     recorded=await createRecordedScene(canvas,{name:'cargo',maxSeconds:18,onChange:request});
@@ -70,7 +68,9 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
   arrivalReveal.update({active,progress:p,time:film.presentedTime,failed:film.failed||liveError,ready:film.ready,deliveryVisible,live:livePreview,blocked:document.body.dataset.autoplayBlocked==='true'});
   if(recorded){recorded.setVisible(deliveryVisible||reduced.matches);recorded.video.style.opacity=deliveryVisible||reduced.matches?'1':'0';}
   host.classList.toggle('film-ready',film.ready&&!reduced.matches);
-  if(active&&(p>=.12||reduced.matches||film.failed))ensureLive();
+  // The opening can autoplay to .25. Fetch the cargo film only when the
+  // visitor enters its chapter, explicitly starts it, or needs the fallback.
+  if(active&&(continuation||reduced.matches||film.failed))ensureLive();
   $('platform-status').hidden=!liveError&&(!continuation||liveReady);
   if(!liveError&&!liveReady&&continuation)$('platform-status').textContent='Loading the trailer film';
   const mix=`${!livePreview?100:film.ready&&!reduced.matches?filmOpacity*100:0}%`;if(mix!==lastMix){lastMix=mix;document.body.style.setProperty('--opening-mix',mix);}
@@ -164,6 +164,6 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
  }
  else if(review.has('live-preview')&&review.has('progress')){const at=Number(review.get('progress'));if(Number.isFinite(at))window.__platform.seek(at);}
  else if(p<.01)start();
- if(reduced.matches||film.failed||p>=.12)ensureLive();
+ if(reduced.matches||film.failed||p>.25)ensureLive();
  return api;
 }

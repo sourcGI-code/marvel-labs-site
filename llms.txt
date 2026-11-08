@@ -4,6 +4,7 @@ Marvel Labs Inc. develops autonomous microfactories. https://marvellabs.shop/ is
 
 ## Authoritative public information
 - [Overview](https://marvellabs.shop/overview.html)
+- [Physical AI and microfactory technology explained](https://marvellabs.shop/technology.html)
 - [16 ft model](https://marvellabs.shop/trailer-16.html)
 - [20 ft model](https://marvellabs.shop/trailer-20.html)
 - [Operating requirements and pending specifications](https://marvellabs.shop/specifications.html)
@@ -23,5 +24,8 @@ Preview Buy prices: 16 ft $44,999; 20 ft $49,999. Proposed operator shares are 7
 Target delivery: Spring 2027, not guaranteed; timing is confirmed separately. Nominal footprints: 16 ft × 7 ft and 20 ft × 8.5 ft. Both have a 6 ft 2½ in factory layout, with 9 ft 9½ in and 13 ft 9½ in rear cargo respectively. Usable clearances, weights, payload and towing requirements are pending.
 
 Suitable collected grass is the development focus; validated feedstock limits, power, runtime, output, reliability and operating costs have not been published. Leaves and food waste are not validated inputs in the published material. Films and product images illustrate the intended design and workflow. App data is illustrative. The $300 example assumes 20 sales at an illustrative $15 gross operator earnings each, before operator expenses; it is not measured output, a forecast, or a plan-specific return.
+
+## Technology terminology
+The trailer concept connects physical AI, autonomous microfactories, mobile manufacturing and distributed manufacturing. Suitable collected grass is the biomass-upcycling development focus; circular manufacturing is an intended approach, not a quantified environmental result. Robotics, automation and computer vision are explained on the technology page; no complete validated trailer specification is implied. The website assistant uses prepared answers, not a live LLM integration, machine controller or payment agent. Marvel Crew app data is illustrative.
 
 This file is a navigation aid, not a special search-ranking requirement. The linked public pages and current policies are authoritative.

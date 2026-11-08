@@ -98,6 +98,36 @@ test('website assistant acknowledges real payments and distinguishes final lease
   }
 });
 
+test('cargo loading waits for its chapter while explicit playback and fallback remain available',async()=>{
+  const source=(await read('platform-hqworld4.js')).replace(/^import .*;\n/gm,'').replace('export async function createPlatform','async function createPlatform');
+  async function fixture({reduced=false,failed=false}={}) {
+    const dom=new JSDOM(await read('index.html'),{url:'https://marvellabs.shop/'});
+    const {document}=dom.window;
+    let progress=.18,loads=0,callbacks=[],timers=[],changed;
+    const video=document.createElement('video');
+    const film={video,failed,ready:!failed,playing:true,bufferedAhead:3,time:7.2,presentedTime:7.2,seek(){},opacity(){},pause(){},setActive(){},resize(){},retry(){},async play(){return true;}};
+    const context={window:dom.window,document,location:dom.window.location,history:dom.window.history,URL,URLSearchParams,console,
+      matchMedia:()=>({matches:reduced}),addEventListener:dom.window.addEventListener.bind(dom.window),
+      requestAnimationFrame:fn=>{callbacks.push(fn);return callbacks.length;},setTimeout:fn=>{timers.push(fn);return timers.length;},clearTimeout(){},
+      createFleetLabelMotion:()=>({update(){}}),createArrivalReveal:()=>({update(){},clear(){}}),
+      createScrollMotion:()=>({snap:v=>v,step:v=>v,moving:false}),loadFilmSources:async()=>{},
+      createOpeningFilm:(_,options)=>{changed=options.onChange;return film;},filmPose:v=>v,filmDuration:10,DELIVERY_END:.885,cargoProgress:v=>Math.max(0,(v-.25)/.635),revealDetails(){},
+      createRecordedScene:async()=>{loads++;return {ready:true,atTarget:true,failed:false,video:document.createElement('video'),duration:18,draw:()=>({labels:[],split:0}),setVisible(){},setActive(){},async retry(){}};}
+    };
+    vm.createContext(context);vm.runInContext(source+'\nthis.makePlatform=createPlatform;',context);
+    const api=await context.makePlatform(document.querySelector('#hero-canvas'),{readProgress:()=>progress,writeProgress:v=>{progress=v;},isActive:()=>true,paused:true});
+    async function flush(){for(let i=0;i<4;i++){await Promise.resolve();const current=callbacks;callbacks=[];current.forEach(fn=>fn(i*16));const pending=timers;timers=[];pending.forEach(fn=>fn());}}
+    return {api,flush,changed,loads:()=>loads,progress:v=>{progress=v;api.setProgress();},close:()=>dom.window.close()};
+  }
+  const page=await fixture();
+  page.changed();await page.flush();assert.equal(page.loads(),0,'buffered opening must not preload cargo');
+  page.progress(.25);await page.flush();assert.equal(page.loads(),0,'autoplay ending must not preload cargo');
+  page.progress(.27);await page.flush();assert.equal(page.loads(),1,'entering the cargo chapter loads it');
+  page.progress(.6);await page.flush();assert.equal(page.loads(),1,'the chapter reuses the existing player');page.close();
+  const playback=await fixture();await playback.api.preparePlayback({progress:.25});await playback.flush();assert.equal(playback.loads(),1);playback.close();
+  for(const options of [{reduced:true},{failed:true}]){const fallback=await fixture(options);await fallback.flush();assert.equal(fallback.loads(),1);fallback.close();}
+});
+
 test('confirmed zero monthly lease fee stays separate from the reservation and operating costs',async()=>{
   for(const file of ['index.html','overview.html','reserve.html','trailer-16.html','trailer-20.html','economics.html','reservation-help.html']) {
     const doc=await documentFor(file),text=doc.body.textContent;

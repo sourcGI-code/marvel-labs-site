@@ -1,7 +1,15 @@
 User-agent: *
-Allow: /
 Disallow: /services/
 Disallow: /crew/
 Disallow: /crew-chat.html
+Allow: /
+
+# ChatGPT search access; preserve the same demo/service exclusions.
+# GPTBot training access remains governed by the wildcard rules above.
+User-agent: OAI-SearchBot
+Disallow: /services/
+Disallow: /crew/
+Disallow: /crew-chat.html
+Allow: /
 
 Sitemap: https://marvellabs.shop/sitemap.xml
