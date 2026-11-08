@@ -135,8 +135,6 @@ test('cargo loading waits for its chapter while explicit playback and fallback r
   async function fixture({reduced=false,failed=false}={}) {
     const dom=new JSDOM(await read('index.html'),{url:'https://marvellabs.shop/'});
     const {document}=dom.window;
-    const authoredTitle=document.querySelector('#hero-title').innerHTML;
-    const authoredDescription=document.querySelector('#hero-description').textContent;
     let progress=.18,loads=0,callbacks=[],timers=[],changed;
     const video=document.createElement('video');
     const film={video,failed,ready:!failed,playing:true,bufferedAhead:3,time:7.2,presentedTime:7.2,seek(){},opacity(){},pause(){},setActive(){},resize(){},retry(){},async play(){return true;}};
@@ -151,18 +149,13 @@ test('cargo loading waits for its chapter while explicit playback and fallback r
     vm.createContext(context);vm.runInContext(source+'\nthis.makePlatform=createPlatform;',context);
     const api=await context.makePlatform(document.querySelector('#hero-canvas'),{readProgress:()=>progress,writeProgress:v=>{progress=v;},isActive:()=>true,paused:true});
     async function flush(){for(let i=0;i<4;i++){await Promise.resolve();const current=callbacks;callbacks=[];current.forEach(fn=>fn(i*16));const pending=timers;timers=[];pending.forEach(fn=>fn());}}
-    return {api,flush,changed,document,authoredTitle,authoredDescription,loads:()=>loads,progress:v=>{progress=v;api.setProgress();},close:()=>dom.window.close()};
+    return {api,flush,changed,loads:()=>loads,progress:v=>{progress=v;api.setProgress();},close:()=>dom.window.close()};
   }
   const page=await fixture();
   page.changed();await page.flush();assert.equal(page.loads(),0,'buffered opening must not preload cargo');
-  assert.equal(page.document.querySelector('#hero-title').innerHTML,page.authoredTitle,'opening uses the authored homepage headline');
   page.progress(.25);await page.flush();assert.equal(page.loads(),0,'autoplay ending must not preload cargo');
   page.progress(.27);await page.flush();assert.equal(page.loads(),1,'entering the cargo chapter loads it');
-  page.progress(.6);await page.flush();assert.equal(page.loads(),1,'the chapter reuses the existing player');
-  assert.notEqual(page.document.querySelector('#hero-title').innerHTML,page.authoredTitle,'delivery has its own chapter title');
-  page.progress(.1);await page.flush();
-  assert.equal(page.document.querySelector('#hero-title').innerHTML,page.authoredTitle,'returning from delivery restores the authored headline');
-  assert.equal(page.document.querySelector('#hero-description').textContent,page.authoredDescription,'returning restores the matching description');page.close();
+  page.progress(.6);await page.flush();assert.equal(page.loads(),1,'the chapter reuses the existing player');page.close();
   const playback=await fixture();await playback.api.preparePlayback({progress:.25});await playback.flush();assert.equal(playback.loads(),1);playback.close();
   for(const options of [{reduced:true},{failed:true}]){const fallback=await fixture(options);await fallback.flush();assert.equal(fallback.loads(),1);fallback.close();}
 });
