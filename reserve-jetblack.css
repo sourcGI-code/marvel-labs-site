@@ -1,0 +1,24 @@
+/* The familiar reservation rail with the colour studio's Jet black preview. */
+.rv.jetblack-stage .rv-show{background:#d8dbdd}
+.rv.jetblack-stage .rv-fade{display:none}
+.rv.jetblack-stage .rs-3d{bottom:145px;opacity:0}
+.rv.jetblack-stage.rs-live .rs-3d{opacity:1}
+.rv-jetblack-frame{display:block;width:100%;height:100%;border:0}
+.rv.jetblack-stage .rv-metrics{--ink:#202622;--muted:#566154;--line:#b8bfb8}
+.rv.jetblack-stage .rv-preview{bottom:170px}
+.rv.jetblack-stage .rv-preview figcaption{color:#566154}
+.rv-viewer-status{position:absolute;z-index:5;top:22px;right:26px;max-width:calc(100% - 40px);padding:10px 14px;background:#f7f7f2e8;border:1px solid #bcc4b9;color:#334133;font:12px/1.5 Arial,sans-serif}
+.rv-viewer-status[hidden],.rv-viewer-retry[hidden]{display:none}
+.rv-viewer-retry{display:block;margin-top:8px;border:1px solid #52674e;background:#fff;color:#26352b;padding:8px 12px;cursor:pointer;font:inherit}
+.rd-finish a{margin-top:7px;color:var(--accent);font-size:12px;text-decoration:underline;text-underline-offset:3px}
+@media(min-width:861px){
+ .rv.jetblack-stage .rs-3d{left:calc(var(--rail) + 2 * var(--gutter,4.5vw))}
+ .rv.jetblack-stage .rv-rail{background:rgba(10,14,16,.94)}
+}
+@media(max-width:860px){
+ body.reserve-page .rv.jetblack-stage .rv-show{height:68svh;min-height:490px}
+ body.reserve-page .rv.jetblack-stage .rs-3d{inset:0 0 136px}
+ .rv.jetblack-stage .rv-preview{inset:30px 10px 160px}
+ .rv.jetblack-stage .rv-metrics{padding-bottom:20px}
+ .rv-viewer-status{top:10px;right:10px;font-size:11px}
+}

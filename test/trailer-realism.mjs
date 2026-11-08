@@ -65,5 +65,5 @@ const source=fs.readFileSync(path.join(root,'trailer-colours.js'),'utf8');
 assert(source.includes("from './trailer-colour-source.js?v=realism-v2'"));
 assert(!source.includes('trailer-model-source.js'),'Comparison must not change the main viewer model source');
 assert(!source.includes('DRACOLoader'),'Uncompressed supplied files require no decoder');
-assert(fs.readFileSync(path.join(root,'trailer-colours.html'),'utf8').includes('trailer-colours.js?v=studio-v3'));
-console.log(JSON.stringify({passed:true,combinations,totalTreads,checks:['both files match the supplied GLBs','four modeled treads per trailer','physical metal and rubber properties preserved','all colour and finish combinations','calibrated black finish on body and roof','opaque bodies and antialiased artwork','comparison-only model source and cache revision']},null,2));
+assert(fs.readFileSync(path.join(root,'trailer-colours.html'),'utf8').includes('trailer-colours.js?v=site-jetblack-v1'));
+console.log(JSON.stringify({passed:true,combinations,totalTreads,checks:['both files match the supplied GLBs','four modeled treads per trailer','physical metal and rubber properties preserved','all colour and finish combinations','calibrated black finish on body and roof','opaque bodies and antialiased artwork','realism model source and cache revision without changing film assets']},null,2));

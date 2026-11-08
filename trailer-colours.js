@@ -17,6 +17,8 @@ const loadMessage=document.querySelector('#load-message');
 const retry=document.querySelector('#retry');
 const note=document.querySelector('#selection-note');
 let selection=readSelection(location.search);
+const embedded=document.documentElement.dataset.embedded==='true';
+function notifyParent(state){if(embedded&&parent!==window)parent.postMessage({type:'marvel:trailer-state',state,size:selection.size},location.origin);}
 let renderer,scene,camera,environment,loader,resizeObserver,current,composer,occlusion;
 let request=0,scheduled=0,view='hero',zoom=1,azimuth=2.22,elevation=.25;
 const cache=new Map(),pointers=new Map();
@@ -39,6 +41,7 @@ function fail(error){
   host.setAttribute('aria-busy','false');loadState.hidden=false;loadState.classList.add('failed');
   loadMessage.textContent='The 3D preview could not load. Try again, or enable hardware acceleration in your browser.';
   retry.hidden=false;
+  notifyParent('error');
 }
 
 async function studioEnvironment(){
@@ -149,6 +152,7 @@ async function selectSize(){
   if(current){current.root.visible=false;current.shadow.visible=false;}
   host.setAttribute('aria-busy','true');loadState.hidden=false;loadState.classList.remove('failed');retry.hidden=true;
   loadMessage.textContent=`Preparing the ${size} ft trailer…`;
+  notifyParent('loading');
   try{
     if(!cache.has(size)){
       const pending=loader.loadAsync(TRAILER_COLOUR_MODELS[size],event=>{
@@ -163,6 +167,7 @@ async function selectSize(){
     fitCamera();renderFrame();
     if(renderer.getContext().isContextLost())throw Error('WebGL context lost');
     host.setAttribute('aria-busy','false');loadState.hidden=true;updateUI();draw();
+    notifyParent('ready');
   }catch(error){if(id===request)fail(error);}
 }
 
@@ -240,4 +245,10 @@ retry.addEventListener('click',()=>{if(loader&&!renderer.getContext().isContextL
 window.addEventListener('popstate',()=>{const size=selection.size;selection=readSelection(location.search);updateUI();if(size!==selection.size&&loader)selectSize();else if(current){applyFinish(current.materials,selection);draw();}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)draw();});
 if(matchMedia('(pointer:coarse)').matches)document.querySelector('#view-hint').textContent='Drag to rotate · Pinch to zoom';
+if(embedded)window.addEventListener('message',event=>{
+  if(event.origin!==location.origin||event.source!==parent||event.data?.type!=='marvel:trailer-size'||!['16','20'].includes(event.data.size))return;
+  if(selection.size===event.data.size)return;
+  selection={...selection,size:event.data.size};updateUI();
+  if(loader)selectSize();
+});
 initialize().catch(fail);
