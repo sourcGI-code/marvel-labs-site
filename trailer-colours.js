@@ -1,6 +1,14 @@
 import * as THREE from 'three';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
-import {COLOURS, readSelection, materialRole, applyFinish} from './trailer-colour-materials.js?v=realism-v2';
+import {RGBELoader} from 'three/addons/loaders/RGBELoader.js';
+import {RectAreaLightUniformsLib} from 'three/addons/lights/RectAreaLightUniformsLib.js';
+import {EffectComposer} from 'three/addons/postprocessing/EffectComposer.js';
+import {RenderPass} from 'three/addons/postprocessing/RenderPass.js';
+import {GTAOPass} from 'three/addons/postprocessing/GTAOPass.js';
+import {OutputPass} from 'three/addons/postprocessing/OutputPass.js';
+import {addSurfaceDetail} from './trailer-surface-detail.js?v=studio-v3';
+import {createContactShadow} from './trailer-contact-shadow.js?v=studio-v3';
+import {COLOURS, readSelection, materialRole, applyFinish} from './trailer-colour-materials.js?v=studio-v3';
 import {TRAILER_COLOUR_MODELS} from './trailer-colour-source.js?v=realism-v2';
 
 const host=document.querySelector('#canvas-host');
@@ -9,7 +17,7 @@ const loadMessage=document.querySelector('#load-message');
 const retry=document.querySelector('#retry');
 const note=document.querySelector('#selection-note');
 let selection=readSelection(location.search);
-let renderer,scene,camera,environment,loader,resizeObserver,current;
+let renderer,scene,camera,environment,loader,resizeObserver,current,composer,occlusion;
 let request=0,scheduled=0,view='hero',zoom=1,azimuth=2.22,elevation=.25;
 const cache=new Map(),pointers=new Map();
 const views={hero:[2.22,.25],side:[Math.PI/2,.12],front:[Math.PI,.20],rear:[0,.20],detail:[2.04,.10]};
@@ -33,25 +41,34 @@ function fail(error){
   retry.hidden=false;
 }
 
-function studioEnvironment(){
-  const room=new THREE.Scene();room.background=new THREE.Color(0x555650);
-  const box=(w,h,position,intensity)=>{
-    const m=new THREE.Mesh(new THREE.PlaneGeometry(w,h),new THREE.MeshBasicMaterial({color:new THREE.Color(1,1,.97).multiplyScalar(intensity),side:THREE.DoubleSide,toneMapped:false}));
-    m.position.set(...position);m.lookAt(0,1,0);room.add(m);
-  };
-  // Broad, restrained softboxes define the curves without mirror-like outdoor
-  // objects appearing to sit inside the trailer's walls.
-  box(9,3,[-3,6,6],2.1);box(8,2,[2,5,-7],1.4);box(9,4,[0,9,0],1.7);
-  const generator=new THREE.PMREMGenerator(renderer);
-  const target=generator.fromScene(room,.08);
-  generator.dispose();room.traverse(o=>{o.geometry?.dispose();o.material?.dispose();});
-  return target;
+async function studioEnvironment(){
+  const hdr=await new RGBELoader().setDataType(THREE.FloatType).loadAsync('./assets/photographic-reserve-v1/courtyard-reflections.hdr');
+  // Preserve photographed light structure while removing coloured buildings
+  // from the reflection tint. Black paint stays neutral under the studio keys.
+  const pixels=hdr.image.data;
+  for(let i=0;i<pixels.length;i+=4){
+    const luminance=pixels[i]*.2126+pixels[i+1]*.7152+pixels[i+2]*.0722;
+    // A dark studio ceiling keeps the upper shell black; the photographed
+    // horizon still supplies varied reflections to the sides and running gear.
+    const row=Math.floor(i/4/hdr.image.width)/hdr.image.height;
+    const ceiling=.07+.93*THREE.MathUtils.smoothstep(row,.47,.55);
+    for(let c=0;c<3;c++)pixels[i+c]=(luminance*.92+pixels[i+c]*.08)*ceiling;
+  }
+  hdr.mapping=THREE.EquirectangularReflectionMapping;hdr.needsUpdate=true;
+  const generator=new THREE.PMREMGenerator(renderer),target=generator.fromEquirectangular(hdr);
+  hdr.dispose();generator.dispose();return target;
 }
+
+class TrailerOcclusion extends GTAOPass{
+  overrideVisibility(){super.overrideVisibility();this.scene.traverse(o=>{if(o.userData.colourStudioOverlay)o.visible=false;});}
+}
+
+function renderFrame(){if(composer)composer.render();else renderer.render(scene,camera);}
 
 function fitCamera(){
   if(!current)return;
   const {bounds}=current,center=bounds.getCenter(new THREE.Vector3());
-  if(view==='detail')center.y=.95;
+  if(view==='detail')center.copy(current.wheelFocus);
   const direction=new THREE.Vector3(Math.cos(azimuth)*Math.cos(elevation),Math.sin(elevation),Math.sin(azimuth)*Math.cos(elevation));
   const right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),direction).normalize();
   const up=new THREE.Vector3().crossVectors(direction,right).normalize();
@@ -63,7 +80,7 @@ function fitCamera(){
   }
   // Normal views fit the full hitch and rear. Only the deliberate detail view
   // crops the vehicle; the camera still stays outside its physical shell.
-  const radius=Math.max(5.8,distance*zoom*(view==='detail'?.66:1));
+  const radius=view==='detail'?2.7*zoom:Math.max(5.8,distance*zoom);
   camera.position.copy(center).addScaledVector(direction,radius);camera.lookAt(center);
   camera.near=.08;camera.far=120;camera.updateProjectionMatrix();
 }
@@ -72,13 +89,15 @@ function draw(){
   if(scheduled||!renderer)return;
   scheduled=requestAnimationFrame(()=>{
     scheduled=0;if(document.hidden||renderer.getContext().isContextLost())return;
-    fitCamera();renderer.render(scene,camera);
+    fitCamera();renderFrame();
   });
 }
 
 function resize(){
   const width=host.clientWidth,height=host.clientHeight;if(!width||!height||!renderer)return;
-  renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setSize(width,height,false);
+  const ratio=Math.min(2,Math.max(devicePixelRatio||1,1.5),Math.sqrt(4e6/(width*height)));
+  renderer.setPixelRatio(ratio);renderer.setSize(width,height,false);
+  composer?.setPixelRatio(ratio);composer?.setSize(width,height);
   camera.aspect=width/height;draw();
 }
 
@@ -92,7 +111,7 @@ function prepare(gltf){
       const material=source.isMeshPhysicalMaterial?source.clone():new THREE.MeshPhysicalMaterial();
       if(!source.isMeshPhysicalMaterial)THREE.MeshStandardMaterial.prototype.copy.call(material,source);
       material.name=source.name;material.side=THREE.DoubleSide;
-      material.flatShading=false;material.envMapIntensity=.7;
+      material.flatShading=false;material.envMapIntensity=.8;
       material.opacity=1;material.transparent=false;material.transmission=0;material.depthWrite=true;
       // Preserve the supplied normals, texture maps and physical material
       // extensions, including the separately authored metal and tire finishes.
@@ -101,25 +120,33 @@ function prepare(gltf){
         // baked white/cyan RGB so grey or green applies to text AND underline.
         material.onBeforeCompile=shader=>{shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>','#include <map_fragment>\n diffuseColor.rgb = diffuse;');};
         material.customProgramCacheKey=()=> 'marvel-single-ink-v1';
+        if(material.map){material.map.anisotropy=Math.min(16,renderer.capabilities.getMaxAnisotropy());material.map.needsUpdate=true;}
       }
+      if(role==='body'||role==='rubber')addSurfaceDetail(material,role==='body'?'paint':'rubber');
       material.userData.colourStudioRole=role;
       materials.push({material,role,authored:material.clone()});made.set(key,material);return material;
     };
     mesh.material=Array.isArray(mesh.material)?mesh.material.map(convert):convert(mesh.material);
     const roles=(Array.isArray(mesh.material)?mesh.material:[mesh.material]).map(m=>m.userData.colourStudioRole);
     mesh.castShadow=!roles.every(r=>r==='decal'||r==='stripe');mesh.receiveShadow=true;
+    mesh.userData.colourStudioOverlay=roles.every(r=>r==='decal'||r==='stripe');
     if(roles.includes('decal'))mesh.renderOrder=2;
   });
   root.updateMatrixWorld(true);
   const bounds=new THREE.Box3().setFromObject(root),center=bounds.getCenter(new THREE.Vector3());
-  root.position.sub(new THREE.Vector3(center.x,bounds.min.y-.065,center.z));root.updateMatrixWorld(true);
-  const result={root,materials,bounds:new THREE.Box3().setFromObject(root)};
-  root.visible=false;scene.add(root);return result;
+  root.position.sub(new THREE.Vector3(center.x,bounds.min.y-.002,center.z));root.updateMatrixWorld(true);
+  const wheelFocus=new THREE.Vector3();let wheels=0;
+  root.traverse(o=>{if(o.isMesh&&o.name.startsWith('Tread')){const p=new THREE.Box3().setFromObject(o).getCenter(new THREE.Vector3());if(p.z>0){wheelFocus.add(p);wheels++;}}});
+  if(wheels)wheelFocus.multiplyScalar(1/wheels);else wheelFocus.set(1,.5,1.2);
+  wheelFocus.y+=.12;
+  const shadow=createContactShadow(renderer,root);
+  const result={root,materials,shadow,wheelFocus,bounds:new THREE.Box3().setFromObject(root)};
+  root.visible=false;scene.add(root,shadow);return result;
 }
 
 async function selectSize(){
   const id=++request,size=selection.size;
-  if(current)current.root.visible=false;
+  if(current){current.root.visible=false;current.shadow.visible=false;}
   host.setAttribute('aria-busy','true');loadState.hidden=false;loadState.classList.remove('failed');retry.hidden=true;
   loadMessage.textContent=`Preparing the ${size} ft trailer…`;
   try{
@@ -132,8 +159,8 @@ async function selectSize(){
       cache.set(size,pending);
     }
     const model=await cache.get(size);if(id!==request)return;
-    current=model;applyFinish(model.materials,selection);model.root.visible=true;
-    fitCamera();renderer.render(scene,camera);
+    current=model;applyFinish(model.materials,selection);model.root.visible=true;model.shadow.visible=true;
+    fitCamera();renderFrame();
     if(renderer.getContext().isContextLost())throw Error('WebGL context lost');
     host.setAttribute('aria-busy','false');loadState.hidden=true;updateUI();draw();
   }catch(error){if(id===request)fail(error);}
@@ -171,25 +198,28 @@ function bindRotation(canvas){
   });
 }
 
-function initialize(){
+async function initialize(){
   renderer=new THREE.WebGLRenderer({antialias:true,alpha:false,powerPreference:'high-performance'});
-  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.AgXToneMapping;renderer.toneMappingExposure=1.05;
-  renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.outputColorSpace=THREE.SRGBColorSpace;renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1;
   renderer.domElement.tabIndex=0;renderer.domElement.setAttribute('role','img');host.append(renderer.domElement);
   renderer.domElement.addEventListener('webglcontextlost',event=>{event.preventDefault();fail(Error('WebGL context lost'));});
   renderer.domElement.addEventListener('webglcontextrestored',()=>location.reload());
-  scene=new THREE.Scene();scene.background=new THREE.Color(0xecebe6);
-  scene.fog=new THREE.Fog(0xecebe6,28,65);camera=new THREE.PerspectiveCamera(32,1,.08,120);
-  environment=studioEnvironment();scene.environment=environment.texture;
-  scene.add(new THREE.HemisphereLight(0xfffaf1,0x85897f,.8));
-  const key=new THREE.DirectionalLight(0xfffbf3,2.1);key.position.set(-3,8,6);key.castShadow=true;
-  key.shadow.mapSize.set(2048,2048);Object.assign(key.shadow.camera,{left:-7,right:7,top:7,bottom:-7,near:.5,far:25});
-  key.shadow.bias=-.0001;key.shadow.normalBias=.025;key.shadow.radius=3;scene.add(key);
-  const fill=new THREE.DirectionalLight(0xf4f7ff,.65);fill.position.set(4,4,-5);scene.add(fill);
-  const ground=new THREE.Mesh(new THREE.PlaneGeometry(160,160),new THREE.MeshStandardMaterial({color:0xe2e3db,roughness:.9,metalness:0}));
-  ground.rotation.x=-Math.PI/2;ground.position.y=-.01;ground.receiveShadow=true;scene.add(ground);
-  const stage=new THREE.Mesh(new THREE.CylinderGeometry(5.2,5.2,.06,128),new THREE.MeshStandardMaterial({color:0xcfd2c7,roughness:.84,metalness:0}));
-  stage.position.y=.02;stage.receiveShadow=true;scene.add(stage);
+  scene=new THREE.Scene();scene.background=new THREE.Color(0xd8dbdd);
+  scene.fog=new THREE.Fog(0xd8dbdd,22,58);camera=new THREE.PerspectiveCamera(32,1,.08,120);
+  environment=await studioEnvironment();scene.environment=environment.texture;
+  RectAreaLightUniformsLib.init();
+  function softbox(intensity,width,height,position,target=[0,1.3,0]){
+    const lamp=new THREE.RectAreaLight(0xffffff,intensity,width,height);lamp.position.set(...position);lamp.lookAt(...target);scene.add(lamp);
+  }
+  softbox(8,9,2.5,[-3,2.1,6]);softbox(6,8,2,[3,2,-6]);softbox(.4,7,2,[0,8,0]);softbox(4,4,2.5,[-7,2.2,0]);
+  scene.add(new THREE.HemisphereLight(0xf5f7ff,0x686a6c,2.5));
+  const groundMaterial=new THREE.MeshStandardMaterial({color:0xa7acaf,roughness:.87,metalness:0});addSurfaceDetail(groundMaterial,'floor');
+  const ground=new THREE.Mesh(new THREE.PlaneGeometry(160,160),groundMaterial);
+  ground.rotation.x=-Math.PI/2;ground.position.y=0;scene.add(ground);
+  composer=new EffectComposer(renderer,new THREE.WebGLRenderTarget(4,4,{type:THREE.HalfFloatType,samples:4}));
+  composer.addPass(new RenderPass(scene,camera));
+  occlusion=new TrailerOcclusion(scene,camera,4,4,undefined,{radius:.25,thickness:1,distanceFallOff:1,scale:1,samples:16},{radius:5,samples:16});
+  occlusion.blendIntensity=.85;composer.addPass(occlusion);composer.addPass(new OutputPass());
   loader=new GLTFLoader();
   bindRotation(renderer.domElement);resizeObserver=new ResizeObserver(resize);resizeObserver.observe(host);resize();
   updateUI();selectSize();
@@ -210,4 +240,4 @@ retry.addEventListener('click',()=>{if(loader&&!renderer.getContext().isContextL
 window.addEventListener('popstate',()=>{const size=selection.size;selection=readSelection(location.search);updateUI();if(size!==selection.size&&loader)selectSize();else if(current){applyFinish(current.materials,selection);draw();}});
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)draw();});
 if(matchMedia('(pointer:coarse)').matches)document.querySelector('#view-hint').textContent='Drag to rotate · Pinch to zoom';
-try{initialize();}catch(error){fail(error);}
+initialize().catch(fail);

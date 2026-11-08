@@ -8,8 +8,8 @@ export const COLOURS = Object.freeze({
   pearl: {label:'Pearl white', color:0xe4e3db, metalness:.04},
 });
 export const FINISHES = Object.freeze({
-  matte: {roughness:.58, specularIntensity:.4, clearcoat:.06, clearcoatRoughness:.42},
-  gloss: {roughness:.27, specularIntensity:.65, clearcoat:.8, clearcoatRoughness:.14},
+  matte: {roughness:.6, specularIntensity:.4, clearcoat:.05, clearcoatRoughness:.4},
+  gloss: {roughness:.24, specularIntensity:.65, clearcoat:.85, clearcoatRoughness:.12},
 });
 export function readSelection(search='') {
   const p=new URLSearchParams(search), pick=(key,values,fallback)=>Object.hasOwn(values,p.get(key))?p.get(key):fallback;
@@ -45,18 +45,17 @@ export function applyFinish(materials,selection) {
   for(const {material,role,authored} of materials){
     let spec=finishSpec(role,selection);
     if(authored){
-      // Restore the pack's material first, so a round trip through any colour
-      // returns to the exact supplied Jet black paint, metals and rubber.
+      // Keep differentiated metals and rubber; painted panels use the studio's
+      // calibrated paint, including the roof, for a consistent Jet black body.
       material.copy(authored);
       spec={opacity:1,transparent:false,depthWrite:true,depthTest:true,transmission:0};
       if(role==='body'){
-        if(selection.colour!=='black')Object.assign(spec,{color:COLOURS[selection.colour].color,metalness:COLOURS[selection.colour].metalness});
-        if(selection.finish==='gloss')Object.assign(spec,FINISHES.gloss);
+        Object.assign(spec,{color:COLOURS[selection.colour].color,metalness:COLOURS[selection.colour].metalness},FINISHES[selection.finish]);
       }
       if(role==='decal'||role==='stripe'){
         // Grey is the supplied artwork. Green adapts to lighter body colours.
         if(selection.decal==='green'||['silver','pearl'].includes(selection.colour))spec.color=finishSpec(role,selection).color;
-        if(role==='decal')Object.assign(spec,{alphaTest:.35,alphaToCoverage:true,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
+        if(role==='decal')Object.assign(spec,{transparent:true,alphaTest:.01,alphaToCoverage:false,depthWrite:false,polygonOffset:true,polygonOffsetFactor:-2,polygonOffsetUnits:-2});
       }
     }
     for(const [key,value] of Object.entries(spec)){

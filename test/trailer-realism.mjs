@@ -39,16 +39,18 @@ for(const size of ['16','20']){
     return {material,role,authored:material.clone()};
   });
   assert(entries.some(e=>e.material.name.includes('zinc plated')));
+  applyFinish(entries,defaults);
+  const defaultAppearance=entries.map(e=>appearance(e.material));
   for(const colour of Object.keys(COLOURS))for(const finish of Object.keys(FINISHES))for(const decal of ['grey','green']){
     applyFinish(entries,{colour,finish,decal,size});combinations++;
     for(const {material:m,role,authored:base} of entries){
-      assert.equal(m.opacity,1);assert.equal(m.transparent,false);assert.equal(m.transmission,0);
+      assert.equal(m.opacity,1);assert.equal(m.transparent,role==='decal');assert.equal(m.transmission,0);
       assert.equal(m.map,base.map,'Original texture reference retained');
       if(['hardware','rubber','lamp','interior'].includes(role))assert.deepEqual(appearance(m),appearance(base),'Metal, rubber and lamp finish must survive all colour controls');
       if(role==='body'){
-        if(colour==='black')assert.deepEqual(m.color.toArray(),base.color.toArray());
-        else assert.equal(m.color.getHex(),COLOURS[colour].color);
-        assert.equal(m.roughness,finish==='gloss'?FINISHES.gloss.roughness:base.roughness);
+        assert.equal(m.color.getHex(),COLOURS[colour].color,'All painted panels, including the roof, use the selected paint');
+        assert.equal(m.roughness,FINISHES[finish].roughness);
+        assert.equal(m.clearcoat,FINISHES[finish].clearcoat);
       }
       if(role==='decal'){assert.equal(m.depthWrite,false);assert(m.alphaTest>0);}
       else assert.equal(m.depthWrite,true);
@@ -57,11 +59,11 @@ for(const size of ['16','20']){
     assert(entries.filter(e=>e.role==='decal').every(e=>JSON.stringify(e.material.color.toArray())===JSON.stringify(ink)));
   }
   applyFinish(entries,defaults);
-  for(const {material,authored} of entries)assert.deepEqual(appearance(material),appearance(authored),'Default Jet black must exactly restore the supplied finish');
+  entries.forEach(({material},i)=>assert.deepEqual(appearance(material),defaultAppearance[i],'Returning to Jet black must restore the calibrated finish'));
 }
 const source=fs.readFileSync(path.join(root,'trailer-colours.js'),'utf8');
 assert(source.includes("from './trailer-colour-source.js?v=realism-v2'"));
 assert(!source.includes('trailer-model-source.js'),'Comparison must not change the main viewer model source');
 assert(!source.includes('DRACOLoader'),'Uncompressed supplied files require no decoder');
-assert(fs.readFileSync(path.join(root,'trailer-colours.html'),'utf8').includes('trailer-colours.js?v=realism-v2'));
-console.log(JSON.stringify({passed:true,combinations,totalTreads,checks:['both files match the supplied GLBs','four modeled treads per trailer','physical metal and rubber properties preserved','all colour and finish combinations','exact default material restoration','opaque bodies and masked decals','comparison-only model source and cache revision']},null,2));
+assert(fs.readFileSync(path.join(root,'trailer-colours.html'),'utf8').includes('trailer-colours.js?v=studio-v3'));
+console.log(JSON.stringify({passed:true,combinations,totalTreads,checks:['both files match the supplied GLBs','four modeled treads per trailer','physical metal and rubber properties preserved','all colour and finish combinations','calibrated black finish on body and roof','opaque bodies and antialiased artwork','comparison-only model source and cache revision']},null,2));
