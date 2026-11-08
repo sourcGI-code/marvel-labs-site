@@ -49,72 +49,68 @@ function fixture({reduced=false,realPlayer=false}={}){
     navigate(id){document.dispatchEvent(new window.CustomEvent('stage:navigate',{detail:{hash:'#'+id}}));active.track=document.getElementById(id);document.body.dataset.activeScene=id;progress=0;}};
 }
 
-test('a long first wheel gesture stays at normal speed; later gestures continue without seeking',()=>{
-  const f=fixture();
-  for(let i=0;i<50;i++){f.wheel(100);f.advance(20);}
-  assert.equal(f.api.step,1);assert.equal(f.rate(),1);assert.equal(f.starts(),1);assert.deepEqual(f.seeks,[]);
-  f.advance(300);f.wheel();f.advance(100);
-  assert.ok(f.rate()>1&&f.rate()<1.5,'acceleration eases into the next speed');
-  f.advance(1000);assert.equal(f.rate(),1.5);assert.equal(f.starts(),1);assert.deepEqual(f.seeks,[]);
-  for(let i=0;i<8;i++){f.advance(300);f.wheel();f.advance(1000);}
-  assert.equal(f.rate(),3);f.advance(5000);assert.equal(f.rate(),3,'release keeps the selected playback speed');f.close();
+function readingPanel(f,{top=0,max=300}={}){
+  const section=f.document.getElementById('story');section.style.overflowY='auto';
+  Object.defineProperties(section,{scrollHeight:{value:600+max},clientHeight:{value:600}});section.scrollTop=top;
+  return section;
+}
+
+test('a wheel event consumes the remaining reading content and immediately carries the excess into the next section',()=>{
+  const f=fixture();f.navigate('story');const section=readingPanel(f,{top:290});
+  f.wheel(120,{target:section});
+  assert.equal(section.scrollTop,300);assert.equal(f.document.body.dataset.activeScene,'inside');
+  assert.equal(f.seeks.length,1,'one handoff, without repeated wheel gestures');f.close();
 });
 
-test('trackpad inertia does not boost, while a fresh push during its tail does',()=>{
-  const f=fixture();
-  for(const delta of [100,75,50,32,18,10,6,3,1]){f.wheel(delta);f.advance(20);}
-  assert.equal(f.api.step,1);assert.equal(f.rate(),1);
-  f.wheel(80);f.advance(1200);assert.equal(f.api.step,2);assert.equal(f.rate(),1.5);f.close();
+test('reading content remains available and reversing at its top moves back immediately',()=>{
+  const f=fixture();f.navigate('story');const section=readingPanel(f);
+  f.wheel(120,{target:section});assert.equal(section.scrollTop,120);assert.equal(f.document.body.dataset.activeScene,'story');
+  f.advance(400);f.wheel(-160,{target:section});assert.equal(section.scrollTop,0);assert.equal(f.document.body.dataset.activeScene,'top');f.close();
 });
 
-test('one forward touch swipe or held key cannot produce multiple speed steps',()=>{
-  const f=fixture();
-  for(let swipe=0;swipe<2;swipe++){
-    f.touch('touchstart',500);for(let y=490;y>100;y-=10){f.touch('touchmove',y);f.advance(16);}f.touch('touchend',100);f.advance(1200);
-    assert.equal(f.rate(),swipe===0?1:1.5);
-  }
-  assert.equal(f.starts(),1);assert.deepEqual(f.seeks,[]);
-  f.navigate('inside');
-  for(let i=0;i<20;i++){f.active.track.dispatchEvent(new f.window.KeyboardEvent('keydown',{code:'ArrowDown',repeat:i>0,cancelable:true,bubbles:true}));f.advance(50);}
-  assert.equal(f.api.step,1);assert.equal(f.rate(),1);
-  f.active.track.dispatchEvent(new f.window.KeyboardEvent('keyup',{code:'ArrowDown',bubbles:true}));
-  f.active.track.dispatchEvent(new f.window.KeyboardEvent('keydown',{code:'ArrowDown',cancelable:true,bubbles:true}));f.advance(1200);assert.equal(f.rate(),1.5);f.close();
+test('a touch swipe can leave a reading panel at its bottom without starting another swipe',()=>{
+  const f=fixture();f.navigate('story');const section=readingPanel(f,{top:290});
+  f.touch('touchstart',500);f.touch('touchmove',470);
+  assert.equal(section.scrollTop,300);assert.equal(f.document.body.dataset.activeScene,'inside');
+  const count=f.seeks.length;f.touch('touchmove',200);assert.equal(f.seeks.length,count,'the same swipe cannot skip the next section');
+  f.touch('touchend',200);f.close();
 });
 
-test('navigation resets speed and reading panels, zoom, horizontal input and reduced motion retain native scrolling',()=>{
-  const f=fixture();f.wheel();f.advance(300);f.wheel();f.advance(1000);assert.equal(f.rate(),1.5);
-  f.navigate('inside');f.wheel();assert.equal(f.rate(),1);assert.equal(f.api.step,1);
-  assert.equal(f.wheel(120,{ctrlKey:true}).defaultPrevented,false);
-  assert.equal(f.wheel(20,{deltaX:120}).defaultPrevented,false);
-  f.navigate('story');const reading=f.document.getElementById('reading');reading.style.overflowY='auto';
-  Object.defineProperties(reading,{scrollHeight:{value:800},clientHeight:{value:200}});
-  assert.equal(f.wheel(120,{target:reading}).defaultPrevented,false);assert.equal(f.document.body.dataset.activeScene,'story');f.close();
-  const r=fixture({reduced:true});assert.equal(r.wheel().defaultPrevented,false);assert.equal(r.starts(),0);r.close();
+test('a reading section that fits on screen leaves on the next wheel gesture',()=>{
+  const f=fixture();f.navigate('story');readingPanel(f,{max:0});f.wheel();
+  assert.equal(f.document.body.dataset.activeScene,'inside');f.close();
 });
 
-test('reverse scrolling stops forward playback and the next forward gesture starts at normal speed',()=>{
-  const f=fixture();f.wheel();f.advance(300);f.wheel();f.advance(1000);assert.equal(f.rate(),1.5);
-  const before=f.progress();f.wheel(-10);f.advance(500);
-  assert.ok(f.progress()<before);assert.equal(f.playback.inspect().mode,'paused');
-  f.wheel();f.advance(1000);assert.equal(f.rate(),1);assert.equal(f.api.step,1);assert.equal(f.playback.inspect().mode,'playing');f.close();
+test('copying selected site text uses plain text, stops pending motion, and leaves scrolling usable',()=>{
+  const f=fixture();f.navigate('story');readingPanel(f,{max:0});
+  const section=f.document.getElementById('story'),p=f.document.createElement('p');p.textContent='Illustration only: 20 sales × $15 = $300 / day.';section.append(p);
+  p.dispatchEvent(new f.window.Event('selectstart',{bubbles:true}));
+  const range=f.document.createRange();range.selectNodeContents(p);const selection=f.document.getSelection();selection.addRange(range);
+  const types=[],copy=new f.window.Event('copy',{bubbles:true,cancelable:true});
+  Object.defineProperty(copy,'clipboardData',{value:{setData:(type,text)=>types.push([type,text])}});p.dispatchEvent(copy);
+  assert.equal(copy.defaultPrevented,true);assert.deepEqual(types,[['text/plain',p.textContent]]);
+  assert.equal(selection.toString(),p.textContent);assert.equal(f.playback.inspect().mode,'paused');
+  f.wheel();assert.equal(f.document.body.dataset.activeScene,'inside');f.close();
 });
 
-test('scrolling during initial media loading reuses the pending playback request',async()=>{
-  const f=fixture({realPlayer:true});f.playback.autoplay(f.active,{end:.25});
-  assert.equal(f.playback.inspect().mode,'loading');f.wheel();f.advance(300);f.wheel();
-  await f.settle();f.advance(1000);
-  assert.equal(f.prepared.length,1);assert.equal(f.starts(),1);assert.equal(f.pauses(),0);assert.equal(f.playback.inspect().mode,'playing');
-  assert.ok(Math.abs(f.videos[0].playbackRate-(5/7)*1.5)<.001);f.playback.pause();f.close();
+test('select all is limited to the visible section and never selects the huge animation spacers',()=>{
+  const f=fixture();f.navigate('story');const section=f.document.getElementById('story');section.innerHTML='<p>Workday opportunity</p>';
+  f.document.getElementById('inside').textContent='Other section';
+  const key=new f.window.KeyboardEvent('keydown',{code:'KeyA',ctrlKey:true,bubbles:true,cancelable:true});f.document.body.dispatchEvent(key);
+  assert.equal(key.defaultPrevented,true);assert.equal(f.document.getSelection().toString(),'Workday opportunity');f.close();
 });
 
-test('forward wheel input adopts actual intro playback without restarting and continues into cargo',async()=>{
-  const f=fixture({realPlayer:true});f.playback.autoplay(f.active,{end:.25});await f.settle();
-  assert.equal(f.playback.inspect().mode,'playing');assert.equal(f.starts(),1);
-  f.videos[0].currentTime=4;f.advance(16);const before=f.progress(),pauses=f.pauses();
-  f.wheel();f.advance(300);f.wheel();f.advance(1200);await f.settle();
-  assert.equal(f.prepared.length,1);assert.equal(f.starts(),1);assert.equal(f.pauses(),pauses);
-  assert.equal(f.progress(),before);assert.deepEqual(f.seeks,[]);assert.ok(Math.abs(f.videos[0].playbackRate-(5/7)*1.5)<.001);
-  f.videos[0].currentTime=10;f.videos[0].ended=true;f.advance(16);await f.settle();
-  assert.equal(f.prepared.length,2);assert.equal(f.videos[1].paused,false);assert.equal(f.videos[1].playbackRate,1.5);
-  f.playback.pause();f.close();
+test('native form editing, zoom, horizontal scrolling and reduced motion are not intercepted',()=>{
+  const f=fixture();f.navigate('story');readingPanel(f);const input=f.document.createElement('input');f.active.track.append(input);
+  const key=new f.window.KeyboardEvent('keydown',{code:'KeyA',ctrlKey:true,bubbles:true,cancelable:true});input.dispatchEvent(key);assert.equal(key.defaultPrevented,false);
+  assert.equal(f.wheel(120,{ctrlKey:true}).defaultPrevented,false);assert.equal(f.wheel(20,{deltaX:120}).defaultPrevented,false);f.close();
+  const r=fixture({reduced:true});assert.equal(r.wheel().defaultPrevented,false);r.close();
 });
+
+test('the restored film controls accelerate through their old steps and settle to normal speed on release',()=>{
+  const f=fixture();f.wheel();assert.equal(f.api.step,1);assert.equal(f.rate(),1);
+  f.advance(400);f.wheel();assert.equal(f.api.step,2);assert.equal(f.rate(),1.9);
+  f.advance(400);f.wheel();assert.equal(f.api.fast,true);f.advance(100);assert.ok(f.seeks.length>0,'the original fast scrubbing is restored');
+  f.advance(500);assert.equal(f.rate(),1);f.close();
+});
+

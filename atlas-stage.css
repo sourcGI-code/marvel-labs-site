@@ -2,7 +2,7 @@
 html.immersive{scrollbar-width:none;overscroll-behavior-y:none}
 html.immersive::-webkit-scrollbar{display:none}
 .immersive body{overscroll-behavior-y:none}
-.scene-slot,.scene-tail{pointer-events:none;width:1px}
+.scene-slot,.scene-tail{pointer-events:none;width:1px;-webkit-user-select:none;user-select:none}
 .immersive .stage-scene{position:fixed!important;inset:0!important;width:100%;height:100svh!important;min-height:0!important;margin:0;overflow:clip;visibility:hidden;opacity:0;z-index:2;pointer-events:none}
 .immersive .stage-scene:not([inert]){pointer-events:auto}
 /* Child video/overlay visibility must never escape an offscreen scene. */
