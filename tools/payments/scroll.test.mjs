@@ -8,11 +8,14 @@ import {DELIVERY_END} from '../../intro-timing.js';
 const root=new URL('../../',import.meta.url);
 const source=await readFile(new URL('continuous-scroll.js',root),'utf8');
 const playerSource=await readFile(new URL('scene-playback.js',root),'utf8');
+const openingSource=await readFile(new URL('opening-autoplay.js',root),'utf8');
 
-function fixture({reduced=false,realPlayer=false}={}){
-  const dom=new JSDOM('<body data-active-scene="top"><main><section id="top"></section><section id="story"><div id="reading">Text</div></section><section id="inside"></section></main><footer class="site-footer"></footer></body>',{url:'https://marvellabs.shop/',pretendToBeVisual:true});
+function fixture({reduced=false,realPlayer=false,hidden=false,opening=false,metadataOnly=false,playError=null,initialProgress=null,url='https://marvellabs.shop/'}={}){
+  const dom=new JSDOM('<body data-active-scene="top"><main><section id="top"></section><section id="story"><div id="reading">Text</div></section><section id="inside"></section></main><footer class="site-footer"></footer></body>',{url,pretendToBeVisual:true});
   const {window}=dom,{document}=window;
-  let now=1000,id=0,progress=realPlayer?0:.05,mode='paused',starts=0,pauses=0,rate=1;
+  Object.defineProperty(document,'hidden',{value:hidden,writable:true});
+  let loads=0;
+  let now=1000,id=0,progress=initialProgress??(realPlayer?0:.05),mode='paused',starts=0,pauses=0,rate=1;
   const frames=new Map(),timers=new Map(),seeks=[],rates=[],prepared=[],videos=[];
   const active={track:document.querySelector('#top'),view:{preparePlayback(){}}};
   const context={window,document,location:window.location,URLSearchParams,CustomEvent:window.CustomEvent,AbortController,DOMException,console,DELIVERY_END,
@@ -29,8 +32,9 @@ function fixture({reduced=false,realPlayer=false}={}){
   if(realPlayer){
     for(const duration of [10,18]){
       const video=document.createElement('video');
-      for(const [key,value] of Object.entries({duration,currentTime:0,readyState:4,paused:true,ended:false,seeking:false}))Object.defineProperty(video,key,{value,writable:true});
-      video.play=async()=>{starts++;video.paused=false;};video.pause=()=>{pauses++;video.paused=true;};videos.push(video);
+      for(const [key,value] of Object.entries({duration,currentTime:0,readyState:metadataOnly?1:4,paused:true,ended:false,seeking:false}))Object.defineProperty(video,key,{value,writable:true});
+      video.preload='metadata';video.load=()=>{loads++;};
+      video.play=async()=>{starts++;if(playError)throw new DOMException('Autoplay blocked',playError);video.readyState=4;video.paused=false;};video.pause=()=>{pauses++;video.paused=true;};videos.push(video);
     }
     active.view.preparePlayback=async({progress:p})=>{prepared.push(p);return p<.25?{video:videos[0],duration:10,start:0,end:.25}:{video:videos[1],duration:18,start:.25,end:DELIVERY_END,terminal:true};};
     active.view.setPlaybackProgress=()=>{};
@@ -40,12 +44,16 @@ function fixture({reduced=false,realPlayer=false}={}){
   }
   vm.runInContext(source.replace(/^import .*;\n/gm,'').replace('export function installBeatScroll','function installBeatScroll')+'\nthis.install=installBeatScroll;',context);
   const api=context.install({stage,playback,getActive:()=>active,readProgress:()=>progress});
+  if(opening){
+    vm.runInContext(openingSource.replace('export function installOpeningAutoplay','function installOpeningAutoplay')+'\nthis.installOpening=installOpeningAutoplay;',context);
+    context.installOpening({state:active,playback,readProgress:()=>progress,reduced:context.matchMedia('(prefers-reduced-motion: reduce)')});
+  }
   function advance(ms){const end=now+ms;while(now<end){now=Math.min(end,now+16);for(const [key,timer] of [...timers])if(timer.at<=now){timers.delete(key);timer.fn();}const queued=[...frames];frames.clear();queued.forEach(([,fn])=>fn(now));}}
   function wheel(deltaY=120,options={}){const event=new window.WheelEvent('wheel',{deltaY,cancelable:true,bubbles:true,...options});(options.target||active.track).dispatchEvent(event);return event;}
   function touch(type,y){const event=new window.Event(type,{bubbles:true,cancelable:true});Object.defineProperty(event,'touches',{value:type==='touchend'?[]:[{clientX:100,clientY:y}]});active.track.dispatchEvent(event);return event;}
   const settle=async()=>{for(let i=0;i<12;i++)await Promise.resolve();};
   return {api,playback,active,document,window,advance,wheel,touch,seeks,rates,prepared,videos,settle,progress:()=>progress,
-    rate:()=>rate,starts:()=>starts,pauses:()=>pauses,close:()=>dom.window.close(),
+    loads:()=>loads,rate:()=>rate,starts:()=>starts,pauses:()=>pauses,close:()=>dom.window.close(),
     navigate(id){document.dispatchEvent(new window.CustomEvent('stage:navigate',{detail:{hash:'#'+id}}));active.track=document.getElementById(id);document.body.dataset.activeScene=id;progress=0;}};
 }
 
@@ -114,3 +122,40 @@ test('the restored film controls accelerate through their old steps and settle t
   f.advance(500);assert.equal(f.rate(),1);f.close();
 });
 
+
+
+test('opening starts muted and inline without wheel input even when only metadata was preloaded',async()=>{
+  const f=fixture({realPlayer:true,opening:true,metadataOnly:true});await f.settle();
+  assert.equal(f.starts(),1);assert.equal(f.loads(),1);assert.equal(f.playback.inspect().mode,'playing');
+  assert.equal(f.videos[0].muted,true);assert.equal(f.videos[0].defaultMuted,true);assert.equal(f.videos[0].playsInline,true);
+  assert.equal(f.api.step,0,'autoplay does not count as a scroll gesture');
+  f.videos[0].currentTime=2;f.advance(16);assert.equal(f.progress(),.05,'decoded time advances the opening');
+  f.videos[0].currentTime=10;f.videos[0].ended=true;f.advance(16);await f.settle();
+  assert.equal(f.playback.inspect().mode,'paused');assert.equal(f.starts(),1,'later film stays lazy until requested');f.close();
+});
+
+test('background arrival waits for visibility and unfinished opening resumes after tab return and bfcache',async()=>{
+  const f=fixture({realPlayer:true,opening:true,hidden:true});await f.settle();assert.equal(f.starts(),0);
+  f.document.hidden=false;f.document.dispatchEvent(new f.window.Event('visibilitychange'));await f.settle();assert.equal(f.starts(),1);
+  f.videos[0].currentTime=3;f.advance(16);
+  f.document.hidden=true;f.document.dispatchEvent(new f.window.Event('visibilitychange'));await f.settle();assert.equal(f.playback.inspect().mode,'paused');
+  f.document.hidden=false;f.document.dispatchEvent(new f.window.Event('visibilitychange'));await f.settle();assert.equal(f.starts(),2);assert.ok(Math.abs(f.progress()-.075)<.00001);
+  f.window.dispatchEvent(new f.window.PageTransitionEvent('pagehide',{persisted:true}));assert.equal(f.playback.inspect().mode,'paused');
+  f.window.dispatchEvent(new f.window.PageTransitionEvent('pageshow',{persisted:true}));await f.settle();assert.equal(f.starts(),3);
+  f.window.dispatchEvent(new f.window.PageTransitionEvent('pageshow',{persisted:true}));await f.settle();assert.equal(f.starts(),3,'no duplicate playback');f.close();
+});
+
+test('opening respects user pause, reduced motion, deep links and completed restored positions',async()=>{
+  const f=fixture({realPlayer:true,opening:true});await f.settle();f.playback.pause();
+  f.window.dispatchEvent(new f.window.PageTransitionEvent('pagehide',{persisted:true}));f.window.dispatchEvent(new f.window.PageTransitionEvent('pageshow',{persisted:true}));await f.settle();assert.equal(f.starts(),1);f.close();
+  for(const options of [{reduced:true},{url:'https://marvellabs.shop/#story'},{url:'https://marvellabs.shop/?display=delivery'},{initialProgress:.3}]){
+    const r=fixture({realPlayer:true,opening:true,...options});await r.settle();assert.equal(r.starts(),0);r.close();
+  }
+  const restored=fixture({realPlayer:true,opening:true,initialProgress:.1});await restored.settle();assert.equal(restored.starts(),1);assert.equal(restored.videos[0].currentTime,4);restored.close();
+});
+
+test('browser autoplay refusal leaves a working play fallback and does not retry continuously',async()=>{
+  const f=fixture({realPlayer:true,opening:true,playError:'NotAllowedError'});await f.settle();
+  assert.equal(f.playback.inspect().mode,'paused');assert.equal(f.playback.inspect().blocked,true);
+  f.window.dispatchEvent(new f.window.PageTransitionEvent('pageshow',{persisted:true}));await f.settle();assert.equal(f.starts(),1);f.close();
+});

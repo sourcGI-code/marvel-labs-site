@@ -61,7 +61,9 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
     if(video.error){finish(new Error('Animation could not load. Refresh and try again.'));return;}
     if(video.readyState<1)return;
     if(!sought){sought=true;const time=Math.min(target,Math.max(0,video.duration-.04));if(Math.abs(video.currentTime-time)>.035)video.currentTime=time;}
-    if(video.readyState>=2&&!video.seeking)finish();
+    // play() requests decoded frames. Waiting for loadeddata first can deadlock
+    // a metadata-only preload, particularly on a fresh mobile visit.
+    if(!video.seeking)finish();
    }
    events.forEach(e=>video.addEventListener(e,check));signal.addEventListener('abort',cancel,{once:true});
    if(signal.aborted)cancel();else check();
@@ -76,6 +78,12 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
    if(token!==generation)return;
    if(!next?.video||!(next.duration>0))throw new Error('Animation is not ready. Press Play to retry.');
    segment=next;const progress=clamp((at-next.start)/(next.end-next.start));
+   next.video.muted=next.video.defaultMuted=true;next.video.playsInline=true;
+   // Promote only the requested film; later chapters retain their lazy loading.
+   if(next.video.preload!=='auto'){
+    next.video.preload='auto';
+    if(next.video.readyState<2)next.video.load();
+   }
    await waitForMedia(next.video,progress*next.duration,signal);
    if(token!==generation)return;
    next.video.dataset.timelinePlaying='true';
@@ -83,11 +91,10 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
    // is read from the decoded time, so captions and the hand-off stay in step.
    baseRate=(owner.track.id==='top'&&next.end<=.25+1e-6)?OPENING_RATE:1;
    next.video.playbackRate=playRate(baseRate,rateBoost);
-   // Only start once the rest of this part can download faster than it plays (playthrough.js): a first visit used to
-   // start at once and stall every half second. The intro's autoplay may wait for it (the poster and headline are up);
-   // a part started by a scroll waits at most 1.2 s (the stepper falls back to scrubbing at 1.5 s).
+   // The opening starts as soon as the browser can play it. Scrolled chapters
+   // retain their short buffering allowance before playback.
    const until=stopAt!==null?clamp((stopAt-next.start)/(next.end-next.start))*next.duration:next.duration;
-   await waitPlayable(next.video,{rate:playRate(baseRate,rateBoost),until,maxWait:autoplayEnd!==null?7000:1200,signal});
+   if(autoplayEnd===null)await waitPlayable(next.video,{rate:playRate(baseRate,rateBoost),until,maxWait:1200,signal});
    if(token!==generation)return;
    await next.video.play();
    if(token!==generation){if(segment?.video!==next.video)next.video.pause();return;}
@@ -156,9 +163,11 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
   // beat-scroll.js: still scrolling as the film nears its stop, so it runs on to a later stop without pausing.
   if(stopAt===null||mode==='paused'||!(target>stopAt))return false;
   stopAt=target;return true;
- },autoplay(next,{end=.25}={}){
-  if(autoplayed||mode!=='paused'||reduced.matches||!next?.view?.preparePlayback||getActive()!==next||readProgress(next)>.01)return false;
-  autoplayed=true;autoplayEnd=end;begin(next,0);
+ },autoplay(next,{end=.25,resume=false}={}){
+  if(!next?.view?.preparePlayback)return false;
+  const at=readProgress(next);
+  if((autoplayed&&!resume)||mode!=='paused'||document.hidden||reduced.matches||getActive()!==next||at>=end-1e-4||(!resume&&at>.01))return false;
+  autoplayed=true;autoplayEnd=end;begin(next,resume?at:0);
   // A phone still not playing 3 s after the attempt gets the pill while the media keeps loading.
   if(touchFirst.matches)blockTimer=setTimeout(()=>{blockTimer=0;if(mode!=='playing')markBlocked(true);},3000);
   return true;
