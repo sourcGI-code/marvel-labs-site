@@ -37,7 +37,7 @@ form.addEventListener('submit', event => {
     return;
   }
   const size = document.body.dataset.trailerSize;
-  const buyPrice = size === '16' ? '$44,999' : '$49,999.99';
+  const buyPrice = size === '16' ? '$44,999' : '$49,999';
   const plan = selection.value === 'buy' ? `Buy — ${buyPrice} / 75% operator profit share` : 'Free — $0 upfront / 25% operator profit share';
   const business = form.elements.business.value.trim();
   const subject = `Details request: ${size} ft trailer, ${selection.value === 'buy' ? 'Buy' : 'Free'} plan`;

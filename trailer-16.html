@@ -40,7 +40,7 @@
   <ol class="rd-steps" aria-label="Reservation steps"><li data-step="configure" aria-current="step"><span>01</span> Trailer</li><li data-step="review"><span>02</span> Review</li><li data-step="payment"><span>03</span> Payment</li></ol>
   <div data-panel="configure">
   <fieldset class="rv-group"><legend>Size</legend><div class="rv-cards">
-   <label class="rv-card"><input type="radio" name="size" value="20"><span><b>20 ft</b><small>8.5 ft wide · 13 ft 9½ in rear cargo<br>Room for more mowers.</small></span><span class="rv-price">$49,999.99<small>or $100 now</small></span></label>
+   <label class="rv-card"><input type="radio" name="size" value="20"><span><b>20 ft</b><small>8.5 ft wide · 13 ft 9½ in rear cargo<br>Room for more mowers.</small></span><span class="rv-price">$49,999<small>or $100 now</small></span></label>
    <label class="rv-card"><input type="radio" name="size" value="16" checked><span><b>16 ft</b><small>7 ft wide · 9 ft 9½ in rear cargo<br>Compact. Same factory, same sinks.</small></span><span class="rv-price">$44,999<small>or $100 now</small></span></label>
   </div><p class="rv-fine">Both carry the same enclosed factory. Layout lengths are nominal; usable clearance is confirmed in the final specification. <span class="hover">Hover a size to see it on the stage.</span><span class="tap">Tap a size to see it on the stage.</span></p></fieldset>
 <fieldset class="rv-group"><legend>Plan</legend><div class="rv-cards two">
@@ -77,8 +77,8 @@ menu.querySelectorAll('a').forEach(a => a.addEventListener('click', close));
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && !menu.hidden) { close(); toggle.focus(); } });
 
 </script>
-<script src="reserve-config.js?v=shopify-checkout-v2"></script>
-<script type="module" src="reserve-page.js?v=shopify-checkout-v2"></script>
+<script src="reserve-config.js?v=shopify-checkout-v3"></script>
+<script type="module" src="reserve-page.js?v=shopify-checkout-v3"></script>
 <script type="module" src="reserve-3d.js?v=mobile-layout-v1"></script>
 <script type="module" src="editor-runtime.js?v=owner-package-v2"></script>
 </body></html>

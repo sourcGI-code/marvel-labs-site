@@ -17,7 +17,7 @@ const topics = [
     'Want to see the 20 ft, or compare how the Buy and Lease plans work?'
   ], next:['Explore the 20 ft','Compare Buy and Lease'], action:{label:'Explore the 20 ft',href:'trailer-20.html?v=mirror-graphite-v1'}},
   {id:'plans', terms:['compare buy','buy or lease','buy and lease','which plan','two plans'], answer:[
-    'Buy is designed for an owner who wants the larger share of product profit: the operator keeps 75%, with Marvel receiving 25%. Preview purchase prices are $44,999 for the 16 ft and $49,999.99 for the 20 ft.',
+    'Buy is designed for an owner who wants the larger share of product profit: the operator keeps 75%, with Marvel receiving 25%. Preview purchase prices are $44,999 for the 16 ft and $49,999 for the 20 ft.',
     'The proposed Lease plan removes the upfront trailer purchase. The operator receives 25% of product profit and Marvel receives 75%. Final operating costs and lease terms still need to be confirmed.',
     'Which matters more for your business: keeping upfront spending down, or keeping the larger share of product profit?'
   ], next:['Keep upfront spending down','Keep the larger profit share']},
@@ -68,7 +68,7 @@ const topics = [
     'The current design shows a 6 ft 2½ in factory after the approved partition adjustment. Final usable clearances and the equipment layout need verification against the physical trailer.'
   ], next:['How much does the trailer cost?','What does Marvel supply?']},
   {id:'pricing', terms:['cost','price','buy','lease','free','purchase','upfront'], answer:[
-    'Current website preview prices are $44,999 for the 16 ft trailer and $49,999.99 for the 20 ft trailer. The proposed lease avoids an upfront trailer purchase and uses a different product-profit split.',
+    'Current website preview prices are $44,999 for the 16 ft trailer and $49,999 for the 20 ft trailer. The proposed lease avoids an upfront trailer purchase and uses a different product-profit split.',
     'Pricing, supplier economics, operating costs and lease terms are still being finalized. The current reservation flow is a demo and does not collect payment.'
   ], next:['What do I actually earn?','How does the reservation work?']},
   {id:'reservation', terms:['reserv','deposit','refundable','refund','pay','checkout','order now','100'], answer:[

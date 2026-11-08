@@ -1,4 +1,4 @@
-import {answerQuestion} from './crew-chat-answers.mjs?v=page-chat-v2';
+import {answerQuestion} from './crew-chat-answers.mjs?v=page-chat-v3';
 
 const form = document.querySelector('#chat-form');
 const input = document.querySelector('#chat-question');
