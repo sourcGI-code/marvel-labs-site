@@ -174,16 +174,16 @@ test('a stale demo config cannot enable a simulated production reservation', asy
 });
 
 test('production HTML contains no demo success, simulated cards, email preview or cancellation controls', async () => {
-  for (const page of ['reserve.html', 'reserve-studio.html', 'reserve-light-outdoor.html', 'reserve-light-white.html', 'reserve-light-reveal.html', 'trailer-16.html', 'trailer-20.html']) {
+  for (const page of ['reserve.html', 'reserve-studio.html', 'reserve-light-outdoor.html', 'reserve-light-white.html', 'reserve-light-reveal.html']) {
     const html = await readFile(new URL(`../../${page}`, import.meta.url), 'utf8');
     assert.doesNotMatch(html, /Your demo reservation|Demo Visa|SIMULATED|View confirmation email|Cancel &amp; preview refund/, page);
     assert.match(html, /class="rv-submit" disabled/, page);
-    assert.match(html, /reserve-page\.js\?v=shopify-checkout-v3/, page);
+    assert.match(html, /reserve-page\.js\?v=consistency-20261108/, page);
   }
 });
 
-test('all seven reservation pages support the live checkout flow with no demo controls', async () => {
-  for (const page of ['reserve.html', 'reserve-studio.html', 'reserve-light-outdoor.html', 'reserve-light-white.html', 'reserve-light-reveal.html', 'trailer-16.html', 'trailer-20.html']) {
+test('all five reservation forms support the live checkout flow with no demo controls', async () => {
+  for (const page of ['reserve.html', 'reserve-studio.html', 'reserve-light-outdoor.html', 'reserve-light-white.html', 'reserve-light-reveal.html']) {
     const f = await fixture(config('live'), page);
     assert.equal(f.form.querySelector('.rd-demo').textContent, 'REFUNDABLE RESERVATION · $100 USD', page);
     f.submit();
@@ -223,7 +223,7 @@ test('activation writes only public fields, generates the policy and refreshes e
     assert.equal(context.window.MARVEL_RESERVE.mode, 'stripe-test');
     const policy = await readFile(join(directory, 'payments/reservation.html'), 'utf8');
     assert.match(policy, /support@example.com/);
-    for (const page of ['reserve.html', 'reserve-studio.html', 'trailer-16.html', 'trailer-20.html', 'reserve-light-outdoor.html', 'reserve-light-white.html', 'reserve-light-reveal.html']) {
+    for (const page of ['reserve.html', 'reserve-studio.html', 'reserve-light-outdoor.html', 'reserve-light-white.html', 'reserve-light-reveal.html']) {
       const html = await readFile(join(directory, page), 'utf8');
       assert.match(html, /reserve-config\.js\?v=stripe-[a-f0-9]{12}/, page);
       assert.match(html, /reserve-page\.js\?v=stripe-[a-f0-9]{12}/, page);

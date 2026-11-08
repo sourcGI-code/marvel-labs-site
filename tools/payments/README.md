@@ -89,9 +89,13 @@ fallback was also verified. No payment was submitted during these checks.
 
 ## Verification and limits
 
-Run `npm ci && npm test` in this directory. Sixteen tests cover link validation,
-selection, consent, all seven reservation pages, and no demo fallback or fabricated
-on-site confirmation. These local tests do not process payments.
+Run `npm ci && npm test` in this directory. The payment suite has sixteen tests
+covering link validation, selection, consent, the five reservation forms, and no
+demo fallback or fabricated on-site confirmation. Seven public-content tests cover
+initial HTML, policy redirects, model pages, size/plan deep links, assistant answers,
+connection-aware media selection and the failed-viewer image fallback. These local
+tests do not process payments. The model pages now lead to the separate reservation
+form instead of duplicating it.
 
 The public Shopify product JSON independently confirms the four IDs, $100 prices,
 availability, no shipping, and no selling plans. Public policy pages return 200.
@@ -109,6 +113,46 @@ follow a website reservation button through review and consent to Shopify.
 Set `mode: 'unavailable'` and publish to stop new website checkouts. This does not
 cancel or refund existing Shopify orders or disable independently shared Shopify
 links. Never replace missing IDs with guesses or test fixtures.
+
+When changing reservation availability, update the initial HTML banner, payment
+note, metadata, overview, `llms.txt` and website assistant together with the config.
+The initial button stays disabled until runtime configuration validation completes;
+its disabled state is not a statement that reservations are closed.
+
+## Public information and media update — November 8, 2026
+
+`python3 scripts/build-public-content.py` (from the site root) generates the two
+model pages, About/Contact, specifications, economics, development status, help,
+legacy policy redirects and sitemap. It uses the current Shopify policies rather
+than maintaining another copy of legal terms. Homepage, overview and reservation
+copy are maintained alongside those pages. Keep the shared Organization identifier
+`https://marvellabs.com/#organization` consistent. No trailer Offer is marked as
+$100; that amount pays only the refundable reservation deposit.
+
+Monthly lease fees, physical operating specifications, production measurements,
+service responsibilities and final profit calculations remain explicitly pending.
+The delivery wording is a Spring 2027 target, not a commitment. Dated physical
+demonstrations and measured results require actual evidence from the team.
+
+The active workday videos now use `assets/workday-stream-v1/` with MP4 fast-start,
+30 fps and one-second keyframes. The timeline length remains 102.934 seconds.
+
+| Video | Original bytes | Standard bytes | Slow-connection bytes |
+| --- | ---: | ---: | ---: |
+| Desktop | 128,026,034 | 26,975,043 | 10,856,684 |
+| Mobile | 57,783,028 | 22,248,866 | 10,454,568 |
+
+`video-delivery.js` selects the smaller version on slow connections. Data Saver
+uses the static homepage; reduced-motion and video errors retain still images.
+The active video players use metadata preload and browser byte-range seeking;
+their whole-file Blob fetch fallback has been removed. The existing stylesheet
+is already minified; another minification pass produced no meaningful saving.
+
+Follow-up requiring separate access/evidence: the reciprocal corporate-site link
+and matching corporate structured data, Search Console/Bing verification and URL
+inspection, actual Core Web Vitals, and physical production/test documentation.
+The accessible local corporate project did not resolve in Sites, so the current
+corporate deployment was not overwritten with the older local copy.
 
 References: [Shopify cart permalinks](https://shopify.dev/docs/apps/build/checkout/create-cart-permalinks)
 and [checkout links](https://help.shopify.com/en/manual/checkout-settings/cart-permalink).

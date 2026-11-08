@@ -1,4 +1,4 @@
-import {installReservationPayments} from './reserve-payments.js?v=shopify-checkout-v3';
+import {installReservationPayments} from './reserve-payments.js?v=consistency-20261108';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 
@@ -26,7 +26,7 @@ function start(sec) {
   }
   function summary() {
     const s = size(), buy = plan() === 'buy';
-    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy : '$100 now'}`;
+    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy + ' preview price' : '25% operator profit share'} · $100 refundable deposit`;
   }
 
   // a size card: hover (mouse) or choose it, and the stage goes to that trailer
@@ -43,7 +43,10 @@ function start(sec) {
   for (const i of plans) i.addEventListener('change', summary);
   sec.addEventListener('rs:size', e => show(e.detail));   // hovering a trailer on the stage picks it here too
 
-  const open = new URLSearchParams(location.search).get('size') || sec.dataset.open;
+  const params = new URLSearchParams(location.search);
+  const requestedPlan = params.get('plan');
+  if (['buy', 'lease'].includes(requestedPlan)) for (const input of plans) input.checked = input.value === (requestedPlan === 'lease' ? 'free' : 'buy');
+  const open = params.get('size') || sec.dataset.open;
   show(SPEC[open] ? open : size());
   if (SPEC[open]) { sec.dataset.open = open; sec.dispatchEvent(new CustomEvent('rs:enter', {detail: open})); }
   installReservationPayments({sec, form, selection: () => ({size: size(), plan: plan() === 'buy' ? 'buy' : 'lease'})});

@@ -1,8 +1,8 @@
 import {createFleetLabelMotion} from './fleet-label-motion.js?v=2-nodip';
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=showcase-quality-v1';
-import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.js?v=showcase-quality-v1';
-import {loadFilmSources} from './film-sources-hqworld4.js?v=showcase-quality-v1';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=consistency-20261108';
+import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.js?v=consistency-20261108';
+import {loadFilmSources} from './film-sources-hqworld4.js?v=consistency-20261108';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';
 import {createScrollMotion} from './scroll-motion.js';
 import {setAnimatedTitle,revealDetails} from './editorial-motion.js?v=7';
@@ -85,7 +85,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
     // Recorded films: the poster stays until the opening has a decodable frame (phones that refused autoplay).
     liveMode='opening';if(!recorded||reduced.matches||film.ready)host.classList.add('scene-ready');
    }
-   copy('THE AUTONOMOUS MICROFACTORY TRAILER','Your next trailer.<br><em>A factory inside.</em>','More than a place for your mowers and equipment. Your trailer turns grass, leaves, and food waste into products, creating a new source of income for your business with every product it produces.');
+   copy('THE AUTONOMOUS MICROFACTORY TRAILER','Your next trailer.<br><em>A factory inside.</em>','A work trailer designed to carry your equipment and turn suitable collected grass into products. Earn a share of profit from products sold, under the agreed plan. The production system is in development.');
    $('platform-story').style.opacity='1';
    fleetLabels.update({inFleet:false,frameReady:false});$('capacity-summary').hidden=true;
   }else{

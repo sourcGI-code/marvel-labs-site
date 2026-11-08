@@ -1,4 +1,4 @@
-import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=showcase-quality-v1';
+import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=consistency-20261108';
 const clamp=v=>Math.max(0,Math.min(1,v));
 export const filmDuration=10;
 // The fast approach/impact is retained; the reveal settles sooner for the handoff.
@@ -7,38 +7,21 @@ export function filmFraming(width,height){const aspect=width/height,reference=wi
 export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
  const livePreview=document.body.dataset.sceneSource!=='accepted-films'&&new URLSearchParams(location.search).has('live-preview');
  if(livePreview)host.querySelectorAll('.arrival-poster,.scene-fallback').forEach(el=>el.style.display='none');
- const video=document.createElement('video');video.className='opening-film';video.muted=true;video.defaultMuted=true;video.playsInline=true;video.preload='auto';video.disablePictureInPicture=true;video.setAttribute('aria-hidden','true');video.tabIndex=-1;
- let failed=livePreview,ready=false,wanted=0,kind='',playing=false,generation=0,playRequest=0,controller,objectURL,mediaURL='',localPending=false,presentedTime=0;
+ const video=document.createElement('video');video.className='opening-film';video.muted=true;video.defaultMuted=true;video.playsInline=true;video.preload='metadata';video.disablePictureInPicture=true;video.setAttribute('aria-hidden','true');video.tabIndex=-1;
+ let failed=livePreview,ready=false,wanted=0,kind='',playing=false,generation=0,playRequest=0,presentedTime=0;
  const notify=()=>onChange?.();
- function seekable(time){for(let i=0;i<video.seekable.length;i++)if(time>=video.seekable.start(i)&&time<=video.seekable.end(i)+.04)return true;return false;}
  function usable(){return ready&&!failed;}
  function bufferedAhead(){for(let i=0;i<video.buffered.length;i++)if(video.currentTime>=video.buffered.start(i)-.05&&video.currentTime<=video.buffered.end(i))return video.buffered.end(i)-video.currentTime;return 0;}
- // Start directly from fast-start MP4 metadata. Only hosts without usable
- // seeking need a complete local copy, and only when the user actually seeks.
- async function localCopy(){
-  if(localPending||objectURL||failed)return;
-  localPending=true;const current=generation;
-  try{
-   const response=await fetch(mediaURL,{cache:'force-cache',signal:controller.signal});
-   if(!response.ok)throw Error('Opening film unavailable');
-   const blob=await response.blob();if(current!==generation)return;
-   objectURL=URL.createObjectURL(blob);ready=false;video.src=objectURL;video.load();
-  }catch(error){if(current===generation&&error.name!=='AbortError'){failed=true;ready=false;playing=false;video.style.opacity='0';notify();}}
-  finally{if(current===generation)localPending=false;}
- }
  function seek(){
   if(!ready||playing||video.dataset.timelinePlaying||video.seeking)return;
   if(wanted>=video.duration-.05&&video.currentTime>=video.duration-.05)return;
   const target=Math.min(wanted,Math.max(0,video.duration-.04));
   if(Math.abs(video.currentTime-target)<=.025)return;
-  if(seekable(target))video.currentTime=target;
-  else if(wanted>.05)localCopy();
+  video.currentTime=target;
  }
  function source(){
   const next=introFilmKind();if(!enabled||livePreview||kind===next||reduced.matches)return false;
-  video.pause();playing=false;playRequest++;kind=next;ready=false;failed=false;generation++;localPending=false;presentedTime=0;
-  controller?.abort();controller=new AbortController();
-  if(objectURL){URL.revokeObjectURL(objectURL);objectURL=null;}
+  video.pause();playing=false;playRequest++;kind=next;ready=false;failed=false;generation++;presentedTime=0;
   const selected=sceneFilmSource('opening',kind),revision=encodeURIComponent(selected.revision);
   video.poster=`${selected.base}/${kind}-poster.webp?v=${revision}`;
   const poster=host.querySelector('.arrival-poster');
@@ -52,7 +35,7 @@ export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
   video.dataset.filmQuality=selected.quality||'original';
   // The current manifest includes the approved 60 fps intro. Older ?fps=60
   // preview links must use this same trailer, not the retired preview film.
-  mediaURL=`${selected.base}/${selected.videoFile||kind+'.mp4'}?v=${revision}`;
+  const mediaURL=`${selected.base}/${selected.videoFile||kind+'.mp4'}?v=${revision}`;
   video.src=mediaURL;video.load();
   return true;
  }
@@ -63,7 +46,7 @@ export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
  video.addEventListener('seeked',()=>{presentedTime=video.currentTime;seek();notify();});
  video.addEventListener('timeupdate',()=>{if(!video.seeking){presentedTime=video.currentTime;notify();}});
  video.addEventListener('ended',()=>{presentedTime=video.currentTime;playing=false;notify();});
- video.addEventListener('error',()=>{if(!objectURL&&!localPending){localCopy();return;}failed=true;ready=false;playing=false;video.style.opacity='0';notify();});
+ video.addEventListener('error',()=>{failed=true;ready=false;playing=false;video.style.opacity='0';notify();});
  host.append(video);source();
  return {
   video,

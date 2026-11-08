@@ -1,206 +1,218 @@
 {
- "version": 1,
- "cargo": {
-  "base": "assets/owner-approved-fleet-neutral-v2",
-  "revision": "neutral-graphite-v2",
-  "desktop": {
-   "base": "assets/owner-approved-fleet-neutral-v2",
-   "revision": "neutral-graphite-v2",
-   "kind": "desktop",
-   "trueWorld": {
-    "version": 1,
-    "nativeWidth": 2560,
-    "nativeHeight": 1600,
-    "renderWidth": 4608,
-    "renderHeight": 2048,
-    "cropX": 1328,
-    "cropY": 224
-   },
-   "videoFile": "desktop.mp4",
-   "quality": "native-30fps",
-   "nativeVideo": {
-    "file": "desktop.mp4",
-    "width": 2304,
-    "height": 1024,
-    "framerate": 30,
-    "bitrate": 3020363,
-    "codec": "avc1.640032"
-   },
-   "compatibilityVideo": {
-    "file": "desktop.mp4",
-    "width": 2304,
-    "height": 1024,
-    "framerate": 30,
-    "bitrate": 3020363,
-    "codec": "avc1.640032",
-    "linearResolution": 1,
-    "verticalResolution": 1
-   },
-   "motionFps": 30,
-   "modelRevision": "owner-approved-trailer-v1"
+  "version": 1,
+  "cargo": {
+    "base": "assets/owner-approved-fleet-neutral-v2",
+    "revision": "neutral-graphite-v2",
+    "desktop": {
+      "base": "assets/owner-approved-fleet-neutral-v2",
+      "revision": "neutral-graphite-v2",
+      "kind": "desktop",
+      "trueWorld": {
+        "version": 1,
+        "nativeWidth": 2560,
+        "nativeHeight": 1600,
+        "renderWidth": 4608,
+        "renderHeight": 2048,
+        "cropX": 1328,
+        "cropY": 224
+      },
+      "videoFile": "desktop.mp4",
+      "quality": "native-30fps",
+      "nativeVideo": {
+        "file": "desktop.mp4",
+        "width": 2304,
+        "height": 1024,
+        "framerate": 30,
+        "bitrate": 3020363,
+        "codec": "avc1.640032"
+      },
+      "compatibilityVideo": {
+        "file": "desktop.mp4",
+        "width": 2304,
+        "height": 1024,
+        "framerate": 30,
+        "bitrate": 3020363,
+        "codec": "avc1.640032",
+        "linearResolution": 1,
+        "verticalResolution": 1
+      },
+      "motionFps": 30,
+      "modelRevision": "owner-approved-trailer-v1"
+    },
+    "videoFile": "mobile.mp4",
+    "quality": "native-30fps",
+    "motionFps": 30,
+    "nativeVideo": {
+      "file": "mobile.mp4",
+      "width": 1080,
+      "height": 2160,
+      "framerate": 30,
+      "bitrate": 2730767,
+      "codec": "avc1.640032"
+    },
+    "compatibilityVideo": {
+      "file": "mobile.mp4",
+      "width": 1080,
+      "height": 2160,
+      "framerate": 30,
+      "bitrate": 2730767,
+      "codec": "avc1.640032",
+      "linearResolution": 1,
+      "verticalResolution": 1
+    },
+    "modelRevision": "owner-approved-trailer-v1"
   },
-  "videoFile": "mobile.mp4",
-  "quality": "native-30fps",
-  "motionFps": 30,
-  "nativeVideo": {
-   "file": "mobile.mp4",
-   "width": 1080,
-   "height": 2160,
-   "framerate": 30,
-   "bitrate": 2730767,
-   "codec": "avc1.640032"
-  },
-  "compatibilityVideo": {
-   "file": "mobile.mp4",
-   "width": 1080,
-   "height": 2160,
-   "framerate": 30,
-   "bitrate": 2730767,
-   "codec": "avc1.640032",
-   "linearResolution": 1,
-   "verticalResolution": 1
-  },
-  "modelRevision": "owner-approved-trailer-v1"
- },
- "field": {
-  "base": "assets/owner-package-workday-v2",
-  "revision": "owner-package-v2",
-  "neighborhood": true,
-  "operator": true,
-  "timelineFrames": 3088,
-  "operatorStartFrame": 0,
-  "howItWorks": {
-   "fieldLeadFrames": 1416,
-   "deliveryStartFrame": 300,
-   "deliveryFrames": 1116
-  },
-  "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films-owner-package-20261105",
-  "kind": "desktop",
-  "videoFile": "desktop.mp4",
-  "motionFps": 30,
-  "modelRevision": "owner-approved-trailer-v1",
-  "packageRevision": "owner-package-v2"
- },
- "opening": {
-  "base": "assets/owner-approved-intro-smooth60-v4",
-  "revision": "smooth60-v4",
-  "desktop": {
-   "base": "assets/owner-approved-intro-smooth60-v4",
-   "revision": "smooth60-v4",
-   "kind": "desktop",
-   "trueWorld": {
-    "version": 1,
-    "nativeWidth": 2560,
-    "nativeHeight": 1600,
-    "renderWidth": 4608,
-    "renderHeight": 2048,
-    "cropX": 1328,
-    "cropY": 224
-   },
-   "videoFile": "desktop.mp4",
-   "quality": "interpolated-60fps",
-   "nativeVideo": {
-    "file": "desktop.mp4",
-    "width": 2304,
-    "height": 1024,
-    "framerate": 60,
-    "bitrate": 3459698,
-    "codec": "avc1.640032"
-   },
-   "compatibilityVideo": {
-    "file": "desktop.mp4",
-    "width": 2304,
-    "height": 1024,
-    "framerate": 60,
-    "bitrate": 3459698,
-    "codec": "avc1.640032",
-    "linearResolution": 1,
-    "verticalResolution": 1
-   },
-   "motionFps": 60,
-   "modelRevision": "owner-approved-trailer-v1"
-  },
-  "modelRevision": "owner-approved-trailer-v1",
-  "videoFile": "mobile.mp4",
-  "motionFps": 60,
-  "nativeVideo": {
-   "file": "mobile.mp4",
-   "width": 720,
-   "height": 1440,
-   "framerate": 60,
-   "bitrate": 3103290,
-   "codec": "avc1.640028"
-  },
-  "compatibilityVideo": {
-   "file": "mobile.mp4",
-   "width": 720,
-   "height": 1440,
-   "framerate": 60,
-   "bitrate": 3103290,
-   "codec": "avc1.640028",
-   "linearResolution": 1,
-   "verticalResolution": 1
-  },
-  "quality": "interpolated-60fps"
- },
- "fieldMobile": {
-  "base": "assets/workday-mobile-sharp-v1",
-  "revision": "workday-mobile-sharp-v1",
-  "neighborhood": true,
-  "operator": true,
-  "timelineFrames": 3088,
-  "operatorStartFrame": 0,
-  "howItWorks": {
-   "fieldLeadFrames": 1416,
-   "deliveryStartFrame": 300,
-   "deliveryFrames": 1116
-  },
-  "kind": "mobile",
-  "mediaBase": "assets/workday-mobile-sharp-v1",
-  "videoFile": "mobile.mp4",
-  "motionFps": 30,
-  "modelRevision": "owner-approved-trailer-v1",
-  "packageRevision": "owner-package-v2",
-  "nativeVideo": {
-   "file": "mobile.mp4",
-   "width": 1440,
-   "height": 900,
-   "framerate": 30,
-   "bitrate": 4490879,
-   "codec": "avc1.640028"
-  }
- },
- "fieldVariants": {
-  "static": {
-   "field": {
-    "base": "assets/how-it-works-v2/recorded/field",
-    "revision": "hiw-gloss4k",
+  "field": {
+    "base": "assets/owner-package-workday-v2",
+    "revision": "stream-20261108",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 3088,
     "operatorStartFrame": 0,
     "howItWorks": {
-     "fieldLeadFrames": 1416,
-     "deliveryStartFrame": 300,
-     "deliveryFrames": 1116
+      "fieldLeadFrames": 1416,
+      "deliveryStartFrame": 300,
+      "deliveryFrames": 1116
     },
-    "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films",
-    "kind": "desktop"
-   },
-   "fieldMobile": {
-    "base": "assets/how-it-works-v2/recorded/field",
-    "revision": "hiw-mobile-recovery-v1",
+    "mediaBase": "assets/workday-stream-v1",
+    "kind": "desktop",
+    "videoFile": "desktop.mp4",
+    "motionFps": 30,
+    "modelRevision": "owner-approved-trailer-v1",
+    "packageRevision": "owner-package-v2",
+    "liteVideoFile": "desktop-lite.mp4",
+    "quality": "adaptive-range-mp4",
+    "nativeVideo": {
+      "file": "desktop.mp4",
+      "width": 1600,
+      "height": 1000,
+      "framerate": 30,
+      "bitrate": 2300000,
+      "codec": "avc1.640028"
+    }
+  },
+  "opening": {
+    "base": "assets/owner-approved-intro-smooth60-v4",
+    "revision": "smooth60-v4",
+    "desktop": {
+      "base": "assets/owner-approved-intro-smooth60-v4",
+      "revision": "smooth60-v4",
+      "kind": "desktop",
+      "trueWorld": {
+        "version": 1,
+        "nativeWidth": 2560,
+        "nativeHeight": 1600,
+        "renderWidth": 4608,
+        "renderHeight": 2048,
+        "cropX": 1328,
+        "cropY": 224
+      },
+      "videoFile": "desktop.mp4",
+      "quality": "interpolated-60fps",
+      "nativeVideo": {
+        "file": "desktop.mp4",
+        "width": 2304,
+        "height": 1024,
+        "framerate": 60,
+        "bitrate": 3459698,
+        "codec": "avc1.640032"
+      },
+      "compatibilityVideo": {
+        "file": "desktop.mp4",
+        "width": 2304,
+        "height": 1024,
+        "framerate": 60,
+        "bitrate": 3459698,
+        "codec": "avc1.640032",
+        "linearResolution": 1,
+        "verticalResolution": 1
+      },
+      "motionFps": 60,
+      "modelRevision": "owner-approved-trailer-v1"
+    },
+    "modelRevision": "owner-approved-trailer-v1",
+    "videoFile": "mobile.mp4",
+    "motionFps": 60,
+    "nativeVideo": {
+      "file": "mobile.mp4",
+      "width": 720,
+      "height": 1440,
+      "framerate": 60,
+      "bitrate": 3103290,
+      "codec": "avc1.640028"
+    },
+    "compatibilityVideo": {
+      "file": "mobile.mp4",
+      "width": 720,
+      "height": 1440,
+      "framerate": 60,
+      "bitrate": 3103290,
+      "codec": "avc1.640028",
+      "linearResolution": 1,
+      "verticalResolution": 1
+    },
+    "quality": "interpolated-60fps"
+  },
+  "fieldMobile": {
+    "base": "assets/workday-mobile-sharp-v1",
+    "revision": "stream-20261108",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 3088,
     "operatorStartFrame": 0,
     "howItWorks": {
-     "fieldLeadFrames": 1416,
-     "deliveryStartFrame": 300,
-     "deliveryFrames": 1116
+      "fieldLeadFrames": 1416,
+      "deliveryStartFrame": 300,
+      "deliveryFrames": 1116
     },
-    "kind": "mobile"
-   }
+    "kind": "mobile",
+    "mediaBase": "assets/workday-stream-v1",
+    "videoFile": "mobile.mp4",
+    "motionFps": 30,
+    "modelRevision": "owner-approved-trailer-v1",
+    "packageRevision": "owner-package-v2",
+    "nativeVideo": {
+      "file": "mobile.mp4",
+      "width": 1440,
+      "height": 900,
+      "framerate": 30,
+      "bitrate": 1800000,
+      "codec": "avc1.640028"
+    },
+    "liteVideoFile": "mobile-lite.mp4",
+    "quality": "adaptive-range-mp4"
+  },
+  "fieldVariants": {
+    "static": {
+      "field": {
+        "base": "assets/how-it-works-v2/recorded/field",
+        "revision": "hiw-gloss4k",
+        "neighborhood": true,
+        "operator": true,
+        "timelineFrames": 3088,
+        "operatorStartFrame": 0,
+        "howItWorks": {
+          "fieldLeadFrames": 1416,
+          "deliveryStartFrame": 300,
+          "deliveryFrames": 1116
+        },
+        "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films",
+        "kind": "desktop"
+      },
+      "fieldMobile": {
+        "base": "assets/how-it-works-v2/recorded/field",
+        "revision": "hiw-mobile-recovery-v1",
+        "neighborhood": true,
+        "operator": true,
+        "timelineFrames": 3088,
+        "operatorStartFrame": 0,
+        "howItWorks": {
+          "fieldLeadFrames": 1416,
+          "deliveryStartFrame": 300,
+          "deliveryFrames": 1116
+        },
+        "kind": "mobile"
+      }
+    }
   }
- }
 }

@@ -1,5 +1,5 @@
 import {createRouteQuotes} from './route-quotes.js?v=yard-coverage-v1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=showcase-quality-v1';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=consistency-20261108';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
 import {createVisionOverlay} from './vision-overlay.js?v=screen-fit-v1';
 import {createScrollMotion} from './scroll-motion.js';
@@ -28,22 +28,22 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
   ['CAMERAS MEASURE THE YARD','Cameras measure.<br><em>You set the price.</em>','The trailer’s cameras turn the lawn, edging, hedges, beds and tree rings into a measured scope, so the estimate starts from numbers, not a guess.','CONCEPT DEMONSTRATION','A measured scope before you price'],
   ['RTK · SURVEY-GRADE GPS','Every measurement<br><em>pinned to the lot.</em>','Survey-grade GPS (RTK) ties each measurement to the property, so the scope still lines up the next time you pull up.','CONCEPT DEMONSTRATION','Site context you can return to'],
   ['AUTO QUOTE · YOU APPROVE IT','The survey becomes<br><em>a quote draft.</em>','The measured scope becomes an estimate and an email that shows the customer their yard before and after. Nothing goes out until you approve the price.','VISUAL DEMONSTRATION','No email is sent'],
-  ['MOW & BAG THE CLIPPINGS','Mow like always.<br><em>Bag the clippings.</em>','Nothing changes about the mowing. The clippings you bag go into the hopper and become the factory’s next sink.','FOR YOUR BUSINESS','Mowing income + a share of every sink sold'],
+  ['MOW & BAG THE CLIPPINGS','Mow like always.<br><em>Bag the clippings.</em>','The planned workflow uses suitable collected grass. Accepted input conditions and reliable production are still being validated.','FOR YOUR BUSINESS','Mowing income + the agreed share of profit on products sold'],
 
  ];
  // Work chapter, second half (owner 14:51): two beats and the closing line, nothing else. They appear only
  // while the installed field timeline carries `operator` states (the film with the person); until that film is
  // installed the Work copy above stays. No spec callouts during the beats (empty key hides #tour-spec).
- const grassIn=['GRASS IN · THE HOPPER','Grass in.','Off the mower. The chute folds out of the factory wall, takes the bagged clippings, and the factory starts on a sink.','',''];
- const chuteShut=['GRASS IN · FACTORY RUNNING','Chute shut.<br><em>Back to the truck.</em>','The chute folds away. The enclosed factory makes the sink on its own while you get on with the day.','',''];
- const productOut=['PRODUCT OUT · BOXED SINK','Sink out.','Open the side hatch. A finished sink, boxed and ready to ship, rides out on the conveyor.','',''];
+ const grassIn=['GRASS IN · THE HOPPER','Grass in.','The concept uses suitable collected grass loaded through a folding chute. Feedstock limits and the complete production cycle are being validated.','',''];
+ const chuteShut=['GRASS IN · FACTORY RUNNING','Chute shut.<br><em>Back to the truck.</em>','The planned process runs inside the enclosed factory. Unattended runtime and production performance still need validation.','',''];
+ const productOut=['PRODUCT OUT · BOXED SINK','Sink out.','The animation illustrates a boxed sink leaving through the side hatch. It is a workflow concept, not a measured production demonstration.','',''];
  const possibilities=['GRASS IN · PRODUCT OUT','Grass goes in.<br><em>Sinks come out.</em>','','',''];
  // How it works (owner 10-26): after the product comes out, a drop-off run to the post office, then the next job.
  const deliveryCaptions={
   A:['DROP IT OFF · THE UPS STORE','On your route.<br><em>No extra trip.</em>','Close up and drive. The boxed sink rides along to The UPS Store, on the way to the next job.','',''],
   B1:['AT THE UPS STORE','Hatch open.<br><em>Sink out.</em>','Parked at The UPS Store. The hatch opens and the boxed sink rolls out, packaged and ready to ship.','',''],
   B2:['HAND IT OVER','Into the store.<br><em>Onto the counter.</em>','Carry it in and hand it over. The clerk scans the box and it ships. You are back in the truck.','',''],
-  B3:['MARVEL CREW APP','Dropped off.<br><em>Confirmed on your phone.</em>','Marvel Crew confirms the drop-off on your phone the moment the box is handed over. Nothing to write down.','',''],
+  B3:['MARVEL CREW APP','Dropped off.<br><em>Confirmed on your phone.</em>','The app concept shows a drop-off record. The website uses example data; live carrier integration is not demonstrated.','',''],
   C:['BACK ON THE ROUTE','Shipped.<br><em>Next yard.</em>','The sink is on its way. You drive to the next job, where the next bag of clippings is waiting.','','']};
  const operatorCaptions=Object.fromEntries([
   ...['dismount','to bag','lift clippings','carry clippings','open chute','grass in','collect-grass','load-grass'].map(stage=>[stage,grassIn]),

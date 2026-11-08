@@ -9,23 +9,23 @@ const topics = [
   {id:'compact-fit', terms:['one mower','single mower','small crew','solo','compact setup'], answer:[
     'I’d start by looking at the 16 ft. Its 7 ft width and smaller overall footprint make it the compact option, with the same front factory concept as the 20 ft.',
     'The important check is your mower’s deck width and the room needed for tools, access and loading. A smaller footprint is useful only if your equipment fits comfortably.',
-    'Would you like to compare the Buy and Lease plans, or see the 16 ft reservation preview?'
-  ], next:['Compare Buy and Lease','Explore the 16 ft'], action:{label:'Explore the 16 ft',href:'trailer-16.html?v=mirror-graphite-v1'}},
+    'Would you like to compare the Buy and Lease plans, or see the 16 ft reservation options?'
+  ], next:['Compare Buy and Lease','Explore the 16 ft'], action:{label:'Explore the 16 ft',href:'trailer-16.html'}},
   {id:'large-fit', terms:['larger equipment','larger setup','two mowers','2 mowers','multiple mowers','big crew','large crew','more equipment'], answer:[
     'The 20 ft is the option to explore for more equipment room. It is 8.5 ft wide, with a larger rear equipment area and the same front factory concept.',
     'We’d still need to confirm your equipment dimensions, loaded weight and tow vehicle before calling it the right fit. More space should support your working day, not make loading harder.',
     'Want to see the 20 ft, or compare how the Buy and Lease plans work?'
-  ], next:['Explore the 20 ft','Compare Buy and Lease'], action:{label:'Explore the 20 ft',href:'trailer-20.html?v=mirror-graphite-v1'}},
+  ], next:['Explore the 20 ft','Compare Buy and Lease'], action:{label:'Explore the 20 ft',href:'trailer-20.html'}},
   {id:'plans', terms:['compare buy','buy or lease','buy and lease','which plan','two plans'], answer:[
     'Buy is designed for an owner who wants the larger share of product profit: the operator keeps 75%, with Marvel receiving 25%. Preview purchase prices are $44,999 for the 16 ft and $49,999 for the 20 ft.',
-    'The proposed Lease plan removes the upfront trailer purchase. The operator receives 25% of product profit and Marvel receives 75%. Final operating costs and lease terms still need to be confirmed.',
+    'The proposed Lease plan removes the upfront trailer purchase. The operator receives 25% of product profit and Marvel receives 75%. Monthly lease charges, duration, maintenance, insurance and return obligations still need to be confirmed in the final written agreement.',
     'Which matters more for your business: keeping upfront spending down, or keeping the larger share of product profit?'
   ], next:['Keep upfront spending down','Keep the larger profit share']},
   {id:'lease-fit', terms:['upfront spending down','lower upfront','no upfront','dont have money','cant afford','too expensive'], answer:[
     'Then the proposed Lease plan is the one to look at first. It is intended to let a crew use the trailer without buying it upfront, while earning 25% of product profit.',
     'That does not mean every operating cost disappears. The final agreement needs to explain supplies, shipping, maintenance and how profit is calculated so you can judge the full cost.',
-    'We can compare trailer sizes next, or you can explore the reservation preview.'
-  ], next:['Compare the trailer sizes','How does the reservation work?'], action:{label:'Explore reservation options',href:'reserve.html?v=mirror-graphite-v1'}},
+    'We can compare trailer sizes next, or you can explore the reservation options.'
+  ], next:['Compare the trailer sizes','How does the reservation work?'], action:{label:'Explore reservation options',href:'reserve.html'}},
   {id:'buy-fit', terms:['larger profit share','higher share','buy outright','purchase outright','keep more profit'], answer:[
     'Then Buy is the plan to compare: you would keep 75% of product profit. It is aimed at an owner who prefers the upfront purchase in exchange for that larger share.',
     'The next decision is equipment space: 16 ft × 7 ft, or 20 ft × 8.5 ft. Both use the same front factory concept.',
@@ -33,7 +33,7 @@ const topics = [
   ], next:['One mower and hand tools','A larger equipment setup']},
   {id:'quality', terms:['durable','build quality','construction','reliable','reliability','warranty','safe','safety','heavy duty'], answer:[
     'A good work trailer has to earn its place on the route: practical loading, usable equipment space, suitable payload and towing limits, and dependable access for cleaning and service.',
-    'Those are the things to verify on the physical build. The render alone cannot prove durability or reliability, and final ratings, warranty and validation results are not confirmed in this demo.',
+    'Those are the things to verify on the physical build. The render alone cannot prove durability or reliability, and final ratings, warranty and validation results are pending validation and final specifications.',
     'Tell me what equipment you carry, and I can help narrow down which layout is worth exploring first.'
   ], next:['One mower and hand tools','A larger equipment setup']},
   {id:'skepticism', terms:['scam','too good','sounds fake','believe','proof','proven','skeptic','legit'], answer:[
@@ -69,11 +69,11 @@ const topics = [
   ], next:['How much does the trailer cost?','What does Marvel supply?']},
   {id:'pricing', terms:['cost','price','buy','lease','free','purchase','upfront'], answer:[
     'Current website preview prices are $44,999 for the 16 ft trailer and $49,999 for the 20 ft trailer. The proposed lease avoids an upfront trailer purchase and uses a different product-profit split.',
-    'Pricing, supplier economics, operating costs and lease terms are still being finalized. The current reservation flow is a demo and does not collect payment.'
+    'Pricing, supplier economics, operating costs and lease terms are still being finalized. Reservations are open through Shopify for a one-time $100 USD fully refundable deposit. It is not the trailer price or a monthly lease payment.'
   ], next:['What do I actually earn?','How does the reservation work?']},
   {id:'reservation', terms:['reserv','deposit','refundable','refund','pay','checkout','order now','100'], answer:[
-    'The planned reservation is a fully refundable $100 deposit. For a purchased trailer, it is intended to count toward the final price.',
-    'The current website checkout is a preview: no payment is taken and a demo confirmation is not an actual reservation. Lease deposit treatment and final agreements still need to be confirmed.'
+    'The reservation is a one-time, fully refundable $100 USD deposit paid through Shopify. For a purchased trailer, it is intended to count toward the final price, subject to the final agreement.',
+    'Checkout is live. Shopify confirms the order after successful payment; no remaining balance is charged automatically. To change or cancel a reservation, contact jaxon@marvellabs.com with your Shopify order number. Final purchase and lease terms are separate.'
   ], next:['How much does the trailer cost?','Is the factory ready?']},
   {id:'production', terms:['how does','how it work','process','grass','leaves','waste','production','sink','manufactur','factory work'], answer:[
     'The goal is an autonomous microfactory inside the trailer’s front factory area: prepare the collected grass, dose and mix the recipe, form the product, complete any required curing, check quality, then package and store it.',

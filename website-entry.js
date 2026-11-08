@@ -1,8 +1,9 @@
+if (navigator.connection?.saveData) document.documentElement.dataset.snapshot = 'true';
 // Snapshot captures get the same page content in ordinary document flow.
 // Keep the interactive entry points out of that mode: no hidden scenes,
 // huge scroll spacers, video autoplay or blank embedded-app loading state.
 if (!document.documentElement.hasAttribute('data-snapshot')) {
-  import('./atlas-hqworld4.js?v=showcase-quality-v1').catch(error => {
+  import('./atlas-hqworld4.js?v=consistency-20261108').catch(error => {
     console.warn('Showing the static website because the presentation did not load.', error);
     document.documentElement.classList.remove('immersive', 'enhanced', 'arrival-quiet');
     document.documentElement.dataset.snapshot = 'true';
@@ -15,7 +16,7 @@ if (!document.documentElement.hasAttribute('data-snapshot')) {
     });
   });
   import('./crew-app-interactive.js?v=showcase-quality-v1').catch(console.warn);
-  import('./crew-page-chat.js?v=page-chat-v2').catch(console.warn);
+  import('./crew-page-chat.js?v=consistency-20261108').catch(console.warn);
   import('./editor-runtime.js?v=showcase-quality-v1').catch(console.warn);
 } else {
   document.querySelectorAll('img').forEach(img => img.loading = 'eager');
