@@ -54,10 +54,11 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   function fittedView(bounds,direction){
     const rail=sec.querySelector('.rv-rail'),box=host.getBoundingClientRect();
     const showroom=sec.classList.contains('trailer-showroom');
-    const desktop=innerWidth>860||(showroom&&innerWidth>=600&&innerHeight<=580);
+    const fitReserve=sec.dataset.reservationLayout==='viewport';
+    const desktop=innerWidth>860||((showroom||fitReserve)&&innerWidth>=600&&innerHeight<=580);
     const plan=fitYardCamera(bounds,direction,{width:host.clientWidth,height:host.clientHeight,
       left:desktop?Math.max(0,rail.getBoundingClientRect().right-box.left)+(showroom?12:0):0,
-      top:showroom?62:(desktop?84:12),bottom:showroom?54:155,fov:YARD_FOV});
+      top:showroom?62:fitReserve?(desktop?22:8):(desktop?84:12),bottom:showroom?54:fitReserve?(desktop&&innerHeight>580?100:48):155,fov:YARD_FOV});
     want.pos.copy(plan.position);want.look.copy(plan.target);want.shift=plan.shiftX;want.shiftY=plan.shiftY;
   }
   function filmView(){
