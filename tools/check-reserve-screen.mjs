@@ -13,19 +13,25 @@ async function measure(page,label){
   const box=el=>{const r=el.getBoundingClientRect();return {x:r.x,y:r.y,right:r.right,bottom:r.bottom,width:r.width,height:r.height};};
   const header=box(document.querySelector('.masthead')),form=box(document.querySelector('.rv-rail'));
   const outside=[...document.querySelectorAll('.rv-rail button,.rv-rail a,.rv-rail label,.rv-rail h1,.rv-rail [data-panel]:not([hidden]) p,.rv-rail [data-order] div')].filter(e=>e.checkVisibility()).map(e=>({text:e.textContent.trim().slice(0,55),...box(e)})).filter(r=>r.y<header.bottom-.5||r.bottom>innerHeight+.5||r.x<-.5||r.right>innerWidth+.5);
-  return {header,form,outside,viewport:[innerWidth,innerHeight],scroll:[document.documentElement.scrollWidth,document.documentElement.scrollHeight],scale:getComputedStyle(document.querySelector('.rv-rail')).zoom,step:document.querySelector('.rv').dataset.orderStep};
+  const section=document.querySelector('.rv');
+  const viewerOutside=[...section.querySelectorAll('.rs-3d-bar,.rs-back,.rv-metrics')].filter(e=>e.checkVisibility()).map(box).filter(r=>r.y<header.bottom-.5||r.bottom>innerHeight+.5||r.x<-.5||r.right>innerWidth+.5);
+  return {header,form,outside,viewerOutside,stacked:section.dataset.reservationStacked==='true',viewport:[innerWidth,innerHeight],scroll:[document.documentElement.scrollWidth,document.documentElement.scrollHeight],scale:getComputedStyle(document.querySelector('.rv-rail')).zoom,step:section.dataset.orderStep};
  });
  assert.deepEqual(state.outside,[],label+' content outside viewport');
+ assert.deepEqual(state.viewerOutside,[],label+' viewer controls outside viewport');
  assert.ok(state.form.y>=state.header.bottom-.5,label+' form crosses header');
  assert.ok(state.form.bottom<=state.viewport[1]+.5,label+' form below viewport');
  assert.ok(state.scroll[0]<=state.viewport[0]&&state.scroll[1]<=state.viewport[1],label+' scrolling document');
+ const filled=state.form.height/(state.viewport[1]-state.header.bottom);
+ assert.ok(filled>=(state.stacked?(state.step==='review'?.84:.63):.9),label+' form is too small for the screen');
+ if(!state.stacked&&state.viewport[1]>580)assert.ok(state.form.width/state.viewport[0]>=.25&&state.form.width/state.viewport[0]<=.37,label+' panel is not proportional to the screen');
  await page.mouse.move(8,80);await page.mouse.wheel(0,800);
  assert.equal(await page.evaluate(()=>scrollY),0,label+' wheel scrolled the page');
  assert.equal(await page.locator('.rv-rail').evaluate(e=>e.scrollHeight>e.clientHeight+1),false,label+' internally scrolling form');
  report.checks.push({label,...state});console.log(label,'scale',state.scale);
 }
 try{
- for(const [width,height] of [[1440,900],[1280,720],[1024,768],[390,844],[375,667],[320,568],[844,390],[768,1024]]){
+ for(const [width,height] of [[1440,900],[1920,1080],[2560,1440],[3840,2160],[3440,1440],[1280,720],[1024,768],[390,844],[375,667],[320,568],[844,390],[768,1024],[1024,1366]]){
   const page=await browser.newPage({viewport:{width,height},hasTouch:width<=860});page.setDefaultTimeout(15000);
   page.on('pageerror',e=>report.errors.push(e.message));page.on('response',r=>{if(r.status()>=400)report.missing.push(r.url());});
   await page.goto(base+'/reserve.html?size=20',{waitUntil:'domcontentloaded'});

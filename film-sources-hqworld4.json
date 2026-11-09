@@ -16,28 +16,28 @@
         "cropX": 1328,
         "cropY": 224
       },
-      "videoFile": "desktop.mp4",
+      "videoFile": "desktop-web.mp4",
       "quality": "high-resolution-30fps-from-15fps-render",
       "nativeVideo": {
-        "file": "desktop.mp4",
+        "file": "desktop-web.mp4",
         "width": 4608,
         "height": 2048,
         "framerate": 30,
-        "bitrate": 7488310,
+        "bitrate": 5159691,
         "codec": "avc1.640034"
       },
       "motionFps": 30,
       "modelRevision": "realism-v2"
     },
-    "videoFile": "mobile.mp4",
+    "videoFile": "mobile-web.mp4",
     "quality": "high-resolution-30fps-from-15fps-render",
     "motionFps": 30,
     "nativeVideo": {
-      "file": "mobile.mp4",
+      "file": "mobile-web.mp4",
       "width": 1080,
       "height": 2160,
       "framerate": 30,
-      "bitrate": 2871683,
+      "bitrate": 1733967,
       "codec": "avc1.640032"
     },
     "modelRevision": "realism-v2"
@@ -86,28 +86,28 @@
         "cropX": 1328,
         "cropY": 224
       },
-      "videoFile": "desktop.mp4",
+      "videoFile": "desktop-web.mp4",
       "quality": "high-resolution-60fps-from-42fps-render",
       "nativeVideo": {
-        "file": "desktop.mp4",
+        "file": "desktop-web.mp4",
         "width": 3840,
         "height": 1706,
         "framerate": 60,
-        "bitrate": 10288035,
+        "bitrate": 6020190,
         "codec": "avc1.640034"
       },
       "motionFps": 60,
       "modelRevision": "realism-v2"
     },
     "modelRevision": "realism-v2",
-    "videoFile": "mobile.mp4",
+    "videoFile": "mobile-web.mp4",
     "motionFps": 60,
     "nativeVideo": {
-      "file": "mobile.mp4",
+      "file": "mobile-web.mp4",
       "width": 1080,
       "height": 2160,
       "framerate": 60,
-      "bitrate": 5930455,
+      "bitrate": 3397741,
       "codec": "avc1.640032"
     },
     "quality": "high-resolution-60fps-from-42fps-render"

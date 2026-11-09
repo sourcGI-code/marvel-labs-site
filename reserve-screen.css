@@ -6,9 +6,12 @@ body.reserve-screen #mobile-menu{position:fixed;top:72px;max-height:calc(100dvh 
 body.reserve-screen main{position:relative;min-height:0;height:100%;padding:0!important;overflow:hidden;isolation:isolate}
 body.reserve-screen .site-footer,body.reserve-screen #local-page-editor-link{display:none}
 body.reserve-screen #reserve{position:absolute;inset:0;display:block;height:100%;min-height:0;overflow:hidden;--reserve-scale:1;--reserve-form-height:550px}
-body.reserve-screen #reserve .rv-show{position:absolute;inset:0;width:100%;height:100%;min-height:0;z-index:0}
+body.reserve-screen #reserve .rv-show{position:absolute;inset:0;width:100%;height:100%;min-height:0;z-index:0;background:radial-gradient(ellipse at 65% 45%,#14343e,#0a0e10 75%)}
+html.reserve-has-js body.reserve-screen #reserve:not([data-viewer=image]) .rv-preview{display:none;visibility:hidden}
+body.reserve-screen #reserve .rv-loading{left:calc((100% + var(--reserve-panel-right,400px))/2);color:#a6dfe6;white-space:nowrap;font-size:clamp(10px,1vw,18px)}
+body.reserve-screen #reserve[data-order-step=review] :is(.rs-3d-bar,.rs-back){display:none}
 body.reserve-screen #reserve .rs-3d{inset:0}
-body.reserve-screen #reserve .rv-rail{position:absolute;z-index:4;top:14px;left:20px;bottom:auto;margin:0;width:380px;min-height:0;max-width:none;padding:18px 20px;gap:0;border:1px solid #ffffff26;border-radius:5px;background:rgba(10,14,16,.94);zoom:var(--reserve-scale);transform-origin:top left;overflow:visible}
+body.reserve-screen #reserve .rv-rail{position:absolute;z-index:4;top:calc(var(--reserve-panel-inset,14px)/var(--reserve-scale));left:calc(var(--reserve-panel-inset,14px)/var(--reserve-scale));bottom:auto;margin:0;width:26vw;min-height:0;max-width:none;padding:18px 20px;gap:0;border:1px solid #ffffff26;border-radius:5px;background:rgba(10,14,16,.94);zoom:var(--reserve-scale);transform-origin:top left;overflow:visible}
 body.reserve-screen #reserve .rv-rail>.rd-demo,body.reserve-screen #reserve .rv-rail>.eyebrow{display:none}
 body.reserve-screen #reserve .rv-rail h1{font-size:30px;line-height:1.06;margin:0;letter-spacing:-.04em}
 body.reserve-screen #reserve .rv-rail h1 br{display:none}body.reserve-screen #reserve .rv-rail h1 em:before{content:' '}
@@ -53,18 +56,19 @@ body.reserve-screen #reserve .rd-payment legend{font-size:10px}
 body.reserve-screen #reserve .rd-consent{margin-top:10px;font-size:10px;line-height:1.4;gap:8px}
 body.reserve-screen #reserve .rd-consent input{width:18px;height:18px;margin-top:2px}
 body.reserve-screen #reserve .rd-error{font-size:10px;line-height:1.3;margin:8px 0 0}
-body.reserve-screen #reserve .rv-metrics{left:440px;right:24px;padding:0 0 20px;gap:20px}
+body.reserve-screen #reserve .rv-metrics{left:calc(var(--reserve-panel-right,400px) + 30px);right:24px;padding:0 0 20px;gap:20px}
 body.reserve-screen #reserve .rv-metrics-size{font-size:36px}
 body.reserve-screen #reserve .rv-metrics dd{font-size:24px}
 body.reserve-screen #reserve .rv-metrics dt{font-size:9px}
-body.reserve-screen #reserve .rs-3d-bar{bottom:100px;left:calc(50% + 190px)}
+body.reserve-screen #reserve .rs-3d-bar{bottom:100px;left:calc((100% + var(--reserve-panel-right,400px))/2)}
 body.reserve-screen #reserve .rs-back{top:16px;left:auto;right:20px}
 body.reserve-screen #reserve .rv-preview figcaption{bottom:100px}
-@media(max-width:860px){
+@media(max-width:860px), (max-aspect-ratio:4/5){
  body.reserve-screen .masthead{height:58px;min-height:58px;padding-top:8px;padding-bottom:8px}
  body.reserve-screen #mobile-menu{top:58px;max-height:calc(100dvh - 58px)}
  body.reserve-screen #reserve .rv-rail{top:auto;bottom:0;left:0;width:100%;padding:12px 16px max(12px,env(safe-area-inset-bottom));border-radius:0;border-left:0;border-right:0;border-bottom:0;background:#0a0e10}
  body.reserve-screen #reserve .rv-show{bottom:var(--reserve-form-height);height:auto}
+ body.reserve-screen #reserve .rv-loading{left:50%;font-size:clamp(10px,1.6vw,18px)}
  body.reserve-screen #reserve .rv-metrics{display:none}
  body.reserve-screen #reserve .rs-3d-bar{left:50%;bottom:8px;padding:5px 8px;gap:8px;max-width:calc(100% - 24px)}
  body.reserve-screen #reserve .rs-3d-hint{font-size:8px}
@@ -108,7 +112,7 @@ body.reserve-screen #reserve .rv-preview figcaption{bottom:100px}
  body.reserve-screen .masthead{height:50px;min-height:50px;padding-top:5px;padding-bottom:5px}
  body.reserve-screen #mobile-menu{top:50px}
  body.reserve-screen #reserve .rv-show{inset:0;height:100%}
- body.reserve-screen #reserve .rv-rail{top:8px;bottom:auto;left:12px;width:430px;padding:10px 14px;border:1px solid #ffffff26;border-radius:4px}
+ body.reserve-screen #reserve .rv-rail{top:calc(var(--reserve-panel-inset,8px)/var(--reserve-scale));bottom:auto;left:calc(var(--reserve-panel-inset,8px)/var(--reserve-scale));width:47vw;padding:10px 14px;border:1px solid #ffffff26;border-radius:4px}
  body.reserve-screen #reserve .rv-rail h1{font-size:23px}body.reserve-screen #reserve .rv-when{margin-top:4px;font-size:9px}
  body.reserve-screen #reserve .rd-steps{margin-top:7px}
  body.reserve-screen #reserve [data-panel=configure]{display:grid;grid-template-columns:1fr 1fr;gap:0 12px}
@@ -128,7 +132,7 @@ body.reserve-screen #reserve .rv-preview figcaption{bottom:100px}
  body.reserve-screen #reserve .rv-pay-note{font-size:8px;margin-top:5px}
  body.reserve-screen #reserve .rd-policies{margin-top:5px;padding-top:5px}
  body.reserve-screen #reserve .rv-metrics{display:none}
- body.reserve-screen #reserve .rs-3d-bar{left:calc(50% + 215px);bottom:12px}
+ body.reserve-screen #reserve .rs-3d-bar{left:calc((100% + var(--reserve-panel-right,430px))/2);bottom:12px}
  body.reserve-screen #reserve .rs-back{top:10px}
  body.reserve-screen .rv[data-order-step=review] .rv-rail>h1,body.reserve-screen .rv[data-order-step=review] .rv-when{display:none}
  body.reserve-screen #reserve [data-panel=review]{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}

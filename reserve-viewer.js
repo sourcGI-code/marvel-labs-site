@@ -17,16 +17,19 @@ if (section) {
   const controller = new AbortController();
   section.dataset.viewer = 'loading';
   const host = section.querySelector('.rs-3d');
+  const loading = section.querySelector('.rv-loading');
+  if(loading)loading.hidden=false;
   host.setAttribute('aria-busy', 'true');
   function fallback() {
     clearTimeout(timeout);
     section.classList.remove('rs-live');
     section.dataset.viewer = 'image';
+    if(loading)loading.hidden=true;
     host.setAttribute('aria-busy', 'false');
     controller.abort();
   }
   const timeout = setTimeout(fallback, 20000);
-  import(jetblack ? './reserve-3d-jetblack.js?v=both-trailers-20261109' : './reserve-3d.js?v=checkout-clarity-20261108')
+  import(jetblack ? './reserve-3d-jetblack.js?v=screen-proportions-20261109' : './reserve-3d.js?v=checkout-clarity-20261108')
     .then(({startReservationViewer}) => {
       if (controller.signal.aborted) return;
       return startReservationViewer(section, {
@@ -35,6 +38,7 @@ if (section) {
           if (controller.signal.aborted) return;
           clearTimeout(timeout);
           section.dataset.viewer = 'interactive';
+          if(loading)loading.hidden=true;
           host.setAttribute('aria-busy', 'false');
           section.classList.add('rs-live');
         },

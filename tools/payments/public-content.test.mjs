@@ -157,7 +157,8 @@ test('cargo loading waits for its chapter while explicit playback and fallback r
   page.progress(.27);await page.flush();assert.equal(page.loads(),1,'entering the cargo chapter loads it');
   page.progress(.6);await page.flush();assert.equal(page.loads(),1,'the chapter reuses the existing player');page.close();
   const playback=await fixture();await playback.api.preparePlayback({progress:.25});await playback.flush();assert.equal(playback.loads(),1);playback.close();
-  for(const options of [{reduced:true},{failed:true}]){const fallback=await fixture(options);await fallback.flush();assert.equal(fallback.loads(),1);fallback.close();}
+  const reduced=await fixture({reduced:true});await reduced.flush();assert.equal(reduced.loads(),1);reduced.close();
+  const failed=await fixture({failed:true});await failed.flush();assert.equal(failed.loads(),0,'a failed opening must not trigger a second large video download');failed.close();
 });
 
 test('confirmed zero monthly lease fee stays separate from the reservation and operating costs',async()=>{

@@ -28,7 +28,7 @@
 .rd-order>div{display:flex;justify-content:space-between;gap:18px;padding:9px 0;border-bottom:1px solid var(--line)}
 .rd-order dt{color:var(--muted);flex:0 0 42%}
 .rd-order dd{margin:0;text-align:right;overflow-wrap:anywhere}
-.rd-order:after{content:'* Preview pricing. Final taxes, delivery and plan terms are confirmed separately.';display:block;font-size:10px;color:var(--muted);line-height:1.6;margin-top:12px}
+.rd-order:after{content:'Taxes, delivery and final plan terms are confirmed with your order.';display:block;font-size:10px;color:var(--muted);line-height:1.6;margin-top:12px}
 .rd-contact{white-space:pre-line;font-size:12px;line-height:1.7;color:var(--offer-muted,#b6bfc1);margin:12px 0 0;overflow-wrap:anywhere}
 .rd-payment{border:0;border-top:1px solid var(--line);padding:16px 0 0;margin:26px 0 0;min-width:0}
 .rd-payment legend{padding:0 8px 0 0;font-size:12px}

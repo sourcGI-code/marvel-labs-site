@@ -44,7 +44,7 @@ test('media and partnerships pages have canonical URLs, real inquiry links and q
   for(const name of ['media.html','partners.html']){
     const dom=new JSDOM(await readFile(new URL('../../'+name,import.meta.url),'utf8'),{url:'https://marvellabs.shop/'+name});const d=dom.window.document;
     assert.equal(d.querySelector('link[rel="canonical"]').href,'https://marvellabs.shop/'+name);assert.ok(d.querySelector('a[href^="mailto:jaxon@marvellabs.com"]'));
-    assert.match(d.body.textContent,/not guaranteed/);assert.ok(d.querySelector('a[href="validation.html"]'));assert.ok(d.querySelector('script[src^="campaign-links.js"]'));
+    assert.match(d.body.textContent,/Delivery scheduling is confirmed with your order/);assert.ok(d.querySelector('a[href="validation.html"]'));assert.ok(d.querySelector('script[src^="campaign-links.js"]'));
     assert.equal(d.querySelector('form'),null,'a mail link must not masquerade as a submitted lead');dom.window.close();
   }
 });

@@ -2,7 +2,7 @@ import {selectVideoFile,isStillOnly} from './video-delivery.js?v=20261108';
 import {workdaySubjects} from './workday-subjects.js?v=workday-ui-20261109';
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
-import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=scene-recovery-20261109b';
+import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=media-delivery-20261109';
 import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=scene-recovery-20261109b';
 const clamp=v=>Math.max(0,Math.min(1,v));
 // 10-30 owner: the drive-by auto quote must "act like live camera recognition": the box draws itself, the measurements
@@ -57,7 +57,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  video.className='recorded-scene';video.muted=video.defaultMuted=true;video.playsInline=true;video.preload='metadata';video.disablePictureInPicture=true;video.tabIndex=-1;video.setAttribute('aria-hidden','true');
  still.className='recorded-scene recorded-still';still.alt='';still.setAttribute('aria-hidden','true');
  host.append(video,still);canvas.style.visibility='hidden';
- let metadata,kind='',wanted=0,enabled=true,visible=true,shown=false,failed=false,loading=0,frame=0,lastSeek=0;
+ let metadata,kind='',wanted=0,enabled=true,visible=true,shown=false,failed=false,loading=0,frame=0,lastSeek=0,networkRetries=0,retryTimer;
  let mediaURL='',generation=0,controller,stillFile='',pendingStill='',lastPresentedTime=0;
  // Cover fit + optional push-in (film-framing.js). The video and still are placed with the same transform the
  // overlays are projected with, so labels, callouts and leaders stay on their objects at any aspect ratio.
@@ -171,6 +171,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   // metadata. Resizing may change fit, but never the navigation's timeline.
   const next=name==='cargo'?introFilmKind():filmSource.kind??(innerWidth<=760||portraitField?'mobile':'desktop');
   if(next===kind)return;kind=next;filmSource=sceneFilmSource(name,kind);revision=filmSource.revision;const current=++generation;unplace();
+  clearTimeout(retryTimer);networkRetries=0;
   controller?.abort();controller=new AbortController();loading++;shown=false;failed=false;metadata=null;stillFile=pendingStill='';updateVisibility();
   const base=`${filmSource.base}/${kind}`;
   const mediaFile=filmSource.videoFile?selectVideoFile(filmSource,kind,navigator.connection):
@@ -190,7 +191,16 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  video.addEventListener('loadeddata',requestSeek);
  video.addEventListener('progress',requestSeek);
  video.addEventListener('seeked',()=>{if(matches()){shown=true;updateVisibility();}requestSeek();changed();});
- video.addEventListener('error',()=>{if(isStillOnly(reduced.matches,navigator.connection))return;failed=true;loadStill();updateVisibility();changed();});
+ video.addEventListener('error',()=>{
+  if(isStillOnly(reduced.matches,navigator.connection))return;
+  failed=true;shown=false;loadStill();updateVisibility();changed();
+  // A transient range-request failure gets one retry, retaining the chapter
+  // still and requested frame. Repeated failures remain a usable still view.
+  if(enabled&&navigator.onLine!==false&&networkRetries<1&&[2,4].includes(video.error?.code)){
+   networkRetries++;const current=generation;
+   retryTimer=setTimeout(()=>{if(current!==generation||!enabled||!failed)return;failed=false;video.load();requestSeek();changed();},600);
+  }
+ });
  reduced.addEventListener('change',()=>{kind='';source();});
 
  function draw(p){

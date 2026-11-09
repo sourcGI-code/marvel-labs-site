@@ -49,7 +49,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   // camera rig: everything eases toward its target values every frame
   const cur = {pos: new THREE.Vector3(), look: new THREE.Vector3(), shift: 0, shiftY: 0}, want = {pos: new THREE.Vector3(), look: new THREE.Vector3(), shift: 0, shiftY: 0};
   let az = .6, el = .32, radius = 12;
-  let touring = false, tourTime = 0, tourAz = 0;
+  let touring = false, tourTime = 0, tourAz = 0, entrance = 1;
   function syncLock() {
     sec.classList.toggle('is-locked', locked);
     if (rv && lockChip) {
@@ -65,10 +65,10 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     const rail=sec.querySelector('.rv-rail'),box=host.getBoundingClientRect();
     const showroom=sec.classList.contains('trailer-showroom');
     const fitReserve=sec.dataset.reservationLayout==='viewport';
-    const desktop=innerWidth>860||((showroom||fitReserve)&&innerWidth>=600&&innerHeight<=580);
+    const desktop=fitReserve?sec.dataset.reservationStacked!=='true':innerWidth>860||(showroom&&innerWidth>=600&&innerHeight<=580);
     const plan=fitYardCamera(bounds,direction,{width:host.clientWidth,height:host.clientHeight,
       left:desktop?Math.max(0,rail.getBoundingClientRect().right-box.left)+(showroom?12:0):0,
-      top:showroom?62:fitReserve?(desktop?22:8):(desktop?84:12),bottom:showroom?54:fitReserve?(desktop&&innerHeight>580?100:48):155,fov:YARD_FOV});
+      top:showroom?62:fitReserve?(desktop?22:8):(desktop?84:12),bottom:showroom?54:fitReserve?(desktop&&innerHeight>580?100:sec.dataset.orderStep==='review'?8:48):155,fov:YARD_FOV});
     want.pos.copy(plan.position);want.look.copy(plan.target);want.shift=plan.shiftX;want.shiftY=plan.shiftY;
   }
   function filmView(){
@@ -239,6 +239,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     resize(); filmView(); cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift = want.shift; cur.shiftY=want.shiftY;
     const sizeObserver = new ResizeObserver(resize);
     sizeObserver.observe(host);
+    if(rv)sizeObserver.observe(sec.querySelector('.rv-rail'));
     signal.addEventListener('abort', () => sizeObserver.disconnect(), {once: true});
     await Promise.all(Object.entries(m.trailers).filter(([size]) => size === '20' || size === '16').map(async ([size, t]) => {
       const g = await loader.loadAsync(A + t.file);
@@ -261,12 +262,20 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     if (signal.aborted) return;
     modelsReady = true; dirty = true; filmView(); cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift=want.shift; cur.shiftY=want.shiftY; renderer.shadowMap.needsUpdate=true;
     if (/[?&]debug3d/.test(location.search)) window.__rs3d = {scene, T, renderer, camera, composer, head, frame, LIGHTS,   // 10-30: the QA grid drives the view
-      state: () => ({az, el, radius, locked, mode, focus, touring}), enter, leave,
+      state: () => ({az, el, radius, locked, mode, focus, touring, entering:entrance<1}), enter, leave,
       view: (a, e, snap) => { az = a; el = e; if (focus) { orbitView(); if (snap) { cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift = want.shift; } dirty = true; } },
       lock: v => { locked = v; if (v) stopTour(); syncLock(); }};
     if (own) enter(pending || sec.dataset.open || sec.dataset.size || '20');
     else if (pending) enter(pending);
     else if (rv) leave();
+    if(rv&&!still){
+      // Restore the original entrance: start farther away and lower, then
+      // glide in to the live trailers. Their wheels remain on the yard.
+      cur.look.copy(want.look);cur.shift=want.shift;cur.shiftY=want.shiftY;
+      const away=want.pos.clone().sub(want.look);away.y*=.55;
+      cur.pos.copy(want.look).addScaledVector(away,1.45);
+      entrance=0;sec.dataset.entrance='arriving';
+    }else sec.dataset.entrance='ready';
   }).catch(onError);
 
   let last = performance.now(), frameNo = 0, shown = true;
@@ -283,7 +292,8 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
       if(mode === 'overview')filmView();
       else {az = tourAz + Math.sin(tourTime * .32) * .28; orbitView();}
     }
-    const k = still ? 1 : 1 - Math.exp(-dt * 3.2), kf = still ? 1 : 1 - Math.exp(-dt * 7);
+    if(entrance<1){entrance=Math.min(1,entrance+dt/2.4);if(entrance===1)sec.dataset.entrance='ready';}
+    const k = still ? 1 : 1 - Math.exp(-dt * (entrance<1?1.7:3.2)), kf = still ? 1 : 1 - Math.exp(-dt * 7);
     let moving = false;
     const ease = (a, b, f) => { const d = b - a; if (Math.abs(d) > 1e-4) moving = true; return a + d * f; };
     // Interpolate around the target, not along a chord through the product.

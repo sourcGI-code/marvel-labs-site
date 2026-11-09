@@ -26,7 +26,7 @@ function start(sec) {
   }
   function summary() {
     const s = size(), buy = plan() === 'buy';
-    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy + ' preview price' : '$0 monthly lease fee · 25% operator profit share'} · $100 refundable deposit`;
+    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy + ' purchase price' : '$0 monthly lease fee · 25% operator profit share'} · $100 refundable deposit`;
   }
 
   // Only a deliberate radio choice changes the reservation and its preview.
