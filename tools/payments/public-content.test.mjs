@@ -38,7 +38,7 @@ test('deposit and applicable tax are clear in initial HTML, review and consent',
   assert.match(form.querySelector('.rd-consent').textContent,/\$100 USD plus applicable tax/);
   assert.match(form.querySelector('[data-order]').textContent,/TaxApplicable tax/);
   assert.match(form.querySelector('.rd-payment').textContent,/installment.*not the trailer lease/);
-  assert.equal(form.querySelector('[type="submit"]').textContent,'Continue to Shopify checkout ↗');dom.window.close();
+  assert.equal(form.querySelector('[type="submit"]').textContent,'Continue to payment ↗');dom.window.close();
 });
 
 test('initial reservation HTML agrees with live checkout without requiring JavaScript to read policies', async () => {

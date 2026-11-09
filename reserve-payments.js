@@ -12,7 +12,6 @@ export function installReservationPayments({sec, form, selection, navigate = url
   const review = form.querySelector('[data-panel="review"]');
   const test = config?.mode === 'stripe-test';
   const shopify = config?.provider === 'shopify' || config?.mode === 'shopify-live';
-  const provider = shopify ? 'Shopify' : 'Stripe';
   const checkoutChoice = () => ({...selection(), exteriorPreview: sec.classList.contains('jetblack-stage') ? 'jet-black' : 'mirror-graphite'});
   const showError = message => { error.textContent = message; error.hidden = false; };
   // Old demo receipts are not payments and must never be restored in production.
@@ -34,7 +33,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
   const description = document.createElement('p'); description.className = 'rd-small';
   description.textContent = test
     ? 'Continue to Stripe’s test checkout to enter example contact details and a test payment method. No real money moves.'
-    : `Enter your contact details and pay on ${provider}. The reservation deposit is $100 USD, plus applicable tax, if any. Review the final total before paying. Any installment option shown applies to this deposit checkout, not the trailer lease.`;
+    : 'Enter your contact and payment details at secure checkout. The reservation deposit is $100 USD, plus applicable tax, if any. Review the final total before paying. Any installment option shown applies to this deposit checkout, not the trailer lease.';
   payment.append(legend, description);
   const consent = review.querySelector('.rd-consent span');
   consent.replaceChildren(document.createTextNode('I’ve read the '));
@@ -84,8 +83,8 @@ export function installReservationPayments({sec, form, selection, navigate = url
     }
     back.hidden = next === 'configure';
     submit.disabled = false;
-    submit.textContent = next === 'configure' ? 'Review reservation ↗' : test ? 'Continue to Stripe test checkout ↗' : `Continue to ${provider} checkout ↗`;
-    note.textContent = test ? 'Test mode. Use Stripe test payment details only.' : `${provider} confirms your order after checkout. Returning here does not confirm or cancel a reservation.`;
+    submit.textContent = next === 'configure' ? 'Review reservation ↗' : test ? 'Continue to Stripe test checkout ↗' : 'Continue to payment ↗';
+    note.textContent = test ? 'Test mode. Use Stripe test payment details only.' : 'Your reservation is confirmed after successful payment. Returning here does not confirm or cancel a reservation.';
     if (next === 'review') renderOrder();
     if (focus) { form.querySelector('#rv-title').focus({preventScroll: true}); form.scrollTop = 0; }
   }
@@ -107,7 +106,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
     if (!consentInput.reportValidity()) return;
     try {
       const url = checkoutURL(config, checkoutChoice(), readCampaign(window.location.search));
-      submit.disabled = true; submit.textContent = `Opening ${provider}…`;
+      submit.disabled = true; submit.textContent = test ? 'Opening test checkout…' : 'Opening secure checkout…';
       navigate(url);
     } catch (e) { submit.disabled = false; showError(e.message); }
   });

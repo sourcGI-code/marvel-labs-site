@@ -1,4 +1,4 @@
-import {installReservationPayments} from './reserve-payments.js?v=checkout-preview-20261108';
+import {installReservationPayments} from './reserve-payments.js?v=marvel-checkout-20261109';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 

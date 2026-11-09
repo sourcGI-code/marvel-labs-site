@@ -187,7 +187,7 @@ test('all five reservation forms support the live checkout flow with no demo con
     const f = await fixture(config('live'), page);
     assert.equal(f.form.querySelector('.rd-demo').textContent, 'REFUNDABLE RESERVATION · $100 USD', page);
     f.submit();
-    assert.match(f.form.querySelector('[type="submit"]').textContent, /Continue to Stripe checkout/, page);
+    assert.match(f.form.querySelector('[type="submit"]').textContent, /Continue to payment/, page);
     assert.equal(f.form.querySelector('[data-action="email-preview"]'), null, page);
     assert.equal(f.form.querySelector('[data-action="fill-demo"]'), null, page);
     assert.match(f.form.querySelector('.rd-consent a').href, /payments\/reservation.html$/, page);
@@ -263,13 +263,13 @@ test('Shopify checkout refuses an unconnected product or a different store', () 
 test('Shopify flow opens the selected checkout and never creates an on-site success or email preview', async () => {
   const f = await fixture(shopifyConfig());
   f.choose({size: '16', plan: 'lease'}); f.submit();
-  assert.match(f.form.querySelector('.rd-payment').textContent, /pay on Shopify/);
-  assert.doesNotMatch(f.form.textContent, /Stripe/);
+  assert.match(f.form.querySelector('.rd-payment').textContent, /contact and payment details at secure checkout/);
+  assert.doesNotMatch(f.form.textContent, /Shopify|Stripe/);
   assert.equal(f.form.querySelectorAll('.rd-consent a').length, 3);
   f.form.querySelector('[name="consent"]').checked = true; f.submit();
   assert.equal(f.destinations[0], checkoutURL(shopifyConfig(), {size: '16', plan: 'lease', exteriorPreview: 'jet-black'}));
   assert.equal(f.form.querySelector('[data-panel="complete"]'), null);
-  assert.match(f.form.querySelector('[type="submit"]').textContent, /Opening Shopify/);
+  assert.match(f.form.querySelector('[type="submit"]').textContent, /Opening secure checkout/);
   f.dom.window.close();
 });
 
