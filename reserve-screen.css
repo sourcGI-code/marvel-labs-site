@@ -82,6 +82,12 @@ body.reserve-screen #reserve .rv-preview figcaption{bottom:100px}
  body.reserve-screen #reserve .rd-policies{margin-top:7px;padding-top:7px}
 }
 @media(max-height:700px) and (max-width:599px){
+ body.reserve-screen #reserve [data-panel=configure]{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}
+ body.reserve-screen #reserve [data-panel=configure]>:is(.rd-finish,.rv-due,.rv-summary,.rd-small){grid-column:1/-1}
+ body.reserve-screen #reserve .rv-card{flex-direction:column;align-items:flex-start;gap:3px}
+ body.reserve-screen #reserve .rv-price{text-align:left;font-size:11px}
+ body.reserve-screen #reserve .rv-price small{display:none}
+ body.reserve-screen #reserve .rs-3d-hint{display:none}
  body.reserve-screen #reserve .rv-rail{padding:9px 12px max(9px,env(safe-area-inset-bottom))}
  body.reserve-screen #reserve .rv-rail h1{font-size:22px}
  body.reserve-screen #reserve .rv-when{font-size:9px;margin-top:4px}

@@ -53,7 +53,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   function syncLock() {
     sec.classList.toggle('is-locked', locked);
     if (rv && lockChip) {
-      lockChip.textContent = locked ? 'Rotate trailer' : touring ? 'Pause rotation' : 'Lock view';
+      lockChip.textContent = mode === 'overview' ? (locked ? 'Play motion' : 'Pause motion') : locked ? 'Rotate trailer' : touring ? 'Pause rotation' : 'Lock view';
       lockChip.setAttribute('aria-pressed', String(locked));
     }
   }
@@ -75,7 +75,9 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     const bounds=new THREE.Box3();
     for(const t of Object.values(T))bounds.union(t.bounds.clone().translate(t.group.position));
     if(bounds.isEmpty()){bounds.min.set(-4,0,-4);bounds.max.set(6,2.8,4);}
-    fittedView(bounds,new THREE.Vector3(...YARD_VIEW_DIRECTION));
+    const direction=new THREE.Vector3(...YARD_VIEW_DIRECTION);
+    if(rv){direction.y=.22;direction.applyAxisAngle(new THREE.Vector3(0,1,0),Math.sin(tourTime*.28)*.12);}
+    fittedView(bounds,direction);
   }
   function orbitView(){
     const t=T[focus];if(!t)return;
@@ -128,7 +130,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   }
   function leave() {
     if (!modelsReady || signal.aborted) return;
-    mode = 'overview'; sec.dataset.mode = 'overview'; focus = null; locked = false; stopTour(); syncLock();
+    mode = 'overview'; sec.dataset.mode = 'overview'; focus = null; locked = still; startTour(); syncLock();
     for (const t of Object.values(T)) t.show = true;
     renderer.shadowMap.needsUpdate=true;
     setRamp(0); light(null); filmView();
@@ -243,6 +245,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
       if (signal.aborted) {disposeModel(g.scene);return;}
       const group = new THREE.Group(); group.userData.size = size; group.add(g.scene);
       group.position.set(...YARD_PARKING[size]);
+      if(rv&&size==='16')group.position.x-=2.2;
       prepareTrailerMaterials(g,renderer,{colour:'black',finish:'matte',decal:'grey'});
       g.scene.traverse(o=>{if(o.isMesh)for(const material of Array.isArray(o.material)?o.material:[o.material])material.envMap=modelEnvironment.texture;});
       const modelBounds=new THREE.Box3().setFromObject(group).translate(group.position.clone().negate());
@@ -261,8 +264,9 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
       state: () => ({az, el, radius, locked, mode, focus, touring}), enter, leave,
       view: (a, e, snap) => { az = a; el = e; if (focus) { orbitView(); if (snap) { cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift = want.shift; } dirty = true; } },
       lock: v => { locked = v; if (v) stopTour(); syncLock(); }};
-    if (own || rv) enter(pending || sec.dataset.open || sec.dataset.size || '20');
+    if (own) enter(pending || sec.dataset.open || sec.dataset.size || '20');
     else if (pending) enter(pending);
+    else if (rv) leave();
   }).catch(onError);
 
   let last = performance.now(), frameNo = 0, shown = true;
@@ -274,8 +278,10 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     if (!shown) return;                               // the immersive page keeps every section fixed: skip while hidden
     // A restrained camera sweep makes the live model evident on arrival.
     // Pointer movement, dragging, the ramp and the pause button take control.
-    if (touring && !locked && !drag && mode === 'viewer' && sec.dataset.orderStep !== 'review') {
-      tourTime += dt; az = tourAz + Math.sin(tourTime * .32) * .28; orbitView();
+    if (touring && !locked && !drag && sec.dataset.orderStep !== 'review') {
+      tourTime += dt;
+      if(mode === 'overview')filmView();
+      else {az = tourAz + Math.sin(tourTime * .32) * .28; orbitView();}
     }
     const k = still ? 1 : 1 - Math.exp(-dt * 3.2), kf = still ? 1 : 1 - Math.exp(-dt * 7);
     let moving = false;

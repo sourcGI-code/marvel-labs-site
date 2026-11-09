@@ -14,8 +14,8 @@ if(section){
    section.style.setProperty('--reserve-scale',String(scale));
    form.style.width=`${targetWidth/scale}px`;
    const natural=form.getBoundingClientRect().height/scale;
-   // Leave a small visible stage on short phones while keeping every form control accessible.
-   const stage=mobile&&section.dataset.orderStep!=='review'?Math.min(120,available*.18):0;
+   // Both trailers need a usable stage, including on short phones.
+   const stage=mobile&&section.dataset.orderStep!=='review'?Math.min(240,available*.32):0;
    scale=Math.min(1,(available-stage)/Math.max(1,natural));
   }
   section.style.setProperty('--reserve-scale',String(scale));

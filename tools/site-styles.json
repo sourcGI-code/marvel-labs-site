@@ -67,5 +67,8 @@
   },
   {
     "file": "mobile-layout.css"
+  },
+  {
+    "file": "workday-fullscreen.css"
   }
 ]

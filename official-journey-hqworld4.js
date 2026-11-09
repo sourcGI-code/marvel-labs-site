@@ -1,7 +1,7 @@
 import {createRouteQuotes} from './route-quotes.js?v=yard-coverage-v1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=scene-recovery-20261109b';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=workday-ui-20261109';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
-import {createVisionOverlay} from './vision-overlay.js?v=screen-fit-v1';
+import {createVisionOverlay} from './vision-overlay.js?v=workday-ui-20261109';
 import {createScrollMotion} from './scroll-motion.js';
 import {setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=7';
 const clamp=v=>Math.max(0,Math.min(1,v));
@@ -15,6 +15,8 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
  }
  catch(error){canvas.closest('.pin').dataset.renderer='static';console.warn('Showing the enclosed trailer still.',error.message);}
  const $=id=>document.getElementById(id),pin=canvas.closest('.pin');
+ const info=document.createElement('button');info.type='button';info.className='tour-info';info.textContent='Info +';info.setAttribute('aria-expanded','false');info.setAttribute('aria-controls','tour-copy');pin.querySelector('.tour-copy').append(info);
+ info.addEventListener('click',()=>{const open=info.getAttribute('aria-expanded')!=='true';info.setAttribute('aria-expanded',String(open));info.textContent=open?'Close −':'Info +';pin.dataset.info=String(open);request();});
  const vision=createVisionOverlay(pin);const routeQuotes=createRouteQuotes(pin);
  const quoteScope=document.createElement('dl');quoteScope.id='workflow-scope';quoteScope.setAttribute('aria-label','Illustrative measured job scope');$('workflow-demo').insertBefore(quoteScope,$('workflow-demo').lastElementChild);
  let p=0,active=false,frame=0,lastCaption=-1,lastScope='',lastNote='',lastP=0;
@@ -63,7 +65,7 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
    const direction=p<lastP?-1:1;
    $('tour-kicker').textContent=tag;setAnimatedTitle($('tour-title'),title,{direction});$('tour-copy').textContent=copy;$('tour-copy').hidden=!copy;
    // The operator beats are the second half of chapter 5 (Work), so the count and the chapter nav stay on 05.
-   const how=!!document.body.dataset.fieldLeadFrames,chapter=how?(operatorActive?0:delivery?1:i+2):operatorActive?4:i;
+   const how=!!document.body.dataset.fieldLeadFrames,chapter=how?(operatorActive?0:delivery?1:routeActive?3:i+2):operatorActive?4:i;
    $('tour-count').textContent=`0${chapter+1} / 0${how?7:5}`;$('tour-spec').hidden=!key;document.querySelector('#tour-spec dt').textContent=key;document.querySelector('#tour-spec dd').textContent=value;
    document.querySelectorAll('.tour-chapters li').forEach((el,index)=>{if(index===chapter)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
    if(lastCaption>=0)revealDetails(['tour-count','tour-kicker','tour-copy','tour-spec'].map($),{direction});

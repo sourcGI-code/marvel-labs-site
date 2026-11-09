@@ -26,7 +26,7 @@ if (section) {
     controller.abort();
   }
   const timeout = setTimeout(fallback, 20000);
-  import(jetblack ? './reserve-3d-jetblack.js?v=live-motion-20261109' : './reserve-3d.js?v=checkout-clarity-20261108')
+  import(jetblack ? './reserve-3d-jetblack.js?v=both-trailers-20261109' : './reserve-3d.js?v=checkout-clarity-20261108')
     .then(({startReservationViewer}) => {
       if (controller.signal.aborted) return;
       return startReservationViewer(section, {

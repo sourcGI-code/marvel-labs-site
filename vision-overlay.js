@@ -14,7 +14,7 @@ export function createVisionOverlay(pin){
  const shortLandscape=matchMedia('(orientation:landscape) and (max-height:540px)');
  function placeSummary(){
   const copy=pin.querySelector('.tour-copy');
-  (shortLandscape.matches&&copy?copy:pin).append(summary);
+  (shortLandscape.matches&&copy&&pin.dataset.presentation!=='fullscreen'?copy:pin).append(summary);
  }
  placeSummary();shortLandscape.addEventListener('change',placeSummary);
  const transcript=document.createElement('ul');transcript.className='vision-transcript';transcript.setAttribute('aria-label','Landscaping tasks');summary.append(transcript);
@@ -31,6 +31,7 @@ export function createVisionOverlay(pin){
   const data=state?.vision,visible=!!data?.visible;layer.hidden=summary.hidden=!visible;pin.dataset.vision=String(visible);
   if(!visible)return;
   const mobile=w<=760,compact=(mobile&&pin.dataset.filmFit==='contain')||(w>h&&h<=540),measuring=data.measuring>0,complete=data.measured;
+  if(mobile&&pin.dataset.presentation==='fullscreen')header.style.top=`${pin.querySelector('.tour-copy').getBoundingClientRect().bottom-pin.getBoundingClientRect().top+10}px`;
   layer.dataset.compact=String(compact);
   layer.style.opacity=data.mix;geometry.setAttribute('viewBox',`0 0 ${w} ${h}`);
   reference.style.display=data.stage==='localize'?'':'none';reference.setAttribute('transform',`translate(${data.origin.x},${data.origin.y})`);

@@ -32,6 +32,7 @@ function start(sec) {
   // Only a deliberate radio choice changes the reservation and its preview.
   for (const i of sizes) {
     i.addEventListener('change', () => { show(i.value); sec.dispatchEvent(new CustomEvent('rs:enter', {detail: i.value})); });
+    i.addEventListener('click', () => { if (i.checked && sec.dataset.mode === 'overview') sec.dispatchEvent(new CustomEvent('rs:enter', {detail: i.value})); });
   }
   for (const i of plans) i.addEventListener('change', summary);
   sec.addEventListener('rs:size', e => show(e.detail));   // explicit stage clicks select a size too

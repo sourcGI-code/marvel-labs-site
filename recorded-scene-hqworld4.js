@@ -1,4 +1,5 @@
 import {selectVideoFile,isStillOnly} from './video-delivery.js?v=20261108';
+import {workdaySubjects} from './workday-subjects.js?v=workday-ui-20261109';
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
 import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=scene-recovery-20261109b';
@@ -64,11 +65,28 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  let routeScan={};   // 10-30: per-house scan clocks for the drive-by (routeScanSchedule)
  // popout.css --hold-zoom is the single switch for every push-in: its value caps the zoom (1 = plain cover).
  function capFraming(){const cap=parseFloat(getComputedStyle(host).getPropertyValue('--hold-zoom'));if(Number.isFinite(cap)&&cap>=1)framing={...framing,maxZoom:Math.min(framing.maxZoom,cap)};}
- function place(w,h,time){
+ function place(w,h,time,state){
   let window=frameWindow;
   const pin=host.closest('.pin');
   const phonePortrait=w<=1100&&h>w;
-  const viewportFraming=name==='field'&&w>h&&w<=1000&&h<=540?{...framing,fit:'contain'}:framing;
+  let viewportFraming=name==='field'&&w>h&&w<=1000&&h<=540?{...framing,fit:'contain'}:framing;
+  if(name==='field'&&pin?.dataset.presentation==='fullscreen'){
+   viewportFraming={...framing,fit:undefined,position:[.5,.5],minZoom:1,maxZoom:1,keys:[]};
+   window=null;
+   if(phonePortrait){
+    // The phone uses the corrected film, with the active subject framed in
+    // the portrait viewport. All projected labels share this exact crop.
+    const frame=time*metadata.fps,segment=workdaySubjects.find(s=>frame>=s.start&&frame<s.end+1);
+    let subjectX=state?.delivery?.shot==='B3'?.52:.64;
+    if(segment){
+     const next=segment.points.findIndex(([f])=>f>frame);
+     const a=segment.points[next<0?segment.points.length-1:Math.max(0,next-1)],b=segment.points[next<0?segment.points.length-1:next];
+     subjectX=mix(a[1],b[1],clamp((frame-a[0])/Math.max(1,b[0]-a[0])));
+    }
+    const focus=state?.annotation||{x:metadata.width*subjectX,y:metadata.height*.5};
+    viewportFraming.keys=[{t:0,zoom:1,focus:[focus.x,metadata.height*.5],at:[.5,.5]}];
+   }
+  }
   if(viewportFraming.fit==='contain'&&pin){
    pin.dataset.filmFit='contain';
    const origin=host.getBoundingClientRect().top,copy=pin.querySelector('.tour-copy');
@@ -92,7 +110,10 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
     window={x0:0,y0:top,x1:w,y1:Math.max(top+1,bottom)};
    }
   }else if(pin)delete pin.dataset.filmFit;
-  const f=placeFilm(w,h,metadata.width,metadata.height,viewportFraming,time,window);lastPlace=f;
+  const fullField=name==='field'&&pin?.dataset.presentation==='fullscreen';
+  const viewportTop=fullField?Math.max(0,(document.querySelector('.masthead')?.getBoundingClientRect().bottom||0)-host.getBoundingClientRect().top):0;
+  const f=placeFilm(w,Math.max(1,h-viewportTop),metadata.width,metadata.height,viewportFraming,time,window);f.dy+=viewportTop;lastPlace=f;
+  if(fullField)pin.style.setProperty('--workday-film-top',`${viewportTop}px`);
   if(phonePortrait&&pin&&viewportFraming.fit==='contain')pin.style.setProperty('--mobile-film-bottom',`${f.dy+metadata.height*f.scale}px`);
   const key=[w,h,f.cover,f.zoom,f.dx,f.dy].map(v=>v.toFixed(3)).join();
   if(key!==placed){placed=key;const width=`${metadata.width*f.cover}px`,height=`${metadata.height*f.cover}px`,transform=`translate3d(${f.dx}px,${f.dy}px,0) scale(${f.zoom})`;
@@ -178,15 +199,15 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   // Cargo's stage and overlays follow the displayed movie during native playback.
   // A pending scrub retains the last decoded camera; its sought frame changes both
   // film and host framing together on seeked. Other scene clocks stay unchanged.
-  const decodedCargo=name==='cargo'&&shown&&!usingStill();
-  if(decodedCargo&&!video.seeking)lastPresentedTime=video.currentTime;
-  const sampleP=presentingStill()?(chapterStill()?.p??originalP):decodedCargo?
+  const decodedScene=(name==='cargo'||name==='field')&&shown&&!usingStill();
+  if(decodedScene&&!video.seeking)lastPresentedTime=video.currentTime;
+  const sampleP=presentingStill()?(chapterStill()?.p??originalP):decodedScene?
    clamp(lastPresentedTime*metadata.fps/(metadata.frames-1)):originalP;
   const samples=metadata.samples,frameIndex=sampleP*(metadata.frames-1)/3,index=Math.min(samples.length-2,Math.floor(frameIndex));
   const a=samples[Math.max(0,index)],b=samples[Math.max(0,index)+1]||a;
   const state=interpolateRecordedState(a,b,clamp((sampleP-a.p)/Math.max(.000001,b.p-a.p)));
   const w=canvas.clientWidth||host.clientWidth,h=canvas.clientHeight||host.clientHeight;
-  const {scale,dx,dy}=place(w,h,sampleP*(metadata.frames-1)/metadata.fps);
+  const {scale,dx,dy}=place(w,h,sampleP*(metadata.frames-1)/metadata.fps,state);
   const point=v=>({...v,x:v.x*scale+dx,y:v.y*scale+dy});
   if(state.labels)state.labels=state.labels.map(point);
   if(state.annotation)state.annotation=point(state.annotation);
