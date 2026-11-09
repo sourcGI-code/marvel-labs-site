@@ -110,7 +110,7 @@ test('media selects a lighter complete video on slow connections and stills for 
     const source=manifest[key];
     assert.equal(selectVideoFile(source,source.kind,{effectiveType:'4g',downlink:10}),`${source.kind}.mp4`);
     assert.equal(selectVideoFile(source,source.kind,{effectiveType:'3g'}),`${source.kind}-lite.mp4`);
-    for(const file of [source.videoFile,source.liteVideoFile])await access(new URL(`${source.mediaBase}/${file}`,root));
+    for(const file of [source.videoFile,source.liteVideoFile])await access(new URL(`${source.mediaBase || source.base}/${file}`,root));
   }
   assert.equal(isStillOnly(false,{saveData:true}),true);
   assert.equal(isStillOnly(true,{}),true);

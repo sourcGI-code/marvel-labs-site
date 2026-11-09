@@ -1,11 +1,11 @@
 {
   "version": 1,
   "cargo": {
-    "base": "assets/owner-approved-fleet-neutral-v2",
-    "revision": "neutral-graphite-v2",
+    "base": "assets/jetblack-films-v1/mono/cargo",
+    "revision": "jetblack-all-v1",
     "desktop": {
-      "base": "assets/owner-approved-fleet-neutral-v2",
-      "revision": "neutral-graphite-v2",
+      "base": "assets/jetblack-films-v1/mono/cargo",
+      "revision": "jetblack-all-v1",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -17,54 +17,34 @@
         "cropY": 224
       },
       "videoFile": "desktop.mp4",
-      "quality": "native-30fps",
+      "quality": "interpolated-30fps-from-15fps-render",
       "nativeVideo": {
         "file": "desktop.mp4",
         "width": 2304,
         "height": 1024,
         "framerate": 30,
-        "bitrate": 3020363,
+        "bitrate": 5500000,
         "codec": "avc1.640032"
       },
-      "compatibilityVideo": {
-        "file": "desktop.mp4",
-        "width": 2304,
-        "height": 1024,
-        "framerate": 30,
-        "bitrate": 3020363,
-        "codec": "avc1.640032",
-        "linearResolution": 1,
-        "verticalResolution": 1
-      },
       "motionFps": 30,
-      "modelRevision": "owner-approved-trailer-v1"
+      "modelRevision": "realism-v2"
     },
     "videoFile": "mobile.mp4",
-    "quality": "native-30fps",
+    "quality": "interpolated-30fps-from-15fps-render",
     "motionFps": 30,
     "nativeVideo": {
       "file": "mobile.mp4",
-      "width": 1080,
-      "height": 2160,
+      "width": 720,
+      "height": 1440,
       "framerate": 30,
-      "bitrate": 2730767,
-      "codec": "avc1.640032"
+      "bitrate": 5500000,
+      "codec": "avc1.640020"
     },
-    "compatibilityVideo": {
-      "file": "mobile.mp4",
-      "width": 1080,
-      "height": 2160,
-      "framerate": 30,
-      "bitrate": 2730767,
-      "codec": "avc1.640032",
-      "linearResolution": 1,
-      "verticalResolution": 1
-    },
-    "modelRevision": "owner-approved-trailer-v1"
+    "modelRevision": "realism-v2"
   },
   "field": {
-    "base": "assets/owner-package-workday-v2",
-    "revision": "stream-20261108",
+    "base": "assets/jetblack-films-v1/mono/field",
+    "revision": "jetblack-all-v1",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 3088,
@@ -74,29 +54,27 @@
       "deliveryStartFrame": 300,
       "deliveryFrames": 1116
     },
-    "mediaBase": "assets/workday-stream-v1",
     "kind": "desktop",
     "videoFile": "desktop.mp4",
     "motionFps": 30,
-    "modelRevision": "owner-approved-trailer-v1",
-    "packageRevision": "owner-package-v2",
+    "modelRevision": "realism-v2",
     "liteVideoFile": "desktop-lite.mp4",
-    "quality": "adaptive-range-mp4",
+    "quality": "interpolated-30fps-from-15fps-render",
     "nativeVideo": {
       "file": "desktop.mp4",
       "width": 1600,
       "height": 1000,
       "framerate": 30,
-      "bitrate": 2300000,
+      "bitrate": 5500000,
       "codec": "avc1.640028"
     }
   },
   "opening": {
-    "base": "assets/owner-approved-intro-smooth60-v4",
-    "revision": "smooth60-v4",
+    "base": "assets/jetblack-films-v1/mono/opening",
+    "revision": "jetblack-all-v1",
     "desktop": {
-      "base": "assets/owner-approved-intro-smooth60-v4",
-      "revision": "smooth60-v4",
+      "base": "assets/jetblack-films-v1/mono/opening",
+      "revision": "jetblack-all-v1",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -108,29 +86,19 @@
         "cropY": 224
       },
       "videoFile": "desktop.mp4",
-      "quality": "interpolated-60fps",
+      "quality": "interpolated-60fps-from-42fps-render",
       "nativeVideo": {
         "file": "desktop.mp4",
         "width": 2304,
         "height": 1024,
         "framerate": 60,
-        "bitrate": 3459698,
+        "bitrate": 5500000,
         "codec": "avc1.640032"
       },
-      "compatibilityVideo": {
-        "file": "desktop.mp4",
-        "width": 2304,
-        "height": 1024,
-        "framerate": 60,
-        "bitrate": 3459698,
-        "codec": "avc1.640032",
-        "linearResolution": 1,
-        "verticalResolution": 1
-      },
       "motionFps": 60,
-      "modelRevision": "owner-approved-trailer-v1"
+      "modelRevision": "realism-v2"
     },
-    "modelRevision": "owner-approved-trailer-v1",
+    "modelRevision": "realism-v2",
     "videoFile": "mobile.mp4",
     "motionFps": 60,
     "nativeVideo": {
@@ -138,24 +106,14 @@
       "width": 720,
       "height": 1440,
       "framerate": 60,
-      "bitrate": 3103290,
+      "bitrate": 5500000,
       "codec": "avc1.640028"
     },
-    "compatibilityVideo": {
-      "file": "mobile.mp4",
-      "width": 720,
-      "height": 1440,
-      "framerate": 60,
-      "bitrate": 3103290,
-      "codec": "avc1.640028",
-      "linearResolution": 1,
-      "verticalResolution": 1
-    },
-    "quality": "interpolated-60fps"
+    "quality": "interpolated-60fps-from-42fps-render"
   },
   "fieldMobile": {
-    "base": "assets/workday-mobile-sharp-v1",
-    "revision": "stream-20261108",
+    "base": "assets/jetblack-films-v1/mono/field",
+    "revision": "jetblack-all-v1",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 3088,
@@ -166,53 +124,19 @@
       "deliveryFrames": 1116
     },
     "kind": "mobile",
-    "mediaBase": "assets/workday-stream-v1",
     "videoFile": "mobile.mp4",
     "motionFps": 30,
-    "modelRevision": "owner-approved-trailer-v1",
-    "packageRevision": "owner-package-v2",
+    "modelRevision": "realism-v2",
     "nativeVideo": {
       "file": "mobile.mp4",
       "width": 1440,
       "height": 900,
       "framerate": 30,
-      "bitrate": 1800000,
+      "bitrate": 5500000,
       "codec": "avc1.640028"
     },
     "liteVideoFile": "mobile-lite.mp4",
-    "quality": "adaptive-range-mp4"
+    "quality": "interpolated-30fps-from-15fps-render"
   },
-  "fieldVariants": {
-    "static": {
-      "field": {
-        "base": "assets/how-it-works-v2/recorded/field",
-        "revision": "hiw-gloss4k",
-        "neighborhood": true,
-        "operator": true,
-        "timelineFrames": 3088,
-        "operatorStartFrame": 0,
-        "howItWorks": {
-          "fieldLeadFrames": 1416,
-          "deliveryStartFrame": 300,
-          "deliveryFrames": 1116
-        },
-        "mediaBase": "https://github.com/sourcGI-code/marvel-labs-site/releases/download/films",
-        "kind": "desktop"
-      },
-      "fieldMobile": {
-        "base": "assets/how-it-works-v2/recorded/field",
-        "revision": "hiw-mobile-recovery-v1",
-        "neighborhood": true,
-        "operator": true,
-        "timelineFrames": 3088,
-        "operatorStartFrame": 0,
-        "howItWorks": {
-          "fieldLeadFrames": 1416,
-          "deliveryStartFrame": 300,
-          "deliveryFrames": 1116
-        },
-        "kind": "mobile"
-      }
-    }
-  }
+  "modelRevision": "realism-v2"
 }

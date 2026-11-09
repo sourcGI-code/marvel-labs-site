@@ -1,8 +1,8 @@
 import {selectVideoFile,isStillOnly} from './video-delivery.js?v=20261108';
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
-import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=consistency-20261108';
-import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=intro-master-workday-mvp-v1';
+import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=complete-trailer-20261109';
+import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=complete-trailer-20261109';
 const clamp=v=>Math.max(0,Math.min(1,v));
 // 10-30 owner: the drive-by auto quote must "act like live camera recognition": the box draws itself, the measurements
 // count up, the estimate comes last. Each house gets a scan clock that is a pure function of the film frame (scrubbing
@@ -68,7 +68,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   let window=frameWindow;
   const pin=host.closest('.pin');
   const phonePortrait=w<=1100&&h>w;
-  const viewportFraming=name==='field'&&w>h&&w<=1000&&h<=540?{...framing,fit:'contain'}:framing;
+  const viewportFraming=name==='cargo'&&framing.trueWorld&&document.body.dataset.filmPresentation==='full-page'?{...framing,fullPage:true}:name==='field'&&w>h&&w<=1000&&h<=540?{...framing,fit:'contain'}:framing;
   if(viewportFraming.fit==='contain'&&pin){
    pin.dataset.filmFit='contain';
    const origin=host.getBoundingClientRect().top,copy=pin.querySelector('.tour-copy');

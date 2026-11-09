@@ -53,10 +53,11 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
 
   function fittedView(bounds,direction){
     const rail=sec.querySelector('.rv-rail'),box=host.getBoundingClientRect();
-    const desktop=innerWidth>860;
+    const showroom=sec.classList.contains('trailer-showroom');
+    const desktop=innerWidth>860||(showroom&&innerWidth>=600&&innerHeight<=580);
     const plan=fitYardCamera(bounds,direction,{width:host.clientWidth,height:host.clientHeight,
-      left:desktop?Math.max(0,rail.getBoundingClientRect().right-box.left):0,
-      top:desktop?84:12,bottom:155,fov:YARD_FOV});
+      left:desktop?Math.max(0,rail.getBoundingClientRect().right-box.left)+(showroom?12:0):0,
+      top:showroom?62:(desktop?84:12),bottom:showroom?54:155,fov:YARD_FOV});
     want.pos.copy(plan.position);want.look.copy(plan.target);want.shift=plan.shiftX;want.shiftY=plan.shiftY;
   }
   function filmView(){
@@ -80,7 +81,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
 
   function setPanel(size) {
     for (const p of panels) p.hidden = p.dataset.size !== size;
-    for (const b of radios) b.setAttribute('aria-checked', String(b.dataset.size === size));
+    for (const b of radios) b.setAttribute(b.getAttribute('role')==='radio'?'aria-checked':'aria-pressed', String(b.dataset.size === size));
     sec.dataset.size = size;
     if (own || 'swapUrl' in sec.dataset) history.replaceState(null, '', `trailer-${size}.html` + location.search);
     sec.dispatchEvent(new CustomEvent('rs:size', {detail: size}));
@@ -200,7 +201,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   for (const b of radios) on(b,'click', () => enter(b.dataset.size));
   for (const a of sec.querySelectorAll('.rs-explore')) on(a,'click', e => { e.preventDefault(); enter(a.closest('.rs-panel').dataset.size); });
   on(rampBtn,'click', () => { if (focus) setRamp(T[focus].rampTo ? 0 : 1); });
-  on(lockChip,'click', () => { locked = false; sec.classList.remove('is-locked'); });
+  on(lockChip,'click', () => { locked = own ? !locked : false; sec.classList.toggle('is-locked',locked); });
 
     // Keep unconfigured links within the reservation flow.
   for (const a of sec.querySelectorAll('.rs-reserve')) {

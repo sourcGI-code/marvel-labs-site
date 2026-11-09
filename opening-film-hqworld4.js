@@ -1,4 +1,4 @@
-import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=consistency-20261108';
+import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=complete-trailer-20261109';
 const clamp=v=>Math.max(0,Math.min(1,v));
 export const filmDuration=10;
 // The fast approach/impact is retained; the reveal settles sooner for the handoff.

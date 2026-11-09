@@ -1,4 +1,4 @@
-import {introFilmKind} from './film-sources-hqworld4.js?v=consistency-20261108';
+import {introFilmKind} from './film-sources-hqworld4.js?v=complete-trailer-20261109';
 // Preview only. Preserve the original glide over one genuinely expanded movie.
 // Restore the original right/left glide over the unchanged HQ
 // films. Projection is centered CONTAIN; there is no arrival zoom or tail dip.
@@ -89,6 +89,9 @@ export function heroReleaseEase(progress){
 export async function installHeroFrame(){
  const root=document.documentElement,host=document.getElementById('hero-visual'),story=document.getElementById('platform-story'),track=document.getElementById('top');
  if(!host||!story||!track)return;
+ // Full-page presentation keeps the movie fixed to the viewport. Shrinking
+ // or moving its entire host exposes a blank border around the animation.
+ if(document.body.dataset.filmPresentation==='full-page')return;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  let data=null;
  try{const response=await fetch(new URL('hero-framing-fuller-graphite-v1/desktop-frame.json?v=fuller-graphite-intro-v1',import.meta.url));if(response.ok)data=await response.json();}catch{}

@@ -1,5 +1,5 @@
 import {fieldProgress} from './neighborhood-timing.js?v=4-hiw-crew1';
-import {loadFilmSources} from './film-sources-hqworld4.js?v=consistency-20261108';
+import {loadFilmSources} from './film-sources-hqworld4.js?v=complete-trailer-20261109';
 await loadFilmSources();
 const {installDisplayFramework}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework-hqworld4.js?v=showcase-quality-v1':'./display-framework.js?v=4');
 import {installScenePlayback} from './scene-playback.js?v=15-rate';
@@ -145,7 +145,7 @@ function update(){scrollFrame=0;stage.update();for(const state of tracks)state.u
 function requestUpdate(){if(!scrollFrame)scrollFrame=requestAnimationFrame(update);}
 addEventListener('scroll',requestUpdate,{passive:true});addEventListener('resize',requestUpdate);update();
 installDisplayFramework({stage,refresh:update});
-if(official)import('./hero-frame-hqworld4.js?v=showcase-quality-v1').then(m=>m.installHeroFrame()).catch(e=>console.warn('Hero framing unavailable.',e.message));
+if(official)import('./hero-frame-hqworld4.js?v=complete-trailer-20261109').then(m=>m.installHeroFrame()).catch(e=>console.warn('Hero framing unavailable.',e.message));
 // One scroll per thing (owner 10-24): forward input steps beat to beat, playing each chapter's film; back scrolls freely.
 if(manualPlayback&&official&&playback)import('./beat-scroll-boost.js?v=showcase-quality-v1').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
 async function loadTrailer(state,canvas,single=false){
@@ -163,7 +163,7 @@ async function loadTrailer(state,canvas,single=false){
      stage.seekProgress(state.track,at,{refresh:true});
     }
    }
-   const view=single?await (await import('./official-journey-hqworld4.js?v=consistency-20261108')).createOfficialJourney($(canvas),{readProgress:()=>stage.progress(state.track),paused}):await (await import('./platform-hqworld4.js?v=discovery-20261108')).createPlatform($(canvas),{readProgress:()=>stage.progress(state.track),writeProgress:p=>stage.seekProgress(state.track,p),isActive:()=>stage.visible(state.track),paused});
+   const view=single?await (await import('./official-journey-hqworld4.js?v=complete-trailer-20261109')).createOfficialJourney($(canvas),{readProgress:()=>stage.progress(state.track),paused}):await (await import('./platform-hqworld4.js?v=complete-trailer-20261109')).createPlatform($(canvas),{readProgress:()=>stage.progress(state.track),writeProgress:p=>stage.seekProgress(state.track,p),isActive:()=>stage.visible(state.track),paused});
    scenes.push(view);state.view=view;view.setActive(stage.visible(state.track));view.setProgress(stage.progress(state.track));view.setPalette();view.setPaused(paused);playback?.sync();
    if(!single&&!new URLSearchParams(location.search).has('edit'))playback?.autoplay(state,{end:.25});
   }catch(e){state.pin.dataset.renderer='static';const status=$('#platform-status');if(!single&&status){document.documentElement.classList.remove('arrival-quiet');document.querySelectorAll('.masthead,#mobile-menu,#platform-story,.hero-base,#capacity-labels,#capacity-summary,#platform-status').forEach(el=>el.inert=false);document.body.style.setProperty('--opening-mix','0%');status.hidden=false;status.textContent='The trailer preview is unavailable. Explore the layouts and pilot details below.';}console.warn('Showing the trailer still.',e.message);}

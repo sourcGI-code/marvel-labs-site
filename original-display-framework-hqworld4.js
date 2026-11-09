@@ -1,6 +1,6 @@
 import {DELIVERY_TITLE_START} from './intro-timing.js?v=1';
 import {fieldProgress,neighborhoodEnabled} from './neighborhood-timing.js?v=4-hiw-crew1';
-import {loadFilmSources} from './film-sources-hqworld4.js?v=consistency-20261108';
+import {loadFilmSources} from './film-sources-hqworld4.js?v=complete-trailer-20261109';
 const howItWorks=(await loadFilmSources()).field?.howItWorks;
 // How it works (owner 10-26): grass in -> product out -> the post-office drop-off -> the old town film (route, then the job).
 if(howItWorks){document.body.dataset.fieldLeadFrames=String(howItWorks.fieldLeadFrames);document.body.dataset.deliveryStartFrame=String(howItWorks.deliveryStartFrame);}

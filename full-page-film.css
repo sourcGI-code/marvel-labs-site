@@ -1,0 +1,29 @@
+/* Full-bleed opening and delivery, with one shared camera projection. */
+body[data-film-presentation="full-page"] #top .platform-pin #hero-visual {
+  position:absolute; inset:0!important; width:100%; height:100%;
+  translate:none!important; scale:none!important; transform:none!important;
+}
+body[data-film-presentation="full-page"] #top .platform-pin {
+  background:#0a0e10; overflow:clip!important;
+}
+@media (orientation:landscape) {
+  body[data-film-presentation="full-page"] #top .platform-pin #hero-visual {
+    --true-native-width:max(min(100vw,160svh),64vw,125svh);
+  }
+  body[data-film-presentation="full-page"] #top .platform-pin :is(.opening-film,.arrival-poster,.scene-fallback img) {
+    position:absolute; inset:auto!important;
+    left:calc(50% - var(--true-native-width)*1.01875)!important;
+    top:calc(50% - var(--true-native-width)*.4)!important;
+    width:calc(var(--true-native-width)*1.8)!important;
+    height:calc(var(--true-native-width)*.8)!important;
+    max-width:none!important; max-height:none!important;
+  }
+}
+@media (orientation:portrait) {
+  body[data-film-presentation="full-page"] #top .platform-pin :is(.opening-film,.arrival-poster) {
+    position:absolute; inset:0!important; width:100%!important; height:100%!important;
+  }
+  body[data-film-presentation="full-page"] #top .platform-pin :is(.opening-film,.arrival-poster img) {
+    width:100%; height:100%; object-fit:cover!important; object-position:center!important;
+  }
+}
