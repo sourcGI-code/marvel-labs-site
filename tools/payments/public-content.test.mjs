@@ -191,7 +191,7 @@ test('historical previews disclose their status and cannot compete as current se
   assert.match(await read('robots.txt'),/Disallow: \/crew\//,'interactive app remains excluded');
 });
 
-test('reservation iframe failure keeps the matching static image and form available',async()=>{
+test('reservation WebGL failure keeps the matching static image and form available',async()=>{
   const dom=new JSDOM(await read('reserve.html'),{url:'https://marvellabs.shop/reserve.html'});
   Object.assign(globalThis,{window:dom.window,document:dom.window.document});
   const section=document.querySelector('.reserve-stage');
@@ -202,25 +202,20 @@ test('reservation iframe failure keeps the matching static image and form availa
     });
     observer.observe(section,{attributes:true,attributeFilter:['data-viewer']});
   });
-  let frame;
   try {
-    // The current viewer is an iframe. Exercise its real failure event rather
-    // than waiting for the removed direct WebGL import to reject.
+    // Node cannot import the browser's mapped Three.js module. The viewer
+    // must recover from that initialization failure with a usable image.
     await import('../../reserve-viewer.js?test=renderer-unavailable');
-    frame=section.querySelector('iframe');
-    assert.ok(frame);
-    frame.dispatchEvent(new window.Event('error'));
     await recovered;
     assert.equal(section.classList.contains('rs-live'),false);
     assert.equal(section.querySelector('.rs-3d').getAttribute('aria-busy'),'false');
-    assert.match(section.querySelector('.rv-preview img').src,/jet-black-20\.png$/);
+    assert.match(section.querySelector('.rv-preview img').src,/yard-desktop\.webp$/);
     assert.ok(section.querySelector('form'));
     section.dispatchEvent(new window.CustomEvent('rs:size',{detail:'16'}));
-    assert.match(section.querySelector('.rv-preview img').src,/jet-black-16\.png$/);
-    frame.dispatchEvent(new window.Event('error'));
+    assert.match(section.querySelector('.rv-preview img').src,/yard-desktop\.webp$/);
+    assert.match(section.querySelector('figcaption').textContent,/16 ft selected/);
     assert.equal(section.dataset.viewer,'image');
   } finally {
-    frame?.dispatchEvent(new window.Event('error'));
     dom.window.close();
   }
 });

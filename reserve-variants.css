@@ -16,7 +16,7 @@
 @media(min-width:861px){
  /* ---- the stage is the whole screen, the rail floats on the left (A, B, C) */
  .rv[data-variant]{display:block}
- .rv[data-variant] .rv-show{position:fixed;inset:var(--reserve-header-height) 0 0;height:calc(100svh - var(--reserve-header-height));z-index:0}
+ .rv[data-variant] .rv-show{position:fixed;inset:0;height:100svh;z-index:0}
  .rv[data-variant] .rv-fade{background:linear-gradient(0deg,#0a0e10 0%,rgba(10,14,16,.8) 10%,rgba(10,14,16,0) 26%),linear-gradient(180deg,#0a0e10 0%,rgba(10,14,16,0) 14%)}
  .rv[data-variant] .rv-rail{position:relative;z-index:3;width:var(--rail);min-height:100svh;margin:0 0 0 var(--gutter,4.5vw);border:0;background:none}
  .rv[data-variant] .rv-metrics{left:calc(var(--rail) + 2 * var(--gutter,4.5vw));grid-template-columns:auto repeat(3,auto);justify-content:end}

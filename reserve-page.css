@@ -22,6 +22,10 @@ section.rv{display:grid;grid-template-columns:minmax(0,1fr) var(--rail);min-heig
 .rv-preview img{display:block;width:100%;height:calc(100% - 28px);min-height:0;object-fit:contain}
 .rv-preview figcaption{flex:none;margin-top:12px;font:11px/1.4 ui-monospace,monospace;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
 .rv.rs-live .rv-preview{visibility:hidden}
+/* Loading and WebGL fallback retain the same dark, two-trailer presentation. */
+.dark-trailer-stage .rv-preview{overflow:hidden}
+.dark-trailer-stage .rv-preview img{object-fit:cover;object-position:68% 65%}
+.dark-trailer-stage .rv-preview figcaption{position:absolute;bottom:0;left:0;right:0;text-align:center;padding:10px;background:#0a0e10e6}
 body.reserve-page .rv:has(.rv-preview):not(.rs-live) .rs-back,body.reserve-page .rv:has(.rv-preview):not(.rs-live) .rs-3d-bar{display:none}
 @media(min-width:861px){.rv[data-variant] .rv-preview{left:calc(var(--rail) + 2 * var(--gutter,4.5vw));bottom:160px}}
 .rv-fade{position:absolute;inset:0;pointer-events:none;
