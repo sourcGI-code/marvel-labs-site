@@ -1,6 +1,6 @@
 {
   "version": 1,
-  "revision": "scene-recovery-20261109",
+  "revision": "scene-recovery-20261109b",
   "modelRevision": "realism-v2",
   "sourceScene": {
     "file": "workday-package-v2.blend",
@@ -87,8 +87,8 @@
       "r_frame_rate": "60/1",
       "duration": "10.000000",
       "nb_frames": "600",
-      "bytes": 9132283,
-      "sha256": "3f756356e13b2932ec599226b9242c11eebc244fe0864911d28f44ca935ad44c"
+      "bytes": 12868196,
+      "sha256": "0092417e537cc34bfad370831874ca1e5905f84f69c2bb63f987726ceac57ee7"
     },
     "clips/mow.mp4": {
       "width": 1920,
@@ -171,5 +171,30 @@
     ],
     "engineSource": "https://github.com/nihui/rife-ncnn-vulkan/releases/tag/20221029",
     "engineArchiveSHA256": "1e2c7ee7fa7daa326542d50622f0afedc80cf6f1858bda411d16385ffa5cdf68"
+  },
+  "openingTailRepair": {
+    "affectedNativeFrames": [
+      784,
+      838
+    ],
+    "repairedNativeFrames": 28,
+    "stationaryPoseDifference": [
+      0.0005774655627198125,
+      0.0005431198710433763,
+      0.0006086056565064479,
+      0.0
+    ],
+    "media": {
+      "width": 3840,
+      "height": 1706,
+      "r_frame_rate": "60/1",
+      "duration": "10.000000",
+      "nb_frames": "600",
+      "bytes": 12868196,
+      "sha256": "0092417e537cc34bfad370831874ca1e5905f84f69c2bb63f987726ceac57ee7"
+    },
+    "minimumEndingStripeLuminance": 207.55555555555554,
+    "persistentRenderData": false,
+    "actorLightVisibilityRestored": true
   }
 }

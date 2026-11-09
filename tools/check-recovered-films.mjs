@@ -49,4 +49,12 @@ for(const [name,info] of Object.entries(audit.media)){
 }
 const html=await readFile(new URL('index.html',root),'utf8');
 assert(!html.includes('data-film-presentation="full-page"'),'Homepage intro must retain its copy-aware glide.');
+// The trailer has settled at this pose. Check every ending frame so the rear
+// stripe cannot turn black again immediately before the 16 ft chapter.
+const stripe=execFileSync('ffmpeg',['-v','error','-i',fileURLToPath(new URL(base+'opening/desktop.mp4',root)),'-vf','select=gte(n\\,560),format=gray,crop=3:3:1727:842','-vsync','0','-f','rawvideo','-']);
+assert.equal(stripe.length,40*9,'All forty ending frames must be decoded.');
+for(let frame=0;frame<40;frame++){
+ const mean=stripe.subarray(frame*9,frame*9+9).reduce((sum,value)=>sum+value,0)/9;
+ assert(mean>180,`Rear decal disappeared at ending frame ${frame}: ${mean}`);
+}
 console.log('Recovered films verified: 13 files, matching timelines, native resolution and preserved original animation.');

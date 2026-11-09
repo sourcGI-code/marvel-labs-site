@@ -1,8 +1,8 @@
 import {selectVideoFile,isStillOnly} from './video-delivery.js?v=20261108';
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
-import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=scene-recovery-20261109';
-import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=scene-recovery-20261109';
+import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=scene-recovery-20261109b';
+import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=scene-recovery-20261109b';
 const clamp=v=>Math.max(0,Math.min(1,v));
 // 10-30 owner: the drive-by auto quote must "act like live camera recognition": the box draws itself, the measurements
 // count up, the estimate comes last. Each house gets a scan clock that is a pure function of the film frame (scrubbing

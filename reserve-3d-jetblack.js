@@ -49,6 +49,16 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   // camera rig: everything eases toward its target values every frame
   const cur = {pos: new THREE.Vector3(), look: new THREE.Vector3(), shift: 0, shiftY: 0}, want = {pos: new THREE.Vector3(), look: new THREE.Vector3(), shift: 0, shiftY: 0};
   let az = .6, el = .32, radius = 12;
+  let touring = false, tourTime = 0, tourAz = 0;
+  function syncLock() {
+    sec.classList.toggle('is-locked', locked);
+    if (rv && lockChip) {
+      lockChip.textContent = locked ? 'Rotate trailer' : touring ? 'Pause rotation' : 'Lock view';
+      lockChip.setAttribute('aria-pressed', String(locked));
+    }
+  }
+  function startTour() { touring = rv && !still; tourTime = 0; tourAz = az; syncLock(); }
+  function stopTour() { if (touring) { touring = false; syncLock(); } }
   const pointer = {x: .5, y: .5, inside: false};
 
   function fittedView(bounds,direction){
@@ -75,7 +85,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   function resize(){
     if(signal.aborted)return;
     const w=host.clientWidth,h=host.clientHeight;if(!w||!h)return;
-    renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.5,Math.sqrt(3000000/(w*h))));
+    renderer.setPixelRatio(Math.min(devicePixelRatio||1,rv?2:1.5,Math.sqrt(3000000/(w*h))));
     renderer.setSize(w,h,false);camera.aspect=w/h;camera.fov=YARD_FOV;camera.updateProjectionMatrix();dirty=true;
     if(mode==='overview')filmView();else orbitView();
   }
@@ -107,7 +117,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     // 10-30 owner: "if I click to lock the trailer then I switch to view another one I want that same pov on the other
     // trailer not to just unlock when I switch" -> the lock, the azimuth and the elevation carry over; only the first entry
     // from the overview picks its angle from where the camera already is
-    if (!from) { az=Math.atan2(1,-.58); el=.06; locked=true; sec.classList.add('is-locked'); }
+    if (!from) { az=Math.atan2(1,-.58); el=rv?.16:.06; locked=rv?still:true; startTour(); syncLock(); }
     setRamp(0);
     const o = size === '20' ? '16' : '20';
     if (other) {
@@ -118,7 +128,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   }
   function leave() {
     if (!modelsReady || signal.aborted) return;
-    mode = 'overview'; sec.dataset.mode = 'overview'; focus = null; locked = false; sec.classList.remove('is-locked');
+    mode = 'overview'; sec.dataset.mode = 'overview'; focus = null; locked = false; stopTour(); syncLock();
     for (const t of Object.values(T)) t.show = true;
     renderer.shadowMap.needsUpdate=true;
     setRamp(0); light(null); filmView();
@@ -127,7 +137,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     if (!focus) { for (const t of Object.values(T)) t.rampTo = 0; return; }
     T[focus].rampTo = to; rampBtn.textContent = to ? 'Close the ramp' : 'Open the ramp';
     if (to) {                                          // look into the bay from behind, and hold the view there
-      az = Math.atan2(-.55, 1); el = .2; locked = true; sec.classList.add('is-locked'); orbitView();
+      az = Math.atan2(-.55, 1); el = .2; locked = true; stopTour(); syncLock(); orbitView();
     }
     dirty = true;
   }
@@ -156,6 +166,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     if (!modelsReady || signal.aborted) return;
     const r = renderer.domElement.getBoundingClientRect();
     if (drag && !fromPage && mode === 'viewer' && T[focus]) { // touch / pen, or dragging while locked: turn it by hand
+      stopTour();
       if(drag.horizontal&&!drag.moved){
         const dx=e.clientX-drag.x,dy=e.clientY-drag.y;
         if(Math.abs(dx)<8||Math.abs(dy)>Math.abs(dx))return;
@@ -172,6 +183,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
       return;
     }
     if (locked || overCopy(e)) return;
+    stopTour();
     // the area right of the copy is the control surface: left..right = once all the way round, top..bottom = overhead..low
     const x0 = !copy || matchMedia('(max-width:760px)').matches ? r.left : copy.getBoundingClientRect().right;
     const u = Math.min(1, Math.max(0, (e.clientX - x0) / (r.right - x0))), v = Math.min(1, Math.max(0, (e.clientY - r.top) / r.height));
@@ -182,6 +194,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   // 10-30 owner: everywhere, on every page). Phones keep the drag
   on(window,'pointermove', e => { if (e.target !== renderer.domElement && !matchMedia('(max-width:860px)').matches) onMove(e, true); });
   on(renderer.domElement,'pointerdown', e => {
+    if (mode === 'viewer') stopTour();
     if (mode === 'viewer' && (e.pointerType !== 'mouse' || locked)) drag = {x: e.clientX, y: e.clientY, moved: false, horizontal:e.pointerType==='touch'&&matchMedia('(max-width:860px)').matches};
     renderer.domElement.setPointerCapture?.(e.pointerId);
   });
@@ -189,7 +202,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     const was = drag; drag = null;
     if (was?.moved) return;
     if (mode === 'overview') { const s = pick(e); if (s) enter(s); return; }
-    if (e.pointerType === 'mouse' && !overCopy(e)) { locked = !locked; sec.classList.toggle('is-locked', locked); }
+    if (e.pointerType === 'mouse' && !overCopy(e)) { locked = !locked; if (!locked) startTour(); syncLock(); }
   });
   on(renderer.domElement,'pointercancel', () => { drag = null; });
   on(renderer.domElement,'lostpointercapture', () => { drag = null; });
@@ -202,7 +215,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   for (const b of radios) on(b,'click', () => enter(b.dataset.size));
   for (const a of sec.querySelectorAll('.rs-explore')) on(a,'click', e => { e.preventDefault(); enter(a.closest('.rs-panel').dataset.size); });
   on(rampBtn,'click', () => { if (focus) setRamp(T[focus].rampTo ? 0 : 1); });
-  on(lockChip,'click', () => { locked = own ? !locked : false; sec.classList.toggle('is-locked',locked); });
+  on(lockChip,'click', () => { locked = own || rv ? !locked : false; if (!locked) startTour(); else stopTour(); syncLock(); });
 
     // Keep unconfigured links within the reservation flow.
   for (const a of sec.querySelectorAll('.rs-reserve')) {
@@ -245,10 +258,10 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     if (signal.aborted) return;
     modelsReady = true; dirty = true; filmView(); cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift=want.shift; cur.shiftY=want.shiftY; renderer.shadowMap.needsUpdate=true;
     if (/[?&]debug3d/.test(location.search)) window.__rs3d = {scene, T, renderer, camera, composer, head, frame, LIGHTS,   // 10-30: the QA grid drives the view
-      state: () => ({az, el, radius, locked, mode, focus}), enter, leave,
+      state: () => ({az, el, radius, locked, mode, focus, touring}), enter, leave,
       view: (a, e, snap) => { az = a; el = e; if (focus) { orbitView(); if (snap) { cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift = want.shift; } dirty = true; } },
-      lock: v => { locked = v; sec.classList.toggle('is-locked', locked); }};
-    if (own) enter(sec.dataset.size || '20');
+      lock: v => { locked = v; if (v) stopTour(); syncLock(); }};
+    if (own || rv) enter(pending || sec.dataset.open || sec.dataset.size || '20');
     else if (pending) enter(pending);
   }).catch(onError);
 
@@ -259,6 +272,11 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     if (!modelsReady || signal.aborted || !visible) return;
     if ((frameNo = (frameNo + 1) % 30) === 0) shown = sec.checkVisibility ? sec.checkVisibility({opacityProperty: true, visibilityProperty: true}) : true;
     if (!shown) return;                               // the immersive page keeps every section fixed: skip while hidden
+    // A restrained camera sweep makes the live model evident on arrival.
+    // Pointer movement, dragging, the ramp and the pause button take control.
+    if (touring && !locked && !drag && mode === 'viewer' && sec.dataset.orderStep !== 'review') {
+      tourTime += dt; az = tourAz + Math.sin(tourTime * .32) * .28; orbitView();
+    }
     const k = still ? 1 : 1 - Math.exp(-dt * 3.2), kf = still ? 1 : 1 - Math.exp(-dt * 7);
     let moving = false;
     const ease = (a, b, f) => { const d = b - a; if (Math.abs(d) > 1e-4) moving = true; return a + d * f; };

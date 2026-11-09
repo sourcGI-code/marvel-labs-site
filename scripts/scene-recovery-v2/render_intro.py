@@ -52,7 +52,7 @@ pref=bpy.context.preferences.addons['cycles'].preferences;pref.compute_device_ty
 for d in pref.devices:d.use=d.type=='OPTIX'
 scene.render.engine='CYCLES';scene.cycles.device='GPU';scene.cycles.samples=samples;scene.cycles.adaptive_min_samples=max(8,samples//2);scene.cycles.adaptive_threshold=.02
 scene.cycles.use_denoising=True;scene.cycles.denoiser='OPENIMAGEDENOISE';scene.cycles.denoising_use_gpu=True
-scene.render.use_motion_blur=False;scene.render.use_persistent_data=True;scene.render.use_compositing=False;scene.render.film_transparent=False;scene.render.threads_mode='FIXED';scene.render.threads=6
+scene.render.use_motion_blur=False;scene.render.use_persistent_data=False;scene.render.use_compositing=False;scene.render.film_transparent=False;scene.render.threads_mode='FIXED';scene.render.threads=6
 scene.render.image_settings.file_format='PNG';scene.render.image_settings.color_mode='RGB';scene.render.image_settings.compression=10
 if kind=='desktop':
  actor_world=scene.world
@@ -103,6 +103,7 @@ for i in frames:
    for o in actor_lights:
     if o.name.startswith('Recovery / trailer fill '):o.hide_render=False
    scene.render.filepath=str(dest/f'{i:05}.actor.png');bpy.ops.render.render(write_still=True)
+   actor_lamp_visibility={o:o.hide_render for o in actor_lights}
    for o in actors:o.visible_camera=False
    actor_floor.hide_render=True
    for o in actor_lights:o.hide_render=True
@@ -116,5 +117,6 @@ for i in frames:
    # Composite encoded display pixels with the original background lift.
    import subprocess
    subprocess.run(['/usr/bin/python3','/scratch/marvel-scene-recovery-20261109/compose_opening.py',str(dest),str(i)],check=True)
+   for o,hidden in actor_lamp_visibility.items():o.hide_render=hidden
  (out/'progress.json').write_text(json.dumps({'frame':i,'total':len(frames),'seconds':time.time()-started,'themes':themes}))
  print('JETBLACK_FRAME',i,round(time.time()-started,2),flush=True)

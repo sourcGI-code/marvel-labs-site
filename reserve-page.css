@@ -43,6 +43,8 @@ body.reserve-page .rv:has(.rv-preview):not(.rs-live) .rs-back,body.reserve-page 
 .rv .rs-lock{all:unset;cursor:pointer;font:10px/1.4 ui-monospace,monospace;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);padding:9px 0}
 .rv .rs-lock:before{content:'●';margin-right:8px;font-size:8px}
 .rv.is-locked[data-mode="viewer"] .rs-3d-bar .rs-lock{display:inline-block}.rv.is-locked[data-mode="viewer"] .rs-3d-hint{display:none}
+.rv[data-page="reserve"][data-mode="viewer"] .rs-3d-bar .rs-lock{display:inline-block}
+.rv[data-page="reserve"][data-mode="viewer"] .rs-3d-hint{display:none}
 .rv-metrics{position:absolute;left:0;right:0;bottom:0;z-index:4;margin:0;padding:0 var(--gutter,4.5vw) 38px;display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));align-items:end;gap:clamp(18px,3vw,56px)}
 .rv-metrics dl{display:contents}
 .rv-metrics-size{margin:0;font-size:clamp(44px,4.2vw,76px);letter-spacing:-.06em;line-height:.9;color:var(--ink)}

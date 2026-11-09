@@ -2,10 +2,10 @@
   "version": 1,
   "cargo": {
     "base": "assets/scene-recovery-v2/cargo",
-    "revision": "scene-recovery-20261109",
+    "revision": "scene-recovery-20261109b",
     "desktop": {
       "base": "assets/scene-recovery-v2/cargo",
-      "revision": "scene-recovery-20261109",
+      "revision": "scene-recovery-20261109b",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -44,7 +44,7 @@
   },
   "field": {
     "base": "assets/scene-recovery-v2/field",
-    "revision": "scene-recovery-20261109",
+    "revision": "scene-recovery-20261109b",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 3088,
@@ -72,10 +72,10 @@
   },
   "opening": {
     "base": "assets/scene-recovery-v2/opening",
-    "revision": "scene-recovery-20261109",
+    "revision": "scene-recovery-20261109b",
     "desktop": {
       "base": "assets/scene-recovery-v2/opening",
-      "revision": "scene-recovery-20261109",
+      "revision": "scene-recovery-20261109b",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -93,7 +93,7 @@
         "width": 3840,
         "height": 1706,
         "framerate": 60,
-        "bitrate": 7299365,
+        "bitrate": 10288035,
         "codec": "avc1.640034"
       },
       "motionFps": 60,
@@ -114,7 +114,7 @@
   },
   "fieldMobile": {
     "base": "assets/scene-recovery-v2/field",
-    "revision": "scene-recovery-20261109",
+    "revision": "scene-recovery-20261109b",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 3088,
@@ -141,5 +141,5 @@
     "animationSHA256": "3891326ea6294683f06e13d4f3a053285dae9e8ddc0e1f50e36cd56f7abf598a"
   },
   "modelRevision": "realism-v2",
-  "sceneRevision": "scene-recovery-20261109"
+  "sceneRevision": "scene-recovery-20261109b"
 }
