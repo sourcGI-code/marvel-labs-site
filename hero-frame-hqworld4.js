@@ -1,4 +1,4 @@
-import {introFilmKind} from './film-sources-hqworld4.js?v=complete-trailer-20261109';
+import {introFilmKind} from './film-sources-hqworld4.js?v=scene-recovery-20261109';
 // Preview only. Preserve the original glide over one genuinely expanded movie.
 // Restore the original right/left glide over the unchanged HQ
 // films. Projection is centered CONTAIN; there is no arrival zoom or tail dip.
@@ -89,9 +89,6 @@ export function heroReleaseEase(progress){
 export async function installHeroFrame(){
  const root=document.documentElement,host=document.getElementById('hero-visual'),story=document.getElementById('platform-story'),track=document.getElementById('top');
  if(!host||!story||!track)return;
- // Full-page presentation keeps the movie fixed to the viewport. Shrinking
- // or moving its entire host exposes a blank border around the animation.
- if(document.body.dataset.filmPresentation==='full-page')return;
  const reduced=matchMedia('(prefers-reduced-motion: reduce)');
  let data=null;
  try{const response=await fetch(new URL('hero-framing-fuller-graphite-v1/desktop-frame.json?v=fuller-graphite-intro-v1',import.meta.url));if(response.ok)data=await response.json();}catch{}
@@ -114,7 +111,8 @@ export async function installHeroFrame(){
  function stopGlide(){if(anim){anim.cancel();anim=null;}animPlan=null;}
  function stopRelease(){if(release?.cancel)release.cancel();release=null;releaseFrom=null;}
  function build(){
-  if(introFilmKind()==='mobile'||!data||reduced.matches){plan=null;pendingBuild=false;return;}
+  if(introFilmKind()==='mobile'){plan=null;pendingBuild=true;return;}
+  if(!data||reduced.matches){plan=null;pendingBuild=false;return;}
   // The same nodes carry delivery copy. Never measure that copy for the intro.
   if(comparing()||parseFloat(track.dataset.sceneProgress||'0')>=.25-1e-4||document.getElementById('platform-tag')?.textContent.trim()!==INTRO_TAG){pendingBuild=true;return;}
   const rects=visibleHeroTextRects(story);if(!rects.length){pendingBuild=true;return;}
@@ -169,7 +167,21 @@ export async function installHeroFrame(){
   }else{release={};set(from.shift,from.scale);}
  }
  function update(){
-  if(introFilmKind()==='mobile'||reduced.matches){stopGlide();stopRelease();set();wasComparing=comparing();return;}
+  if(introFilmKind()==='mobile'){
+   stopGlide();stopRelease();set();
+   const isComparing=comparing();
+   if(pendingBuild||isComparing!==wasComparing){
+    // The close approach can fill a portrait frame. Keep that movie below
+    // the actual copy, including its reservation note, throughout the shot.
+    const bottom=Math.max(0,...visibleHeroTextRects(story).map(rect=>rect.bottom));
+    const start=Math.max(0,bottom+2-host.getBoundingClientRect().top);
+    host.style.setProperty('--mobile-clear-start',`${start}px`);
+    host.style.setProperty('--mobile-clear-end',`${start+14}px`);
+    pendingBuild=false;
+   }
+   wasComparing=isComparing;return;
+  }
+  if(reduced.matches){stopGlide();stopRelease();set();wasComparing=comparing();return;}
   const isComparing=comparing();
   if(isComparing){
    if(!wasComparing){wasComparing=true;beginRelease();}

@@ -1,0 +1,175 @@
+{
+  "version": 1,
+  "revision": "scene-recovery-20261109",
+  "modelRevision": "realism-v2",
+  "sourceScene": {
+    "file": "workday-package-v2.blend",
+    "sha256": "3f1e61e00d6b8ac8ab01e32a73cea50291ea5e1feb898ae91ce53128311937fb"
+  },
+  "originalAnimationSHA256": "3891326ea6294683f06e13d4f3a053285dae9e8ddc0e1f50e36cd56f7abf598a",
+  "finalOriginalAnimationSHA256": "3891326ea6294683f06e13d4f3a053285dae9e8ddc0e1f50e36cd56f7abf598a",
+  "replacedMeshCount": 1288,
+  "preservedCorrections": {
+    "neighborhood_route": "v3: original house and garage on the selected lot; v2: houses both sides, CC0 asphalt + lines, 3D grass (Claude environment agent)",
+    "collection_visibility_repaired": "2026-11-04: source library collections restored; instance collections retain their members.",
+    "releasePackageFix": "Carry forward 6 cm, forearm clearance, top-edge stabilizing grip; 321-frame audit",
+    "releasePhoneFix": "Top grip at pocket transitioning to cradle; hand and forearm audit",
+    "grassContactRevision": "Reachable bin grips, original feet and walk, lowered realistic pour, retargeted clippings",
+    "approvedPackageRevision": "owner-package-v2"
+  },
+  "media": {
+    "field/mobile.mp4": {
+      "width": 1440,
+      "height": 900,
+      "r_frame_rate": "30/1",
+      "duration": "102.933333",
+      "nb_frames": "3088",
+      "bytes": 51084651,
+      "sha256": "2ebd95a5a27d876cdd919f68b56900da7107bfdcd8b718314a8555c15d51565d"
+    },
+    "field/desktop-lite.mp4": {
+      "width": 960,
+      "height": 600,
+      "r_frame_rate": "30/1",
+      "duration": "102.933333",
+      "nb_frames": "3088",
+      "bytes": 23166565,
+      "sha256": "63a78e0b3a8003bc65a384161d593e1347e36e27c20f567f49ecac1a36ed5bb1"
+    },
+    "field/desktop.mp4": {
+      "width": 1920,
+      "height": 1200,
+      "r_frame_rate": "30/1",
+      "duration": "102.934000",
+      "nb_frames": "3088",
+      "bytes": 89117097,
+      "sha256": "ebc9f7c9d35dca39447759871efe57ae73875abd7872f4f18261e5fd90f1a796"
+    },
+    "field/mobile-lite.mp4": {
+      "width": 960,
+      "height": 600,
+      "r_frame_rate": "30/1",
+      "duration": "102.933333",
+      "nb_frames": "3088",
+      "bytes": 23157791,
+      "sha256": "22dd30e023ec9a1613018f6ffc598bc3d79510d593dc18ba15f21d0fe90ef3f2"
+    },
+    "cargo/mobile.mp4": {
+      "width": 1080,
+      "height": 2160,
+      "r_frame_rate": "30/1",
+      "duration": "18.033333",
+      "nb_frames": "541",
+      "bytes": 6480647,
+      "sha256": "cad60ce19f89ce83a768c4ff2f6f060ab3bf4ec5dd39fa5ff70b3adc7c476d4d"
+    },
+    "cargo/desktop.mp4": {
+      "width": 4608,
+      "height": 2048,
+      "r_frame_rate": "30/1",
+      "duration": "18.033333",
+      "nb_frames": "541",
+      "bytes": 16887385,
+      "sha256": "51761d562bfbe9ec7fb4f605db3e5be26cd92fc9e60158c104acc26333eef8e5"
+    },
+    "opening/mobile.mp4": {
+      "width": 1080,
+      "height": 2160,
+      "r_frame_rate": "60/1",
+      "duration": "10.000000",
+      "nb_frames": "600",
+      "bytes": 7420846,
+      "sha256": "4ab14d0c27ba79b430385c63228f68517f8d8cc1d55928e54c1405f37a6e34dc"
+    },
+    "opening/desktop.mp4": {
+      "width": 3840,
+      "height": 1706,
+      "r_frame_rate": "60/1",
+      "duration": "10.000000",
+      "nb_frames": "600",
+      "bytes": 9132283,
+      "sha256": "3f756356e13b2932ec599226b9242c11eebc244fe0864911d28f44ca935ad44c"
+    },
+    "clips/mow.mp4": {
+      "width": 1920,
+      "height": 1200,
+      "r_frame_rate": "30/1",
+      "duration": "4.700000",
+      "nb_frames": "141",
+      "bytes": 4381385,
+      "sha256": "023dfede48e91799de338d81d977508eac2e1d03b9ddfdaf42658a2b12e2272f"
+    },
+    "clips/pickup.mp4": {
+      "width": 1920,
+      "height": 1200,
+      "r_frame_rate": "30/1",
+      "duration": "6.000000",
+      "nb_frames": "180",
+      "bytes": 4748673,
+      "sha256": "bda4eadf459cc6214f2a0a3cd04927d6bfe39f23617fa0f5f162b0abc914eef2"
+    },
+    "clips/dropoff.mp4": {
+      "width": 1920,
+      "height": 1200,
+      "r_frame_rate": "30/1",
+      "duration": "11.000000",
+      "nb_frames": "330",
+      "bytes": 9427418,
+      "sha256": "8faab6f78c4e7be88ff1157a07cc38c8fe502c865ff60ced8422f4f0de3b37d8"
+    },
+    "clips/equipment.mp4": {
+      "width": 1920,
+      "height": 1200,
+      "r_frame_rate": "30/1",
+      "duration": "10.000000",
+      "nb_frames": "300",
+      "bytes": 8387378,
+      "sha256": "7a0f07c84e57d046907c63acc32839300ccad3722aaa4312ca3a49c17e76e151"
+    },
+    "clips/load.mp4": {
+      "width": 1920,
+      "height": 1200,
+      "r_frame_rate": "30/1",
+      "duration": "10.000000",
+      "nb_frames": "300",
+      "bytes": 6975679,
+      "sha256": "447099967b3c67a85317a03c879992d065f502fda68db4d7b845ae3ed13f8e5c"
+    }
+  },
+  "renderedDimensions": {
+    "openingDesktop": [
+      3840,
+      1706
+    ],
+    "cargoDesktop": [
+      4608,
+      2048
+    ],
+    "portrait": [
+      1080,
+      2160
+    ],
+    "workday": [
+      1920,
+      1200
+    ]
+  },
+  "workdayMotion": {
+    "revision": "rife-4.6-native-frames-preserved",
+    "nativeFrames": 1544,
+    "nativeFramesPreserved": true,
+    "outputFrames": 3088,
+    "authoredCuts": [
+      300,
+      624,
+      804,
+      1134,
+      1290,
+      1416,
+      2733,
+      2812
+    ],
+    "engineSource": "https://github.com/nihui/rife-ncnn-vulkan/releases/tag/20221029",
+    "engineArchiveSHA256": "1e2c7ee7fa7daa326542d50622f0afedc80cf6f1858bda411d16385ffa5cdf68"
+  }
+}

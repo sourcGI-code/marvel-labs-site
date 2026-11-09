@@ -1,11 +1,11 @@
 {
   "version": 1,
   "cargo": {
-    "base": "assets/jetblack-films-v1/mono/cargo",
-    "revision": "jetblack-all-v1",
+    "base": "assets/scene-recovery-v2/cargo",
+    "revision": "scene-recovery-20261109",
     "desktop": {
-      "base": "assets/jetblack-films-v1/mono/cargo",
-      "revision": "jetblack-all-v1",
+      "base": "assets/scene-recovery-v2/cargo",
+      "revision": "scene-recovery-20261109",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -17,34 +17,34 @@
         "cropY": 224
       },
       "videoFile": "desktop.mp4",
-      "quality": "interpolated-30fps-from-15fps-render",
+      "quality": "high-resolution-30fps-from-15fps-render",
       "nativeVideo": {
         "file": "desktop.mp4",
-        "width": 2304,
-        "height": 1024,
+        "width": 4608,
+        "height": 2048,
         "framerate": 30,
-        "bitrate": 5500000,
-        "codec": "avc1.640032"
+        "bitrate": 7488310,
+        "codec": "avc1.640034"
       },
       "motionFps": 30,
       "modelRevision": "realism-v2"
     },
     "videoFile": "mobile.mp4",
-    "quality": "interpolated-30fps-from-15fps-render",
+    "quality": "high-resolution-30fps-from-15fps-render",
     "motionFps": 30,
     "nativeVideo": {
       "file": "mobile.mp4",
-      "width": 720,
-      "height": 1440,
+      "width": 1080,
+      "height": 2160,
       "framerate": 30,
-      "bitrate": 5500000,
-      "codec": "avc1.640020"
+      "bitrate": 2871683,
+      "codec": "avc1.640032"
     },
     "modelRevision": "realism-v2"
   },
   "field": {
-    "base": "assets/jetblack-films-v1/mono/field",
-    "revision": "jetblack-all-v1",
+    "base": "assets/scene-recovery-v2/field",
+    "revision": "scene-recovery-20261109",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 3088,
@@ -59,22 +59,23 @@
     "motionFps": 30,
     "modelRevision": "realism-v2",
     "liteVideoFile": "desktop-lite.mp4",
-    "quality": "interpolated-30fps-from-15fps-render",
+    "quality": "high-resolution-30fps-from-15fps-render",
     "nativeVideo": {
       "file": "desktop.mp4",
-      "width": 1600,
-      "height": 1000,
+      "width": 1920,
+      "height": 1200,
       "framerate": 30,
-      "bitrate": 5500000,
-      "codec": "avc1.640028"
-    }
+      "bitrate": 6923157,
+      "codec": "avc1.640032"
+    },
+    "animationSHA256": "3891326ea6294683f06e13d4f3a053285dae9e8ddc0e1f50e36cd56f7abf598a"
   },
   "opening": {
-    "base": "assets/jetblack-films-v1/mono/opening",
-    "revision": "jetblack-all-v1",
+    "base": "assets/scene-recovery-v2/opening",
+    "revision": "scene-recovery-20261109",
     "desktop": {
-      "base": "assets/jetblack-films-v1/mono/opening",
-      "revision": "jetblack-all-v1",
+      "base": "assets/scene-recovery-v2/opening",
+      "revision": "scene-recovery-20261109",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -86,14 +87,14 @@
         "cropY": 224
       },
       "videoFile": "desktop.mp4",
-      "quality": "interpolated-60fps-from-42fps-render",
+      "quality": "high-resolution-60fps-from-42fps-render",
       "nativeVideo": {
         "file": "desktop.mp4",
-        "width": 2304,
-        "height": 1024,
+        "width": 3840,
+        "height": 1706,
         "framerate": 60,
-        "bitrate": 5500000,
-        "codec": "avc1.640032"
+        "bitrate": 7299365,
+        "codec": "avc1.640034"
       },
       "motionFps": 60,
       "modelRevision": "realism-v2"
@@ -103,17 +104,17 @@
     "motionFps": 60,
     "nativeVideo": {
       "file": "mobile.mp4",
-      "width": 720,
-      "height": 1440,
+      "width": 1080,
+      "height": 2160,
       "framerate": 60,
-      "bitrate": 5500000,
-      "codec": "avc1.640028"
+      "bitrate": 5930455,
+      "codec": "avc1.640032"
     },
-    "quality": "interpolated-60fps-from-42fps-render"
+    "quality": "high-resolution-60fps-from-42fps-render"
   },
   "fieldMobile": {
-    "base": "assets/jetblack-films-v1/mono/field",
-    "revision": "jetblack-all-v1",
+    "base": "assets/scene-recovery-v2/field",
+    "revision": "scene-recovery-20261109",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 3088,
@@ -132,11 +133,13 @@
       "width": 1440,
       "height": 900,
       "framerate": 30,
-      "bitrate": 5500000,
+      "bitrate": 3967363,
       "codec": "avc1.640028"
     },
     "liteVideoFile": "mobile-lite.mp4",
-    "quality": "interpolated-30fps-from-15fps-render"
+    "quality": "high-resolution-30fps-from-15fps-render",
+    "animationSHA256": "3891326ea6294683f06e13d4f3a053285dae9e8ddc0e1f50e36cd56f7abf598a"
   },
-  "modelRevision": "realism-v2"
+  "modelRevision": "realism-v2",
+  "sceneRevision": "scene-recovery-20261109"
 }

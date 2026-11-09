@@ -2,11 +2,8 @@
 // rectangle extends around its native 2560×1600 image; labels never inherit the
 // expanded raster's dimensions as their coordinate system.
 export const TRUE_WORLD={"version":1,"nativeWidth":2560,"nativeHeight":1600,"renderWidth":4608,"renderHeight":2048,"cropX":1328,"cropY":224};
-export function placeTrueWorldFilm(w,h,W,H,fullPage=false){
- // Preserve the native camera size where possible, expanding the overscan
- // just enough to cover wide screens without stretching the trailer.
- const nativeWidth=Math.max(Math.min(w,h*W/H),fullPage?w/1.5625:0,fullPage?h/0.8:0);
- const scale=nativeWidth/W,cover=Math.max(w/W,h/H),dx=(w-W*scale)/2,dy=(h-H*scale)/2;
+export function placeTrueWorldFilm(w,h,W,H){
+ const scale=Math.min(w/W,h/H),cover=Math.max(w/W,h/H),dx=(w-W*scale)/2,dy=(h-H*scale)/2;
  const q=W*scale/TRUE_WORLD.nativeWidth;
  return {scale,dx,dy,cover,zoom:scale/cover,feather:false,media:{left:dx-TRUE_WORLD.cropX*q,top:dy-TRUE_WORLD.cropY*q,width:TRUE_WORLD.renderWidth*q,height:TRUE_WORLD.renderHeight*q}};
 }
@@ -91,7 +88,7 @@ export function placeFilm(w, h, W, H, framing, time = 0, frameWindow = null) {
    const scale=Math.min((box.x1-box.x0)/W,Math.max(1,box.y1-box.y0)/H),cover=Math.max(w/W,h/H);
    return {scale,cover,dx:box.x0+((box.x1-box.x0)-W*scale)/2,dy:box.y0+((box.y1-box.y0)-H*scale)/2,zoom:scale/cover,feather:false};
   }
-  if(framing.trueWorld)return placeTrueWorldFilm(w,h,W,H,framing.fullPage);
+  if(framing.trueWorld)return placeTrueWorldFilm(w,h,W,H);
   if(framing.oldDeliveryStage){
    const cover=Math.max(w/W,h/H),scale=framing.mobileCover||w<=760?cover:Math.min(w/W,h/H);
    const dx=(w-W*scale)/2,dy=(h-H*scale)/2;

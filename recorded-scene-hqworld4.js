@@ -1,8 +1,8 @@
 import {selectVideoFile,isStillOnly} from './video-delivery.js?v=20261108';
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
-import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=complete-trailer-20261109';
-import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=complete-trailer-20261109';
+import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=scene-recovery-20261109';
+import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=scene-recovery-20261109';
 const clamp=v=>Math.max(0,Math.min(1,v));
 // 10-30 owner: the drive-by auto quote must "act like live camera recognition": the box draws itself, the measurements
 // count up, the estimate comes last. Each house gets a scan clock that is a pure function of the film frame (scrubbing
@@ -68,7 +68,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   let window=frameWindow;
   const pin=host.closest('.pin');
   const phonePortrait=w<=1100&&h>w;
-  const viewportFraming=name==='cargo'&&framing.trueWorld&&document.body.dataset.filmPresentation==='full-page'?{...framing,fullPage:true}:name==='field'&&w>h&&w<=1000&&h<=540?{...framing,fit:'contain'}:framing;
+  const viewportFraming=name==='field'&&w>h&&w<=1000&&h<=540?{...framing,fit:'contain'}:framing;
   if(viewportFraming.fit==='contain'&&pin){
    pin.dataset.filmFit='contain';
    const origin=host.getBoundingClientRect().top,copy=pin.querySelector('.tour-copy');
@@ -192,7 +192,6 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   if(state.annotation)state.annotation=point(state.annotation);
   if(state.route?.properties)state.route.properties=state.route.properties.map(v=>{const q=point(v);if(v.box)q.box={x0:v.box.x0*scale+dx,y0:v.box.y0*scale+dy,x1:v.box.x1*scale+dx,y1:v.box.y1*scale+dy};const sc=routeScan[v.id];if(sc)q.scan={...sc,t:clamp((sampleP-sc.start)/(sc.end-sc.start))};return q;})   // 10-29: house boxes (auto-quote); 10-30: scan clock t per house, a pure function of the film frame
   const workflowP=state.workflowP??sampleP;
-  if(name==='cargo'&&state.cargoFeet){state.cargoFeet=[12,8];state.factoryFeet=8;}
   if(metadata.vision){
    const full=metadata.vision,classification=clamp((workflowP-.205)/.065),measuring=clamp((workflowP-.275)/.05);
    const count=workflowP<.205?0:Math.min(full.total,Math.floor(classification*full.total)+1);

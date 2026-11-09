@@ -18,6 +18,14 @@
  body[data-page-flow-preview] #top .platform-pin .offer-actions .offer-button {font-size:13px;min-height:44px;padding:10px 12px}
  body[data-page-flow-preview] #top .platform-pin .offer-text-link {font-size:13px;min-height:44px;display:inline-flex;align-items:center}
  body[data-page-flow-preview] #top .platform-pin #capacity-labels span {font-size:10px}
+ body[data-page-flow-preview] #top .platform-pin #capacity-small {margin-left:14px}
+ /* The approach shot stays visible below the measured copy. A soft edge
+    prevents the close-up from crossing the headline or mobile header. */
+ html.immersive body[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-visual {
+  -webkit-mask-image:linear-gradient(180deg,transparent 0,transparent var(--mobile-clear-start,0px),#000 var(--mobile-clear-end,0px))!important;
+  mask-image:linear-gradient(180deg,transparent 0,transparent var(--mobile-clear-start,0px),#000 var(--mobile-clear-end,0px))!important;
+  -webkit-mask-composite:source-over;mask-composite:add;
+ }
  /* Reading sections can be taller than a phone. Their final card and action stay reachable. */
  html.immersive body[data-page-flow-preview] :is(#story,#sizes) {overflow-x:hidden;overflow-y:auto;overscroll-behavior-y:contain;scroll-padding-top:90px;padding-bottom:calc(32px + env(safe-area-inset-bottom))}
  body[data-page-flow-preview] :is(#story,#sizes) .eyebrow {font-size:10px}
@@ -62,6 +70,9 @@
  body[data-page-flow-preview] #app .crew-phone-caption {font-size:11px;bottom:-20px}
 }
 @media (orientation:portrait) and (max-width:450px) and (max-height:720px) {
+ /* Keep the intro model below its copy and reservation note on short phones.
+    The comparison phase retains its own camera and label projection. */
+ html.immersive body[data-page-flow-preview] #top .platform-pin:not(.is-comparing) #hero-visual {translate:0 clamp(0px,calc(228px - 30svh),60px)!important}
  body[data-page-flow-preview] #top .platform-pin #platform-story {top:88px}
  body[data-page-flow-preview] #top .platform-pin #hero-description {font-size:13px;line-height:1.4;margin-top:10px}
  body[data-page-flow-preview] #top .platform-pin .offer-actions {margin-top:10px;gap:8px}
