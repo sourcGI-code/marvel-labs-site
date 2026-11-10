@@ -12,7 +12,14 @@ function start(sec) {
   const metric = k => sec.querySelector(`.rv-metrics [data-k="${k}"]`);
   const size = () => sizes.find(i => i.checked)?.value || '20', plan = () => plans.find(i => i.checked)?.value || 'buy';
 
-  function show(s) {
+  function rememberSelection() {
+    // Keep a refresh/shareable URL without adding history entries or saving consent.
+    const url = new URL(window.location.href);
+    url.searchParams.set('size', size());
+    url.searchParams.set('plan', plan() === 'buy' ? 'buy' : 'lease');
+    window.history.replaceState(window.history.state, '', url);
+  }
+  function show(s, remember = false) {
     if (sec.dataset.orderStep && sec.dataset.orderStep !== 'configure') return; // the numbers under the stage, the Buy price and the summary follow the size
     const p = SPEC[s]; if (!p) return;
     for (const i of sizes) i.checked = i.value === s;
@@ -23,6 +30,7 @@ function start(sec) {
     sec.querySelector('.rv-metrics-size').textContent = `${s} ft`;
     form.querySelector('[data-buy-price]').textContent = p.buy;
     summary();
+    if (remember) rememberSelection();
   }
   function summary() {
     const s = size(), buy = plan() === 'buy';
@@ -31,11 +39,11 @@ function start(sec) {
 
   // Only a deliberate radio choice changes the reservation and its preview.
   for (const i of sizes) {
-    i.addEventListener('change', () => { show(i.value); sec.dispatchEvent(new CustomEvent('rs:enter', {detail: i.value})); });
+    i.addEventListener('change', () => { show(i.value, true); sec.dispatchEvent(new CustomEvent('rs:enter', {detail: i.value})); });
     i.addEventListener('click', () => { if (i.checked && sec.dataset.mode === 'overview') sec.dispatchEvent(new CustomEvent('rs:enter', {detail: i.value})); });
   }
-  for (const i of plans) i.addEventListener('change', summary);
-  sec.addEventListener('rs:size', e => show(e.detail));   // explicit stage clicks select a size too
+  for (const i of plans) i.addEventListener('change', () => { summary(); rememberSelection(); });
+  sec.addEventListener('rs:size', e => show(e.detail, true));   // explicit stage clicks select a size too
 
   const params = new URLSearchParams(location.search);
   const requestedPlan = params.get('plan');
