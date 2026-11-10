@@ -31,7 +31,8 @@ class Links(HTMLParser):
             self.hrefs.extend(value for key, value in attrs if key == 'href' and value)
 
 pages = set()
-pending = ['index.html', '404.html', 'privacy.html', 'terms.html', 'reservation-agreement.html', 'reservation-refunds.html']
+# The website loads this chat document in an iframe, so anchor discovery alone misses it.
+pending = ['index.html', '404.html', 'crew-chat.html', 'privacy.html', 'terms.html', 'reservation-agreement.html', 'reservation-refunds.html']
 pending += [urlsplit(node.text).path.lstrip('/') or 'index.html' for node in ET.fromstring(read('sitemap.xml')).iter() if node.tag.endswith('loc')]
 while pending:
     name = pending.pop()

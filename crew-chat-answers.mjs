@@ -7,12 +7,12 @@ const topics = [
     'The right choice starts with your equipment. Are you hauling one mower and hand tools, or a larger setup?'
   ], next:['One mower and hand tools','A larger equipment setup']},
   {id:'compact-fit', terms:['one mower','single mower','small crew','solo','compact setup'], answer:[
-    'I’d start by looking at the 16 ft. Its 7 ft width and smaller overall footprint make it the compact option, with the same front factory concept as the 20 ft.',
+    'I’d start by looking at the 16 ft. It shares the 20 ft model’s 8.5 ft width, 7.5 ft height and front factory, with a shorter overall length.',
     'The important check is your mower’s deck width and the room needed for tools, access and loading. A smaller footprint is useful only if your equipment fits comfortably.',
     'Would you like to compare the Buy and Lease plans, or see the 16 ft reservation options?'
   ], next:['Compare Buy and Lease','Explore the 16 ft'], action:{label:'Explore the 16 ft',href:'trailer-16.html'}},
   {id:'large-fit', terms:['larger equipment','larger setup','two mowers','2 mowers','multiple mowers','big crew','large crew','more equipment'], answer:[
-    'The 20 ft is the option to explore for more equipment room. It is 8.5 ft wide, with a larger rear equipment area and the same front factory concept.',
+    'The 20 ft is the option to explore for more equipment room. Both models are 8.5 ft wide and 7.5 ft high. The 20 ft adds 4 ft of rear equipment length, with the same front factory concept.',
     'We’d still need to confirm your equipment dimensions, loaded weight and tow vehicle before calling it the right fit. More space should support your working day, not make loading harder.',
     'Want to see the 20 ft, or compare how the Buy and Lease plans work?'
   ], next:['Explore the 20 ft','Compare Buy and Lease'], action:{label:'Explore the 20 ft',href:'trailer-20.html'}},
@@ -28,7 +28,7 @@ const topics = [
   ], next:['Compare the trailer sizes','How does the reservation work?'], action:{label:'Explore reservation options',href:'reserve.html'}},
   {id:'buy-fit', terms:['larger profit share','higher share','buy outright','purchase outright','keep more profit'], answer:[
     'Then Buy is the plan to compare: you would keep 75% of product profit. It is aimed at an owner who prefers the upfront purchase in exchange for that larger share.',
-    'The next decision is equipment space: 16 ft × 7 ft, or 20 ft × 8.5 ft. Both use the same front factory concept.',
+    'The next decision is length: 16 ft or 20 ft. Both are 8.5 ft wide and 7.5 ft high, with the same front factory concept.',
     'Would the compact trailer fit your crew, or do you need the larger equipment bay?'
   ], next:['One mower and hand tools','A larger equipment setup']},
   {id:'quality', terms:['durable','build quality','construction','reliable','reliability','warranty','safe','safety','heavy duty'], answer:[
@@ -63,8 +63,8 @@ const topics = [
     'The planned workflow packages and stores finished products onboard. The crew retrieves them through the package exit and takes the labeled packages to a UPS Store.',
     'Marvel is planning to supply the packaging and shipping arrangements. The app would show what is ready, what shipped and what sold; this chat cannot book a shipment.'
   ], next:['What does Marvel supply?','What do I actually earn?']},
-  {id:'sizes', terms:['16','20ft','20 ft','20 foot','size','dimension','width','cargo','footprint','factory length','six foot','6 foot'], answer:[
-    'The two proposed trailer footprints are 16 ft × 7 ft and 20 ft × 8.5 ft. Both use the same nominal six-foot front factory; the larger trailer leaves more equipment room.',
+  {id:'sizes', terms:['16','20ft','20 ft','20 foot','size','dimension','width','wide','height','tall','cargo','footprint','factory length','six foot','6 foot'], answer:[
+    'The trailers are 16 ft or 20 ft long. Both are 8.5 ft wide and 7.5 ft high; only the length differs. Both use the same front factory, and the 20 ft adds 4 ft of rear equipment length.',
     'The current design shows a 6 ft 2½ in factory after the approved partition adjustment. Final usable clearances and the equipment layout need verification against the physical trailer.'
   ], next:['How much does the trailer cost?','What does Marvel supply?']},
   {id:'pricing', terms:['cost','price','buy','lease','free','purchase','upfront'], answer:[

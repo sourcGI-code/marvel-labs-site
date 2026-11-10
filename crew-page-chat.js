@@ -22,7 +22,7 @@ if (section) {
   const frame = document.createElement('iframe');
   frame.title = 'Ask Marvel — guided website chat';
   frame.src = 'about:blank';
-  const url = new URL('crew-chat.html?v=lease-20261108', document.baseURI);
+  const url = new URL('crew-chat.html?v=chat-guide-20261110', document.baseURI);
   panel.append(frame);
   widget.append(launch, panel);
   document.body.append(widget);

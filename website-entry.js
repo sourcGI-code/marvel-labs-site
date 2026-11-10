@@ -23,7 +23,7 @@ if (!document.documentElement.hasAttribute('data-snapshot')) {
     });
   });
   import('./crew-app-interactive.js?v=phone-playback-20261109').catch(console.warn);
-  import('./crew-page-chat.js?v=lease-20261108').catch(console.warn);
+  import('./crew-page-chat.js?v=chat-guide-20261110').catch(console.warn);
   import('./editor-runtime.js?v=showcase-quality-v1').catch(console.warn);
 } else {
   document.querySelectorAll('img').forEach(img => img.loading = 'eager');
