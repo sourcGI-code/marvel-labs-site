@@ -12,6 +12,8 @@ const colors={charcoal:'#4dd8e8',ivory:'#356b50',burgundy:'#ff7866',midnight:'#d
 export async function createPlatform(canvas,{readProgress,writeProgress,isActive,paused}){
  await loadFilmSources();
  const host=canvas.parentElement,reduced=matchMedia('(prefers-reduced-motion: reduce)');
+ // Restore the page's opening copy after later chapters without keeping a second version of it.
+ const openingCopy={tag:$('platform-tag').textContent,title:$('hero-title').innerHTML,description:$('hero-description').textContent};
  const arrivalReveal=createArrivalReveal({reduced});
  const fleetLabels=createFleetLabelMotion($('capacity-labels'),reduced);
  const livePreview=document.body.dataset.sceneSource!=='accepted-films'&&false /* live authoring is local-only */;
@@ -87,7 +89,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
     // Recorded films: the poster stays until the opening has a decodable frame (phones that refused autoplay).
     liveMode='opening';if(!recorded||reduced.matches||film.ready)host.classList.add('scene-ready');
    }
-   copy('THE AUTONOMOUS MICROFACTORY TRAILER','Your next trailer.<br><em>A factory inside.</em>','A work trailer designed to carry your equipment and turn suitable collected grass into products. Earn a share of profit from products sold, under the agreed plan. The production system is in development.');
+   copy(openingCopy.tag,openingCopy.title,openingCopy.description);
    $('platform-story').style.opacity='1';
    fleetLabels.update({inFleet:false,frameReady:false});$('capacity-summary').hidden=true;
   }else{
