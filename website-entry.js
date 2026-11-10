@@ -5,7 +5,7 @@ installDeferredSectionImages();
 // Keep the interactive entry points out of that mode: no hidden scenes,
 // huge scroll spacers, video autoplay or blank embedded-app loading state.
 if (!document.documentElement.hasAttribute('data-snapshot')) {
-  import('./atlas-hqworld4.js?v=hero-copy-20261110').then(() => {
+  import('./atlas-hqworld4.js?v=shared-dimensions-20261110').then(() => {
     // The initial scene and its scroll position are set before revealing content.
     requestAnimationFrame(() => { delete document.documentElement.dataset.siteLoading; });
   }).catch(error => {

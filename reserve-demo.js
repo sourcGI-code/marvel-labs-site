@@ -31,7 +31,7 @@ export function installReservationDemo({sec, form, selection, restore}) {
     return [
       ['Trailer', `${choice.size} ft · Mirror Graphite`],
       ['Plan', planName(choice.plan)],
-      ['Footprint', choice.size === '16' ? '16 ft × 7 ft' : '20 ft × 8.5 ft'],
+      ['Footprint', choice.size === '16' ? '16 ft × 8.5 ft' : '20 ft × 8.5 ft'],
       ['Factory / cargo', choice.size === '16' ? '6 ft 2½ in / 9 ft 9½ in' : '6 ft 2½ in / 13 ft 9½ in'],
       ...(choice.plan === 'buy' ? [
         ['Trailer price', money(price(choice.size))],

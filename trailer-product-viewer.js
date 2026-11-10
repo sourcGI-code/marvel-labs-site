@@ -1,6 +1,6 @@
 const section = document.querySelector('.trailer-showroom');
 const models = {
-  '16': {width:'7 ft',cargo:'9 ft 9½ in',price:'$44,999'},
+  '16': {width:'8.5 ft',cargo:'9 ft 9½ in',price:'$44,999'},
   '20': {width:'8.5 ft',cargo:'13 ft 9½ in',price:'$49,999'},
 };
 const host = section.querySelector('.rs-3d');
