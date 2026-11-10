@@ -3,7 +3,7 @@ import {createRecordedScene} from './recorded-scene-hqworld4.js?v=media-delivery
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
 import {createVisionOverlay} from './vision-overlay.js?v=workday-ui-20261109';
 import {createScrollMotion} from './scroll-motion.js';
-import {setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=7';
+import {setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=stable-slides-v1';
 const clamp=v=>Math.max(0,Math.min(1,v));
 export async function createOfficialJourney(canvas,{readProgress,paused}){
  let scene;

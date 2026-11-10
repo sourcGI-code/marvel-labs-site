@@ -5,10 +5,15 @@ installDeferredSectionImages();
 // Keep the interactive entry points out of that mode: no hidden scenes,
 // huge scroll spacers, video autoplay or blank embedded-app loading state.
 if (!document.documentElement.hasAttribute('data-snapshot')) {
-  import('./atlas-hqworld4.js?v=media-delivery-20261109').catch(error => {
+  import('./atlas-hqworld4.js?v=refresh-startup-20261110').then(() => {
+    // The initial scene and its scroll position are set before revealing content.
+    requestAnimationFrame(() => { delete document.documentElement.dataset.siteLoading; });
+  }).catch(error => {
     console.warn('Showing the static website because the presentation did not load.', error);
     document.documentElement.classList.remove('immersive', 'enhanced', 'arrival-quiet');
     document.documentElement.dataset.snapshot = 'true';
+    delete document.documentElement.dataset.siteLoading;
+    history.scrollRestoration = 'auto';
     document.querySelectorAll('.scene-slot,.scene-tail').forEach(el => el.remove());
     document.querySelectorAll('.stage-scene').forEach(el => {
       el.inert = false;

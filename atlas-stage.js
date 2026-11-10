@@ -5,6 +5,7 @@ const smooth = value => { const t = clamp(value); return t * t * (3 - 2 * t); };
 // Scroll distance is a timeline. Every visible scene stays in viewport coordinates.
 export function createStage() {
   const root = document.documentElement;
+  const controlledStartup = root.hasAttribute('data-site-loading');
   const slide = document.body.dataset.experience === 'official';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
   const elements = [...document.querySelectorAll('main > section, body > .site-footer')];
@@ -112,8 +113,37 @@ export function createStage() {
     }
     update();
   });
-  measure(); update();
-  if (location.hash) requestAnimationFrame(() => navigate(location.hash));
+  measure();
+  if (controlledStartup) {
+    // Browser pixel restoration can land on an unrelated stacked section before
+    // our timeline exists. Restore the actual scene only after measuring it.
+    const navigation = performance.getEntriesByType('navigation')[0]?.type;
+    const storageKey = 'marvel-stage:' + location.pathname + location.search;
+    let saved = null;
+    if (['reload','back_forward'].includes(navigation)) {
+      saved = history.state?.marvelStage;
+      // Updating history during pagehide is discarded by some browsers on reload.
+      try { saved ??= JSON.parse(sessionStorage.getItem(storageKey)); } catch {}
+    }
+    const scene = saved?.hash === location.hash && scenes.find(s => (s.element.id || 'footer') === saved.id);
+    if (scene && Number.isFinite(saved.progress)) {
+      const inset = scene.index === 0 ? 0 : viewport * HANDOFF_VIEWPORTS / 2;
+      scrollTo({top:scene.start + inset + clamp(saved.progress) * (scene.length - inset - viewport * HANDOFF_VIEWPORTS / 2),behavior:'instant'});
+    } else if (!location.hash || !navigate(location.hash)) {
+      scrollTo({top:0,behavior:'instant'});
+    }
+    update();
+    addEventListener('pagehide', () => {
+      if (!active) return;
+      const state = history.state && typeof history.state === 'object' ? history.state : {};
+      const position = {id:active.element.id || 'footer',progress:liveProgress(active.element),hash:location.hash};
+      try { sessionStorage.setItem(storageKey,JSON.stringify(position)); } catch {}
+      history.replaceState({...state,marvelStage:position},'');
+    });
+  } else {
+    update();
+    if (location.hash) requestAnimationFrame(() => navigate(location.hash));
+  }
   addEventListener('pageshow', () => { measure(); update(); });
   return {
     update,

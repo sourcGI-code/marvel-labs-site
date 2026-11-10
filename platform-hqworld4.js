@@ -5,7 +5,7 @@ import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.j
 import {loadFilmSources} from './film-sources-hqworld4.js?v=media-delivery-20261109';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';
 import {createScrollMotion} from './scroll-motion.js';
-import {setAnimatedTitle,revealDetails} from './editorial-motion.js?v=7';
+import {setAnimatedTitle,revealDetails} from './editorial-motion.js?v=stable-slides-v1';
 const clamp=v=>Math.max(0,Math.min(1,v));
 const $=id=>document.getElementById(id);
 const colors={charcoal:'#4dd8e8',ivory:'#356b50',burgundy:'#ff7866',midnight:'#d2ed70'};

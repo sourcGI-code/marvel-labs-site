@@ -2,10 +2,10 @@ import {fieldProgress} from './neighborhood-timing.js?v=4-hiw-crew1';
 import {loadFilmSources} from './film-sources-hqworld4.js?v=media-delivery-20261109';
 import {syncTrailerPosters} from './trailer-presentation.js?v=media-delivery-20261109';
 syncTrailerPosters(await loadFilmSources());
-const {installDisplayFramework}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework-hqworld4.js?v=showcase-quality-v1':'./display-framework.js?v=4');
+const {installDisplayFramework}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework-hqworld4.js?v=refresh-startup-20261110':'./display-framework.js?v=4');
 import {installScenePlayback} from './scene-playback.js?v=opening-autoplay-20261108';
 import {installOpeningAutoplay} from './opening-autoplay.js?v=opening-autoplay-20261108';
-import { createStage } from './atlas-stage.js?v=screen-fit-v1';
+import { createStage } from './atlas-stage.js?v=refresh-startup-20261110';
 import {setupGrassEconomics} from './grass-economics.js?v=2';
 import {createAmbientSpace} from './ambient-space.js?v=4';
 import {createEditorialMotion,setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=stable-slides-v1';
@@ -147,7 +147,7 @@ function update(){scrollFrame=0;stage.update();for(const state of tracks)state.u
 function requestUpdate(){if(!scrollFrame)scrollFrame=requestAnimationFrame(update);}
 addEventListener('scroll',requestUpdate,{passive:true});addEventListener('resize',requestUpdate);update();
 installDisplayFramework({stage,refresh:update});
-if(official)import('./hero-frame-hqworld4.js?v=scene-recovery-20261109b').then(m=>m.installHeroFrame()).catch(e=>console.warn('Hero framing unavailable.',e.message));
+if(official)import('./hero-frame-hqworld4.js?v=refresh-startup-20261110').then(m=>m.installHeroFrame()).catch(e=>console.warn('Hero framing unavailable.',e.message));
 // Main site: third gesture unlocks fast scrubbing; release resumes normal playback. Archives retain their original controller.
 if(manualPlayback&&official&&playback)import(document.body.dataset.scrollBehavior==='continuous-after-third'?'./continuous-scroll.js?v=scroll-copy-20261108':document.body.dataset.fastSectionSkip==='true'?'./three-step-scroll.js?v=interactive-phone-v1':'./beat-scroll-hqworld4.js?v=showcase-quality-v1').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
 async function loadTrailer(state,canvas,single=false){
@@ -165,7 +165,7 @@ async function loadTrailer(state,canvas,single=false){
      stage.seekProgress(state.track,at,{refresh:true});
     }
    }
-   const view=single?await (await import('./official-journey-hqworld4.js?v=media-delivery-20261109')).createOfficialJourney($(canvas),{readProgress:()=>stage.progress(state.track),paused}):await (await import('./platform-hqworld4.js?v=media-delivery-20261109')).createPlatform($(canvas),{readProgress:()=>stage.progress(state.track),writeProgress:p=>stage.seekProgress(state.track,p),isActive:()=>stage.visible(state.track),paused});
+   const view=single?await (await import('./official-journey-hqworld4.js?v=refresh-startup-20261110')).createOfficialJourney($(canvas),{readProgress:()=>stage.progress(state.track),paused}):await (await import('./platform-hqworld4.js?v=refresh-startup-20261110')).createPlatform($(canvas),{readProgress:()=>stage.progress(state.track),writeProgress:p=>stage.seekProgress(state.track,p),isActive:()=>stage.visible(state.track),paused});
    scenes.push(view);state.view=view;view.setActive(stage.visible(state.track));view.setProgress(stage.progress(state.track));view.setPalette();view.setPaused(paused);playback?.sync();
    if(!single&&playback)installOpeningAutoplay({state,playback,readProgress:state=>stage.progress(state.track),reduced:reduce});
   }catch(e){state.pin.dataset.renderer='static';const status=$('#platform-status');if(!single&&status){document.documentElement.classList.remove('arrival-quiet');document.querySelectorAll('.masthead,#mobile-menu,#platform-story,.hero-base,#capacity-labels,#capacity-summary,#platform-status').forEach(el=>el.inert=false);document.body.style.setProperty('--opening-mix','0%');status.hidden=false;status.textContent='The trailer preview is unavailable. Explore the layouts and pilot details below.';}console.warn('Showing the trailer still.',e.message);}
