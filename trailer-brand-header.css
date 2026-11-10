@@ -1,0 +1,18 @@
+/* Use the original image, including the grey LABS lettering, at its native ratio. */
+:is(.showroom-page,.reserve-screen) .brand{display:flex;align-items:center;flex-shrink:0;min-height:44px;padding:6px 0}
+:is(.showroom-page,.reserve-screen) .site-brand-logo{display:block;width:160px;height:auto;aspect-ratio:1247/256;object-fit:contain}
+:is(.showroom-header,body.reserve-screen .masthead){background:#0a0e10;border-bottom:1px solid #4dd8e826}
+:is(.showroom-header,body.reserve-screen .masthead) .menu-button{border:1px solid #4dd8e8;background:#081116;color:#eef2f1;min-width:76px;min-height:44px;padding:8px 12px;align-items:center;justify-content:center;gap:12px}
+:is(.showroom-header,body.reserve-screen .masthead) .menu-button span{color:#4dd8e8;font-size:22px;line-height:1}
+.showroom-header .header-reserve{border-color:#4dd8e8;background:#081116;min-height:44px;display:flex;align-items:center}
+.showroom-header .header-reserve:hover{background:#4dd8e8;color:#081116}
+@media(max-width:860px){
+ :is(.showroom-page,.reserve-screen) .site-brand-logo{width:140px}
+ body.showroom-page .showroom-header .menu-button{display:flex;min-width:64px;font-size:12px;padding:8px}
+ .showroom-header .header-reserve{font-size:12px;padding:8px 10px}
+}
+@media(max-width:360px){
+ .showroom-page .site-brand-logo{width:120px}
+ .showroom-header{gap:8px}
+ body.showroom-page .showroom-header .menu-button{min-width:56px;gap:6px}
+}

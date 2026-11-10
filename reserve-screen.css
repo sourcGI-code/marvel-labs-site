@@ -144,3 +144,69 @@ body.reserve-screen #reserve .rv-preview figcaption{bottom:100px}
  body.reserve-screen #reserve .rd-consent{margin-top:7px;font-size:10px;line-height:1.3}
  body.reserve-screen #reserve [data-panel=review]>.rd-small{font-size:8px;margin-top:5px}
 }
+
+/* Keep phone controls readable instead of scaling the whole form down. */
+@media(max-width:599px){
+ body.reserve-screen #reserve .rv-rail{padding:12px 14px max(10px,env(safe-area-inset-bottom))}
+ body.reserve-screen #reserve .rv-rail h1{font-size:25px}
+ body.reserve-screen #reserve .rv-when{font-size:11px;line-height:1.35;margin-top:5px}
+ body.reserve-screen #reserve .rd-steps{margin-top:10px}
+ body.reserve-screen #reserve .rd-steps li{font-size:10px}
+ body.reserve-screen #reserve .rv-group legend{font-size:10px}
+ body.reserve-screen #reserve .rv-card{min-height:58px;padding:8px;gap:5px}
+ body.reserve-screen #reserve .rv-card b{font-size:20px;white-space:nowrap}
+ body.reserve-screen #reserve .rv-price{font-size:12px}
+ body.reserve-screen #reserve .rv-price small{display:none}
+ body.reserve-screen #reserve .rv-plan{min-height:68px;gap:4px}
+ body.reserve-screen #reserve .rv-plan b{font-size:18px}
+ body.reserve-screen #reserve .rv-plan span{font-size:12px}
+ body.reserve-screen #reserve .rv-plan small{font-size:10px;line-height:1.3}
+ body.reserve-screen #reserve .rd-finish{gap:3px 8px}
+ body.reserve-screen #reserve .rd-finish>span{font-size:9px}
+ body.reserve-screen #reserve .rd-finish strong{font-size:12px}
+ body.reserve-screen #reserve .rd-finish small{font-size:10px}
+ body.reserve-screen #reserve .rv-due span{font-size:12px}
+ body.reserve-screen #reserve .rv-due small{font-size:11px;line-height:1.35}
+ body.reserve-screen #reserve .rv-due b{font-size:29px}
+ body.reserve-screen #reserve [data-panel=configure]>.rv-summary,
+ body.reserve-screen #reserve [data-panel=configure]>.rd-small,
+ body.reserve-screen #reserve[data-order-step=configure] .rv-pay-note{display:none}
+ body.reserve-screen #reserve .rd-controls .rv-submit{min-height:44px;font-size:13px}
+ body.reserve-screen #reserve .rd-policies{margin-top:8px;padding-top:3px;gap:22px;font-size:11px}
+ body.reserve-screen #reserve .rd-policies a{display:flex;align-items:center;min-height:32px}
+ body.reserve-screen #reserve .rd-small{font-size:10px;line-height:1.4}
+ body.reserve-screen #reserve .rd-order{font-size:11px;line-height:1.4}
+ body.reserve-screen #reserve .rd-order>div{padding:5px 0}
+ body.reserve-screen #reserve .rd-order:after{display:none}
+ body.reserve-screen #reserve [data-panel=review]>.rv-due{display:none}
+ body.reserve-screen #reserve .rd-consent{font-size:11px;line-height:1.4;margin-top:12px}
+ body.reserve-screen #reserve .rd-consent input{width:20px;height:20px;flex-shrink:0}
+ body.reserve-screen #reserve .rv-pay-note{font-size:10px;line-height:1.35}
+ body.reserve-screen #reserve .rs-ramp-btn,body.reserve-screen #reserve .rs-lock{min-height:40px;font-size:10px}
+ body.reserve-screen #reserve .rs-back{min-height:32px;font-size:10px}
+ body.reserve-screen #reserve .rs-3d-bar{width:max-content;max-width:calc(100% - 16px);gap:6px;padding:4px 6px}
+ body.reserve-screen #reserve .rs-3d-bar .rs-back{position:static;min-height:40px;padding:6px;border:0;background:transparent;font-size:10px;letter-spacing:0;white-space:nowrap}
+ body.reserve-screen #reserve .rs-3d-bar .rs-lock{padding:6px;font-size:9px;letter-spacing:.03em}
+ body.reserve-screen #reserve .rs-3d-bar .rs-ramp-btn{padding:6px;font-size:10px}
+ body.reserve-screen #reserve .rs-3d canvas{touch-action:pan-y pinch-zoom}
+}
+@media(max-width:599px) and (max-height:700px){
+ body.reserve-screen #reserve [data-panel=configure]{grid-template-columns:.9fr 1.1fr}
+ body.reserve-screen #reserve .rv-rail{padding:9px 12px max(8px,env(safe-area-inset-bottom))}
+ body.reserve-screen #reserve .rv-rail h1{font-size:23px}
+ body.reserve-screen #reserve .rv-cards{gap:5px}
+ body.reserve-screen #reserve .rv-card{padding:6px;min-height:58px;gap:4px}
+ body.reserve-screen #reserve .rv-card b{font-size:18px}
+ body.reserve-screen #reserve .rv-plan b{font-size:16px}
+ body.reserve-screen #reserve .rv-plan span{font-size:11px}
+ body.reserve-screen #reserve .rv-plan small{font-size:10px}
+ body.reserve-screen #reserve .rd-steps{margin-top:8px}
+ body.reserve-screen #reserve .rd-finish{margin-top:9px}
+ body.reserve-screen #reserve .rd-controls{margin-top:8px}
+ body.reserve-screen #reserve .rd-policies{margin-top:6px}
+ body.reserve-screen #reserve[data-order-step=review] .rv-rail h1{font-size:19px}
+ body.reserve-screen #reserve[data-order-step=review] .rv-when{display:none}
+ /* The sole exterior is confirmed in Review; the payment rule is in consent. */
+ body.reserve-screen #reserve [data-panel=configure]>.rd-finish,
+ body.reserve-screen #reserve [data-order-field=Payment]{display:none}
+}

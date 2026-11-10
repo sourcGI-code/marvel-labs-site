@@ -15,7 +15,10 @@ async function measure(page,label){
   const outside=[...document.querySelectorAll('.rv-rail button,.rv-rail a,.rv-rail label,.rv-rail h1,.rv-rail [data-panel]:not([hidden]) p,.rv-rail [data-order] div')].filter(e=>e.checkVisibility()).map(e=>({text:e.textContent.trim().slice(0,55),...box(e)})).filter(r=>r.y<header.bottom-.5||r.bottom>innerHeight+.5||r.x<-.5||r.right>innerWidth+.5);
   const section=document.querySelector('.rv');
   const viewerOutside=[...section.querySelectorAll('.rs-3d-bar,.rs-back,.rv-metrics')].filter(e=>e.checkVisibility()).map(box).filter(r=>r.y<header.bottom-.5||r.bottom>innerHeight+.5||r.x<-.5||r.right>innerWidth+.5);
-  return {header,form,outside,viewerOutside,stacked:section.dataset.reservationStacked==='true',viewport:[innerWidth,innerHeight],scroll:[document.documentElement.scrollWidth,document.documentElement.scrollHeight],scale:getComputedStyle(document.querySelector('.rv-rail')).zoom,step:section.dataset.orderStep};
+  const scale=Number(getComputedStyle(document.querySelector('.rv-rail')).zoom);
+  const copy=section.dataset.orderStep==='review'?section.querySelector('.rd-consent'):section.querySelector('[data-panel=configure] .rv-due small');
+  const logo=document.querySelector('.site-brand-logo');
+  return {header,form,outside,viewerOutside,stacked:section.dataset.reservationStacked==='true',viewport:[innerWidth,innerHeight],scroll:[document.documentElement.scrollWidth,document.documentElement.scrollHeight],scale,step:section.dataset.orderStep,copySize:parseFloat(getComputedStyle(copy).fontSize)*scale,submitHeight:section.querySelector('.rv-submit').getBoundingClientRect().height,stageHeight:section.querySelector('.rv-show').getBoundingClientRect().height,logo:logo?{...box(logo),loaded:logo.complete&&logo.naturalWidth===1247}:null};
  });
  assert.deepEqual(state.outside,[],label+' content outside viewport');
  assert.deepEqual(state.viewerOutside,[],label+' viewer controls outside viewport');
@@ -23,7 +26,12 @@ async function measure(page,label){
  assert.ok(state.form.bottom<=state.viewport[1]+.5,label+' form below viewport');
  assert.ok(state.scroll[0]<=state.viewport[0]&&state.scroll[1]<=state.viewport[1],label+' scrolling document');
  const filled=state.form.height/(state.viewport[1]-state.header.bottom);
- assert.ok(filled>=(state.stacked?(state.step==='review'?.84:.63):.9),label+' form is too small for the screen');
+ if(state.stacked&&state.viewport[0]<600){
+  assert.ok(state.copySize>=9.5,label+' phone body text is too small');
+  assert.ok(state.submitHeight>=38,label+' phone submit control is too small');
+  if(state.step==='configure')assert.ok(state.stageHeight>=100,label+' phone trailer stage is too short');
+ }else assert.ok(filled>=(state.stacked?(state.step==='review'?.84:.63):.9),label+' form is too small for the screen');
+ assert.ok(state.logo?.loaded&&state.logo.y>=state.header.y&&state.logo.bottom<=state.header.bottom,label+' original logo must fit inside the header');
  if(!state.stacked&&state.viewport[1]>580)assert.ok(state.form.width/state.viewport[0]>=.25&&state.form.width/state.viewport[0]<=.37,label+' panel is not proportional to the screen');
  await page.mouse.move(8,80);await page.mouse.wheel(0,800);
  assert.equal(await page.evaluate(()=>scrollY),0,label+' wheel scrolled the page');

@@ -33,7 +33,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
   const description = document.createElement('p'); description.className = 'rd-small';
   description.textContent = test
     ? 'Continue to Stripe’s test checkout to enter example contact details and a test payment method. No real money moves.'
-    : 'Enter your contact and payment details at secure checkout. The reservation deposit is $100 USD, plus applicable tax, if any. Review the final total before paying. Any installment option shown applies to this deposit checkout, not the trailer lease.';
+    : 'Enter contact and payment details at secure checkout. Review the $100 USD deposit plus applicable tax, if any, before paying. Any installment option applies to this deposit, not the trailer lease.';
   payment.append(legend, description);
   const consent = review.querySelector('.rd-consent span');
   consent.replaceChildren(document.createTextNode('I’ve read the '));
@@ -47,7 +47,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
       a.target = '_blank'; a.rel = 'noopener'; consent.append(document.createTextNode(', '), a);
     }
   }
-  consent.append(document.createTextNode(test ? '. I understand this is a test checkout.' : '. I understand that the deposit is $100 USD plus applicable tax, if any, and will review the final total on checkout. No automatic trailer balance or lease payment is authorized.'));
+  consent.append(document.createTextNode(test ? '. I understand this is a test checkout.' : '. I understand that the deposit is $100 USD plus applicable tax, if any. No automatic trailer balance or lease payment is authorized.'));
   review.querySelector(':scope > .rd-small').textContent = 'Final pricing, specifications and the Buy or Lease agreement are confirmed separately.';
   const policies = form.querySelector('.rd-policies'); policies.replaceChildren();
   const policyTargets = shopify
@@ -68,6 +68,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
       ['Reservation deposit', '$100 USD · fully refundable'], ['Tax', 'Applicable tax, if any, calculated at checkout'], ['Payment', test ? 'Stripe test checkout · no real charge' : 'One-time deposit · no automatic balance charge']];
     form.querySelector('[data-order]').replaceChildren(...entries.map(([label, value]) => {
       const row = document.createElement('div'), dt = document.createElement('dt'), dd = document.createElement('dd');
+      row.dataset.orderField = label;
       dt.textContent = label; dd.textContent = value; row.append(dt, dd); return row;
     }));
   }

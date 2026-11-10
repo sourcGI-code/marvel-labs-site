@@ -1,9 +1,12 @@
 import * as THREE from 'three';
 import {yardLayout,YARD_MATERIALS,YARD_FOV} from './reserve-yard-layout.js?v=factory-yard-20261108';
 
-export function createFactoryYard(scene,renderer){
+export function createFactoryYard(scene,renderer,{twilight=false}={}){
  const group=new THREE.Group();group.name='Factory loading yard';
  const materials=Object.fromEntries(Object.entries(YARD_MATERIALS).map(([key,spec])=>[key,new THREE.MeshStandardMaterial(spec)]));
+ if(twilight){
+  for(const [key,colour] of Object.entries({asphalt:0x17232c,concrete:0x30404b,wall:0x23333e,cladding:0x2e4351,rib:0x304855,door:0x243b49,line:0x69808b}))materials[key].color.setHex(colour);
+ }
  // Fine aggregate breaks up the asphalt without a large texture download.
  const c=document.createElement('canvas');c.width=c.height=256;
  const ctx=c.getContext('2d'),data=ctx.createImageData(256,256);let seed=7643;
@@ -25,7 +28,7 @@ export function createFactoryYard(scene,renderer){
   mesh.castShadow=casts;mesh.receiveShadow=true;mesh.computeBoundingSphere();group.add(mesh);
  }
  scene.add(group);
- const sun=new THREE.DirectionalLight(0xfff0d6,3.1);sun.position.set(-10,18,10);sun.target.position.set(0,0,0);
+ const sun=new THREE.DirectionalLight(twilight?0xc8e4ff:0xfff0d6,twilight?2.2:3.1);sun.position.set(-10,18,10);sun.target.position.set(0,0,0);
  sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-18;sun.shadow.camera.right=18;sun.shadow.camera.top=16;sun.shadow.camera.bottom=-16;sun.shadow.camera.near=.5;sun.shadow.camera.far=80;sun.shadow.normalBias=.025;sun.shadow.bias=-.00015;sun.shadow.radius=3;
  scene.add(sun,sun.target);
  return {dispose(){group.traverse(o=>{if(o.isMesh)o.geometry.dispose();});for(const m of Object.values(materials))m.dispose();texture.dispose();sun.shadow.map?.dispose();scene.remove(group,sun,sun.target);}};
@@ -35,8 +38,10 @@ export function createFactoryYard(scene,renderer){
 export function fitYardCamera(bounds,direction,{width,height,left=0,top=95,bottom=160,fov=YARD_FOV}){
  const target=bounds.getCenter(new THREE.Vector3()),dir=direction.clone().normalize();
  const right=new THREE.Vector3().crossVectors(new THREE.Vector3(0,1,0),dir).normalize(),up=new THREE.Vector3().crossVectors(dir,right);
- const x0=Math.min(width*.60,left+24),x1=width-28,y0=top+16,y1=Math.max(y0+80,height-bottom);
- const halfX=Math.max(70,(x1-x0)/2),halfY=Math.max(70,(y1-y0)/2),tan=Math.tan(THREE.MathUtils.degToRad(fov)/2);
+ const x0=Math.min(width*.60,left+24),x1=width-28,y0=top+16,y1=Math.max(y0+40,height-bottom);
+ // A phone's controls can leave less than 140 px of height for the model.
+ // Fit that real space instead of framing into the buttons above or below it.
+ const halfX=Math.max(40,(x1-x0)/2),halfY=Math.max(20,(y1-y0)/2),tan=Math.tan(THREE.MathUtils.degToRad(fov)/2);
  let distance=1;
  for(const x of [bounds.min.x,bounds.max.x])for(const y of [bounds.min.y,bounds.max.y])for(const z of [bounds.min.z,bounds.max.z]){
   const p=new THREE.Vector3(x,y,z).sub(target),depth=p.dot(dir);

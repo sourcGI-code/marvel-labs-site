@@ -29,7 +29,7 @@ if (section) {
     controller.abort();
   }
   const timeout = setTimeout(fallback, 20000);
-  import(jetblack ? './reserve-3d-jetblack.js?v=screen-proportions-20261109' : './reserve-3d.js?v=checkout-clarity-20261108')
+  import(jetblack ? './reserve-3d-jetblack.js?v=marvel-showroom-20261110' : './reserve-3d.js?v=checkout-clarity-20261108')
     .then(({startReservationViewer}) => {
       if (controller.signal.aborted) return;
       return startReservationViewer(section, {

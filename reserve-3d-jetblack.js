@@ -5,7 +5,7 @@ import {createContactShadow} from './trailer-contact-shadow.js?v=studio-v3';
 import {GLTFLoader} from 'three/addons/loaders/GLTFLoader.js';
 import {DRACOLoader} from 'three/addons/loaders/DRACOLoader.js';
 import {RectAreaLightUniformsLib} from 'three/addons/lights/RectAreaLightUniformsLib.js';
-import {createFactoryYard,fitYardCamera} from './reserve-yard.js?v=factory-yard-20261108';
+import {createFactoryYard,fitYardCamera} from './reserve-yard.js?v=marvel-showroom-20261110';
 import {YARD_PARKING,YARD_VIEW_DIRECTION,YARD_FOV} from './reserve-yard-layout.js?v=factory-yard-20261108';
 
 export async function startReservationViewer(sec,{signal,onReady,onError}){
@@ -26,10 +26,11 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
   renderer.shadowMap.autoUpdate=false;renderer.shadowMap.needsUpdate=true;
   host.append(renderer.domElement);RectAreaLightUniformsLib.init();
-  const scene=new THREE.Scene();scene.background=new THREE.Color(0x9dadb5);scene.fog=new THREE.Fog(0x9dadb5,65,135);
+  const twilight=sec.classList.contains('trailer-showroom');
+  const scene=new THREE.Scene();scene.background=new THREE.Color(twilight?0x08131d:0x9dadb5);scene.fog=new THREE.Fog(twilight?0x08131d:0x9dadb5,65,135);
   const camera=new THREE.PerspectiveCamera(YARD_FOV,1.6,.08,180);
-  const yard=createFactoryYard(scene,renderer);signal.addEventListener('abort',()=>yard.dispose(),{once:true});
-  scene.add(new THREE.HemisphereLight(0xe6f1ff,0x666758,1.65));
+  const yard=createFactoryYard(scene,renderer,{twilight});signal.addEventListener('abort',()=>yard.dispose(),{once:true});
+  scene.add(new THREE.HemisphereLight(twilight?0xc5e5ff:0xe6f1ff,twilight?0x22343d:0x666758,twilight?1.2:1.65));
   const head=new THREE.RectAreaLight(0xffffff,3.5,10,6);scene.add(head);
   const rim=new THREE.RectAreaLight(0xdceaff,6,12,5);rim.position.set(4,6,-7);rim.lookAt(0,1,0);scene.add(rim);
   const frame=new THREE.RectAreaLight(0xffffff,0,8,4);scene.add(frame);
