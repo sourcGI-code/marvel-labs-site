@@ -85,3 +85,5 @@ document.querySelector('#chat-back').addEventListener('click', close);
 document.addEventListener('keydown', event => {
   if (event.key === 'Escape') {event.preventDefault();close();}
 });
+// A visitor can type while the module and answer guide are still downloading.
+syncInput();

@@ -9,6 +9,25 @@ const root = new URL('../../', import.meta.url);
 const read = path => readFile(new URL(path, root), 'utf8');
 const documentFor = async path => new JSDOM(await read(path), {url:`https://marvellabs.shop/${path}`}).window.document;
 
+test('a question typed before the FAQ module loads can be submitted after initialization', async () => {
+  const dom = new JSDOM(await read('crew-chat.html'), {url:'https://marvellabs.shop/crew-chat.html', runScripts:'outside-only', pretendToBeVisual:true});
+  const input = dom.window.document.querySelector('#chat-question');
+  const send = dom.window.document.querySelector('#chat-send');
+  input.value = 'How wide and tall are both trailers?';
+  input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
+  assert.equal(send.disabled, true, 'the HTML is initially waiting for the module');
+  dom.window.answerQuestion = (await import('../../crew-chat-answers.mjs')).answerQuestion;
+  vm.runInContext((await read('crew-chat.js')).replace(/^import .*;\n/, ''), dom.getInternalVMContext());
+  assert.equal(send.disabled, false);
+  send.click();
+  const reply = dom.window.document.querySelector('.message-assistant').textContent;
+  assert.match(reply, /8\.5/);
+  assert.match(reply, /7\.5/);
+  assert.equal(input.value, '');
+  assert.equal(send.disabled, true);
+  dom.window.close();
+});
+
 test('hover cannot silently change the selected deposit; explicit choices still work',async()=>{
   const dom=new JSDOM(await read('reserve.html'),{url:'https://marvellabs.shop/reserve.html?size=16&plan=lease'});
   Object.assign(globalThis,{window:dom.window,document:dom.window.document,location:dom.window.location,CustomEvent:dom.window.CustomEvent});
