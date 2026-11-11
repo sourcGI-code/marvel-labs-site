@@ -5,16 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0a0e10">
   <meta name="robots" content="noindex">
-  <title>Ask Marvel · Trailer assistant demo</title>
-  <link rel="stylesheet" href="crew-chat.css?v=page-chat-v3">
-  <script type="module" src="crew-chat.js?v=chat-ready-20261110"></script>
+  <title>Ask Marvel · AI trailer assistant</title>
+  <link rel="stylesheet" href="crew-chat.css?v=live-ai-20261111">
+  <script type="module" src="crew-chat.js?v=live-ai-20261111"></script>
 </head>
 <body>
   <header class="chat-header">
     <div class="chat-brand"><strong>Ask Marvel</strong><span>YOUR TRAILER. YOUR QUESTIONS.</span></div>
     <button id="chat-back" type="button" aria-label="Close chat">×</button>
   </header>
-  <p class="demo-note">Trailer guide · Interactive preview</p>
+  <p class="demo-note">Marvel AI · Ask about your business</p>
   <main id="conversation" tabindex="0" aria-label="Conversation">
     <div class="chat-welcome">
       <span class="welcome-mark" aria-hidden="true">✦</span>
@@ -35,8 +35,9 @@
       <textarea id="chat-question" rows="1" maxlength="500" placeholder="Ask about your trailer…" enterkeyhint="send"></textarea>
       <button id="chat-send" type="submit" aria-label="Send message" disabled>↑</button>
     </div>
-    <p class="chat-disclosure">Preset answers · No live AI or trailer connection</p>
+    <p class="chat-privacy">Messages are processed by Cloudflare Workers AI to answer your questions. Don’t include payment or sensitive information. <a href="privacy.html" target="_blank" rel="noopener">Privacy</a></p>
+    <p class="chat-disclosure">AI answers can be wrong. No payment or reservation is made in chat.</p>
   </form>
-  <noscript>Enable JavaScript to try this guided chat.</noscript>
+  <noscript>Enable JavaScript to talk with the Marvel AI assistant.</noscript>
 </body>
 </html>

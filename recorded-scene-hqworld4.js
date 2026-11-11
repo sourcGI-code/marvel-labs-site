@@ -1,5 +1,4 @@
 import {selectVideoFile,isStillOnly} from './video-delivery.js?v=20261108';
-import {workdaySubjects} from './workday-subjects.js?v=workday-ui-20261109';
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
 import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=media-delivery-20261109';
@@ -73,19 +72,10 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   if(name==='field'&&pin?.dataset.presentation==='fullscreen'){
    viewportFraming={...framing,fit:undefined,position:[.5,.5],minZoom:1,maxZoom:1,keys:[]};
    window=null;
-   if(phonePortrait){
-    // The phone uses the corrected film, with the active subject framed in
-    // the portrait viewport. All projected labels share this exact crop.
-    const frame=time*metadata.fps,segment=workdaySubjects.find(s=>frame>=s.start&&frame<s.end+1);
-    let subjectX=state?.delivery?.shot==='B3'?.52:.64;
-    if(segment){
-     const next=segment.points.findIndex(([f])=>f>frame);
-     const a=segment.points[next<0?segment.points.length-1:Math.max(0,next-1)],b=segment.points[next<0?segment.points.length-1:next];
-     subjectX=mix(a[1],b[1],clamp((frame-a[0])/Math.max(1,b[0]-a[0])));
-    }
-    const focus=state?.annotation||{x:metadata.width*subjectX,y:metadata.height*.5};
-    viewportFraming.keys=[{t:0,zoom:1,focus:[focus.x,metadata.height*.5],at:[.5,.5]}];
-   }
+   // The source is a landscape camera even in its mobile encode. Preserve
+   // the whole shot on portrait screens: a fullscreen cover crop discards
+   // the chute, operator and yard. Overlays use this same fitted rectangle.
+   if(phonePortrait)viewportFraming.fit='contain';
   }
   if(viewportFraming.fit==='contain'&&pin){
    pin.dataset.filmFit='contain';
@@ -111,7 +101,9 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
    }
   }else if(pin)delete pin.dataset.filmFit;
   const fullField=name==='field'&&pin?.dataset.presentation==='fullscreen';
-  const viewportTop=fullField?Math.max(0,(document.querySelector('.masthead')?.getBoundingClientRect().bottom||0)-host.getBoundingClientRect().top):0;
+  // Contained framing already measures its window below the page copy.
+  // Adding the header offset again would push the film into its controls.
+  const viewportTop=fullField&&viewportFraming.fit!=='contain'?Math.max(0,(document.querySelector('.masthead')?.getBoundingClientRect().bottom||0)-host.getBoundingClientRect().top):0;
   const f=placeFilm(w,Math.max(1,h-viewportTop),metadata.width,metadata.height,viewportFraming,time,window);f.dy+=viewportTop;lastPlace=f;
   if(fullField)pin.style.setProperty('--workday-film-top',`${viewportTop}px`);
   if(phonePortrait&&pin&&viewportFraming.fit==='contain')pin.style.setProperty('--mobile-film-bottom',`${f.dy+metadata.height*f.scale}px`);

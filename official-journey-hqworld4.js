@@ -1,5 +1,5 @@
 import {createRouteQuotes} from './route-quotes.js?v=yard-coverage-v1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=media-delivery-20261109';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=portrait-fit-20261111';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
 import {createVisionOverlay} from './vision-overlay.js?v=workday-ui-20261109';
 import {createScrollMotion} from './scroll-motion.js';
@@ -102,6 +102,10 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
   if(motion.moving)request();
  }
  function request(){if(!frame)frame=requestAnimationFrame(draw);}
+ // Captions and the measured-scope panel change after the film is drawn.
+ // Refit once their new size is known, including while playback is paused.
+ const layoutObserver=new ResizeObserver(request);
+ for(const element of [pin.querySelector('.tour-copy'),pin.querySelector('#vision-summary')])if(element)layoutObserver.observe(element);
  addEventListener('resize',()=>{scene?.resize();request();});
  return {async preparePlayback({progress=readProgress(),signal}={}){
   if(!scene?.video)return null;

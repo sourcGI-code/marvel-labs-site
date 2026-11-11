@@ -1,5 +1,5 @@
-@font-face{font-family:Lato;src:url('assets/lato-regular.woff2') format('woff2');font-weight:400;font-display:swap}
-@font-face{font-family:Lato;src:url('assets/lato-bold.woff2') format('woff2');font-weight:700;font-display:swap}
+@font-face{font-family:Lato;src:url('assets/lato-latin-regular.woff2') format('woff2');font-weight:400;font-display:swap}
+@font-face{font-family:Lato;src:url('assets/lato-latin-bold.woff2') format('woff2');font-weight:700;font-display:swap}
 :root{color-scheme:dark;font-family:Lato,system-ui,sans-serif;color:#edf4f4;background:#0a0e10;font-synthesis:none}
 *{box-sizing:border-box;overscroll-behavior:contain}
 html,body{height:100%;margin:0;overflow:hidden}
@@ -44,3 +44,6 @@ textarea::placeholder{color:#95a9af}
 .chat-disclosure{text-align:center;font-size:10px;line-height:1.5;color:#91a3a9;margin:8px 0 0}
 .sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media(max-height:600px){main{padding-top:16px}.chat-welcome p{margin-bottom:16px}h1{font-size:25px}.welcome-mark{display:none}.chat-header{min-height:58px}.chat-disclosure{margin-top:6px}}
+.chat-privacy{color:#9cadb3;font-size:10px;line-height:1.45;margin:8px 0 0;text-align:center}
+.chat-retry{min-height:44px;margin-top:12px;border:1px solid #4dd8e8;border-radius:12px;background:#10282f;color:#b2f5fb;padding:10px 16px;cursor:pointer}
+.chat-thinking{color:#a9c7cf!important}

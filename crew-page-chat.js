@@ -17,12 +17,12 @@ if (section) {
   panel.id = 'crew-website-chat';
   panel.className = 'crew-chat-panel';
   panel.setAttribute('role', 'dialog');
-  panel.setAttribute('aria-label', 'Ask Marvel — guided website chat');
+  panel.setAttribute('aria-label', 'Ask Marvel — AI website chat');
   panel.hidden = true;
   const frame = document.createElement('iframe');
-  frame.title = 'Ask Marvel — guided website chat';
+  frame.title = 'Ask Marvel — AI website chat';
   frame.src = 'about:blank';
-  const url = new URL('crew-chat.html?v=chat-ready-20261110', document.baseURI);
+  const url = new URL('crew-chat.html?v=live-ai-20261111', document.baseURI);
   panel.append(frame);
   widget.append(launch, panel);
   document.body.append(widget);
