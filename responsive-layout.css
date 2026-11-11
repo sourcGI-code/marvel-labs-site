@@ -1,6 +1,8 @@
 /* Shared viewport limits. Keep the approved scenes; reserve space for their copy. */
 body[data-page-flow-preview][data-experience="official"]{--gutter:clamp(22px,4.5vw,100px);--screen-header:90px}
-html.immersive body[data-page-flow-preview] .masthead{height:var(--screen-header);box-sizing:border-box}
+/* One opaque, edge-to-edge header for every scene. Legacy floating-header
+   rules must not expose moving copy through its surface or outer gutters. */
+html.immersive body[data-page-flow-preview]>.masthead{position:fixed;inset:0 0 auto!important;width:100%!important;max-width:none;height:var(--screen-header)!important;padding:0 var(--gutter)!important;box-sizing:border-box;background:var(--bg,#0a0e10)!important;border-radius:0!important;isolation:isolate;z-index:20}
 body[data-page-flow-preview] .masthead :is(.brand,.desktop-nav){flex-shrink:0}
 body[data-page-flow-preview] .masthead .desktop-nav{gap:clamp(16px,1.7vw,28px)}
 body[data-page-flow-preview] #top .platform-pin #platform-story{top:clamp(112px,17svh,180px);max-width:min(44vw,540px)}
@@ -93,7 +95,6 @@ body[data-page-flow-preview] #app .crew-beats{margin-bottom:16px}
 }
 @media(orientation:landscape) and (max-height:540px){
  body[data-page-flow-preview][data-experience="official"]{--screen-header:60px}
- html.immersive body[data-page-flow-preview] .masthead{height:60px}
  body[data-page-flow-preview] #top .platform-pin #platform-story{top:78px;max-width:42vw}
  body[data-page-flow-preview] #top .platform-pin #hero-title{font-size:28px;line-height:1.03}
  body[data-page-flow-preview] #top .platform-pin #platform-tag{font-size:8px;margin-bottom:8px}

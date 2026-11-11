@@ -18,6 +18,9 @@
 - Use `tools/check-mobile-presentation.cjs` for the film/app regression checks.
   Pass the actual preview URL, installed Playwright path, browser executables
   and output directory via its documented environment variables.
+- Header changes also run `tools/check-header.cjs`: verify every scene, stable
+  logo placement, scrolling panels and mobile menus. Its pixel comparison must
+  hide a bright underlay across the entire header, including the corners.
 - Keep preview routes consistent with the current exported app base (`/crew`).
   Do not reuse old preview redirects without checking the app export.
 - A real-AI claim requires a successful public model request. Scripted replies,
