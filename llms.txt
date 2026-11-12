@@ -1,8 +1,9 @@
 # Marvel Labs — Autonomous Microfactory Trailers
 
-Marvel Labs Inc. develops autonomous microfactories. https://marvellabs.shop/ is its trailer product and reservation site; https://marvellabs.com/ is the corporate site. Official organization identity: https://marvellabs.com/#organization.
+Marvel Labs Inc. develops autonomous microfactories. https://marvellabs.shop/ is its trailer product and reservation site; https://marvellabs.com/ is the corporate site. The founder is Jake Miller. Official organization identity: https://marvellabs.com/#organization. The company focus is physical AI and manufacturing; this website does not offer Shopware plugins or e-commerce development services.
 
 ## Authoritative public information
+- [Company and trailer questions](https://marvellabs.shop/faq.html)
 - [Overview](https://marvellabs.shop/overview.html)
 - [Physical AI and microfactory technology explained](https://marvellabs.shop/technology.html)
 - [16 ft model](https://marvellabs.shop/trailer-16.html)
@@ -28,6 +29,6 @@ Target delivery: Spring 2027, not guaranteed; timing is confirmed separately. No
 Suitable collected grass is the development focus; validated feedstock limits, power, runtime, output, reliability and operating costs have not been published. Leaves and food waste are not validated inputs in the published material. Films and product images illustrate the intended design and workflow. App data is illustrative. The $300 example assumes 20 sales at an illustrative $15 gross operator earnings each, before operator expenses; it is not measured output, a forecast, or a plan-specific return.
 
 ## Technology terminology
-The trailer concept connects physical AI, autonomous microfactories, mobile manufacturing and distributed manufacturing. Suitable collected grass is the biomass-upcycling development focus; circular manufacturing is an intended approach, not a quantified environmental result. Robotics, automation and computer vision are explained on the technology page; no complete validated trailer specification is implied. The website assistant uses prepared answers, not a live LLM integration, machine controller or payment agent. Marvel Crew app data is illustrative.
+The trailer concept connects physical AI, autonomous microfactories, mobile manufacturing and distributed manufacturing. Suitable collected grass is the biomass-upcycling development focus; circular manufacturing is an intended approach, not a quantified environmental result. Robotics, automation and computer vision are explained on the technology page; no complete validated trailer specification is implied. The website assistant answers questions about the product and business offer. It does not operate machinery, access live trailer cameras or complete payments. A conversational assistant does not establish autonomous factory performance. Marvel Crew app data is illustrative.
 
 This file is a navigation aid, not a special search-ranking requirement. The linked public pages and current policies are authoritative.
