@@ -14,14 +14,14 @@ try{
   await page.evaluate(()=>window.__platform.seek(.249));await page.waitForTimeout(1500);await page.addStyleTag({content:'#local-page-editor-link{display:none!important}'});await page.screenshot({path:`${out}/home-opening-${theme}-${mobile?'mobile':'desktop'}.png`});
   const opening=await page.locator('video.opening-film').evaluate(v=>({src:v.currentSrc,width:v.videoWidth,height:v.videoHeight}));
   assert(opening.src.includes('/scene-recovery-v2/'));
-  assert.deepEqual([opening.width,opening.height],mobile?[1080,2160]:[3840,1706]);
+  assert.deepEqual([opening.width,opening.height],mobile?[1440,2880]:[3840,1706]);
   await page.evaluate(()=>window.__platform.seek(.885));await page.waitForFunction(()=>window.__platform.state().ready,{timeout:60000});await page.waitForTimeout(1500);
   await page.screenshot({path:`${out}/home-fleet-${theme}-${mobile?'mobile':'desktop'}.png`});
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);
   const videos=await page.locator('video').evaluateAll(v=>v.map(x=>({src:x.currentSrc||x.src,duration:x.duration,ready:x.readyState,width:x.videoWidth,height:x.videoHeight})));
   for(const v of videos.filter(v=>v.src.includes('/opening/')||v.src.includes('/cargo/'))){
    assert(v.src.includes('/scene-recovery-v2/'));
-   const size=mobile?[1080,2160]:v.src.includes('/opening/')?[3840,1706]:[4608,2048];
+   const size=v.src.includes('/opening/')?(mobile?[1440,2880]:[3840,1706]):(mobile?[1080,2160]:[4608,2048]);
    assert.deepEqual([v.width,v.height],size,'The browser must decode the native-resolution film.');
   }
   report.checks.push({theme,mobile,opening,videos});

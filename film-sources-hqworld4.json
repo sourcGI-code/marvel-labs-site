@@ -2,10 +2,10 @@
   "version": 1,
   "cargo": {
     "base": "assets/scene-recovery-v2/cargo",
-    "revision": "scene-recovery-20261109b",
+    "revision": "scene-recovery-20261116",
     "desktop": {
       "base": "assets/scene-recovery-v2/cargo",
-      "revision": "scene-recovery-20261109b",
+      "revision": "scene-recovery-20261116",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -17,27 +17,27 @@
         "cropY": 224
       },
       "videoFile": "desktop-web.mp4",
-      "quality": "high-resolution-30fps-from-15fps-render",
+      "quality": "native-30fps-every-frame-rendered",
       "nativeVideo": {
         "file": "desktop-web.mp4",
         "width": 4608,
         "height": 2048,
         "framerate": 30,
-        "bitrate": 5159691,
+        "bitrate": 6870946,
         "codec": "avc1.640034"
       },
       "motionFps": 30,
       "modelRevision": "realism-v2"
     },
     "videoFile": "mobile-web.mp4",
-    "quality": "high-resolution-30fps-from-15fps-render",
+    "quality": "native-30fps-every-frame-rendered",
     "motionFps": 30,
     "nativeVideo": {
       "file": "mobile-web.mp4",
       "width": 1080,
       "height": 2160,
       "framerate": 30,
-      "bitrate": 1733967,
+      "bitrate": 2515497,
       "codec": "avc1.640032"
     },
     "modelRevision": "realism-v2"

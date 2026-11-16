@@ -170,20 +170,24 @@
       "height": 2048,
       "r_frame_rate": "30/1",
       "nb_frames": "541",
-      "duration": "18.034000",
-      "bytes": 11638260,
-      "sha256": "3601cb5868d12ba6459d4d0b409d62e98a8d9875d37f235113bef22243c9a7a6",
-      "encodedFrom": "cargo/desktop.mp4"
+      "duration": "18.033333",
+      "bytes": 15495706,
+      "sha256": "22a8ce83bb26159ba55a009162242c5da303dedd3ce72d198a583e7ac82586c0",
+      "revision": "scene-recovery-20261116",
+      "interpolatedFrames": 0,
+      "encodedFrom": "541 rendered frames (even frames from the accepted render, odd frames rendered 2026-11-16 by the same script and settings)"
     },
     "cargo/mobile-web.mp4": {
       "width": 1080,
       "height": 2160,
       "r_frame_rate": "30/1",
       "nb_frames": "541",
-      "duration": "18.034000",
-      "bytes": 3915996,
-      "sha256": "d1b78974ece1b92990a5a54839cf2732114038cc81b283fc10e23dd663e155e4",
-      "encodedFrom": "cargo/mobile.mp4"
+      "duration": "18.033333",
+      "bytes": 5677712,
+      "sha256": "600c9b3d04939fb5caa6b4cba5eb6984c996761e582def28bf7e29abe420a250",
+      "revision": "scene-recovery-20261116",
+      "interpolatedFrames": 0,
+      "encodedFrom": "541 rendered frames (even frames from the accepted render, odd frames rendered 2026-11-16 by the same script and settings)"
     },
     "opening/desktop-smooth.mp4": {
       "width": 1920,
@@ -488,5 +492,13 @@
     "backgroundFlashCorrection": "Desktop background samples limited to their neighbours where a stray floor light appeared for one sample",
     "source": "scripts/scene-recovery-v2/assemble_smooth_opening.py",
     "meshAudit": "scripts/scene-recovery-v2/render_intro.py --audit-wheels --audit-only"
+  },
+  "fleetMotion": {
+    "revision": "every-frame-rendered-20261116",
+    "nativeFrames": 541,
+    "outputFrames": 541,
+    "interpolatedFrames": 0,
+    "reproducibility": "Frame 100 re-rendered on 2026-11-16 matched the accepted frame within one 8-bit level (82 dB actor, 68 dB background).",
+    "source": "scripts/scene-recovery-v2/render_fleet.py and render_mobile_fleet.py"
   }
 }
