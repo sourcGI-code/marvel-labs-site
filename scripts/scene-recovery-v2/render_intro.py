@@ -38,6 +38,11 @@ if kind=='mobile':
  lamp=bpy.data.objects.new(data.name,data);scene.collection.objects.link(lamp);lamp.parent=bridge;lamp.matrix_parent_inverse=Matrix.Identity(4);lamp.location=(3.4,-4,4);lamp.rotation_euler=(Vector((3.4,-1,0))-lamp.location).to_track_quat('-Z','Y').to_euler();lamp.light_linking.receiver_collection=receivers
 # Preserve the original stage, lights, and exact camera poses.
 settings=json.loads((ACCEPTED/'constant-stage-settings.json').read_text())
+handoff_lights=json.loads((ACCEPTED/'00758.constant-stage.json').read_text())['truckLightPowers']
+if kind=='desktop':
+ # Explicit per-frame powers below replace the old animated on/off keys.
+ for name in settings['originalTruckLights']:
+  scene.objects[name].data.animation_data_clear()
 overscan=module('overscan',WORK/'true-world-overscan-camera-v1.py')
 sensors={key:getattr(camera.data,key) for key in ('sensor_fit','sensor_width','sensor_height')}
 def mat(a):return Matrix([a[i:i+4] for i in range(0,16,4)])
@@ -71,11 +76,18 @@ for i in frames:
  started=time.time();scene.frame_set(i+1)
  if kind=='desktop':
   s=json.loads((ACCEPTED/f'{i:05}.constant-stage.json').read_text())
+  # The source switches every truck/studio lamp off at frame 760. Fade their
+  # physical power as the camera settles instead of flashing to a darker set.
+  if 732<=i<784:
+   t=(i-732)/(784-732);fade=1-t*t*(3-2*t)
+   s['truckLightPowers']={name:power*fade for name,power in handoff_lights.items()}
   for k,v in sensors.items():setattr(camera.data,k,v)
   camera.matrix_world=mat(s['cameraMatrix']);camera.data.lens=s['lens'];camera.data.shift_x,camera.data.shift_y=s['shift']
   for name,info in settings['stageLamps'].items():
    o=scene.objects[name];matrix=mat(info['matrix']);matrix.translation.x+=s['stageOffsetXM'];o.matrix_world=matrix;o.data.energy=info['power'];o.hide_render=False
-  for name in settings['originalTruckLights']:scene.objects[name].hide_render=name not in s['truckLightPowers']
+  for name in settings['originalTruckLights']:
+   scene.objects[name].hide_render=name not in s['truckLightPowers']
+   if name in s['truckLightPowers']:scene.objects[name].data.energy=s['truckLightPowers'][name]
   for name in settings['disabledFloorOnlyOriginalLights']:scene.objects[name].hide_render=True
   floor=scene.objects[settings['floor']];matrix=mat(settings['floorMatrix']);matrix.translation.x+=s['stageOffsetXM'];floor.matrix_world=matrix;floor.hide_render=False;floor.visible_camera=True
   for o in scene.objects:

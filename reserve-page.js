@@ -1,4 +1,4 @@
-import {installReservationPayments} from './reserve-payments.js?v=readable-phone-20261110';
+import {installReservationPayments} from './reserve-payments.js?v=lease-zero-20261115';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 
@@ -34,7 +34,7 @@ function start(sec) {
   }
   function summary() {
     const s = size(), buy = plan() === 'buy';
-    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy + ' purchase price' : '$0 monthly lease fee · 25% operator profit share'} · $100 refundable deposit`;
+    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy + ' purchase price' : '$0 lease · 25% operator profit share'} · $100 refundable deposit`;
   }
 
   // Only a deliberate radio choice changes the reservation and its preview.

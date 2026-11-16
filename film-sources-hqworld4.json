@@ -72,10 +72,10 @@
   },
   "opening": {
     "base": "assets/scene-recovery-v2/opening",
-    "revision": "scene-recovery-20261109b",
+    "revision": "opening-clean-20261115",
     "desktop": {
       "base": "assets/scene-recovery-v2/opening",
-      "revision": "scene-recovery-20261109b",
+      "revision": "opening-clean-20261115",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -93,11 +93,12 @@
         "width": 3840,
         "height": 1706,
         "framerate": 60,
-        "bitrate": 6020190,
+        "bitrate": 7420176,
         "codec": "avc1.640034"
       },
       "motionFps": 60,
-      "modelRevision": "realism-v2"
+      "modelRevision": "realism-v2",
+      "playbackRevision": "opening-clean-20261115"
     },
     "modelRevision": "realism-v2",
     "videoFile": "mobile-web.mp4",
@@ -107,10 +108,11 @@
       "width": 1080,
       "height": 2160,
       "framerate": 60,
-      "bitrate": 3397741,
+      "bitrate": 4427432,
       "codec": "avc1.640032"
     },
-    "quality": "high-resolution-60fps-from-42fps-render"
+    "quality": "high-resolution-60fps-from-42fps-render",
+    "playbackRevision": "opening-clean-20261115"
   },
   "fieldMobile": {
     "base": "assets/scene-recovery-v2/field",

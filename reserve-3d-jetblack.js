@@ -67,9 +67,12 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     const showroom=sec.classList.contains('trailer-showroom');
     const fitReserve=sec.dataset.reservationLayout==='viewport';
     const desktop=fitReserve?sec.dataset.reservationStacked!=='true':innerWidth>860||(showroom&&innerWidth>=600&&innerHeight<=580);
+    let bottom=showroom?54:fitReserve?(desktop&&innerHeight>580?100:sec.dataset.orderStep==='review'?8:48):155;
+    const bar=sec.querySelector('.rs-3d-bar'),barBox=bar?.getBoundingClientRect();
+    if(barBox?.height&&getComputedStyle(bar).display!=='none')bottom=Math.max(bottom,box.bottom-barBox.top+12);
     const plan=fitYardCamera(bounds,direction,{width:host.clientWidth,height:host.clientHeight,
       left:desktop?Math.max(0,rail.getBoundingClientRect().right-box.left)+(showroom?12:0):0,
-      top:showroom?62:fitReserve?(desktop?22:8):(desktop?84:12),bottom:showroom?54:fitReserve?(desktop&&innerHeight>580?100:sec.dataset.orderStep==='review'?8:48):155,fov:YARD_FOV});
+      top:showroom?62:fitReserve?(desktop?22:8):(desktop?84:12),bottom,fov:YARD_FOV});
     want.pos.copy(plan.position);want.look.copy(plan.target);want.shift=plan.shiftX;want.shiftY=plan.shiftY;
   }
   function filmView(){
@@ -82,7 +85,11 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
   }
   function orbitView(){
     const t=T[focus];if(!t)return;
-    const bounds=t.bounds.clone().translate(t.group.position);
+    const bounds=t.bounds.clone();
+    // Frame the full travel of the door before it starts moving. The closed
+    // CAD bounds exclude the ramp, which otherwise passes behind the controls.
+    if(t.rampTo||t.ramp>.001)bounds.union(t.rampBounds);
+    bounds.translate(t.group.position);
     fittedView(bounds,new THREE.Vector3(Math.cos(el)*Math.cos(az),Math.sin(el),Math.cos(el)*Math.sin(az)));
   }
   function resize(){
@@ -142,6 +149,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     if (to) {                                          // look into the bay from behind, and hold the view there
       az = Math.atan2(-.55, 1); el = .2; locked = true; stopTour(); syncLock(); orbitView();
     }
+    else orbitView();
     dirty = true;
   }
 
@@ -256,9 +264,21 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
       // the ramp: the old rigs carry a 'Ramp hinge' node turned about Z; the owner's new 20 ft names its own (ramp_door, axis in meta)
       const hinge = (t.hingeNode && g.scene.getObjectByName(t.hingeNode)) || g.scene.getObjectByName(`Ramp_hinge_${size}`) || g.scene.getObjectByName(`Ramp hinge ${size}`);
       if(hinge){g.scene.updateMatrixWorld(true);const locks=[];g.scene.traverse(o=>{if(o.name.startsWith('ramp_bar_lock_'))locks.push(o);});for(const lock of locks)hinge.attach(lock);}
+      const base=hinge?.quaternion.clone(),axis=new THREE.Vector3(...(t.rampAxis||[0,0,1]));
+      const open=t.rampAxis?t.rampOpen:-t.rampOpen,rampBounds=modelBounds.clone();
+      if(hinge){
+        const turn=new THREE.Quaternion();
+        // Include intermediate poses too: the upper edge sweeps beyond the
+        // closed/open endpoint boxes while the door folds down.
+        for(let step=1;step<=16;step++){
+          hinge.quaternion.copy(base).multiply(turn.setFromAxisAngle(axis,open*step/16));
+          rampBounds.union(new THREE.Box3().setFromObject(hinge).translate(group.position.clone().negate()));
+        }
+        hinge.quaternion.copy(base);group.updateMatrixWorld(true);
+      }
       scene.add(group);
-      T[size] = {group, hinge, bounds: modelBounds, base: hinge ? hinge.quaternion.clone() : null, axis: new THREE.Vector3(...(t.rampAxis || [0, 0, 1])),
-                 open: t.rampAxis ? t.rampOpen : -t.rampOpen, ramp: 0, rampTo: 0, scale: 1, scaleTo: 1, show: true, fade: 1};
+      T[size] = {group, hinge, bounds:modelBounds, rampBounds, base, axis,
+                 open, ramp:0, rampTo:0, scale:1, scaleTo:1, show:true, fade:1};
     }));
     if (signal.aborted) return;
     modelsReady = true; dirty = true; filmView(); cur.pos.copy(want.pos); cur.look.copy(want.look); cur.shift=want.shift; cur.shiftY=want.shiftY; renderer.shadowMap.needsUpdate=true;
@@ -317,9 +337,12 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
       tr.group.visible = tr.show;
       tr.group.position.y = LIFT;
       const previousRamp=tr.ramp;
-      tr.ramp = still ? tr.rampTo : ease(tr.ramp, tr.rampTo, 1 - Math.exp(-dt * 2.4));
+      // Let the camera clear space for the full ramp before unfolding it.
+      const rampReady=!tr.rampTo||cur.pos.distanceTo(want.pos)<.15;
+      tr.ramp = still ? tr.rampTo : ease(tr.ramp,rampReady?tr.rampTo:tr.ramp,1-Math.exp(-dt*2.4));
       if(Math.abs(previousRamp-tr.ramp)>1e-5)renderer.shadowMap.needsUpdate=true;
       if (tr.hinge) tr.hinge.quaternion.copy(tr.base).multiply(qRamp.setFromAxisAngle(tr.axis, tr.open * tr.ramp));
+      if(focus&&tr===T[focus]&&!tr.rampTo&&previousRamp>.001&&tr.ramp<=.001)orbitView();
     }
     if (!moving && !dirty) return;
     dirty = false;
@@ -329,7 +352,7 @@ export async function startReservationViewer(sec,{signal,onReady,onError}){
     camera.setViewOffset(w,h,cur.shift*w,cur.shiftY*h,w,h);   // Blender lens shift: + moves the frame right
     try {
       if (composer) composer.render(); else renderer.render(scene, camera);
-      if (!presented && !renderer.getContext().isContextLost()) { presented = true; onReady(); }
+      if (!presented && !renderer.getContext().isContextLost()) { presented = true; onReady(); resize(); }
     } catch (error) { onError(error); }
   });
 }

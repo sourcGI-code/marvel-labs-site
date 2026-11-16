@@ -7,7 +7,8 @@ body.reserve-screen main{position:relative;min-height:0;height:100%;padding:0!im
 body.reserve-screen .site-footer,body.reserve-screen #local-page-editor-link{display:none}
 body.reserve-screen #reserve{position:absolute;inset:0;display:block;height:100%;min-height:0;overflow:hidden;--reserve-scale:1;--reserve-form-height:550px}
 body.reserve-screen #reserve .rv-show{position:absolute;inset:0;width:100%;height:100%;min-height:0;z-index:0;background:radial-gradient(ellipse at 65% 45%,#14343e,#0a0e10 75%)}
-html.reserve-has-js body.reserve-screen #reserve:not([data-viewer=image]) .rv-preview{display:none;visibility:hidden}
+body.reserve-screen #reserve.rs-live .rv-preview{visibility:hidden}
+body.reserve-screen #reserve .rv-preview{left:var(--reserve-panel-right,400px);bottom:100px}
 body.reserve-screen #reserve .rv-loading{left:calc((100% + var(--reserve-panel-right,400px))/2);color:#a6dfe6;white-space:nowrap;font-size:clamp(10px,1vw,18px)}
 body.reserve-screen #reserve[data-order-step=review] :is(.rs-3d-bar,.rs-back){display:none}
 body.reserve-screen #reserve .rs-3d{inset:0}
@@ -75,6 +76,7 @@ body.reserve-screen #reserve .rv-preview figcaption{bottom:100px}
  body.reserve-screen #reserve .rs-ramp-btn,body.reserve-screen #reserve .rs-lock{box-sizing:border-box;min-height:32px;padding:6px 8px;font-size:9px}
  body.reserve-screen #reserve .rs-back{box-sizing:border-box;min-height:28px;top:8px;right:12px;left:auto;padding:5px 7px;font-size:9px}
  body.reserve-screen #reserve .rv-preview figcaption{display:none}
+ body.reserve-screen #reserve .rv-preview{left:0;bottom:0}
  body.reserve-screen #reserve .rv-rail h1{font-size:25px}
  body.reserve-screen #reserve .rv-group{margin-top:9px}
  body.reserve-screen #reserve .rd-steps{margin-top:10px}
@@ -134,6 +136,7 @@ body.reserve-screen #reserve .rv-preview figcaption{bottom:100px}
  body.reserve-screen #reserve .rv-metrics{display:none}
  body.reserve-screen #reserve .rs-3d-bar{left:calc((100% + var(--reserve-panel-right,430px))/2);bottom:12px}
  body.reserve-screen #reserve .rs-back{top:10px}
+ body.reserve-screen #reserve .rv-preview{left:var(--reserve-panel-right,430px);bottom:12px}
  body.reserve-screen .rv[data-order-step=review] .rv-rail>h1,body.reserve-screen .rv[data-order-step=review] .rv-when{display:none}
  body.reserve-screen #reserve [data-panel=review]{display:grid;grid-template-columns:1fr 1fr;gap:0 14px}
  body.reserve-screen #reserve .rd-panel-head{grid-column:1/-1;margin-top:7px}
@@ -147,7 +150,11 @@ body.reserve-screen #reserve .rv-preview figcaption{bottom:100px}
 
 /* Keep phone controls readable instead of scaling the whole form down. */
 @media(max-width:599px){
- body.reserve-screen #reserve .rv-rail{padding:12px 14px max(10px,env(safe-area-inset-bottom))}
+ body.reserve-screen main{overflow-y:auto;overscroll-behavior-y:contain}
+ body.reserve-screen #reserve{position:relative;inset:auto;display:flex;flex-direction:column;height:auto;min-height:100%;overflow:visible}
+ body.reserve-screen #reserve .rv-show{position:relative;inset:auto;flex:none;height:clamp(280px,40svh,360px)}
+ body.reserve-screen #reserve[data-order-step=review] .rv-show{height:220px}
+ body.reserve-screen #reserve .rv-rail{position:relative;inset:auto;flex:none;padding:12px 14px max(10px,env(safe-area-inset-bottom))}
  body.reserve-screen #reserve .rv-rail h1{font-size:25px}
  body.reserve-screen #reserve .rv-when{font-size:11px;line-height:1.35;margin-top:5px}
  body.reserve-screen #reserve .rd-steps{margin-top:10px}

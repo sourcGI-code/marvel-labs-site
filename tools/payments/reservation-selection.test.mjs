@@ -55,7 +55,8 @@ for (const size of ['16', '20']) for (const plan of ['buy', 'lease']) {
     f.submit();
     const order = f.form.querySelector('[data-order]').textContent;
     assert.ok(order.includes(`${size} ft`));
-    assert.ok(order.includes(plan === 'buy' ? 'Buy · 75%' : 'Lease · $0'));
+    assert.ok(order.includes(plan === 'buy' ? 'Buy · 75%' : '$0 lease · 25%'));
+    if(plan==='lease')assert.doesNotMatch(order,/month/i);
     f.dom.window.close();
   });
 }

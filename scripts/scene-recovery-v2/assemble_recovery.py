@@ -53,6 +53,8 @@ def presentation(scene,kind):
  folder=W/('intro-'+kind if scene=='opening' else 'fleet-'+kind)/'mono';dest=A/scene
  if scene=='opening':
   for name in ['poster','hero']:webp(folder/'00838.png',dest/f'{kind}-{name}.webp')
+  # Playback begins at frame zero. The final-pose hero is only a static preview.
+  webp(folder/'00000.png',dest/f'{kind}-start.webp')
  else:
   j=cargo_metadata(kind)
   for still in j['stills']:

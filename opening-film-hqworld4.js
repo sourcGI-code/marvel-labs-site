@@ -1,4 +1,4 @@
-import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=media-delivery-20261109';
+import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=opening-clean-20261115';
 const clamp=v=>Math.max(0,Math.min(1,v));
 export const filmDuration=10;
 // The fast approach/impact is retained; the reveal settles sooner for the handoff.
@@ -8,9 +8,9 @@ export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
  const livePreview=document.body.dataset.sceneSource!=='accepted-films'&&new URLSearchParams(location.search).has('live-preview');
  if(livePreview)host.querySelectorAll('.arrival-poster,.scene-fallback').forEach(el=>el.style.display='none');
  const video=document.createElement('video');video.className='opening-film';video.muted=true;video.defaultMuted=true;video.playsInline=true;video.preload='metadata';video.disablePictureInPicture=true;video.setAttribute('aria-hidden','true');video.tabIndex=-1;
- let failed=livePreview,ready=false,wanted=0,kind='',playing=false,generation=0,playRequest=0,presentedTime=0;
+ let failed=livePreview,ready=false,presented=false,wanted=0,kind='',playing=false,generation=0,playRequest=0,presentedTime=0;
  const notify=()=>onChange?.();
- function usable(){return ready&&!failed;}
+ function usable(){return ready&&presented&&!failed;}
  function bufferedAhead(){for(let i=0;i<video.buffered.length;i++)if(video.currentTime>=video.buffered.start(i)-.05&&video.currentTime<=video.buffered.end(i))return video.buffered.end(i)-video.currentTime;return 0;}
  function seek(){
   if(!ready||playing||video.dataset.timelinePlaying||video.seeking)return;
@@ -21,16 +21,16 @@ export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
  }
  function source(){
   const next=introFilmKind();if(!enabled||livePreview||kind===next||reduced.matches)return false;
-  video.pause();playing=false;playRequest++;kind=next;ready=false;failed=false;generation++;presentedTime=0;
+  video.pause();playing=false;playRequest++;kind=next;ready=false;presented=false;failed=false;generation++;presentedTime=0;
   const selected=sceneFilmSource('opening',kind),revision=encodeURIComponent(selected.revision);
-  video.poster=`${selected.base}/${kind}-poster.webp?v=${revision}`;
+  video.poster=`${selected.base}/${kind}-start.webp?v=opening-start-20261115`;
   const poster=host.querySelector('.arrival-poster');
   if(poster){
    const phone=poster.querySelector('source[data-opening-mobile]');
    const original=sceneFilmSource('opening');
-   if(phone)phone.srcset=`${original.base}/mobile-poster.webp?v=${encodeURIComponent(original.revision)}`;
+   if(phone)phone.srcset=`${original.base}/mobile-start.webp?v=opening-start-20261115`;
    const desktop=sceneFilmSource('opening','desktop');
-   const image=poster.querySelector('img');if(image)image.src=`${desktop.base}/desktop-poster.webp?v=${encodeURIComponent(desktop.revision)}`;
+   const image=poster.querySelector('img');if(image)image.src=`${desktop.base}/desktop-start.webp?v=opening-start-20261115`;
   }
   video.dataset.filmQuality=selected.quality||'original';
   // The current manifest includes the approved 60 fps intro. Older ?fps=60
@@ -39,7 +39,16 @@ export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
   video.src=mediaURL;video.load();
   return true;
  }
- video.addEventListener('loadeddata',()=>{presentedTime=video.currentTime;ready=true;seek();notify();});
+ video.addEventListener('loadeddata',()=>{
+  ready=true;seek();
+  const current=generation;
+  const reveal=(_now,frame)=>{if(current!==generation||failed)return;presentedTime=frame?.mediaTime??video.currentTime;presented=true;notify();};
+  // Metadata and decoded data can arrive before the compositor submits a
+  // frame. Keep the matching first-frame image until that handoff is ready.
+  if(video.requestVideoFrameCallback)video.requestVideoFrameCallback(reveal);
+  else requestAnimationFrame(()=>requestAnimationFrame(reveal));
+  notify();
+ });
  video.addEventListener('pause',()=>{playing=false;notify();});
  video.addEventListener('playing',()=>{playing=true;notify();});
  video.addEventListener('progress',()=>{seek();notify();});

@@ -25,20 +25,9 @@ if(section){
    return form.getBoundingClientRect().height;
   }
   if(phone){
-   // Phones use a compact layout at readable native size. Only unusually short
-   // viewports need a final fit; do not shrink every phone to a fixed percentage.
-   const stage=section.dataset.orderStep==='review'?0:Math.min(150,available*.25);
-   const naturalHeight=measure(1),limit=available-stage;
-   if(naturalHeight<=limit){
-    section.style.setProperty('--reserve-form-height',`${naturalHeight}px`);
-    return;
-   }
-   let low=.1,high=1;
-   for(let pass=0;pass<12;pass++){
-    const scale=(low+high)/2;
-    if(measure(scale)<=limit-1)low=scale;else high=scale;
-   }
-   section.style.setProperty('--reserve-form-height',`${measure(low)}px`);
+   // Let the phone page scroll at native text size. Reserving a real stage
+   // above the form keeps the product visible even on short ad landing views.
+   section.style.setProperty('--reserve-form-height',`${measure(1)}px`);
    return;
   }
   // Text reflows as it grows. Find the largest readable scale that fits rather

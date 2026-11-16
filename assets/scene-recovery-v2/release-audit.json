@@ -141,9 +141,10 @@
       "r_frame_rate": "60/1",
       "nb_frames": "600",
       "duration": "10.000000",
-      "bytes": 7533310,
-      "sha256": "02fa331ccf69f196b50080e9a363ea2da5d4b2dc15b0738fb97d0d5b845821c6",
-      "encodedFrom": "opening/desktop.mp4"
+      "bytes": 9283345,
+      "sha256": "9a1513c9a3e9175c30d69558a5685a203204197f7e2f3ff2102ea6a938bc44dd",
+      "encodedFrom": "Accepted opening with native impact frames and repaired desktop lighting",
+      "revision": "opening-clean-20261115"
     },
     "opening/mobile-web.mp4": {
       "width": 1080,
@@ -151,9 +152,10 @@
       "r_frame_rate": "60/1",
       "nb_frames": "600",
       "duration": "10.000000",
-      "bytes": 4254818,
-      "sha256": "ba34e7815d3888c843103c1a7a89b0650762d9184729d5355f89d6a0efef54ba",
-      "encodedFrom": "opening/mobile.mp4"
+      "bytes": 5542132,
+      "sha256": "7d8e0b6c875b074839dd78b8d64a25374cc54d973bf6552a7028210d520d8d5f",
+      "encodedFrom": "Accepted opening with native impact frames",
+      "revision": "opening-clean-20261115"
     },
     "cargo/desktop-web.mp4": {
       "width": 4608,
@@ -236,5 +238,21 @@
     "minimumEndingStripeLuminance": 207.55555555555554,
     "persistentRenderData": false,
     "actorLightVisibilityRestored": true
+  },
+  "openingPlaybackRepair": {
+    "revision": "opening-clean-20261115",
+    "durationSeconds": 10,
+    "outputFrames": 600,
+    "impactOutputFrames": [
+      60,
+      119
+    ],
+    "cameraIntersectionNativeFrame": 126,
+    "replacementNativeFrame": 128,
+    "desktopLightingNativeFrames": [
+      732,
+      782
+    ],
+    "source": "scripts/scene-recovery-v2/repair_opening_playback.py"
   }
 }

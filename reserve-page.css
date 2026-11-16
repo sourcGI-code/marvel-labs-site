@@ -13,7 +13,7 @@ section.rv{display:grid;grid-template-columns:minmax(0,1fr) var(--rail);min-heig
 /* ---- the stage */
 .rv-show{position:sticky;top:var(--reserve-header-height);height:calc(100svh - var(--reserve-header-height));overflow:hidden;background:#0a0e10}
 .rv .rs-3d{position:absolute;inset:0;overflow:hidden}
-.rv .rs-3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;transition:opacity .9s ease;touch-action:none}
+.rv .rs-3d canvas{position:absolute;inset:0;width:100%;height:100%;display:block;opacity:0;touch-action:none}
 .rv.rs-live .rs-3d canvas{opacity:1}
 .rv .rv-loading{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);font:var(--mono);letter-spacing:.14em;text-transform:uppercase;color:var(--muted);transition:opacity .6s}
 .rv.rs-live .rv-loading{opacity:0}

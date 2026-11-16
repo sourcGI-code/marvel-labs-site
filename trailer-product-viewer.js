@@ -63,7 +63,7 @@ function fallback(){
   for(const button of section.querySelectorAll('.showroom-tools button,.rs-back'))button.disabled=true;
 }
 timeout=setTimeout(fallback,30000);
-import('./reserve-3d-jetblack.js?v=marvel-showroom-20261110').then(({startReservationViewer})=>{
+import('./reserve-3d-jetblack.js?v=cad-render-ready-20261115').then(({startReservationViewer})=>{
   if(controller.signal.aborted)return;
   return startReservationViewer(section,{signal:controller.signal,onError:fallback,onReady(){
     if(controller.signal.aborted)return;

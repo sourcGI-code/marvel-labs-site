@@ -11,21 +11,30 @@ const documentFor = async path => new JSDOM(await read(path), {url:`https://marv
 
 test('a question typed before the FAQ module loads can be submitted after initialization', async () => {
   const dom = new JSDOM(await read('crew-chat.html'), {url:'https://marvellabs.shop/crew-chat.html', runScripts:'outside-only', pretendToBeVisual:true});
+  const closeWindow=dom.window.close.bind(dom.window);
   const input = dom.window.document.querySelector('#chat-question');
   const send = dom.window.document.querySelector('#chat-send');
   input.value = 'How wide and tall are both trailers?';
   input.dispatchEvent(new dom.window.Event('input', {bubbles:true}));
   assert.equal(send.disabled, true, 'the HTML is initially waiting for the module');
-  dom.window.answerQuestion = (await import('../../crew-chat-answers.mjs')).answerQuestion;
+  // Exercise initialization without calling the public model service.
+  dom.window.CHAT_ENDPOINT = 'https://example.test/chat';
+  const requests=[];
+  dom.window.fetch = async (url,options) => {
+    requests.push(JSON.parse(options.body));
+    return {ok:true,json:async()=>({answer:'Both trailers are 8.5 ft wide and 7.5 ft tall.'})};
+  };
   vm.runInContext((await read('crew-chat.js')).replace(/^import .*;\n/, ''), dom.getInternalVMContext());
   assert.equal(send.disabled, false);
   send.click();
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(requests[0].messages[0].content,'How wide and tall are both trailers?');
   const reply = dom.window.document.querySelector('.message-assistant').textContent;
   assert.match(reply, /8\.5/);
   assert.match(reply, /7\.5/);
   assert.equal(input.value, '');
   assert.equal(send.disabled, true);
-  dom.window.close();
+  closeWindow();
 });
 
 test('hover cannot silently change the selected deposit; explicit choices still work',async()=>{
@@ -88,7 +97,7 @@ test('model pages describe distinct products and link to a separate selected res
     assert.equal(product.model,`${size} ft`);
     assert.equal(product.offers,undefined,'a deposit cannot be represented as the trailer sale price');
     assert.match(doc.body.textContent,/GVWR/);
-    assert.match(doc.body.textContent,/\$0\s+monthly lease fee/);
+    assert.match(doc.body.textContent,/(?:Lease\s*(?:is\s*)?\$0|\$0\s+lease)/i);
     assert.ok(doc.querySelector('meta[property="og:image"]'));
     assert.ok(doc.querySelector('meta[name="twitter:card"]'));
   }
@@ -116,8 +125,8 @@ test('all size and plan deep links select the intended live form and review',asy
     assert.equal(form.querySelector('[name="plan"]:checked').value,plan==='lease'?'free':'buy');
     form.dispatchEvent(new window.Event('submit',{cancelable:true,bubbles:true}));
     assert.match(form.querySelector('[data-order]').textContent,new RegExp(`${size} ft`));
-    assert.match(form.querySelector('[data-order]').textContent,plan==='lease'?/Lease/:/Buy/);
-    if(plan==='lease')assert.match(form.querySelector('[data-order]').textContent,/\$0 monthly lease fee/);
+    assert.match(form.querySelector('[data-order]').textContent,plan==='lease'?/lease/i:/Buy/);
+    if(plan==='lease')assert.match(form.querySelector('[data-order]').textContent,/\$0 lease/);
     assert.equal(form.querySelector('[name="consent"]').checked,false);
     dom.window.close();
   }
@@ -180,17 +189,17 @@ test('cargo loading waits for its chapter while explicit playback and fallback r
   const failed=await fixture({failed:true});await failed.flush();assert.equal(failed.loads(),0,'a failed opening must not trigger a second large video download');failed.close();
 });
 
-test('confirmed zero monthly lease fee stays separate from the reservation and operating costs',async()=>{
+test('zero-dollar lease stays separate from the reservation and operating costs',async()=>{
   for(const file of ['index.html','overview.html','reserve.html','trailer-16.html','trailer-20.html','reservation-help.html']) {
     const doc=await documentFor(file),text=doc.body.textContent;
-    assert.match(text,/\$0\s*(?:\/\s*month|monthly lease fee)/,file);
+    assert.match(text,/(?:Lease\s*(?:is\s*)?\$0|\$0\s+lease)/i,file);
     assert.match(text,/\$100/,file);
     assert.match(text,/operating costs/i,file);
-    assert.doesNotMatch(text,/monthly (?:lease )?(?:charges|fees?).{0,80}(?:pending|finalized)/i,file);
+    assert.doesNotMatch(text,/monthly\s+lease|\$0\s*\/\s*month|\$0\s+monthly/i,file);
   }
   const {answerQuestion}=await import('../../crew-chat-answers.mjs');
   for(const question of ['Compare Buy and Lease','What is the monthly lease cost?']) {
-    assert.match(answerQuestion(question,{}).answer.join(' '),/\$0 monthly lease fee/);
+    assert.match(answerQuestion(question,{}).answer.join(' '),/\$0 lease/);
   }
 });
 
@@ -229,10 +238,10 @@ test('reservation WebGL failure keeps the matching static image and form availab
     await recovered;
     assert.equal(section.classList.contains('rs-live'),false);
     assert.equal(section.querySelector('.rs-3d').getAttribute('aria-busy'),'false');
-    assert.match(section.querySelector('.rv-preview img').src,/yard-desktop\.webp$/);
+    assert.match(new URL(section.querySelector('.rv-preview img').src).pathname,/yard-desktop\.webp$/);
     assert.ok(section.querySelector('form'));
     section.dispatchEvent(new window.CustomEvent('rs:size',{detail:'16'}));
-    assert.match(section.querySelector('.rv-preview img').src,/yard-desktop\.webp$/);
+    assert.match(new URL(section.querySelector('.rv-preview img').src).pathname,/yard-desktop\.webp$/);
     assert.match(section.querySelector('figcaption').textContent,/16 ft selected/);
     assert.equal(section.dataset.viewer,'image');
   } finally {
