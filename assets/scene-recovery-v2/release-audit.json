@@ -24,8 +24,10 @@
       "r_frame_rate": "30/1",
       "duration": "102.933333",
       "nb_frames": "3088",
-      "bytes": 51084651,
-      "sha256": "2ebd95a5a27d876cdd919f68b56900da7107bfdcd8b718314a8555c15d51565d"
+      "bytes": 50801297,
+      "sha256": "50b4171a69274b7d6577ccbd73bbf0f2f83864100bb76a5d36b43f640f87ecc2",
+      "revision": "scene-recovery-20261116",
+      "interpolatedFrames": 0
     },
     "field/desktop-lite.mp4": {
       "width": 960,
@@ -33,17 +35,21 @@
       "r_frame_rate": "30/1",
       "duration": "102.933333",
       "nb_frames": "3088",
-      "bytes": 23166565,
-      "sha256": "63a78e0b3a8003bc65a384161d593e1347e36e27c20f567f49ecac1a36ed5bb1"
+      "bytes": 22029702,
+      "sha256": "506cfd6a4902be4a88c95dcbe2a049a2221cbd674e5ceef240a05e3af963ff8a",
+      "revision": "scene-recovery-20261116",
+      "interpolatedFrames": 0
     },
     "field/desktop.mp4": {
       "width": 1920,
       "height": 1200,
       "r_frame_rate": "30/1",
-      "duration": "102.934000",
+      "duration": "102.933333",
       "nb_frames": "3088",
-      "bytes": 89117097,
-      "sha256": "ebc9f7c9d35dca39447759871efe57ae73875abd7872f4f18261e5fd90f1a796"
+      "bytes": 89566423,
+      "sha256": "7ee07781cec2a8a110c3c0b039f3d99a9a68ee0bf55dd2f9d8fb3d31a8d2c6d0",
+      "revision": "scene-recovery-20261116",
+      "interpolatedFrames": 0
     },
     "field/mobile-lite.mp4": {
       "width": 960,
@@ -51,8 +57,10 @@
       "r_frame_rate": "30/1",
       "duration": "102.933333",
       "nb_frames": "3088",
-      "bytes": 23157791,
-      "sha256": "22dd30e023ec9a1613018f6ffc598bc3d79510d593dc18ba15f21d0fe90ef3f2"
+      "bytes": 22029702,
+      "sha256": "506cfd6a4902be4a88c95dcbe2a049a2221cbd674e5ceef240a05e3af963ff8a",
+      "revision": "scene-recovery-20261116",
+      "interpolatedFrames": 0
     },
     "cargo/mobile.mp4": {
       "width": 1080,
@@ -320,10 +328,11 @@
     ]
   },
   "workdayMotion": {
-    "revision": "rife-4.6-native-frames-preserved",
-    "nativeFrames": 1544,
+    "revision": "every-frame-rendered-20261116",
+    "nativeFrames": 3088,
     "nativeFramesPreserved": true,
     "outputFrames": 3088,
+    "interpolatedFrames": 0,
     "authoredCuts": [
       300,
       624,
@@ -334,8 +343,9 @@
       2733,
       2812
     ],
-    "engineSource": "https://github.com/nihui/rife-ncnn-vulkan/releases/tag/20221029",
-    "engineArchiveSHA256": "1e2c7ee7fa7daa326542d50622f0afedc80cf6f1858bda411d16385ffa5cdf68"
+    "supersedes": "rife-4.6-native-frames-preserved",
+    "reason": "Interpolated odd frames were corrupt around the authored cuts at 2733 and 2812 and ghosted moving subjects elsewhere; every frame is now a render of the same animation.",
+    "source": "/scratch/marvel-scene-recovery-20261109/workday-frames (even frames from the accepted render, odd frames rendered 2026-11-12 from the same scene)"
   },
   "openingTailRepair": {
     "affectedNativeFrames": [

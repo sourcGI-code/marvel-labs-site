@@ -44,7 +44,7 @@
   },
   "field": {
     "base": "assets/scene-recovery-v2/field",
-    "revision": "scene-recovery-20261109b",
+    "revision": "scene-recovery-20261116",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 3088,
@@ -59,13 +59,13 @@
     "motionFps": 30,
     "modelRevision": "realism-v2",
     "liteVideoFile": "desktop-lite.mp4",
-    "quality": "high-resolution-30fps-from-15fps-render",
+    "quality": "native-30fps-every-frame-rendered",
     "nativeVideo": {
       "file": "desktop.mp4",
       "width": 1920,
       "height": 1200,
       "framerate": 30,
-      "bitrate": 6923157,
+      "bitrate": 6958125,
       "codec": "avc1.640032"
     },
     "animationSHA256": "3891326ea6294683f06e13d4f3a053285dae9e8ddc0e1f50e36cd56f7abf598a"
@@ -118,7 +118,7 @@
   },
   "fieldMobile": {
     "base": "assets/scene-recovery-v2/field",
-    "revision": "scene-recovery-20261109b",
+    "revision": "scene-recovery-20261116",
     "neighborhood": true,
     "operator": true,
     "timelineFrames": 3088,
@@ -137,11 +137,11 @@
       "width": 1440,
       "height": 900,
       "framerate": 30,
-      "bitrate": 3967363,
+      "bitrate": 3945336,
       "codec": "avc1.640028"
     },
     "liteVideoFile": "mobile-lite.mp4",
-    "quality": "high-resolution-30fps-from-15fps-render",
+    "quality": "native-30fps-every-frame-rendered",
     "animationSHA256": "3891326ea6294683f06e13d4f3a053285dae9e8ddc0e1f50e36cd56f7abf598a"
   },
   "modelRevision": "realism-v2",

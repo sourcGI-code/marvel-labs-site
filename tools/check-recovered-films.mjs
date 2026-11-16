@@ -12,8 +12,8 @@ assert.equal(audit.sourceScene.file,'workday-package-v2.blend');
 assert.equal(audit.originalAnimationSHA256,preserved);
 assert.equal(audit.finalOriginalAnimationSHA256,preserved,'The corrected package, yard and mower animation must survive exterior replacement.');
 assert.equal(audit.preservedCorrections.approvedPackageRevision,'owner-package-v2');
-assert.equal(audit.workdayMotion.revision,'rife-4.6-native-frames-preserved');
-assert.equal(audit.workdayMotion.nativeFrames,1544);assert.equal(audit.workdayMotion.nativeFramesPreserved,true);
+assert.equal(audit.workdayMotion.revision,'every-frame-rendered-20261116');
+assert.equal(audit.workdayMotion.nativeFrames,3088);assert.equal(audit.workdayMotion.nativeFramesPreserved,true);
 assert.equal(audit.workdayMotion.outputFrames,3088);
 for(const key of ['collection_visibility_repaired','releasePackageFix','releasePhoneFix','grassContactRevision','neighborhood_route'])assert(audit.preservedCorrections[key],`Missing recovered correction: ${key}`);
 const entries=[['opening',manifest.opening,'mobile'],['opening',manifest.opening.desktop,'desktop'],['cargo',manifest.cargo,'mobile'],['cargo',manifest.cargo.desktop,'desktop'],['field',manifest.field,'desktop'],['field',manifest.fieldMobile,'mobile']];
@@ -24,7 +24,7 @@ for(const [scene,source,kind] of entries){
  if(scene==='field'){
   const timeline=await read(`${base}${scene}/${kind}.json`);
   assert.equal(timeline.frames,3088);assert.equal(timeline.packageRevision,'owner-package-v2');assert.equal(timeline.animationSHA256,preserved);
-  assert.equal(timeline.interpolationRevision,'rife-4.6-native-frames-preserved');
+  assert.equal(timeline.interpolationRevision,'every-frame-rendered-20261116');
   assert.equal(timeline.howItWorks.fieldLeadFrames,1416);
  }else if(scene==='cargo'){
   const timeline=await read(`${base}${scene}/${kind}.json`);
