@@ -11,6 +11,7 @@ def render(size, model, metadata):
 <link rel="preload" href="assets/lato-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
 <script type="module" src="trailer-product-viewer.js?v=fullscreen-20261109"></script>
 <script type="module" src="campaign-links.js?v=launch-20261108"></script>
+<script src="marketing-config.js?v=1"></script><script type="module" src="linkedin-insight.js?v=1"></script>
 </head><body class="showroom-page">
 <a class="skip-link" href="#model-info">Skip to trailer details</a>
 <header class="showroom-header">
