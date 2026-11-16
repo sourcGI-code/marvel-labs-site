@@ -4,22 +4,22 @@
   "revision": "realism-v2",
   "models": {
     "16": {
-      "file": "trailer-16-cad2.glb",
+      "file": "trailer-16-cad3.glb",
       "sourceFile": "marvel_cad/trailer20 CAD web export",
-      "sha256": "a86c7ecf21af674d8edc71ad8fdb12478de98d10f9d5e96116f214649b46cccd",
-      "bytes": 2002576,
-      "meshNodes": 49,
+      "sha256": "c60463ceb9a9330ace43b055e7e5ad74ed0f38c4b85dbf6ba2491568cbdc5c35",
+      "bytes": 802804,
+      "meshNodes": 47,
       "treadMeshes": 4,
-      "triangles": 626593
+      "triangles": 197261
     },
     "20": {
-      "file": "trailer-20-cad2.glb",
+      "file": "trailer-20-cad3.glb",
       "sourceFile": "marvel_cad/trailer20 CAD web export",
-      "sha256": "4fed2d52c504cbb1a757ca7d6f05effc72253de8696fc910b3d9cfb69af63361",
-      "bytes": 2017868,
-      "meshNodes": 49,
+      "sha256": "b5a282147fa68a7959e96791640f07467313cbfdf1dd5377543ea601d5d42d35",
+      "bytes": 810176,
+      "meshNodes": 47,
       "treadMeshes": 4,
-      "triangles": 639179
+      "triangles": 200605
     }
   }
 }
