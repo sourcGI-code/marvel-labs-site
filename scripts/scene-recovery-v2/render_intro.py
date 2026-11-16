@@ -14,21 +14,50 @@ def opt(name,default):return args[args.index(name)+1] if name in args else defau
 frames=[int(x) for x in opt('--frames','126').split(',')] if '--all' not in args else list(range(int(opt('--start','0')),int(opt('--end','840')),int(opt('--step','2'))))
 width=int(opt('--width','1536'));samples=int(opt('--samples','32'));kind=opt('--kind','desktop');themes=opt('--themes','cyan,mono').split(',')
 actor_only='--actor-only' in args and kind=='desktop'
+background_only='--background-only' in args and kind=='desktop'
+actor_border='--actor-border' in args and actor_only
+soft_impact='--original-camera' not in args
 out=Path('/scratch/marvel-scene-recovery-20261109')/opt('--out','intro-proof');out.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.open_mainfile(filepath=str(ROOT/f'render-work/realism/package-access-v1/opening-{kind}-package-access-v1.blend'),use_scripts=False)
 scene=bpy.context.scene;camera=scene.camera
 bridge=bpy.data.objects['Hybrid trailer / aligned tow point']
 old=list(bridge.children_recursive)
-actions={o.name:(o.animation_data.action,o.animation_data.action_slot) for o in old if o.animation_data and o.animation_data.action}
+actions={o.name:(o.animation_data.action,o.animation_data.action_slot,o.rotation_mode) for o in old if o.animation_data and o.animation_data.action}
 with bpy.data.libraries.load(str(TASK/'models/trailer-20-hybrid-native.blend'),link=False) as (src,dst):
  names=tuple(src.objects);dst.objects=list(names)
 for name,o in zip(names,dst.objects):
  scene.collection.objects.link(o);o.name='Realism / '+name
  if o.parent is None:o.parent=bridge;o.matrix_parent_inverse=Matrix.Identity(4)
  if name in actions:
-  o.animation_data_create();o.animation_data.action,o.animation_data.action_slot=actions[name]
+  action,slot,rotation_mode=actions[name]
+  # Imported GLB empties use quaternions. The original wheel actions animate
+  # Euler rotation, which otherwise changes values without turning any mesh.
+  o.rotation_mode=rotation_mode
+  o.animation_data_create();o.animation_data.action,o.animation_data.action_slot=action,slot
 for o in old:
  if o.type=='MESH':o.data=bpy.data.meshes.new('Superseded / '+o.name)
+if '--audit-wheels' in args:
+ # Inspect real mesh positions in trailer coordinates. Euler values alone
+ # cannot prove motion when a GLB object's active mode is quaternion rotation.
+ report=[]
+ for frame in [160,161,170,180,200,600,601]:
+  scene.frame_set(frame+1);bpy.context.view_layer.update();rows=[]
+  for n in range(1,5):
+   wheel=bpy.data.objects[f'Realism / Film wheel {n}']
+   lug=next(o for o in wheel.children_recursive if o.type=='MESH' and 'Lug nut' in o.name)
+   point=bridge.matrix_world.inverted()@lug.matrix_world@(sum((Vector(v) for v in lug.bound_box),Vector())/8)
+   center=bridge.matrix_world.inverted()@wheel.matrix_world.translation
+   rows.append({'wheel':n,'mode':wheel.rotation_mode,'point':list(point),'radius':(point-center).length})
+  report.append({'frame':frame,'wheels':rows})
+ for n in range(4):
+  first,second=[Vector(r['wheels'][n]['point']) for r in report[:2]]
+  assert (second-first).length>.01,('Wheel mesh did not roll',n+1)
+  assert max(r['wheels'][n]['radius'] for r in report)-min(r['wheels'][n]['radius'] for r in report)<1e-4,('Wheel did not orbit its axle',n+1)
+  stopped=[Vector(r['wheels'][n]['point']) for r in report[-2:]]
+  assert (stopped[1]-stopped[0]).length<1e-4,('Wheel keeps spinning after the trailer stops',n+1)
+ (out/'wheel-motion-audit.json').write_text(json.dumps(report,indent=2)+'\n')
+ print('All four wheel meshes roll around their axles and stop with the trailer.',flush=True)
+ if '--audit-only' in args:sys.exit(0)
 # A fixed soft fill follows the trailer, so the decal remains lit through the reveal.
 for side in [-1,1]:
  data=bpy.data.lights.new('Recovery / trailer fill '+str(side),'AREA');data.energy=650 if kind=='desktop' else 350;data.shape='DISK';data.size=6;data.color=(.78,.9,1)
@@ -61,7 +90,7 @@ pref=bpy.context.preferences.addons['cycles'].preferences;pref.compute_device_ty
 for d in pref.devices:d.use=d.type=='OPTIX'
 scene.render.engine='CYCLES';scene.cycles.device='GPU';scene.cycles.samples=samples;scene.cycles.adaptive_min_samples=max(8,samples//2);scene.cycles.adaptive_threshold=.02
 scene.cycles.use_denoising=True;scene.cycles.denoiser='OPENIMAGEDENOISE';scene.cycles.denoising_use_gpu=True
-scene.render.use_motion_blur=False;scene.render.use_persistent_data=actor_only or kind=='mobile';scene.render.use_compositing=False;scene.render.film_transparent=False;scene.render.threads_mode='FIXED';scene.render.threads=6
+scene.render.use_motion_blur=False;scene.render.use_persistent_data=actor_only or background_only or kind=='mobile';scene.render.use_compositing=False;scene.render.film_transparent=False;scene.render.threads_mode='FIXED';scene.render.threads=6
 scene.render.image_settings.file_format='PNG';scene.render.image_settings.color_mode='RGB';scene.render.image_settings.compression=10
 if kind=='desktop':
  actor_world=scene.world
@@ -76,10 +105,62 @@ if kind=='desktop':
  env=background.append(scene,PKG/'render-work/realism/impact-opening-20261022/final-frames/Opening-desktop.blend')
  overscan.extend_background_floor(env['floor'])
  poses=json.loads((PKG/'render-work/film/desktop-poses.json').read_text())['frames']
+def impact_camera_time(frame):return 126+(frame-118)**2/32 if soft_impact and 118<=frame<134 else frame
+mobile_camera_poses={}
+if kind=='mobile' and soft_impact:
+ original_camera=camera
+ for frame in frames:
+  target=impact_camera_time(frame);scene.frame_set(math.floor(target)+1,subframe=target%1)
+  evaluated=original_camera.evaluated_get(bpy.context.evaluated_depsgraph_get())
+  mobile_camera_poses[frame]=(evaluated.matrix_world.copy(),evaluated.data.lens)
+ # The original mobile camera has animation/constraints; a clean camera holds
+ # its sampled pose while the truck and trailer stay at their original time.
+ camera=original_camera.copy();camera.data=original_camera.data.copy();camera.parent=None
+ camera.animation_data_clear();camera.data.animation_data_clear()
+ for constraint in list(camera.constraints):camera.constraints.remove(constraint)
+ scene.collection.objects.link(camera);scene.camera=camera
+def limit_actor_render():
+ # Trace only pixels around the visible truck/trailer, retaining the complete
+ # native-resolution canvas. This does not rescale geometry or alter cameras.
+ scene.render.use_border=False;scene.render.use_crop_to_border=False
+ if not actor_border:return
+ bpy.context.view_layer.update()
+ w,h=scene.render.resolution_x,scene.render.resolution_y
+ projection=camera.calc_matrix_camera(bpy.context.evaluated_depsgraph_get(),x=w,y=h)@camera.matrix_world.inverted()
+ points=[]
+ for o in actors:
+  if o.hide_render or not o.visible_camera or not len(o.data.vertices):continue
+  transform=projection@o.matrix_world
+  corners=[transform@Vector((*corner,1)) for corner in o.bound_box]
+  # Offscreen truck parts must not expand the border to the whole viewport
+  # during the departure. They remain in the scene for lighting/reflections.
+  if all(p.w<=0 for p in corners):continue
+  if any(all(sign*p[axis]>p.w for p in corners) for axis in range(3) for sign in [-1,1]):continue
+  for p in corners:
+   if p.w<=0:return
+   points.append(((p.x/p.w+1)/2,(p.y/p.w+1)/2))
+ if not points:return
+ left=max(0,min(p[0] for p in points)-40/w);right=min(1,max(p[0] for p in points)+40/w)
+ bottom=max(0,min(p[1] for p in points)-40/h);top=min(1,max(p[1] for p in points)+40/h)
+ if left>=right or bottom>=top:return
+ scene.render.use_border=True
+ scene.render.border_min_x=left;scene.render.border_max_x=right
+ scene.render.border_min_y=bottom;scene.render.border_max_y=top
 for i in frames:
  started=time.time();scene.frame_set(i+1)
+ # Begin the existing sideways escape gently before the grille reaches the
+ # camera. The remapped camera time has zero speed at 118 and rejoins the
+ # original path at frame 134 with matching speed, without a held-frame cut.
+ camera_time=impact_camera_time(i)
  if kind=='desktop':
   s=json.loads((ACCEPTED/f'{i:05}.constant-stage.json').read_text())
+  if camera_time!=i:
+   lo=math.floor(camera_time);t=camera_time-lo
+   a=json.loads((ACCEPTED/f'{lo:05}.constant-stage.json').read_text());b=json.loads((ACCEPTED/f'{lo+1:05}.constant-stage.json').read_text())
+   m=mat(a['cameraMatrix']).lerp(mat(b['cameraMatrix']),t)
+   s['cameraMatrix']=[v for row in m for v in row]
+   s['lens']=a['lens']*(1-t)+b['lens']*t
+   s['shift']=[x*(1-t)+y*t for x,y in zip(a['shift'],b['shift'])]
   # The source switches every truck/studio lamp off at frame 760. Fade their
   # physical power as the camera settles instead of flashing to a darker set.
   if 732<=i<784:
@@ -99,11 +180,12 @@ for i in frames:
   bpy.context.view_layer.update();overscan.apply(scene,camera,4608,2048,1328,224)
   scene.render.resolution_x=width;scene.render.resolution_y=round(width*2048/4608/2)*2
  else:
+  if mobile_camera_poses:camera.matrix_world,camera.data.lens=mobile_camera_poses[i]
   scene.render.resolution_x=width;scene.render.resolution_y=width*2
  scene.render.resolution_percentage=100
  for theme in themes:
   dest=out/theme;dest.mkdir(exist_ok=True);path=dest/f'{i:05}.png'
-  if (dest/f'{i:05}.actor.png' if actor_only else path).exists():continue
+  if (dest/f'{i:05}.actor.png' if actor_only else dest/f'{i:05}.background.png' if background_only else path).exists():continue
   if kind=='mobile':
    shared.theme(theme);scene.render.filepath=str(path);bpy.ops.render.render(write_still=True)
   else:
@@ -118,7 +200,9 @@ for i in frames:
    for name,info in settings['stageLamps'].items():scene.objects[name].hide_render=False
    for o in actor_lights:
     if o.name.startswith('Recovery / trailer fill '):o.hide_render=False
-   scene.render.filepath=str(dest/f'{i:05}.actor.png');bpy.ops.render.render(write_still=True)
+   limit_actor_render()
+   scene.render.filepath=str(dest/f'{i:05}.actor.png')
+   if not background_only:bpy.ops.render.render(write_still=True)
    if actor_only:continue
    actor_lamp_visibility={o:o.hide_render for o in actor_lights}
    for o in actors:o.visible_camera=False
@@ -131,6 +215,7 @@ for i in frames:
    scene.cycles.samples=12;scene.cycles.adaptive_min_samples=6
    scene.render.image_settings.color_mode='RGB';scene.render.compositor_device='GPU'
    scene.render.filepath=str(dest/f'{i:05}.background.png');bpy.ops.render.render(write_still=True)
+   if background_only:continue
    # Composite encoded display pixels with the original background lift.
    import subprocess
    subprocess.run(['/usr/bin/python3','/scratch/marvel-scene-recovery-20261109/compose_opening.py',str(dest),str(i)],check=True)

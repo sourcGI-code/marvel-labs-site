@@ -1,4 +1,4 @@
-import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=opening-smooth-20261116';
+import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=opening-hq-20261116';
 const clamp=v=>Math.max(0,Math.min(1,v));
 export const filmDuration=14;
 // The fast approach/impact is retained; the reveal settles sooner for the handoff.
@@ -25,14 +25,14 @@ export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
   video.pause();playing=false;playRequest++;kind=next;ready=false;presented=false;failed=false;generation++;presentedTime=0;
   const selected=sceneFilmSource('opening',kind),revision=encodeURIComponent(selected.revision);
   timelineDuration=selected.duration||10;
-  video.poster=`${selected.base}/${kind}-start.webp?v=opening-smooth-20261116`;
+  video.poster=`${selected.base}/${kind}-start.webp?v=opening-hq-20261116`;
   const poster=host.querySelector('.arrival-poster');
   if(poster){
    const phone=poster.querySelector('source[data-opening-mobile]');
    const original=sceneFilmSource('opening');
-   if(phone)phone.srcset=`${original.base}/mobile-start.webp?v=opening-smooth-20261116`;
+   if(phone)phone.srcset=`${original.base}/mobile-start.webp?v=opening-hq-20261116`;
    const desktop=sceneFilmSource('opening','desktop');
-   const image=poster.querySelector('img');if(image)image.src=`${desktop.base}/desktop-start.webp?v=opening-smooth-20261116`;
+   const image=poster.querySelector('img');if(image)image.src=`${desktop.base}/desktop-start.webp?v=opening-hq-20261116`;
   }
   video.dataset.filmQuality=selected.quality||'original';
   // The current manifest includes the approved 60 fps intro. Older ?fps=60

@@ -1,5 +1,5 @@
 import {displays,displayById} from './display-framework.js?v=4';
-import {createStage} from './atlas-stage.js?v=opening-smooth-20261116';
+import {createStage} from './atlas-stage.js?v=opening-hq-20261116';
 import {installDisplayFramework} from './display-framework.js?v=4';
 export function installCinema(){
  document.documentElement.classList.add('cinematic');document.body.dataset.experience='official';

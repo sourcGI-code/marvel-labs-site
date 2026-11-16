@@ -1,4 +1,4 @@
-import {introFilmKind} from './film-sources-hqworld4.js?v=opening-smooth-20261116';
+import {introFilmKind} from './film-sources-hqworld4.js?v=opening-hq-20261116';
 // Preview only. Preserve the original glide over one genuinely expanded movie.
 // Restore the original right/left glide over the unchanged HQ
 // films. Projection is centered CONTAIN; there is no arrival zoom or tail dip.

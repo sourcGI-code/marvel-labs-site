@@ -208,6 +208,97 @@
       "interpolatedActorFrames": 0,
       "revision": "opening-smooth-20261116",
       "encodedFrom": "Every native opening pose with original wheel action slots restored"
+    },
+    "opening/desktop-hq.mp4": {
+      "width": 3840,
+      "height": 1706,
+      "level": 52,
+      "r_frame_rate": "60/1",
+      "duration": "14.000000",
+      "bit_rate": "7725268",
+      "nb_frames": "840",
+      "bytes": 13530219,
+      "sha256": "4b15e7f2856bdc815cdd12e3002743983a3d01858715acb32b92907a0776d2e8",
+      "sourceFrameRate": 84,
+      "outputFrameRate": 60,
+      "interpolatedActorFrames": 0,
+      "sourceStartFrame": 0,
+      "backgroundFlashSamplesCorrected": [
+        196,
+        212,
+        216,
+        220,
+        232,
+        258,
+        286,
+        342,
+        344,
+        348,
+        354,
+        356,
+        366,
+        380,
+        384,
+        386,
+        396,
+        398,
+        420,
+        424,
+        426,
+        432,
+        444,
+        452,
+        456,
+        460,
+        464,
+        468,
+        482,
+        484,
+        486,
+        492,
+        494,
+        500,
+        516
+      ],
+      "encodedInSegments": [
+        0,
+        150,
+        300,
+        450,
+        600,
+        720,
+        840
+      ],
+      "revision": "opening-hq-20261116",
+      "rotationMode": "XYZ",
+      "cameraTransitionFrames": [
+        118,
+        133
+      ],
+      "encodedFrom": "Native high-resolution frames; every truck and trailer pose rendered, none interpolated"
+    },
+    "opening/mobile-hq.mp4": {
+      "width": 1440,
+      "height": 2880,
+      "level": 51,
+      "r_frame_rate": "60/1",
+      "duration": "14.000000",
+      "bit_rate": "8431294",
+      "nb_frames": "840",
+      "bytes": 14765349,
+      "sha256": "d9e3aa03106e031addfbb4bba3492bc552bef240b52fd125233b85b8de3363af",
+      "sourceFrameRate": 84,
+      "outputFrameRate": 60,
+      "interpolatedActorFrames": 0,
+      "cameraTransitionFrames": [
+        118,
+        133
+      ],
+      "rotationMode": "XYZ",
+      "renderedMeshMotionVerified": true,
+      "deliveryEncoding": "x264 slow CRF 18; full native output dimensions and all 840 frames retained",
+      "revision": "opening-hq-20261116",
+      "encodedFrom": "Native high-resolution frames; every truck and trailer pose rendered, none interpolated"
     }
   },
   "renderedDimensions": {
@@ -303,6 +394,89 @@
     "replacementNativeFrame": 128,
     "wheelActionSlotsRestored": 4,
     "wheelRotationVerifiedAgainstOriginalAnimation": true,
-    "source": "scripts/scene-recovery-v2/assemble_smooth_opening.py"
+    "source": "scripts/scene-recovery-v2/assemble_smooth_opening.py",
+    "supersededBy": "opening-hq-20261116",
+    "limitation": "The Euler action values changed, but the imported quaternion rotation mode kept the wheel meshes from turning; 1920 px wide."
+  },
+  "openingHqPlayback": {
+    "revision": "opening-hq-20261116",
+    "sourceRenderDimensions": {
+      "desktop": [
+        4608,
+        2048
+      ],
+      "mobile": [
+        1440,
+        2880
+      ]
+    },
+    "encodedDimensions": {
+      "desktop": [
+        3840,
+        1706
+      ],
+      "mobile": [
+        1440,
+        2880
+      ]
+    },
+    "renderSamples": 32,
+    "durationSeconds": 14,
+    "outputFrames": 840,
+    "outputFPS": 60,
+    "playbackRate": 1,
+    "interpolatedActorFrames": 0,
+    "cameraTransitionFrames": [
+      118,
+      133
+    ],
+    "cameraTransition": "Continuous camera motion past the truck; no held or repeated frames",
+    "wheelRotationMode": "XYZ",
+    "wheelPointDisplacementMeters": [
+      0.03406945762190312,
+      0.034069411692592866,
+      0.03406945762190312,
+      0.03406938192483258
+    ],
+    "backgroundFlashSamplesCorrected": [
+      196,
+      212,
+      216,
+      220,
+      232,
+      258,
+      286,
+      342,
+      344,
+      348,
+      354,
+      356,
+      366,
+      380,
+      384,
+      386,
+      396,
+      398,
+      420,
+      424,
+      426,
+      432,
+      444,
+      452,
+      456,
+      460,
+      464,
+      468,
+      482,
+      484,
+      486,
+      492,
+      494,
+      500,
+      516
+    ],
+    "backgroundFlashCorrection": "Desktop background samples limited to their neighbours where a stray floor light appeared for one sample",
+    "source": "scripts/scene-recovery-v2/assemble_smooth_opening.py",
+    "meshAudit": "scripts/scene-recovery-v2/render_intro.py --audit-wheels --audit-only"
   }
 }
