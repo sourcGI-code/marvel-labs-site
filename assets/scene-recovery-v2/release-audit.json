@@ -176,6 +176,38 @@
       "bytes": 3915996,
       "sha256": "d1b78974ece1b92990a5a54839cf2732114038cc81b283fc10e23dd663e155e4",
       "encodedFrom": "cargo/mobile.mp4"
+    },
+    "opening/desktop-smooth.mp4": {
+      "width": 1920,
+      "height": 854,
+      "level": 42,
+      "r_frame_rate": "60/1",
+      "duration": "14.000000",
+      "bit_rate": "2330476",
+      "nb_frames": "840",
+      "bytes": 4089189,
+      "sha256": "3a7c91f1856caa16385b928c219acff2bb9b09c45225d29e08d51039e4087c57",
+      "sourceFrameRate": 84,
+      "outputFrameRate": 60,
+      "interpolatedActorFrames": 0,
+      "revision": "opening-smooth-20261116",
+      "encodedFrom": "Every native opening pose with original wheel action slots restored"
+    },
+    "opening/mobile-smooth.mp4": {
+      "width": 768,
+      "height": 1536,
+      "level": 42,
+      "r_frame_rate": "60/1",
+      "duration": "14.000000",
+      "bit_rate": "3179908",
+      "nb_frames": "840",
+      "bytes": 5575454,
+      "sha256": "2fdca6103460dfbb1a33c681ef5757589dd81f1a30b1936d770c2b23927d1220",
+      "sourceFrameRate": 84,
+      "outputFrameRate": 60,
+      "interpolatedActorFrames": 0,
+      "revision": "opening-smooth-20261116",
+      "encodedFrom": "Every native opening pose with original wheel action slots restored"
     }
   },
   "renderedDimensions": {
@@ -254,5 +286,23 @@
       782
     ],
     "source": "scripts/scene-recovery-v2/repair_opening_playback.py"
+  },
+  "openingSmoothPlayback": {
+    "revision": "opening-smooth-20261116",
+    "durationSeconds": 14,
+    "outputFrames": 840,
+    "renderedFrames": 840,
+    "sourceFrameRate": 84,
+    "outputFrameRate": 60,
+    "playbackRate": 1,
+    "interpolatedActorFrames": 0,
+    "cameraIntersectionNativeFrames": [
+      126,
+      127
+    ],
+    "replacementNativeFrame": 128,
+    "wheelActionSlotsRestored": 4,
+    "wheelRotationVerifiedAgainstOriginalAnimation": true,
+    "source": "scripts/scene-recovery-v2/assemble_smooth_opening.py"
   }
 }

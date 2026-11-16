@@ -8,6 +8,7 @@ export function createStage() {
   const controlledStartup = root.hasAttribute('data-site-loading');
   const slide = document.body.dataset.experience === 'official';
   const reduced = matchMedia('(prefers-reduced-motion: reduce)');
+  const phone = matchMedia('(max-width:760px)');
   const elements = [...document.querySelectorAll('main > section, body > .site-footer')];
   const durations = { top: 1100, story: 220, materials: 1000, inside: 1600, objects: 360, contact: 300 };
   const scenes = elements.map((element, index) => {
@@ -17,21 +18,31 @@ export function createStage() {
     slot.style.height = `${duration}svh`;
     element.before(slot); element.classList.add('stage-scene');
     element.dataset.stageActive = 'false';
-    return { element, slot, index, start: 0, length: 1, progress: 0, opacity: 0 };
+    return { element, slot, index, start: 0, length: 1, progress: 0, opacity: 0,
+      first:element.querySelector('.object-photo, .contact-grid > div, .earnings-copy'),
+      last:element.querySelector('.object-copy, #inquiry-form, .earnings-calculator'),
+      panels:[...element.querySelectorAll('.object-photo,.object-copy,.contact-grid > div,#inquiry-form,.earnings-copy,.earnings-calculator')] };
   });
   const tail = document.createElement('div');
   tail.className = 'scene-tail'; tail.style.height = '100svh'; tail.setAttribute('aria-hidden', 'true');
   document.body.append(tail);
   root.classList.add('immersive');
   let viewport = innerHeight, active = null, transitionFrame = 0, finishTransition = null;
+  let lastY=NaN,lastReduced,lastPhone;
+  const style=(element,key,value)=>{if(element.style[key]!==value)element.style[key]=value;};
+  const data=(element,key,value)=>{if(element.dataset[key]!==value)element.dataset[key]=value;};
+  const inert=(element,value)=>{if(element.inert!==value)element.inert=value;};
   function cancelTransition(){cancelAnimationFrame(transitionFrame);transitionFrame=0;const done=finishTransition;finishTransition=null;done?.(false);}
   function measure() {
+    lastY=NaN;
     viewport = tail.getBoundingClientRect().height;
     for (const scene of scenes) { scene.start = scene.slot.offsetTop; scene.length = scene.slot.offsetHeight; }
   }
   function update() {
     // Scene hand-offs slide upward over 1.5 screens of scroll (owner: transitions must visibly move up, not switch).
     const y = scrollY, fade = viewport * HANDOFF_VIEWPORTS;
+    if(y===lastY&&lastReduced===reduced.matches&&lastPhone===phone.matches)return;
+    lastY=y;lastReduced=reduced.matches;lastPhone=phone.matches;
     let dominant = scenes[0];
     for (const scene of scenes) {
       const enter = scene.index === 0 ? 1 : smooth((y - scene.start + fade / 2) / fade);
@@ -39,26 +50,24 @@ export function createStage() {
       scene.opacity = enter * leave;
       const inset = scene.index === 0 ? 0 : fade / 2;
       scene.progress = clamp((y - scene.start - inset) / (scene.length - inset - fade / 2));
-      scene.element.style.opacity = slide ? '1' : scene.opacity;
+      style(scene.element,'opacity',slide?'1':String(scene.opacity));
       // Scroll-driven slide follows the visitor's own scrolling, so only reduced-motion disables it (motion-paused is the film autoplay state).
-      if (slide) scene.element.style.transform = reduced.matches ? 'none' : `translate3d(0,${((1-enter)-(1-leave))*viewport}px,0)`;
-      scene.element.style.visibility = scene.opacity > .001 ? 'visible' : 'hidden';
-      scene.element.dataset.stageActive = String(scene.opacity > .001);
-      scene.element.dataset.sceneProgress = scene.progress.toFixed(4);
+      if (slide) style(scene.element,'transform',reduced.matches ? 'none' : `translate3d(0,${((1-enter)-(1-leave))*viewport}px,0)`);
+      style(scene.element,'visibility',scene.opacity > .001 ? 'visible' : 'hidden');
+      data(scene.element,'stageActive',String(scene.opacity > .001));
+      data(scene.element,'sceneProgress',scene.progress.toFixed(4));
       if (scene.opacity > dominant.opacity) dominant = scene;
       const second = scene.progress >= .5;
       scene.element.classList.toggle('scene-detail', second);
-      if (matchMedia('(max-width:760px)').matches) {
-        const first = scene.element.querySelector('.object-photo, .contact-grid > div, .earnings-copy');
-        const last = scene.element.querySelector('.object-copy, #inquiry-form, .earnings-calculator');
-        if (first && last) { first.inert = second; last.inert = !second; }
+      if (phone.matches) {
+        if (scene.first && scene.last) { inert(scene.first,second);inert(scene.last,!second); }
       } else {
-        scene.element.querySelectorAll('.object-photo,.object-copy,.contact-grid > div,#inquiry-form,.earnings-copy,.earnings-calculator').forEach(el => el.inert = false);
+        scene.panels.forEach(el=>inert(el,false));
       }
     }
     for (const scene of scenes) {
-      scene.element.inert = scene !== dominant;
-      scene.element.setAttribute('aria-hidden', String(scene !== dominant));
+      inert(scene.element,scene!==dominant);
+      const hidden=String(scene!==dominant);if(scene.element.getAttribute('aria-hidden')!==hidden)scene.element.setAttribute('aria-hidden',hidden);
     }
     if (dominant !== active) {
       // A focused link in a departing scene must not remain in an inert subtree.

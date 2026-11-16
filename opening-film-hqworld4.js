@@ -1,14 +1,15 @@
-import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=opening-clean-20261115';
+import {sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=opening-smooth-20261116';
 const clamp=v=>Math.max(0,Math.min(1,v));
-export const filmDuration=10;
+export const filmDuration=14;
 // The fast approach/impact is retained; the reveal settles sooner for the handoff.
-export function filmPose(progress){const s=clamp(progress)*filmDuration;return s<=1.5?s/1.5*.46:s<=2.9?.46+(s-1.5)/1.4*.14:.6+(s-2.9)/7.1*.4;}
+export function filmPose(progress){const s=clamp(progress)*10;return s<=1.5?s/1.5*.46:s<=2.9?.46+(s-1.5)/1.4*.14:.6+(s-2.9)/7.1*.4;}
 export function filmFraming(width,height){const aspect=width/height,reference=width<700?9/16:16/9,scale=Math.min(1,reference/aspect);return {scale,offset:(width<700?.10:.035)/scale};}
 export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
  const livePreview=document.body.dataset.sceneSource!=='accepted-films'&&new URLSearchParams(location.search).has('live-preview');
  if(livePreview)host.querySelectorAll('.arrival-poster,.scene-fallback').forEach(el=>el.style.display='none');
  const video=document.createElement('video');video.className='opening-film';video.muted=true;video.defaultMuted=true;video.playsInline=true;video.preload='metadata';video.disablePictureInPicture=true;video.setAttribute('aria-hidden','true');video.tabIndex=-1;
  let failed=livePreview,ready=false,presented=false,wanted=0,kind='',playing=false,generation=0,playRequest=0,presentedTime=0;
+ let timelineDuration=filmDuration;
  const notify=()=>onChange?.();
  function usable(){return ready&&presented&&!failed;}
  function bufferedAhead(){for(let i=0;i<video.buffered.length;i++)if(video.currentTime>=video.buffered.start(i)-.05&&video.currentTime<=video.buffered.end(i))return video.buffered.end(i)-video.currentTime;return 0;}
@@ -23,14 +24,15 @@ export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
   const next=introFilmKind();if(!enabled||livePreview||kind===next||reduced.matches)return false;
   video.pause();playing=false;playRequest++;kind=next;ready=false;presented=false;failed=false;generation++;presentedTime=0;
   const selected=sceneFilmSource('opening',kind),revision=encodeURIComponent(selected.revision);
-  video.poster=`${selected.base}/${kind}-start.webp?v=opening-start-20261115`;
+  timelineDuration=selected.duration||10;
+  video.poster=`${selected.base}/${kind}-start.webp?v=opening-smooth-20261116`;
   const poster=host.querySelector('.arrival-poster');
   if(poster){
    const phone=poster.querySelector('source[data-opening-mobile]');
    const original=sceneFilmSource('opening');
-   if(phone)phone.srcset=`${original.base}/mobile-start.webp?v=opening-start-20261115`;
+   if(phone)phone.srcset=`${original.base}/mobile-start.webp?v=opening-smooth-20261116`;
    const desktop=sceneFilmSource('opening','desktop');
-   const image=poster.querySelector('img');if(image)image.src=`${desktop.base}/desktop-start.webp?v=opening-start-20261115`;
+   const image=poster.querySelector('img');if(image)image.src=`${desktop.base}/desktop-start.webp?v=opening-smooth-20261116`;
   }
   video.dataset.filmQuality=selected.quality||'original';
   // The current manifest includes the approved 60 fps intro. Older ?fps=60
@@ -77,9 +79,9 @@ export function createOpeningFilm(host,{reduced,onChange,enabled=true}){
    try{await video.play();if(current!==generation||request!==playRequest)return false;playing=true;notify();return true;}catch{if(request===playRequest)playing=false;return false;}
   },
   pause(){playRequest++;playing=false;video.pause();},
-  seek(progress){wanted=clamp(progress)*filmDuration;seek();},
+  seek(progress){wanted=clamp(progress)*timelineDuration;seek();},
   opacity(value){video.style.opacity=String(usable()&&!reduced.matches?value:0);},
   resize:source,
-  get ready(){return usable();},get bufferedAhead(){return bufferedAhead();},get failed(){return failed;},get playing(){return playing;},get time(){return video.currentTime;},get presentedTime(){return presentedTime;},get ended(){return video.ended;},get kind(){return kind;}
+  get duration(){return timelineDuration;},get ready(){return usable();},get bufferedAhead(){return bufferedAhead();},get failed(){return failed;},get playing(){return playing;},get time(){return video.currentTime;},get presentedTime(){return presentedTime;},get ended(){return video.ended;},get kind(){return kind;}
  };
 }

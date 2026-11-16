@@ -1,13 +1,14 @@
 import {createFleetLabelMotion} from './fleet-label-motion.js?v=2-nodip';
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=opening-clean-20261115';
-import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.js?v=opening-clean-20261115';
-import {loadFilmSources} from './film-sources-hqworld4.js?v=opening-clean-20261115';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=opening-smooth-20261116';
+import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.js?v=opening-smooth-20261116';
+import {loadFilmSources} from './film-sources-hqworld4.js?v=opening-smooth-20261116';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';
 import {createScrollMotion} from './scroll-motion.js';
 import {setAnimatedTitle,revealDetails} from './editorial-motion.js?v=stable-slides-v1';
 const clamp=v=>Math.max(0,Math.min(1,v));
 const $=id=>document.getElementById(id);
+const text=(id,value)=>{const el=$(id);if(el.textContent!==value)el.textContent=value;};
 const colors={charcoal:'#4dd8e8',ivory:'#356b50',burgundy:'#ff7866',midnight:'#d2ed70'};
 export async function createPlatform(canvas,{readProgress,writeProgress,isActive,paused}){
  await loadFilmSources();
@@ -117,16 +118,16 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
    $('capacity-summary').hidden=true;
    $('cargo-loadout').textContent='ZERO-TURN · PUSH MOWER · 3 WEED TRIMMERS';
   }
-  $('hero-count').textContent=continuation&&t>=15/18?'02 / 02':'01 / 02';
-  $('hero-step').textContent=continuation?(t>=14.4/18?'TWO SIZES · ONE FACTORY':'THE 16 FT ARRIVES'):'THE 20 FT ARRIVES';
-  $('platform-invitation').textContent=auto?'THE PLATFORM ARRIVES':p<.25?'SCROLL TO REVEAL ↓':'SCROLL TO CONTINUE ↓';
+  text('hero-count',continuation&&t>=15/18?'02 / 02':'01 / 02');
+  text('hero-step',continuation?(t>=14.4/18?'TWO SIZES · ONE FACTORY':'THE 16 FT ARRIVES'):'THE 20 FT ARRIVES');
+  text('platform-invitation',auto?'THE PLATFORM ARRIVES':p<.25?'SCROLL TO REVEAL ↓':'SCROLL TO CONTINUE ↓');
   previousP=p;
  }
  function tick(time){frame=0;
   if(auto&&active&&!document.hidden){
    if(film.failed)stop();
    // A seek to the end also reports ended; only playback that really started may advance the page.
-   else if(film.playing||(autoStarted&&film.ended)){p=film.ended?.25:Math.min(.25,film.time/filmDuration*.25);writeProgress(p);if(p>=.25)stop();}
+   else if(film.playing||(autoStarted&&film.ended)){p=film.ended?.25:Math.min(.25,film.time/(film.duration||filmDuration)*.25);writeProgress(p);if(p>=.25)stop();}
   }
   if(!auto&&active){const next=readProgress();if(playbackTarget&&Math.abs(next-playbackTarget.read)<1e-8)p=motion.snap(playbackTarget.value);else{playbackTarget=null;p=motion.step(next,time,paused||reduced.matches);}}
   if(active)draw();if((auto||motion.moving)&&active&&!frame)frame=requestAnimationFrame(tick);
@@ -153,7 +154,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
   // The final scroll interval holds the delivery frame. Play there replays the intro.
   if(progress>=DELIVERY_END-1e-6){progress=0;writeProgress(0);}
   pinPlayback(progress);
-  if(p<.25){film.retry();film.seek(p/.25);draw();return {video:film.video,start:0,end:.25,duration:filmDuration};}
+  if(p<.25){film.retry();film.seek(p/.25);draw();return {video:film.video,start:0,end:.25,duration:film.duration||filmDuration};}
   await ensureLive();if(!recorded)return null;
   await recorded.retry();if(signal?.aborted)return null;liveError=recorded.failed;
   recorded.draw(cargoProgress(p));draw();

@@ -1,10 +1,13 @@
-import {introFilmKind} from './film-sources-hqworld4.js?v=opening-clean-20261115';
+import {introFilmKind} from './film-sources-hqworld4.js?v=opening-smooth-20261116';
 // Preview only. Preserve the original glide over one genuinely expanded movie.
 // Restore the original right/left glide over the unchanged HQ
 // films. Projection is centered CONTAIN; there is no arrival zoom or tail dip.
 const GAP=36,EDGE=24,FPS=30,SLIDE_IN=1.8,SLIDE_OUT=2.7,RELEASE_MS=900;
 const INTRO_TAG='THE AUTONOMOUS MICROFACTORY TRAILER';
 const clamp=v=>Math.max(0,Math.min(1,v));
+// Framing is authored on a ten-second clock; the delivery export runs for 14.
+export const heroMediaScale=video=>10/(Number.isFinite(video?.duration)&&video.duration>0?video.duration:10);
+export const heroMediaTime=video=>(video?.currentTime||0)*heroMediaScale(video);
 export const heroEase=x=>{x=clamp(x);return x*x*x*(x*(x*6-15)+10);};
 
 export function projectHeroActor(frame,{cx,cy,filmWidth,filmHeight},shift=0,scale=1){
@@ -126,22 +129,22 @@ export async function installHeroFrame(){
  function filmTime(video,p){
   if(!video||video.readyState<1){est=null;return Math.min(10,p*40);}
   if(video.seeking)return lastDecodedTime;
-  const now=performance.now(),ct=video.currentTime;lastDecodedTime=ct;
+  const now=performance.now(),ct=heroMediaTime(video);lastDecodedTime=ct;
   if(video.paused||video.ended||est===null){est=ct;estWall=now;return ct;}
-  est+=(now-estWall)/1000*(video.playbackRate||1);estWall=now;
+  est+=(now-estWall)/1000*(video.playbackRate||1)*heroMediaScale(video);estWall=now;
   const off=ct-est;if(Math.abs(off)>.25)est=ct;else est+=off*.08;
   return est;
  }
  function glide(video){
-  const now=performance.now(),rate=video.playbackRate||1;
+  const now=performance.now(),rate=(video.playbackRate||1)*heroMediaScale(video);
   if(anim&&animPlan===plan){
    const want=rate/animRate;if(Math.abs((anim.playbackRate||1)-want)>.005)anim.updatePlaybackRate(want);
    if(now-checkedAt<500)return;
    checkedAt=now;
    const expected=animFrom+(anim.currentTime||0)/1000*animRate;
-   if(Math.abs(expected-video.currentTime)<.12)return;
+   if(Math.abs(expected-heroMediaTime(video))<.12)return;
   }
-  const from=video.currentTime,span=10-from;
+  const from=heroMediaTime(video),span=10-from;
   if(span<=.02){stopGlide();set(plan.at(10),plan.sc(10));return;}
   const steps=Math.max(2,Math.min(400,Math.ceil(span*40))),frames=[];
   for(let i=0;i<=steps;i++){const t=from+span*i/steps;frames.push({translate:Math.max(0,Math.round(plan.at(t)*100)/100)+'px 0',scale:String(Math.round(plan.sc(t)*10000)/10000),offset:i/steps});}

@@ -11,21 +11,22 @@ def module(name,path):
 shared=module('shared',TASK/'shared_new_trailer.py')
 args=sys.argv[sys.argv.index('--')+1:]
 def opt(name,default):return args[args.index(name)+1] if name in args else default
-frames=[int(x) for x in opt('--frames','126').split(',')] if '--all' not in args else list(range(0,840,2))
+frames=[int(x) for x in opt('--frames','126').split(',')] if '--all' not in args else list(range(int(opt('--start','0')),int(opt('--end','840')),int(opt('--step','2'))))
 width=int(opt('--width','1536'));samples=int(opt('--samples','32'));kind=opt('--kind','desktop');themes=opt('--themes','cyan,mono').split(',')
+actor_only='--actor-only' in args and kind=='desktop'
 out=Path('/scratch/marvel-scene-recovery-20261109')/opt('--out','intro-proof');out.mkdir(parents=True,exist_ok=True)
 bpy.ops.wm.open_mainfile(filepath=str(ROOT/f'render-work/realism/package-access-v1/opening-{kind}-package-access-v1.blend'),use_scripts=False)
 scene=bpy.context.scene;camera=scene.camera
 bridge=bpy.data.objects['Hybrid trailer / aligned tow point']
 old=list(bridge.children_recursive)
-actions={o.name:o.animation_data.action for o in old if o.animation_data and o.animation_data.action}
+actions={o.name:(o.animation_data.action,o.animation_data.action_slot) for o in old if o.animation_data and o.animation_data.action}
 with bpy.data.libraries.load(str(TASK/'models/trailer-20-hybrid-native.blend'),link=False) as (src,dst):
  names=tuple(src.objects);dst.objects=list(names)
 for name,o in zip(names,dst.objects):
  scene.collection.objects.link(o);o.name='Realism / '+name
  if o.parent is None:o.parent=bridge;o.matrix_parent_inverse=Matrix.Identity(4)
  if name in actions:
-  o.animation_data_create();o.animation_data.action=actions[name]
+  o.animation_data_create();o.animation_data.action,o.animation_data.action_slot=actions[name]
 for o in old:
  if o.type=='MESH':o.data=bpy.data.meshes.new('Superseded / '+o.name)
 # A fixed soft fill follows the trailer, so the decal remains lit through the reveal.
@@ -43,6 +44,9 @@ if kind=='desktop':
  # Explicit per-frame powers below replace the old animated on/off keys.
  for name in settings['originalTruckLights']:
   scene.objects[name].data.animation_data_clear()
+  # Match the established separated-background lighting from the first frame.
+  # The old two-pass loop only cleared these links after its first actor pass.
+  scene.objects[name].light_linking.receiver_collection=None
 overscan=module('overscan',WORK/'true-world-overscan-camera-v1.py')
 sensors={key:getattr(camera.data,key) for key in ('sensor_fit','sensor_width','sensor_height')}
 def mat(a):return Matrix([a[i:i+4] for i in range(0,16,4)])
@@ -57,7 +61,7 @@ pref=bpy.context.preferences.addons['cycles'].preferences;pref.compute_device_ty
 for d in pref.devices:d.use=d.type=='OPTIX'
 scene.render.engine='CYCLES';scene.cycles.device='GPU';scene.cycles.samples=samples;scene.cycles.adaptive_min_samples=max(8,samples//2);scene.cycles.adaptive_threshold=.02
 scene.cycles.use_denoising=True;scene.cycles.denoiser='OPENIMAGEDENOISE';scene.cycles.denoising_use_gpu=True
-scene.render.use_motion_blur=False;scene.render.use_persistent_data=False;scene.render.use_compositing=False;scene.render.film_transparent=False;scene.render.threads_mode='FIXED';scene.render.threads=6
+scene.render.use_motion_blur=False;scene.render.use_persistent_data=actor_only or kind=='mobile';scene.render.use_compositing=False;scene.render.film_transparent=False;scene.render.threads_mode='FIXED';scene.render.threads=6
 scene.render.image_settings.file_format='PNG';scene.render.image_settings.color_mode='RGB';scene.render.image_settings.compression=10
 if kind=='desktop':
  actor_world=scene.world
@@ -99,7 +103,7 @@ for i in frames:
  scene.render.resolution_percentage=100
  for theme in themes:
   dest=out/theme;dest.mkdir(exist_ok=True);path=dest/f'{i:05}.png'
-  if path.exists():continue
+  if (dest/f'{i:05}.actor.png' if actor_only else path).exists():continue
   if kind=='mobile':
    shared.theme(theme);scene.render.filepath=str(path);bpy.ops.render.render(write_still=True)
   else:
@@ -115,6 +119,7 @@ for i in frames:
    for o in actor_lights:
     if o.name.startswith('Recovery / trailer fill '):o.hide_render=False
    scene.render.filepath=str(dest/f'{i:05}.actor.png');bpy.ops.render.render(write_still=True)
+   if actor_only:continue
    actor_lamp_visibility={o:o.hide_render for o in actor_lights}
    for o in actors:o.visible_camera=False
    actor_floor.hide_render=True

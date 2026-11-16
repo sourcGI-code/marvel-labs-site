@@ -1,11 +1,11 @@
 // The opening can autoplay once; scrolling then owns the timeline. During playback,
 // decoded media time drives that same timeline, including captions and navigation.
-// The arrival film is rendered at 84 fps and played at 5/7 speed: exactly one film frame per 60 Hz refresh (owner 10-24:
-// "jittery and not smooth"; the 60 fps film at 0.7x showed 42 frames a second, held for one or two refreshes unevenly).
+// The arrival takes 14 seconds on screen. The new 60 fps export already has
+// that timing; older 10-second exports retain their original slower playback.
 // While someone keeps scrolling, beat-scroll.js speeds the playing film up (setRate, owner 10-26: "I am scrolling and it
 // doesnt speed up the quote animation or the solo trailer ... I need it to smoothly scroll past it"), up to MAX_RATE.
 import {waitPlayable} from './playthrough.js?v=3';
-const OPENING_RATE=5/7;
+const OPENING_SECONDS=14;
 const MAX_RATE=4;
 const playRate=(base,boost)=>Math.round(Math.min(MAX_RATE,base*boost)*1e4)/1e4;
 export function installScenePlayback({getActive,readProgress,writeProgress,setPaused,reduced}){
@@ -87,9 +87,9 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
    await waitForMedia(next.video,progress*next.duration,signal);
    if(token!==generation)return;
    next.video.dataset.timelinePlaying='true';
-   // The arrival plays slower than real time (owner 10-24: "the arrival film itself" is too fast); its progress
-   // is read from the decoded time, so captions and the hand-off stay in step.
-   baseRate=(owner.track.id==='top'&&next.end<=.25+1e-6)?OPENING_RATE:1;
+   // Keep the approved 14-second arrival; decoded time keeps captions and
+   // the hand-off in step with both the current and legacy movie exports.
+   baseRate=(owner.track.id==='top'&&next.end<=.25+1e-6)?next.duration/OPENING_SECONDS:1;
    next.video.playbackRate=playRate(baseRate,rateBoost);
    // The opening starts as soon as the browser can play it. Scrolled chapters
    // retain their short buffering allowance before playback.

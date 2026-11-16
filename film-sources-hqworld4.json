@@ -72,10 +72,10 @@
   },
   "opening": {
     "base": "assets/scene-recovery-v2/opening",
-    "revision": "opening-clean-20261115",
+    "revision": "opening-smooth-20261116",
     "desktop": {
       "base": "assets/scene-recovery-v2/opening",
-      "revision": "opening-clean-20261115",
+      "revision": "opening-smooth-20261116",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -86,33 +86,35 @@
         "cropX": 1328,
         "cropY": 224
       },
-      "videoFile": "desktop-web.mp4",
-      "quality": "high-resolution-60fps-from-42fps-render",
+      "videoFile": "desktop-smooth.mp4",
+      "quality": "native-60fps-original-animation",
       "nativeVideo": {
-        "file": "desktop-web.mp4",
-        "width": 3840,
-        "height": 1706,
+        "file": "desktop-smooth.mp4",
+        "width": 1920,
+        "height": 854,
         "framerate": 60,
-        "bitrate": 7420176,
-        "codec": "avc1.640034"
+        "bitrate": 2330476,
+        "codec": "avc1.64002A"
       },
       "motionFps": 60,
       "modelRevision": "realism-v2",
-      "playbackRevision": "opening-clean-20261115"
+      "playbackRevision": "opening-smooth-20261116",
+      "duration": 14
     },
     "modelRevision": "realism-v2",
-    "videoFile": "mobile-web.mp4",
+    "videoFile": "mobile-smooth.mp4",
     "motionFps": 60,
     "nativeVideo": {
-      "file": "mobile-web.mp4",
-      "width": 1080,
-      "height": 2160,
+      "file": "mobile-smooth.mp4",
+      "width": 768,
+      "height": 1536,
       "framerate": 60,
-      "bitrate": 4427432,
-      "codec": "avc1.640032"
+      "bitrate": 3179908,
+      "codec": "avc1.64002A"
     },
-    "quality": "high-resolution-60fps-from-42fps-render",
-    "playbackRevision": "opening-clean-20261115"
+    "quality": "native-60fps-original-animation",
+    "playbackRevision": "opening-smooth-20261116",
+    "duration": 14
   },
   "fieldMobile": {
     "base": "assets/scene-recovery-v2/field",

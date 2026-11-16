@@ -4,13 +4,14 @@ import {readFile} from 'node:fs/promises';
 import vm from 'node:vm';
 import {JSDOM} from 'jsdom';
 import {DELIVERY_END} from '../../intro-timing.js';
+import {heroMediaTime,heroMediaScale} from '../../hero-frame-hqworld4.js';
 
 const root=new URL('../../',import.meta.url);
 const source=await readFile(new URL('continuous-scroll.js',root),'utf8');
 const playerSource=await readFile(new URL('scene-playback.js',root),'utf8');
 const openingSource=await readFile(new URL('opening-autoplay.js',root),'utf8');
 
-function fixture({reduced=false,realPlayer=false,hidden=false,opening=false,metadataOnly=false,playError=null,initialProgress=null,url='https://marvellabs.shop/'}={}){
+function fixture({reduced=false,realPlayer=false,hidden=false,opening=false,openingDuration=10,metadataOnly=false,playError=null,initialProgress=null,url='https://marvellabs.shop/'}={}){
   const dom=new JSDOM('<body data-active-scene="top"><main><section id="top"></section><section id="story"><div id="reading">Text</div></section><section id="inside"></section></main><footer class="site-footer"></footer></body>',{url,pretendToBeVisual:true});
   const {window}=dom,{document}=window;
   Object.defineProperty(document,'hidden',{value:hidden,writable:true});
@@ -30,13 +31,13 @@ function fixture({reduced=false,realPlayer=false,hidden=false,opening=false,meta
   let playback={pause(){pauses++;mode='paused';},setRate(value){rate=value;rates.push(value);},inspect:()=>({mode}),
     playTo(){starts++;mode='playing';return true;},extendTo:()=>mode!=='paused'};
   if(realPlayer){
-    for(const duration of [10,18]){
+    for(const duration of [openingDuration,18]){
       const video=document.createElement('video');
       for(const [key,value] of Object.entries({duration,currentTime:0,readyState:metadataOnly?1:4,paused:true,ended:false,seeking:false}))Object.defineProperty(video,key,{value,writable:true});
       video.preload='metadata';video.load=()=>{loads++;};
       video.play=async()=>{starts++;if(playError)throw new DOMException('Autoplay blocked',playError);video.readyState=4;video.paused=false;};video.pause=()=>{pauses++;video.paused=true;};videos.push(video);
     }
-    active.view.preparePlayback=async({progress:p})=>{prepared.push(p);return p<.25?{video:videos[0],duration:10,start:0,end:.25}:{video:videos[1],duration:18,start:.25,end:DELIVERY_END,terminal:true};};
+    active.view.preparePlayback=async({progress:p})=>{prepared.push(p);return p<.25?{video:videos[0],duration:openingDuration,start:0,end:.25}:{video:videos[1],duration:18,start:.25,end:DELIVERY_END,terminal:true};};
     active.view.setPlaybackProgress=()=>{};
     context.waitPlayable=async()=>{};
     vm.runInContext(playerSource.replace(/^import .*;\n/gm,'').replace('export function installScenePlayback','function installScenePlayback')+'\nthis.installPlayer=installScenePlayback;',context);
@@ -132,6 +133,17 @@ test('opening starts muted and inline without wheel input even when only metadat
   f.videos[0].currentTime=2;f.advance(16);assert.equal(f.progress(),.05,'decoded time advances the opening');
   f.videos[0].currentTime=10;f.videos[0].ended=true;f.advance(16);await f.settle();
   assert.equal(f.playback.inspect().mode,'paused');assert.equal(f.starts(),1,'later film stays lazy until requested');f.close();
+});
+
+test('native 60 fps opening keeps the same 14-second presentation at normal playback speed',async()=>{
+  const f=fixture({realPlayer:true,opening:true,openingDuration:14});await f.settle();
+  assert.equal(f.videos[0].playbackRate,1);
+  f.videos[0].currentTime=7;f.advance(16);assert.equal(f.progress(),.125);
+  assert.equal(heroMediaTime(f.videos[0]),5);
+  assert.equal(heroMediaScale(f.videos[0]),5/7);
+  assert.equal(heroMediaTime({currentTime:5,duration:10}),5,'older exports keep their authored framing clock');
+  f.videos[0].currentTime=14;f.videos[0].ended=true;f.advance(16);await f.settle();
+  assert.equal(f.playback.inspect().mode,'paused');assert.equal(f.starts(),1);f.close();
 });
 
 test('background arrival waits for visibility and unfinished opening resumes after tab return and bfcache',async()=>{
