@@ -98,3 +98,6 @@ h1{font-size:clamp(42px,4.2vw,64px);margin-bottom:24px}
  .plan-line strong{font-size:20px}.plan-line small{font-size:9px}.detail-copy{font-size:12px}
  .showroom-reserve{min-height:42px;padding:10px;font-size:12px}.deposit-note{margin-top:5px}
 }
+/* Trailer photograph in place of the WebGL showroom. */
+.trailer-showroom.photo-stage .showroom-poster{padding:0}
+.trailer-showroom.photo-stage .showroom-poster img{display:block;object-fit:cover;object-position:50% 51%}

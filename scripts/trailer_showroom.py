@@ -9,7 +9,6 @@ def render(size, model, metadata):
 <link rel="icon" href="assets/mark.svg" type="image/svg+xml">
 <link rel="stylesheet" href="trailer-showroom.css?v=fullscreen-20261109">
 <link rel="preload" href="assets/lato-latin-regular.woff2" as="font" type="font/woff2" crossorigin>
-<script type="importmap">{{"imports":{{"three":"./vendor/three/three.module.min.js","three/addons/":"./vendor/three/addons/"}}}}</script>
 <script type="module" src="trailer-product-viewer.js?v=fullscreen-20261109"></script>
 <script type="module" src="campaign-links.js?v=launch-20261108"></script>
 </head><body class="showroom-page">
@@ -22,17 +21,13 @@ def render(size, model, metadata):
  <nav id="showroom-menu" aria-label="Mobile navigation" hidden><a href="./">Home</a><a href="about.html">Company</a><a href="specifications.html">Operating requirements</a></nav>
 </header>
 <main class="showroom-main">
- <section class="trailer-showroom reserve-stage jetblack-stage" data-page="trailer" data-size="{size}" data-open="{size}" data-mode="viewer" data-viewer="loading" aria-labelledby="model-title">
+ <section class="trailer-showroom reserve-stage jetblack-stage photo-stage" data-page="trailer" data-size="{size}" data-open="{size}" data-mode="viewer" data-viewer="image" aria-labelledby="model-title">
   <div class="showroom-stage">
-   <div class="rs-3d" role="img" aria-label="Interactive {size} ft Jet black trailer. Drag to rotate." aria-busy="true"></div>
-   <figure class="showroom-poster"><img src="assets/trailer-realism-v2/jet-black-{size}.png" width="960" height="640" alt="{size} ft Marvel Labs trailer design in matte Jet black with grey graphics" fetchpriority="high"></figure>
-   <p class="viewer-status" role="status">Loading interactive trailer…</p>
+   <figure class="showroom-poster"><img src="assets/trailer-photo-v1/trailer-1536.webp?v=trailer-photo-20261116" srcset="assets/trailer-photo-v1/trailer-960.webp?v=trailer-photo-20261116 960w, assets/trailer-photo-v1/trailer-1536.webp?v=trailer-photo-20261116 1536w, assets/trailer-photo-v1/trailer-3072.webp?v=trailer-photo-20261116 3072w" sizes="(max-width:860px) 100vw, 72vw" width="1536" height="1500" fetchpriority="high" decoding="async" alt="Marvel Labs Autonomous Microfactory trailer in Jet black, hitched to a pickup on a residential driveway"></figure>
   </div>
   <div class="showroom-selector">
    <div class="rs-switch" role="group" aria-label="Trailer size"><button type="button" data-size="16" aria-pressed="{'true' if size == '16' else 'false'}">16 ft</button><button type="button" data-size="20" aria-pressed="{'true' if size == '20' else 'false'}">20 ft</button></div>
-   <button type="button" class="rs-back" disabled>See both</button>
   </div>
-  <div class="showroom-tools"><button type="button" class="rs-lock" disabled>Unlock view</button><button type="button" class="rs-ramp-btn" disabled>Open the ramp</button></div>
   <aside id="model-info" class="rv-rail showroom-info" tabindex="-1" aria-label="Trailer information">
    <p class="eyebrow">Jet black · Design preview</p>
    <h1 id="model-title"><span data-model-size>{size}</span> ft <span class="title-small">microfactory trailer.</span></h1>
@@ -51,5 +46,5 @@ def render(size, model, metadata):
   </aside>
  </section>
 </main>
-<noscript><style>.viewer-status{{display:none}}.info-tabs{{display:none}}</style></noscript>
+<noscript><style>.info-tabs{{display:none}}</style></noscript>
 </body></html>'''

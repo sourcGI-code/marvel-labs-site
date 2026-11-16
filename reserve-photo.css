@@ -1,0 +1,6 @@
+/* The trailer photograph replaces the WebGL stage on the reservation page. */
+.rv.photo-stage .rs-3d{display:none}
+.rv.photo-stage .rv-show{background:#0a0e10}
+.rv.photo-stage .rv-preview{visibility:visible;background:#0a0e10}
+.rv.photo-stage .rv-preview img{display:block;width:100%;height:100%;object-fit:cover;object-position:50% 46%}
+body.reserve-screen #reserve.photo-stage .rv-preview figcaption{bottom:14px;right:14px}

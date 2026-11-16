@@ -220,28 +220,20 @@ test('historical previews disclose their status and cannot compete as current se
   assert.match(await read('robots.txt'),/Disallow: \/crew\//,'interactive app remains excluded');
 });
 
-test('reservation WebGL failure keeps the matching static image and form available',async()=>{
+test('reservation page shows the trailer photograph and keeps the form available without WebGL',async()=>{
   const dom=new JSDOM(await read('reserve.html'),{url:'https://marvellabs.shop/reserve.html'});
   Object.assign(globalThis,{window:dom.window,document:dom.window.document});
   const section=document.querySelector('.reserve-stage');
-  const recovered=new Promise((resolve,reject)=>{
-    const timer=setTimeout(()=>{observer.disconnect();reject(new Error('Viewer did not recover'));},1500);
-    const observer=new window.MutationObserver(()=>{
-      if(section.dataset.viewer==='image'){clearTimeout(timer);observer.disconnect();resolve();}
-    });
-    observer.observe(section,{attributes:true,attributeFilter:['data-viewer']});
-  });
   try {
-    // Node cannot import the browser's mapped Three.js module. The viewer
-    // must recover from that initialization failure with a usable image.
-    await import('../../reserve-viewer.js?test=renderer-unavailable');
-    await recovered;
+    // The page ships in photograph mode and must not depend on Three.js.
+    assert.equal(section.dataset.viewer,'image');
+    assert.equal(document.querySelector('script[type="importmap"]'),null);
+    await import('../../reserve-viewer.js?test=photograph');
     assert.equal(section.classList.contains('rs-live'),false);
-    assert.equal(section.querySelector('.rs-3d').getAttribute('aria-busy'),'false');
-    assert.match(new URL(section.querySelector('.rv-preview img').src).pathname,/yard-desktop\.webp$/);
+    assert.match(new URL(section.querySelector('.rv-preview img').src).pathname,/trailer-photo-v1\/trailer-1536\.webp$/);
     assert.ok(section.querySelector('form'));
     section.dispatchEvent(new window.CustomEvent('rs:size',{detail:'16'}));
-    assert.match(new URL(section.querySelector('.rv-preview img').src).pathname,/yard-desktop\.webp$/);
+    assert.match(new URL(section.querySelector('.rv-preview img').src).pathname,/trailer-photo-v1\/trailer-1536\.webp$/);
     assert.match(section.querySelector('figcaption').textContent,/16 ft selected/);
     assert.equal(section.dataset.viewer,'image');
   } finally {
