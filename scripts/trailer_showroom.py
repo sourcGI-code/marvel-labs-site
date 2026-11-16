@@ -16,10 +16,10 @@ def render(size, model, metadata):
 <a class="skip-link" href="#model-info">Skip to trailer details</a>
 <header class="showroom-header">
  <a class="brand" href="./" aria-label="Marvel Labs home"><span>MARVEL LABS</span></a>
- <nav class="header-links" aria-label="Main navigation"><a href="economics.html">Plans &amp; earnings</a><a href="about.html">Company</a></nav>
+ <nav class="header-links" aria-label="Main navigation"><a href="about.html">Company</a></nav>
  <a class="header-reserve" data-reserve href="reserve.html?size={size}">Reserve ↗</a>
  <button class="menu-button" type="button" aria-expanded="false" aria-controls="showroom-menu">Menu</button>
- <nav id="showroom-menu" aria-label="Mobile navigation" hidden><a href="./">Home</a><a href="economics.html">Plans &amp; earnings</a><a href="about.html">Company</a><a href="specifications.html">Operating requirements</a></nav>
+ <nav id="showroom-menu" aria-label="Mobile navigation" hidden><a href="./">Home</a><a href="about.html">Company</a><a href="specifications.html">Operating requirements</a></nav>
 </header>
 <main class="showroom-main">
  <section class="trailer-showroom reserve-stage jetblack-stage" data-page="trailer" data-size="{size}" data-open="{size}" data-mode="viewer" data-viewer="loading" aria-labelledby="model-title">
@@ -43,7 +43,7 @@ def render(size, model, metadata):
    </div>
    <div class="info-content">
     <div id="info-layout" role="tabpanel" aria-labelledby="tab-layout"><dl class="model-specs"><div><dt>Width</dt><dd data-model-width>{model['width']}</dd></div><div><dt>Factory</dt><dd>6 ft 2½ in</dd></div><div><dt>Rear bay</dt><dd data-model-cargo>{model['cargo']}</dd></div></dl><p class="fine">Nominal layout. Usable clearances and GVWR pending.</p></div>
-    <div id="info-plans" role="tabpanel" aria-labelledby="tab-plans" hidden><div class="plan-line"><span>Buy <strong data-model-price>{model['price']}</strong><small>Preview price · 75% operator profit share</small></span><span>Lease <strong>$0 <small>monthly lease fee</small></strong><small>25% operator profit share</small></span></div><p class="fine">Shares apply to profit from products sold. Operating costs and final terms are separate. <a href="economics.html">Plan details ↗</a></p></div>
+    <div id="info-plans" role="tabpanel" aria-labelledby="tab-plans" hidden><div class="plan-line"><span>Buy <strong data-model-price>{model['price']}</strong><small>Preview price · 75% operator profit share</small></span><span>Lease <strong>$0 <small>monthly lease fee</small></strong><small>25% operator profit share</small></span></div><p class="fine">Shares apply to profit from products sold. Operating costs and final terms are separate. </p></div>
     <div id="info-details" role="tabpanel" aria-labelledby="tab-details" hidden><p class="detail-copy">Same front factory concept in both sizes. The 20 ft adds room for equipment.</p><p class="fine">Target delivery: Spring 2027, not guaranteed.<br><a href="specifications.html">Specifications</a> · <a href="validation.html">Development status</a> · <a data-colours href="trailer-colours.html?colour=black&amp;size={size}">Colours</a></p></div>
    </div>
    <a class="showroom-reserve" data-reserve href="reserve.html?size={size}"><span>Reserve <span data-model-size>{size}</span> ft</span><span>$100 deposit ↗</span></a>

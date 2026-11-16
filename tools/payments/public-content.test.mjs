@@ -181,7 +181,7 @@ test('cargo loading waits for its chapter while explicit playback and fallback r
 });
 
 test('confirmed zero monthly lease fee stays separate from the reservation and operating costs',async()=>{
-  for(const file of ['index.html','overview.html','reserve.html','trailer-16.html','trailer-20.html','economics.html','reservation-help.html']) {
+  for(const file of ['index.html','overview.html','reserve.html','trailer-16.html','trailer-20.html','reservation-help.html']) {
     const doc=await documentFor(file),text=doc.body.textContent;
     assert.match(text,/\$0\s*(?:\/\s*month|monthly lease fee)/,file);
     assert.match(text,/\$100/,file);
