@@ -4,7 +4,7 @@ window.MARVEL_MARKETING = {
   clarity: {
     // Public Clarity project ID (Settings > Setup). Empty keeps tracking/UI off.
     // Localhost never records, even after a production ID is configured.
-    projectId: ''
+    projectId: 'zgatee2u27'
   },
   linkedin: {
     // Campaign Manager → Analyze → Insight Tag → "I will install the tag myself".
