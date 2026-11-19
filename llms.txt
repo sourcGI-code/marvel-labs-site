@@ -3,8 +3,6 @@
 Marvel Labs Inc. develops autonomous microfactories. https://marvellabs.shop/ is its trailer product and reservation site; https://marvellabs.com/ is the corporate site. The founder is Jake Miller. Official organization identity: https://marvellabs.com/#organization. The company focus is physical AI and manufacturing; this website does not offer Shopware plugins or e-commerce development services.
 
 ## Authoritative public information
-- [Company and trailer questions](https://marvellabs.shop/faq.html)
-- [Overview](https://marvellabs.shop/overview.html)
 - [Physical AI and microfactory technology explained](https://marvellabs.shop/technology.html)
 - [16 ft model](https://marvellabs.shop/trailer-16.html)
 - [20 ft model](https://marvellabs.shop/trailer-20.html)
@@ -19,7 +17,7 @@ Marvel Labs Inc. develops autonomous microfactories. https://marvellabs.shop/ is
 - [Privacy policy](https://cr1bpi-qf.myshopify.com/policies/privacy-policy)
 
 ## Current offer and limits
-Reservations are open through Shopify for a one-time $100 USD refundable deposit. This is not the trailer price or a lease payment. Shopify confirms successful payment; no remaining balance is charged automatically. Contact jaxon@marvellabs.com with the Shopify order number to change or cancel a reservation.
+Reservations are open through Shopify for a one-time $100 USD refundable deposit. This is not the trailer price or a lease payment. Shopify confirms successful payment; no remaining balance is charged automatically. Contact hello@marvellabs.com with the Shopify order number to change or cancel a reservation.
 
 Preview Buy prices: 16 ft $44,999; 20 ft $49,999. Proposed operator shares are 75% for Buy and 25% for Lease, applying to the agreed profit from products sold, not the selling price or products merely produced. The lease is $0; the refundable $100 reservation deposit is separate. A $0 lease fee does not eliminate operating costs. Lease duration, operating obligations and final profit calculations are confirmed in the written agreement.
 

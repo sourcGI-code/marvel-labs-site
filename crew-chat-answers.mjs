@@ -73,7 +73,7 @@ const topics = [
   ], next:['What do I actually earn?','How does the reservation work?']},
   {id:'reservation', terms:['reserv','deposit','refundable','refund','pay','checkout','order now','100'], answer:[
     'The reservation is a one-time, fully refundable $100 USD deposit paid through Shopify. For a purchased trailer, it is intended to count toward the final price, subject to the final agreement.',
-    'Checkout is live. Shopify confirms the order after successful payment; no remaining balance is charged automatically. To change or cancel a reservation, contact jaxon@marvellabs.com with your Shopify order number. Final purchase and lease terms are separate.'
+    'Checkout is live. Shopify confirms the order after successful payment; no remaining balance is charged automatically. To change or cancel a reservation, contact hello@marvellabs.com with your Shopify order number. Final purchase and lease terms are separate.'
   ], next:['How much does the trailer cost?','Is the factory ready?']},
   {id:'production', terms:['how does','how it work','process','grass','leaves','waste','production','sink','manufactur','factory work'], answer:[
     'The goal is an autonomous microfactory inside the trailer’s front factory area: prepare the collected grass, dose and mix the recipe, form the product, complete any required curing, check quality, then package and store it.',

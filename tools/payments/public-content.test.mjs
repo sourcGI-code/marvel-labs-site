@@ -190,7 +190,7 @@ test('cargo loading waits for its chapter while explicit playback and fallback r
 });
 
 test('zero-dollar lease stays separate from the reservation and operating costs',async()=>{
-  for(const file of ['index.html','overview.html','reserve.html','trailer-16.html','trailer-20.html','reservation-help.html']) {
+  for(const file of ['index.html','reserve.html','trailer-16.html','trailer-20.html','reservation-help.html']) {
     const doc=await documentFor(file),text=doc.body.textContent;
     assert.match(text,/(?:Lease\s*(?:is\s*)?\$0|\$0\s+lease)/i,file);
     assert.match(text,/\$100/,file);
