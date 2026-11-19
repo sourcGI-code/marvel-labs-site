@@ -32,7 +32,7 @@ class Links(HTMLParser):
 
 pages = set()
 # The website loads this chat document in an iframe, so anchor discovery alone misses it.
-pending = ['index.html', '404.html', 'crew-chat.html', 'privacy.html', 'terms.html', 'reservation-agreement.html', 'reservation-refunds.html',
+pending = ['analytics-privacy.html', 'index.html', '404.html', 'crew-chat.html', 'privacy.html', 'terms.html', 'reservation-agreement.html', 'reservation-refunds.html',
            'faq.html', 'overview.html',   # removed 2026-11-18; kept as redirects to the homepage
            'credits.html']                # its link left the contact page 2026-11-18; one model is CC BY 4.0, so the page stays published
 pending += [urlsplit(node.text).path.lstrip('/') or 'index.html' for node in ET.fromstring(read('sitemap.xml')).iter() if node.tag.endswith('loc')]

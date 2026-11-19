@@ -3,6 +3,7 @@ const section = document.querySelector('#app[data-phone-mode="interactive"]');
 if (section) {
   const widget = document.createElement('aside');
   widget.className = 'crew-page-chat';
+  widget.setAttribute('data-clarity-mask', 'true');
   widget.setAttribute('aria-label', 'Marvel website assistant');
   widget.hidden = true;
 

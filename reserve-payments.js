@@ -108,6 +108,7 @@ export function installReservationPayments({sec, form, selection, navigate = url
     try {
       const url = checkoutURL(config, checkoutChoice(), readCampaign(window.location.search));
       submit.disabled = true; submit.textContent = test ? 'Opening test checkout…' : 'Opening secure checkout…';
+      sec.dispatchEvent(new window.CustomEvent('marvel:checkout-handoff', {bubbles:true}));
       navigate(url);
     } catch (e) { submit.disabled = false; showError(e.message); }
   });

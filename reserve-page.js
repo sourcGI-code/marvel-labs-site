@@ -1,4 +1,4 @@
-import {installReservationPayments} from './reserve-payments.js?v=lease-zero-20261115';
+import {installReservationPayments} from './reserve-payments.js?v=analytics-20261119';
 const sec = document.querySelector('section.rv');
 if (sec) start(sec);
 
