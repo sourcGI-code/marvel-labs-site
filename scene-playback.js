@@ -161,8 +161,10 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
   completedOwner=null;autoplayEnd=null;stopAt=target;begin(next,at);return true;
  },extendTo(target){
   // beat-scroll.js: still scrolling as the film nears its stop, so it runs on to a later stop without pausing.
-  if(stopAt===null||mode==='paused'||!(target>stopAt))return false;
-  stopAt=target;return true;
+  if(mode==='paused')return false;
+  const limit=stopAt??autoplayEnd;
+  if(limit===null||target<=limit)return false;
+  autoplayEnd=null;stopAt=target;return true;
  },autoplay(next,{end=.25,resume=false}={}){
   if(!next?.view?.preparePlayback)return false;
   const at=readProgress(next);
