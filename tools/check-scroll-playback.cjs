@@ -12,6 +12,8 @@ async function check(browser, mobile) {
     const page = await context.newPage();
     await page.goto(base + '/#inside', {waitUntil:'domcontentloaded'});
     await page.waitForFunction(() => window.__beats && document.querySelector('#inside video')?.readyState >= 2);
+    const decline = page.getByRole('button', {name:'Decline analytics'});
+    if (await decline.isVisible()) await decline.click();
     const film = page.locator('#inside video');
     // Start from a chapter in the middle so rewinding stays within the film.
     await page.locator('[data-display-target="equipment"]').click();
