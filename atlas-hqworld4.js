@@ -3,7 +3,7 @@ import {loadFilmSources} from './film-sources-hqworld4.js?v=workday-hd-20261122'
 import {syncTrailerPosters} from './trailer-presentation.js?v=media-delivery-20261109';
 syncTrailerPosters(await loadFilmSources());
 const {installDisplayFramework}=await import(document.body.dataset.displayFramework==='original'?'./original-display-framework-hqworld4.js?v=workday-hd-20261122':'./display-framework.js?v=4');
-import {installScenePlayback} from './scene-playback.js?v=wheel-rewind-20261121';
+import {installScenePlayback} from './scene-playback.js?v=distance-20261125';
 import {installOpeningAutoplay} from './opening-autoplay.js?v=opening-autoplay-20261108';
 import { createStage } from './atlas-stage.js?v=opening-hq-20261116';
 import {setupGrassEconomics} from './grass-economics.js?v=2';
@@ -149,7 +149,7 @@ addEventListener('scroll',requestUpdate,{passive:true});addEventListener('resize
 installDisplayFramework({stage,refresh:update});
 if(official)import('./hero-frame-hqworld4.js?v=workday-hd-20261122').then(m=>m.installHeroFrame()).catch(e=>console.warn('Hero framing unavailable.',e.message));
 // Main site: third gesture unlocks fast scrubbing; release resumes normal playback. Archives retain their original controller.
-if(manualPlayback&&official&&playback)import(document.body.dataset.scrollBehavior==='continuous-after-third'?'./continuous-scroll.js?v=distance3-20261125':document.body.dataset.fastSectionSkip==='true'?'./three-step-scroll.js?v=interactive-phone-v1':'./beat-scroll-hqworld4.js?v=workday-hd-20261122').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
+if(manualPlayback&&official&&playback)import(document.body.dataset.scrollBehavior==='continuous-after-third'?'./continuous-scroll.js?v=distance-20261125':document.body.dataset.fastSectionSkip==='true'?'./three-step-scroll.js?v=interactive-phone-v1':'./beat-scroll-hqworld4.js?v=workday-hd-20261122').then(m=>m.installBeatScroll({stage,tracks,playback,getActive:()=>tracks.find(state=>state.track.id===document.body.dataset.activeScene),readProgress:state=>stage.progress(state.track)})).catch(e=>console.warn('Beat scrolling unavailable.',e.message));
 async function loadTrailer(state,canvas,single=false){
  if(!state)return;
  if(official){
