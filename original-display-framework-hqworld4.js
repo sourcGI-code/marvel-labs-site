@@ -1,9 +1,11 @@
 import {DELIVERY_TITLE_START} from './intro-timing.js?v=1';
-import {fieldProgress,neighborhoodEnabled} from './neighborhood-timing.js?v=4-hiw-crew1';
-import {loadFilmSources} from './film-sources-hqworld4.js?v=opening-hq-20261116';
+import {fieldProgress,neighborhoodEnabled} from './neighborhood-timing.js?v=job-first-trim-20261121';
+import {loadFilmSources} from './film-sources-hqworld4.js?v=workday-hd-20261122';
 const howItWorks=(await loadFilmSources()).field?.howItWorks;
-// How it works (owner 10-26): grass in -> product out -> the post-office drop-off -> the old town film (route, then the job).
-if(howItWorks){document.body.dataset.fieldLeadFrames=String(howItWorks.fieldLeadFrames);document.body.dataset.deliveryStartFrame=String(howItWorks.deliveryStartFrame);}
+// How it works, job first (owner 11-21): the job (route, unload, measure, RTK, quote, mow) -> grass in -> the UPS Store drop-off last.
+// film-sources-hqworld4.json carries fieldLeadFrames 0, operatorStartFrame and deliveryStartFrame for that order (field_order.py).
+if(howItWorks){document.body.dataset.fieldLeadFrames=String(howItWorks.fieldLeadFrames);document.body.dataset.deliveryStartFrame=String(howItWorks.deliveryStartFrame);
+ if(Array.isArray(howItWorks.timeMap))document.body.dataset.fieldTimeMap=JSON.stringify(howItWorks.timeMap);else delete document.body.dataset.fieldTimeMap;}
 // One ordered map for the homepage's displays, editor navigation and chapter links.
 export const displays = [
  {id:'arrival',group:'Opening',label:'Arrival',section:'top',start:0,at:.055,title:'#hero-title',copy:'#hero-description',purpose:'Introduce the microfactory trailer. Keep the truck, approach and impact in one continuous scene.'},
@@ -19,12 +21,12 @@ export const displays = [
  {id:'app',group:'Next step',label:'Marvel Crew app',section:'app',start:0,at:.15,title:'#app-title',copy:'.crew-lead',purpose:'The app for the trailer: status and production, the live storage camera, auto quotes with the yard before and after, the map, schedule and money.'}
 ].map(display=>display.section==='inside'?{...display,start:fieldProgress(display.start),at:fieldProgress(display.at)}:display);
 const fieldLast=Number(document.body.dataset.fieldTimelineFrames)-1,fieldLead=Number(document.body.dataset.fieldLeadFrames)||0;
-if(neighborhoodEnabled())displays.splice(displays.findIndex(d=>d.id==='equipment'),0,{id:'route',group:'Working day',label:'Drive-by auto quotes',section:'inside',start:fieldLead/fieldLast,at:fieldLead?(fieldLead+138)/fieldLast:.06,title:'#tour-title',copy:'#tour-copy',purpose:'Quote each property along the route, then stop at the selected house.'});
+if(neighborhoodEnabled())displays.splice(displays.findIndex(d=>d.id==='equipment'),0,{id:'route',group:'Working day',label:'Drive-by auto quotes',section:'inside',start:fieldLead/fieldLast,at:howItWorks?(fieldLead+138)/fieldLast:.06,title:'#tour-title',copy:'#tour-copy',purpose:'Quote each property along the route, then stop at the selected house.'});
 if(document.body.dataset.operatorSequence==='true'){
  const last=Number(document.body.dataset.fieldTimelineFrames)-1,start=Number(document.body.dataset.operatorStartFrame);
- displays.splice(displays.findIndex(d=>d.id==='numbers'),0,{id:'operator',group:'Working day',label:'05 · Grass in, product out',section:'inside',start:start/last,at:Math.min(1,(start+90)/last),title:'#tour-title',copy:'#tour-copy',purpose:'Second half of Work: clippings into the hopper, then the packaged product out on the conveyor at the side hatch. Ends on "Imagine the possibilities."'});
+ displays.splice(displays.findIndex(d=>d.id==='numbers'),0,{id:'operator',group:'Working day',label:'06 · Grass in, product out',section:'inside',start:start/last,at:Math.min(1,(start+90)/last),title:'#tour-title',copy:'#tour-copy',purpose:'After the mowing: the clippings go into the hopper and the factory runs; the packaged product comes out at the side hatch at The UPS Store.'});
 }
-if(howItWorks){const start=howItWorks.deliveryStartFrame;displays.splice(displays.findIndex(d=>d.id==='numbers'),0,{id:'dropoff',group:'Working day',label:'Drop-off',section:'inside',start:start/fieldLast,at:Math.min(1,(start+60)/fieldLast),title:'#tour-title',copy:'#tour-copy',purpose:'The packaged product rides to the post office and is handed over; then the truck drives on to the next job.'});}
+if(howItWorks){const start=howItWorks.deliveryStartFrame;displays.splice(displays.findIndex(d=>d.id==='numbers'),0,{id:'dropoff',group:'Working day',label:'07 · Drop-off',section:'inside',start:start/fieldLast,at:Math.min(1,(start+60)/fieldLast),title:'#tour-title',copy:'#tour-copy',purpose:'Last: the packaged product rides to The UPS Store, is set on the counter, and the phone confirms the drop-off. The film ends there.'});}
 const sectionOrder=['top','story','inside','sizes','founding','app'];   // owner 10-26: workday (01), how it works (02), specs (03)
 displays.sort((a,b)=>sectionOrder.indexOf(a.section)-sectionOrder.indexOf(b.section)||(a.section==='inside'&&b.section==='inside'?a.start-b.start:0));
 export const displayById = id => displays.find(display => display.id === (['unhitch','cargo','overhead','receiving'].includes(id)?'delivery':['production','packaging','storage'].includes(id)?(document.body.dataset.operatorSequence==='true'?'operator':'work'):id));

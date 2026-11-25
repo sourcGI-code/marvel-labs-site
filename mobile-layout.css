@@ -55,6 +55,11 @@
  body[data-page-flow-preview] #inside .official-tour #vision-summary dl>div,
  body[data-page-flow-preview] #inside .official-tour #vision-summary dd {font-size:11px}
  body[data-page-flow-preview] #inside .official-tour #vision-summary small {font-size:10px;line-height:1.4}
+ body[data-page-flow-preview] #inside .official-tour #vision-summary .vision-table {margin:2px 0}
+ body[data-page-flow-preview] #inside .official-tour #vision-summary .vision-table :is(th,td) {font-size:11px;padding:2px 0 2px 6px}
+ body[data-page-flow-preview] #inside .official-tour #vision-summary .vision-table thead th {font-size:9px}
+ body[data-page-flow-preview] #inside .official-tour #vision-summary .vision-table tbody th {padding-left:0}
+ body[data-page-flow-preview] #inside .official-tour #vision-summary .vision-table thead th span {font-size:8px}
  body[data-page-flow-preview] #inside .official-tour .tour-note {font-size:10px;line-height:1.4;max-width:none;left:var(--gutter);right:var(--gutter);bottom:calc(16px + env(safe-area-inset-bottom))}
  /* The phone remains interactive; readable tabs and a full-size app link sit above it. */
  html.immersive body[data-page-flow-preview] #app.crew-app {grid-template-rows:auto auto;align-content:start;gap:12px;overscroll-behavior-y:contain;padding-bottom:calc(32px + env(safe-area-inset-bottom))}
@@ -118,4 +123,16 @@
  body.reserve-page .rv :is(.rv-submit,.rd-secondary) {min-height:48px;font-size:14px}
  body.reserve-page .rv-rail {padding-bottom:calc(32px + env(safe-area-inset-bottom))}
  body.reserve-page .rd-dialog {padding:24px;scroll-padding-block:24px}
+}
+
+/* Owner 11-20: "positioning of the trailer is too the left too much on mobile". The portrait opening film frames
+   the trailer against its left edge. On upright phones the trailer shots are drawn from the film's own left edge
+   and enlarged, so the trailer sits in the middle; hero-frame-hqworld4.js moves --phone-film-x and
+   --phone-film-zoom while the trailer sweeps across the frame, and recorded-scene-hqworld4.js starts the
+   two-trailer film in the same place. --phone-trailer-zoom:1 (or removing it) turns all of this off.
+   Short phones keep their existing top-anchored framing. */
+@media (orientation:portrait) and (max-width:760px) and (min-height:701px) {
+ body[data-page-flow-preview][data-experience="official"] #top .platform-pin {--phone-trailer-zoom:1.185}
+ body[data-page-flow-preview][data-experience="official"] #top .platform-pin :is(.opening-film,.arrival-poster img) {
+  object-position:var(--phone-film-x,50%) 50%!important;transform-origin:0 50%!important;transform:scale(var(--phone-film-zoom,1))!important}
 }

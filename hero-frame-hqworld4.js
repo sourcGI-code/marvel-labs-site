@@ -1,13 +1,26 @@
-import {introFilmKind} from './film-sources-hqworld4.js?v=opening-hq-20261116';
+import {introFilmKind} from './film-sources-hqworld4.js?v=workday-hd-20261122';
 // Preview only. Preserve the original glide over one genuinely expanded movie.
 // Restore the original right/left glide over the unchanged HQ
 // films. Projection is centered CONTAIN; there is no arrival zoom or tail dip.
 const GAP=36,EDGE=24,FPS=30,SLIDE_IN=1.8,SLIDE_OUT=2.7,RELEASE_MS=900;
+// Phones (owner 11-20: "positioning of the trailer is too the left too much on mobile"). The portrait film frames
+// the trailer against its left edge, and the cover crop cut a further strip off that side, so the nose was clipped
+// with empty floor to the right. Once the truck has passed the camera, the film is drawn from its own left edge and
+// enlarged (mobile-layout.css reads --phone-film-x / --phone-film-zoom; --phone-trailer-zoom there says how much and
+// on which screens): the trailer sits in the middle and is larger. Times are on the ten-second authoring clock
+// (frames 124-151 of the 14 s phone film, while the trailer sweeps across the whole frame and hides the move).
+// recorded-scene-hqworld4.js starts the two-trailer film in the same place and eases back as its camera pulls away.
+const PHONE_CENTER_FROM=1.476,PHONE_CENTER_OVER=.32;
+export const phoneTrailerWeight=t=>heroEase((t-PHONE_CENTER_FROM)/PHONE_CENTER_OVER);
 const INTRO_TAG='THE AUTONOMOUS MICROFACTORY TRAILER';
 const clamp=v=>Math.max(0,Math.min(1,v));
 // Framing is authored on a ten-second clock; the delivery export runs for 14.
-export const heroMediaScale=video=>10/(Number.isFinite(video?.duration)&&video.duration>0?video.duration:10);
-export const heroMediaTime=video=>(video?.currentTime||0)*heroMediaScale(video);
+// A film that carries a reversed copy for scrolling back is twice as long as the film itself:
+// opening-film-hqworld4.js states the film's own length and where the copy starts on the element.
+const filmSeconds=video=>{const own=Number(video?.dataset?.filmDuration);return own>0?own:Number.isFinite(video?.duration)&&video.duration>0?video.duration:10;};
+const rewinding=video=>{const start=Number(video?.dataset?.rewindStart);return start>0&&(video.currentTime||0)>=start;};
+export const heroMediaScale=video=>10/filmSeconds(video);
+export const heroMediaTime=video=>{const t=video?.currentTime||0;return (rewinding(video)?Math.max(0,2*Number(video.dataset.rewindStart)-t):t)*heroMediaScale(video);};
 export const heroEase=x=>{x=clamp(x);return x*x*x*(x*(x*6-15)+10);};
 
 export function projectHeroActor(frame,{cx,cy,filmWidth,filmHeight},shift=0,scale=1){
@@ -96,7 +109,7 @@ export async function installHeroFrame(){
  let data=null;
  try{const response=await fetch(new URL('hero-framing-fuller-graphite-v1/desktop-frame.json?v=fuller-graphite-intro-v1',import.meta.url));if(response.ok)data=await response.json();}catch{}
  let plan=null,pendingBuild=true,lastTranslate='',lastScale='';
- let visual={shift:0,scale:1},wasComparing=false,release=null,releaseStart=0,releaseFrom=null;
+ let visual={shift:0,scale:1},wasComparing=false,release=null,releaseStart=0,releaseFrom=null,phoneZoom=1,lastPhone='';
  let anim=null,animFrom=0,animRate=1,animPlan=null,checkedAt=0,est=null,estWall=0,lastDecodedTime=0;
  const comparing=()=>!!host.closest('.pin')?.classList.contains('is-comparing');
  function edges(shift,scale){
@@ -131,7 +144,7 @@ export async function installHeroFrame(){
   if(video.seeking)return lastDecodedTime;
   const now=performance.now(),ct=heroMediaTime(video);lastDecodedTime=ct;
   if(video.paused||video.ended||est===null){est=ct;estWall=now;return ct;}
-  est+=(now-estWall)/1000*(video.playbackRate||1)*heroMediaScale(video);estWall=now;
+  est+=(rewinding(video)?-1:1)*(now-estWall)/1000*(video.playbackRate||1)*heroMediaScale(video);estWall=now;
   const off=ct-est;if(Math.abs(off)>.25)est=ct;else est+=off*.08;
   return est;
  }
@@ -180,9 +193,22 @@ export async function installHeroFrame(){
     const start=Math.max(0,bottom+2-host.getBoundingClientRect().top);
     host.style.setProperty('--mobile-clear-start',`${start}px`);
     host.style.setProperty('--mobile-clear-end',`${start+14}px`);
+    // How far this screen enlarges the trailer shots (1 = not at all), from the stylesheet.
+    phoneZoom=parseFloat(getComputedStyle(host).getPropertyValue('--phone-trailer-zoom'))||1;
     pendingBuild=false;
    }
-   wasComparing=isComparing;return;
+   wasComparing=isComparing;
+   // Centre and enlarge the trailer once the truck has passed; the delivery film carries it on from there.
+   const p=parseFloat(track.dataset.sceneProgress||'0'),video=document.querySelector('video.opening-film');
+   const weight=phoneZoom>1&&!reduced.matches?phoneTrailerWeight(p>=.25-1e-4?10:Math.max(0,Math.min(10,filmTime(video,p)))):0;
+   const key=weight.toFixed(4);
+   if(key!==lastPhone){
+    lastPhone=key;
+    host.style.setProperty('--phone-film-x',`${(50*(1-weight)).toFixed(3)}%`);
+    host.style.setProperty('--phone-film-zoom',(1+(phoneZoom-1)*weight).toFixed(5));
+    root.dataset.heroFrame=`phone trailer centring ${Math.round(weight*100)}% zoom ${(1+(phoneZoom-1)*weight).toFixed(3)}`;
+   }
+   return;
   }
   if(reduced.matches){stopGlide();stopRelease();set();wasComparing=comparing();return;}
   const isComparing=comparing();
@@ -202,7 +228,8 @@ export async function installHeroFrame(){
   const p=parseFloat(track.dataset.sceneProgress||'0'),video=document.querySelector('video.opening-film');
   // Keep the intro's final place while the requested delivery frame is loading.
   const t=p>=.25-1e-4?10:Math.max(0,Math.min(10,filmTime(video,p)));
-  if(p<.25-1e-4&&video&&!video.paused&&!video.ended&&!video.seeking&&video.readyState>=2&&typeof host.animate==='function'){
+  // The compositor glide assumes the film runs forward; a rewinding film is followed frame by frame.
+  if(p<.25-1e-4&&video&&!video.paused&&!video.ended&&!video.seeking&&!rewinding(video)&&video.readyState>=2&&typeof host.animate==='function'){
    glide(video);
    const displayTime=anim?animFrom+(anim.currentTime||0)/1000*animRate:t;
    edges(plan.at(displayTime),plan.sc(displayTime));return;

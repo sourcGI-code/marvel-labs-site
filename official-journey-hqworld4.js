@@ -1,7 +1,7 @@
 import {createRouteQuotes} from './route-quotes.js?v=yard-coverage-v1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=opening-hq-20261116';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=frozenfix-20261124';
 const workflowStops=[0,.16,.34,.46,.58,1380/1919];
-import {createVisionOverlay} from './vision-overlay.js?v=workday-ui-20261109';
+import {createVisionOverlay,createScanOverlay} from './vision-overlay.js?v=phone-fixes-20261120';
 import {createScrollMotion} from './scroll-motion.js';
 import {setAnimatedTitle,revealTitle,revealDetails} from './editorial-motion.js?v=stable-slides-v1';
 const clamp=v=>Math.max(0,Math.min(1,v));
@@ -17,7 +17,7 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
  const $=id=>document.getElementById(id),pin=canvas.closest('.pin');
  const info=document.createElement('button');info.type='button';info.className='tour-info';info.textContent='Info +';info.setAttribute('aria-expanded','false');info.setAttribute('aria-controls','tour-copy');pin.querySelector('.tour-copy').append(info);
  info.addEventListener('click',()=>{const open=info.getAttribute('aria-expanded')!=='true';info.setAttribute('aria-expanded',String(open));info.textContent=open?'Close −':'Info +';pin.dataset.info=String(open);request();});
- const vision=createVisionOverlay(pin);const routeQuotes=createRouteQuotes(pin);
+ const vision=createVisionOverlay(pin);const scan=createScanOverlay(pin);const routeQuotes=createRouteQuotes(pin);
  const quoteScope=document.createElement('dl');quoteScope.id='workflow-scope';quoteScope.setAttribute('aria-label','Illustrative measured job scope');$('workflow-demo').insertBefore(quoteScope,$('workflow-demo').lastElementChild);
  let p=0,active=false,frame=0,lastCaption=-1,lastScope='',lastNote='',lastP=0;
  const reduceMotion=matchMedia('(prefers-reduced-motion:reduce)');
@@ -26,27 +26,27 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
  function pinPlayback(value){p=motion.snap(value);playbackTarget={value,read:readProgress()};request();}
  const captions=[
   // #tour-count carries the chapter number ("0n / 05"); the kickers are labels only.
-  ['YOUR EQUIPMENT · REAR EQUIPMENT BAY','Your mowers<br><em>ride in the back.</em>','The ramp drops. Your zero-turn mower and trimmers ride in the rear bay, like any equipment trailer. The factory sits sealed up front.','THE WORKING DAY','Haul → measure → quote → mow → make'],
-  ['CAMERAS MEASURE THE YARD','Cameras measure.<br><em>You set the price.</em>','The trailer’s cameras turn the lawn, edging, hedges, beds and tree rings into a measured scope, so the estimate starts from numbers, not a guess.','CONCEPT DEMONSTRATION','A measured scope before you price'],
-  ['RTK · SURVEY-GRADE GPS','Every measurement<br><em>pinned to the lot.</em>','Survey-grade GPS (RTK) ties each measurement to the property, so the scope still lines up the next time you pull up.','CONCEPT DEMONSTRATION','Site context you can return to'],
-  ['AUTO QUOTE · YOU APPROVE IT','The survey becomes<br><em>a quote draft.</em>','The measured scope becomes an estimate and an email that shows the customer their yard before and after. Nothing goes out until you approve the price.','VISUAL DEMONSTRATION','No email is sent'],
-  ['MOW & BAG THE CLIPPINGS','Mow like always.<br><em>Bag the clippings.</em>','The planned workflow uses suitable collected grass. Accepted input conditions and reliable production are still being validated.','FOR YOUR BUSINESS','Mowing income + the agreed share of profit on products sold'],
+  ['UNLOAD · REAR EQUIPMENT BAY','Your mowers<br><em>ride in the back.</em>','Drop the ramp and roll out. Your zero-turn and trimmers ride in the rear bay like any equipment trailer. The factory stays sealed up front.','THE WORKING DAY','Haul → measure → quote → mow → make'],
+  ['CAMERAS MEASURE THE YARD','Cameras measure.<br><em>You set the price.</em>','The trailer’s cameras measure the lawn, edging, hedges, beds and tree rings, so every estimate starts from real numbers, not a guess.','CONCEPT DEMONSTRATION','Measured before you price'],
+  ['RTK · SURVEY-GRADE GPS','Every measurement<br><em>pinned to the lot.</em>','Survey-grade GPS (RTK) pins every measurement to the property, so it lines up again on your next visit.','CONCEPT DEMONSTRATION','Ready for the next visit'],
+  ['AUTO QUOTE · YOU APPROVE IT','Measurements in.<br><em>Quote drafted.</em>','The app turns the measurements into a price and a draft email that shows the customer their yard before and after. Nothing is sent until you approve it.','DEMONSTRATION ONLY','No email is sent'],
+  ['MOW & BAG THE CLIPPINGS','Mow like always.<br><em>Bag the clippings.</em>','Bag the clippings as you go. Which grass the factory accepts, and how reliably it produces, are still being tested.','FOR YOUR BUSINESS','Your mowing income, plus your share of profit on products sold'],
 
  ];
  // Work chapter, second half (owner 14:51): two beats and the closing line, nothing else. They appear only
  // while the installed field timeline carries `operator` states (the film with the person); until that film is
  // installed the Work copy above stays. No spec callouts during the beats (empty key hides #tour-spec).
- const grassIn=['GRASS IN · THE HOPPER','Grass in.','The concept uses suitable collected grass loaded through a folding chute. Feedstock limits and the complete production cycle are being validated.','',''];
- const chuteShut=['GRASS IN · FACTORY RUNNING','Chute shut.<br><em>Back to the truck.</em>','The planned process runs inside the enclosed factory. Unattended runtime and production performance still need validation.','',''];
- const productOut=['PRODUCT OUT · BOXED SINK','Sink out.','The animation illustrates a boxed sink leaving through the side hatch. It is a workflow concept, not a measured production demonstration.','',''];
+ const grassIn=['GRASS IN · FOLD-DOWN DOOR','Grass in.','Fold down the door in the trailer wall and tip the clippings in. Which grass works, and the full production cycle, are still being tested.','',''];
+ const chuteShut=['GRASS IN · FACTORY RUNNING','Door shut.<br><em>Back to the truck.</em>','The factory works inside the closed trailer while it’s parked. How long it runs on its own, and how much it makes, are still being tested.','',''];
+ const productOut=['PRODUCT OUT · BOXED SINK','Sink out.','A boxed sink comes out through the side hatch. This shows the concept; it isn’t footage of real production.','',''];
  const possibilities=['GRASS IN · PRODUCT OUT','Grass goes in.<br><em>Sinks come out.</em>','','',''];
  // How it works (owner 10-26): after the product comes out, a drop-off run to the post office, then the next job.
  const deliveryCaptions={
-  A:['DROP IT OFF · THE UPS STORE','On your route.<br><em>No extra trip.</em>','Close up and drive. The boxed sink rides along to The UPS Store, on the way to the next job.','',''],
-  B1:['AT THE UPS STORE','Hatch open.<br><em>Sink out.</em>','Parked at The UPS Store. The hatch opens and the boxed sink rolls out, packaged and ready to ship.','',''],
-  B2:['HAND IT OVER','Into the store.<br><em>Onto the counter.</em>','Carry it in and hand it over. The clerk scans the box and it ships. You are back in the truck.','',''],
-  B3:['MARVEL CREW APP','Dropped off.<br><em>Confirmed on your phone.</em>','The app concept shows a drop-off record. The website uses example data; live carrier integration is not demonstrated.','',''],
-  C:['BACK ON THE ROUTE','Shipped.<br><em>Next yard.</em>','The sink is on its way. You drive to the next job, where the next bag of clippings is waiting.','','']};
+  A:['DROP IT OFF · THE UPS STORE','On your route.<br><em>No extra trip.</em>','Close up and drive on. The boxed sink rides along to The UPS Store on your way to the next job.','',''],
+  B1:['AT THE UPS STORE','Hatch open.<br><em>Sink out.</em>','Park at The UPS Store, open the side hatch and lift out the boxed sink, packed and ready to ship.','',''],
+  B2:['HAND IT OVER','Into the store.<br><em>Onto the counter.</em>','Carry it in and set it on the counter. It ships from here.','',''],
+  B3:['MARVEL CREW APP','Dropped off.<br><em>Counted in your earnings.</em>','Tap Confirm and the drop-off lands in the Marvel Crew app, added to today’s earnings. Example data; live carrier tracking isn’t shown.','',''],
+  C:['BACK ON THE ROUTE','Shipped.<br><em>Next yard.</em>','The sink is on its way. On to the next job and the next bag of clippings.','','']};
  const operatorCaptions=Object.fromEntries([
   ...['dismount','to bag','lift clippings','carry clippings','open chute','grass in','collect-grass','load-grass'].map(stage=>[stage,grassIn]),
   ...['close chute','to truck'].map(stage=>[stage,chuteShut]),
@@ -64,14 +64,15 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
   if(captionKey!==lastCaption){
    const direction=p<lastP?-1:1;
    $('tour-kicker').textContent=tag;setAnimatedTitle($('tour-title'),title,{direction});$('tour-copy').textContent=copy;$('tour-copy').hidden=!copy;
-   // The operator beats are the second half of chapter 5 (Work), so the count and the chapter nav stay on 05.
-   const how=!!document.body.dataset.fieldLeadFrames,chapter=how?(operatorActive?0:delivery?1:routeActive?3:i+2):operatorActive?4:i;
+   // How it works, job first (owner 11-21: "starting a job first with driving to the destination, last should be the packaged
+   // box being taken to ups"): the five job chapters 01-05 (the drive-by belongs to 01), grass in 06, the drop-off 07.
+   const how=!!document.body.dataset.fieldLeadFrames,chapter=how?(operatorActive?5:delivery?6:routeActive?0:i):operatorActive?4:i;
    $('tour-count').textContent=`0${chapter+1} / 0${how?7:5}`;$('tour-spec').hidden=!key;document.querySelector('#tour-spec dt').textContent=key;document.querySelector('#tour-spec dd').textContent=value;
    document.querySelectorAll('.tour-chapters li').forEach((el,index)=>{if(index===chapter)el.setAttribute('aria-current','step');else el.removeAttribute('aria-current');});
    if(lastCaption>=0)revealDetails(['tour-count','tour-kicker','tour-copy','tour-spec'].map($),{direction});
    lastCaption=captionKey;
   }
-  vision.update(state,canvas.clientWidth,canvas.clientHeight);routeQuotes.update(state,canvas.clientWidth,canvas.clientHeight);
+  vision.update(state,canvas.clientWidth,canvas.clientHeight);scan.update(state,canvas.clientWidth,canvas.clientHeight);routeQuotes.update(state,canvas.clientWidth,canvas.clientHeight);
   pin.style.setProperty('--yard-reveal',state?.yardReveal||0);
   const mode=state?.mode||(p<.035?'towing':'parked');pin.dataset.fieldMode=mode;pin.dataset.fieldChapter=String(i);pin.dataset.interior=String(i>=5);
   pin.dataset.operator=String(operatorActive);
@@ -107,9 +108,12 @@ export async function createOfficialJourney(canvas,{readProgress,paused}){
  const layoutObserver=new ResizeObserver(request);
  for(const element of [pin.querySelector('.tour-copy'),pin.querySelector('#vision-summary')])if(element)layoutObserver.observe(element);
  addEventListener('resize',()=>{scene?.resize();request();});
- return {async preparePlayback({progress=readProgress(),signal}={}){
+ return {async preparePlayback({progress=readProgress(),signal,reverse=false}={}){
   if(!scene?.video)return null;
-  await scene.retry();if(signal?.aborted)return null;pinPlayback(progress);scene.draw(p);request();
-  return {video:scene.video,start:0,end:1,duration:scene.duration};
- },setPlaybackProgress:pinPlayback,setProgress(){request();},setActive(value){if(value&&!active)motion.snap(readProgress());active=value;scene?.setActive?.(value);request();},setPaused(value){paused=value;request();},setPalette(){scene?.setPalette(document.documentElement.dataset.palette);request();}};
+  await scene.retry();if(signal?.aborted)return null;
+  // Scrolling back plays the film's reversed copy; without one the caller seeks instead.
+  const rewind=reverse?scene.rewind:null;if(reverse&&!rewind)return null;
+  pinPlayback(progress);scene.draw(p);request();
+  return {video:scene.video,start:0,end:1,duration:scene.duration,...(rewind?{reverse:true,rewindStart:rewind.start}:{})};
+ },canRewind:()=>!!scene?.rewind,setPlaybackProgress:pinPlayback,setProgress(){request();},setActive(value){if(value&&!active)motion.snap(readProgress());active=value;scene?.setActive?.(value);request();},setPaused(value){paused=value;request();},setPalette(){scene?.setPalette(document.documentElement.dataset.palette);request();}};
 }

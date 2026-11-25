@@ -17,7 +17,11 @@ try{
    await page.waitForFunction(()=>[...document.querySelectorAll('video')].some(v=>v.currentSrc.includes('/field/')&&v.readyState>=2&&!v.seeking),{timeout:45000});await page.waitForTimeout(1000);
    await page.screenshot({path:`${out}/workday-${theme}-${mobile?'mobile':'desktop'}-${name}.png`});
   }
-  const media=await page.locator('video').evaluateAll(vs=>vs.filter(v=>v.currentSrc.includes('/field/')).map(v=>({src:v.currentSrc,duration:v.duration,width:v.videoWidth,height:v.videoHeight})));assert.equal(media.length,1);assert(Math.abs(media[0].duration-3088/30)<.05);assert(media[0].src.includes('/scene-recovery-v2/'));assert.equal(media[0].width,mobile?1440:1920);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);report.checks.push({theme,mobile,media});await page.close();
+  const media=await page.locator('video').evaluateAll(vs=>vs.filter(v=>v.currentSrc.includes('/field/')).map(v=>({src:v.currentSrc,duration:v.duration,width:v.videoWidth,height:v.videoHeight,film:(v.dataset.filmDuration||'').slice(0,8)})));assert.equal(media.length,1);
+  // The film is 3088 frames; the file carries the same frames once more in reverse order for scrolling back.
+  assert(Math.abs(media[0].duration-2*3088/30)<.05,String(media[0].duration));assert.equal(media[0].film,String(3088/30).slice(0,8));assert(media[0].src.includes('/scene-recovery-v2/'));
+  // A headless browser reports a slow line and is given the 960 px film; a normal line gets 1920 (1280 on phones).
+  assert([960,mobile?1280:1920].includes(media[0].width),String(media[0].width));assert.equal(media[0].width/media[0].height,16/9);assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth),false);report.checks.push({theme,mobile,media});await page.close();
  }
  assert.deepEqual(report.errors,[]);assert.deepEqual(report.missing,[]);report.passed=true;
 }finally{fs.writeFileSync(`${out}/workday-check-report.json`,JSON.stringify(report,null,2));console.log(JSON.stringify(report,null,2));await browser.close();}

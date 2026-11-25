@@ -2,10 +2,10 @@
   "version": 1,
   "cargo": {
     "base": "assets/scene-recovery-v2/cargo",
-    "revision": "scene-recovery-20261116",
+    "revision": "scene-recovery-3d-20261125",
     "desktop": {
       "base": "assets/scene-recovery-v2/cargo",
-      "revision": "scene-recovery-20261116",
+      "revision": "scene-recovery-3d-20261125",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -27,7 +27,8 @@
         "codec": "avc1.640034"
       },
       "motionFps": 30,
-      "modelRevision": "realism-v2"
+      "modelRevision": "realism-v2",
+      "reversedCopy": true
     },
     "videoFile": "mobile-web.mp4",
     "quality": "native-30fps-every-frame-rendered",
@@ -40,42 +41,69 @@
       "bitrate": 2515497,
       "codec": "avc1.640032"
     },
-    "modelRevision": "realism-v2"
+    "modelRevision": "realism-v2",
+    "reversedCopy": true
   },
   "field": {
     "base": "assets/scene-recovery-v2/field",
-    "revision": "scene-recovery-20261116",
+    "revision": "field-jobfirst-20261125-publish",
+    "video4kFile": "desktop-4k.mp4",
+    "video4kCodec": "av01.0.12M.08",
     "neighborhood": true,
     "operator": true,
-    "timelineFrames": 3088,
-    "operatorStartFrame": 0,
+    "timelineFrames": 2629,
+    "operatorStartFrame": 1339,
     "howItWorks": {
-      "fieldLeadFrames": 1416,
-      "deliveryStartFrame": 300,
-      "deliveryFrames": 1116
+      "fieldLeadFrames": 0,
+      "deliveryStartFrame": 1639,
+      "deliveryFrames": 990,
+      "order": "job-first",
+      "trim": "aerial-5s-3s-end-on-dropoff",
+      "timeMap": [
+        [
+          0,
+          0
+        ],
+        [
+          600,
+          600
+        ],
+        [
+          944,
+          750
+        ],
+        [
+          1175,
+          842
+        ],
+        [
+          2961,
+          2628
+        ]
+      ]
     },
     "kind": "desktop",
     "videoFile": "desktop.mp4",
     "motionFps": 30,
-    "modelRevision": "realism-v2",
     "liteVideoFile": "desktop-lite.mp4",
-    "quality": "native-30fps-every-frame-rendered",
+    "quality": "realistic-walkthrough-30fps",
     "nativeVideo": {
       "file": "desktop.mp4",
       "width": 1920,
-      "height": 1200,
+      "height": 1080,
       "framerate": 30,
-      "bitrate": 6958125,
+      "bitrate": 3618416,
       "codec": "avc1.640032"
     },
-    "animationSHA256": "3891326ea6294683f06e13d4f3a053285dae9e8ddc0e1f50e36cd56f7abf598a"
+    "footage": "ai-generated",
+    "reversedCopy": true
   },
   "opening": {
     "base": "assets/scene-recovery-v2/opening",
-    "revision": "opening-hq-20261116",
+    "revision": "opening-hq-3d-20261125",
     "desktop": {
       "base": "assets/scene-recovery-v2/opening",
-      "revision": "opening-hq-20261116",
+      "revision": "opening-hq-3d-20261125",
       "kind": "desktop",
       "trueWorld": {
         "version": 1,
@@ -93,13 +121,17 @@
         "width": 3840,
         "height": 1706,
         "framerate": 60,
-        "bitrate": 7725268,
+        "bitrate": 15834458,
         "codec": "avc1.640034"
       },
       "motionFps": 60,
       "modelRevision": "realism-v2",
-      "playbackRevision": "opening-hq-20261116",
-      "duration": 14
+      "playbackRevision": "opening-continuity-20261122",
+      "duration": 14,
+      "rewind": {
+        "start": 14.0
+      },
+      "ladder": 15
     },
     "modelRevision": "realism-v2",
     "videoFile": "mobile-hq.mp4",
@@ -109,40 +141,68 @@
       "width": 1440,
       "height": 2880,
       "framerate": 60,
-      "bitrate": 8431294,
+      "bitrate": 10856022,
       "codec": "avc1.640033"
     },
     "quality": "high-resolution-native-60fps",
-    "playbackRevision": "opening-hq-20261116",
-    "duration": 14
+    "playbackRevision": "opening-continuity-20261122",
+    "duration": 14,
+    "rewind": {
+      "start": 14.0
+    },
+    "ladder": 15
   },
   "fieldMobile": {
     "base": "assets/scene-recovery-v2/field",
-    "revision": "scene-recovery-20261116",
+    "revision": "field-jobfirst-20261125-publish",
     "neighborhood": true,
     "operator": true,
-    "timelineFrames": 3088,
-    "operatorStartFrame": 0,
+    "timelineFrames": 2629,
+    "operatorStartFrame": 1339,
     "howItWorks": {
-      "fieldLeadFrames": 1416,
-      "deliveryStartFrame": 300,
-      "deliveryFrames": 1116
+      "fieldLeadFrames": 0,
+      "deliveryStartFrame": 1639,
+      "deliveryFrames": 990,
+      "order": "job-first",
+      "trim": "aerial-5s-3s-end-on-dropoff",
+      "timeMap": [
+        [
+          0,
+          0
+        ],
+        [
+          600,
+          600
+        ],
+        [
+          944,
+          750
+        ],
+        [
+          1175,
+          842
+        ],
+        [
+          2961,
+          2628
+        ]
+      ]
     },
     "kind": "mobile",
     "videoFile": "mobile.mp4",
     "motionFps": 30,
-    "modelRevision": "realism-v2",
     "nativeVideo": {
       "file": "mobile.mp4",
-      "width": 1440,
-      "height": 900,
+      "width": 1280,
+      "height": 720,
       "framerate": 30,
-      "bitrate": 3945336,
-      "codec": "avc1.640028"
+      "bitrate": 2196993,
+      "codec": "avc1.64001F"
     },
     "liteVideoFile": "mobile-lite.mp4",
-    "quality": "native-30fps-every-frame-rendered",
-    "animationSHA256": "3891326ea6294683f06e13d4f3a053285dae9e8ddc0e1f50e36cd56f7abf598a"
+    "quality": "realistic-walkthrough-30fps",
+    "footage": "ai-generated",
+    "reversedCopy": true
   },
   "modelRevision": "realism-v2",
   "sceneRevision": "scene-recovery-20261109b"

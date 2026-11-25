@@ -19,48 +19,60 @@
   },
   "media": {
     "field/mobile.mp4": {
-      "width": 1440,
-      "height": 900,
+      "width": 1280,
+      "height": 720,
       "r_frame_rate": "30/1",
-      "duration": "102.933333",
-      "nb_frames": "3088",
-      "bytes": 50801297,
-      "sha256": "50b4171a69274b7d6577ccbd73bbf0f2f83864100bb76a5d36b43f640f87ecc2",
-      "revision": "scene-recovery-20261116",
-      "interpolatedFrames": 0
+      "duration": "175.267000",
+      "nb_frames": "5258",
+      "bytes": 48197194,
+      "sha256": "0443d0bdd9b90f0c4f73048cd122b9410af4b0d763988f2af520c6154370430b",
+      "revision": "field-jobfirst-20261125-publish",
+      "footage": "ai-generated",
+      "filmFrames": 2629,
+      "reversedCopyFrames": 2629,
+      "source": "seedream-render-pass-20261113 field-desktop.mp4, touch-up 2026-11-19"
     },
     "field/desktop-lite.mp4": {
       "width": 960,
-      "height": 600,
+      "height": 540,
       "r_frame_rate": "30/1",
-      "duration": "102.933333",
-      "nb_frames": "3088",
-      "bytes": 22029702,
-      "sha256": "506cfd6a4902be4a88c95dcbe2a049a2221cbd674e5ceef240a05e3af963ff8a",
-      "revision": "scene-recovery-20261116",
-      "interpolatedFrames": 0
+      "duration": "175.267000",
+      "nb_frames": "5258",
+      "bytes": 24098241,
+      "sha256": "a85b7e5c9781232d800c84ff63e87e3614aad8ad82cdabdad8eddc83e42dd965",
+      "revision": "field-jobfirst-20261125-publish",
+      "footage": "ai-generated",
+      "filmFrames": 2629,
+      "reversedCopyFrames": 2629,
+      "source": "seedream-render-pass-20261113 field-desktop.mp4, touch-up 2026-11-19"
     },
     "field/desktop.mp4": {
       "width": 1920,
-      "height": 1200,
+      "height": 1080,
       "r_frame_rate": "30/1",
-      "duration": "102.933333",
-      "nb_frames": "3088",
-      "bytes": 89566423,
-      "sha256": "7ee07781cec2a8a110c3c0b039f3d99a9a68ee0bf55dd2f9d8fb3d31a8d2c6d0",
-      "revision": "scene-recovery-20261116",
-      "interpolatedFrames": 0
+      "duration": "175.267000",
+      "nb_frames": "5258",
+      "bytes": 79337564,
+      "sha256": "f7cbd17de0cea7ba7b5209d6e59949b603ee7cf16c086cc75a014d37e1a730eb",
+      "revision": "field-jobfirst-20261125-publish",
+      "footage": "ai-generated",
+      "filmFrames": 2629,
+      "reversedCopyFrames": 2629,
+      "source": "seedream-render-pass-20261113 field-desktop.mp4, touch-up 2026-11-19"
     },
     "field/mobile-lite.mp4": {
       "width": 960,
-      "height": 600,
+      "height": 540,
       "r_frame_rate": "30/1",
-      "duration": "102.933333",
-      "nb_frames": "3088",
-      "bytes": 22029702,
-      "sha256": "506cfd6a4902be4a88c95dcbe2a049a2221cbd674e5ceef240a05e3af963ff8a",
-      "revision": "scene-recovery-20261116",
-      "interpolatedFrames": 0
+      "duration": "175.267000",
+      "nb_frames": "5258",
+      "bytes": 24098241,
+      "sha256": "a85b7e5c9781232d800c84ff63e87e3614aad8ad82cdabdad8eddc83e42dd965",
+      "revision": "field-jobfirst-20261125-publish",
+      "footage": "ai-generated",
+      "filmFrames": 2629,
+      "reversedCopyFrames": 2629,
+      "source": "seedream-render-pass-20261113 field-desktop.mp4, touch-up 2026-11-19"
     },
     "cargo/mobile.mp4": {
       "width": 1080,
@@ -169,25 +181,31 @@
       "width": 4608,
       "height": 2048,
       "r_frame_rate": "30/1",
-      "nb_frames": "541",
-      "duration": "18.033333",
-      "bytes": 15495706,
-      "sha256": "22a8ce83bb26159ba55a009162242c5da303dedd3ce72d198a583e7ac82586c0",
+      "nb_frames": "1082",
+      "duration": "36.067000",
+      "bytes": 33795547,
+      "sha256": "26b58a17491e2d787644a683c7ae8b5c6d3ba4e99d3d2b3966a718d976a2cc5a",
       "revision": "scene-recovery-20261116",
       "interpolatedFrames": 0,
-      "encodedFrom": "541 rendered frames (even frames from the accepted render, odd frames rendered 2026-11-16 by the same script and settings)"
+      "encodedFrom": "541 rendered frames (even frames from the accepted render, odd frames rendered 2026-11-16 by the same script and settings)",
+      "filmFrames": 541,
+      "reversedCopyFrames": 541,
+      "reversedCopy": "appended without re-encoding the film (qa-tools append_reversed.py)"
     },
     "cargo/mobile-web.mp4": {
       "width": 1080,
       "height": 2160,
       "r_frame_rate": "30/1",
-      "nb_frames": "541",
-      "duration": "18.033333",
-      "bytes": 5677712,
-      "sha256": "600c9b3d04939fb5caa6b4cba5eb6984c996761e582def28bf7e29abe420a250",
+      "nb_frames": "1082",
+      "duration": "36.067000",
+      "bytes": 11740354,
+      "sha256": "76935738a9bff3fbf911d9710486e8660ab199cb8ef66cd79d288f1de50d3a66",
       "revision": "scene-recovery-20261116",
       "interpolatedFrames": 0,
-      "encodedFrom": "541 rendered frames (even frames from the accepted render, odd frames rendered 2026-11-16 by the same script and settings)"
+      "encodedFrom": "541 rendered frames (even frames from the accepted render, odd frames rendered 2026-11-16 by the same script and settings)",
+      "filmFrames": 541,
+      "reversedCopyFrames": 541,
+      "reversedCopy": "appended without re-encoding the film (qa-tools append_reversed.py)"
     },
     "opening/desktop-smooth.mp4": {
       "width": 1920,
@@ -224,93 +242,32 @@
     "opening/desktop-hq.mp4": {
       "width": 3840,
       "height": 1706,
-      "level": 52,
       "r_frame_rate": "60/1",
-      "duration": "14.000000",
-      "bit_rate": "7725268",
-      "nb_frames": "840",
-      "bytes": 13530219,
-      "sha256": "4b15e7f2856bdc815cdd12e3002743983a3d01858715acb32b92907a0776d2e8",
-      "sourceFrameRate": 84,
-      "outputFrameRate": 60,
-      "interpolatedActorFrames": 0,
-      "sourceStartFrame": 0,
-      "backgroundFlashSamplesCorrected": [
-        196,
-        212,
-        216,
-        220,
-        232,
-        258,
-        286,
-        342,
-        344,
-        348,
-        354,
-        356,
-        366,
-        380,
-        384,
-        386,
-        396,
-        398,
-        420,
-        424,
-        426,
-        432,
-        444,
-        452,
-        456,
-        460,
-        464,
-        468,
-        482,
-        484,
-        486,
-        492,
-        494,
-        500,
-        516
-      ],
-      "encodedInSegments": [
-        0,
-        150,
-        300,
-        450,
-        600,
-        720,
-        840
-      ],
-      "revision": "opening-hq-20261116",
-      "rotationMode": "XYZ",
-      "cameraTransitionFrames": [
-        118,
-        133
-      ],
-      "encodedFrom": "Native high-resolution frames; every truck and trailer pose rendered, none interpolated"
+      "duration": "28.000000",
+      "nb_frames": "1680",
+      "bytes": 29390935,
+      "sha256": "89c785fbc2eb78c7f0c3c0c727a4b37d29f79866ed99ac3b6eb29a425a59b637",
+      "revision": "opening-continuity-20261122",
+      "footage": "existing opening footage with camera-tracked equipment details",
+      "filmFrames": 840,
+      "reversedCopyFrames": 840,
+      "source": "Warehouse opening with original camera and projected service-side details",
+      "reversedCopy": "appended without re-encoding the film (qa-tools append_reversed.py)"
     },
     "opening/mobile-hq.mp4": {
       "width": 1440,
       "height": 2880,
-      "level": 51,
       "r_frame_rate": "60/1",
-      "duration": "14.000000",
-      "bit_rate": "8431294",
-      "nb_frames": "840",
-      "bytes": 14765349,
-      "sha256": "d9e3aa03106e031addfbb4bba3492bc552bef240b52fd125233b85b8de3363af",
-      "sourceFrameRate": 84,
-      "outputFrameRate": 60,
-      "interpolatedActorFrames": 0,
-      "cameraTransitionFrames": [
-        118,
-        133
-      ],
-      "rotationMode": "XYZ",
-      "renderedMeshMotionVerified": true,
-      "deliveryEncoding": "x264 slow CRF 18; full native output dimensions and all 840 frames retained",
-      "revision": "opening-hq-20261116",
-      "encodedFrom": "Native high-resolution frames; every truck and trailer pose rendered, none interpolated"
+      "duration": "28.000000",
+      "nb_frames": "1680",
+      "bytes": 29536323,
+      "sha256": "3ad8d0a6c7b87d88f58e49994f5700aece2304f7f9064069d63d27117c0f2d18",
+      "revision": "opening-continuity-20261122",
+      "footage": "existing opening footage with camera-tracked equipment details",
+      "filmFrames": 840,
+      "reversedCopyFrames": 840,
+      "source": "Warehouse opening with original camera and projected service-side details",
+      "reversedCopy": "appended without re-encoding the film (qa-tools append_reversed.py)"
     }
   },
   "renderedDimensions": {
@@ -328,28 +285,8 @@
     ],
     "workday": [
       1920,
-      1200
+      1080
     ]
-  },
-  "workdayMotion": {
-    "revision": "every-frame-rendered-20261116",
-    "nativeFrames": 3088,
-    "nativeFramesPreserved": true,
-    "outputFrames": 3088,
-    "interpolatedFrames": 0,
-    "authoredCuts": [
-      300,
-      624,
-      804,
-      1134,
-      1290,
-      1416,
-      2733,
-      2812
-    ],
-    "supersedes": "rife-4.6-native-frames-preserved",
-    "reason": "Interpolated odd frames were corrupt around the authored cuts at 2733 and 2812 and ghosted moving subjects elsewhere; every frame is now a render of the same animation.",
-    "source": "/scratch/marvel-scene-recovery-20261109/workday-frames (even frames from the accepted render, odd frames rendered 2026-11-12 from the same scene)"
   },
   "openingTailRepair": {
     "affectedNativeFrames": [
@@ -413,7 +350,7 @@
     "limitation": "The Euler action values changed, but the imported quaternion rotation mode kept the wheel meshes from turning; 1920 px wide."
   },
   "openingHqPlayback": {
-    "revision": "opening-hq-20261116",
+    "revision": "opening-continuity-20261122",
     "sourceRenderDimensions": {
       "desktop": [
         4608,
@@ -490,7 +427,7 @@
       516
     ],
     "backgroundFlashCorrection": "Desktop background samples limited to their neighbours where a stray floor light appeared for one sample",
-    "source": "scripts/scene-recovery-v2/assemble_smooth_opening.py",
+    "source": "Installed warehouse reveal with approved-model camera projections for the axles and service hatches.",
     "meshAudit": "scripts/scene-recovery-v2/render_intro.py --audit-wheels --audit-only"
   },
   "fleetMotion": {

@@ -2,6 +2,7 @@ import {chromium} from '/home/jaxon/marvel_site/marvel-crew-app/node_modules/pla
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
 const base=process.env.PREVIEW_URL||'http://127.0.0.1:8768';
+const yardOverlay=JSON.parse(fs.readFileSync(new URL('../assets/scene-recovery-v2/field/desktop.json',import.meta.url),'utf8')).vision?.overlay!==false;
 const out=process.env.REVIEW_OUTPUT||'/home/jaxon/website-review-20261109/fullscreen-workday';
 fs.mkdirSync(out,{recursive:true});
 const browser=await chromium.launch({executablePath:'/opt/google/chrome/chrome',headless:true,args:['--enable-gpu','--use-angle=gl','--disable-dev-shm-usage']});
@@ -26,7 +27,8 @@ try{
    assert(row.copy.top>=row.header.bottom&&row.status.top>=row.header.bottom,JSON.stringify({name,width,row}));
    assert.equal(row.buttons.length,7);assert(row.buttons.every(r=>r.width>0&&r.left>=0&&r.right<=width+1&&r.bottom<=height&&r.top>=row.header.bottom));
    assert(row.chapter&&row.title);assert.equal(row.overflow,false);
-   if(name==='measure'){assert.equal(row.vision,'true');assert(row.labels.length>0);}
+   // Yard outlines are projected from the 3D scene's camera. A film that is not that scene (timeline vision.overlay:false) must draw none.
+   if(name==='measure'){if(yardOverlay){assert.equal(row.vision,'true');assert(row.labels.length>0);}else{assert.equal(row.vision,'false');assert.equal(row.labels.length,0);}}
    if(['grass','measure','dropoff','pickup','handoff','phone'].includes(name))await page.screenshot({path:`${out}/${width}-${height}-${name}.png`});
    report.checks.push({width,height,name,...row});
   }

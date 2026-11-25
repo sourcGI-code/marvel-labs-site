@@ -12,7 +12,7 @@ try{
  await page.goto(base+'/',{waitUntil:'domcontentloaded'});
  await page.waitForFunction(()=>document.querySelector('.opening-film')?.currentTime>.15,{timeout:30000});
  const a=await page.locator('.opening-film').evaluate(v=>({time:v.currentTime,src:v.currentSrc}));await page.waitForTimeout(900);
- const b=await page.locator('.opening-film').evaluate(v=>v.currentTime);assert(b>a.time+.3);assert(a.src.includes('/mobile-web.mp4'));result.checks.push({scene:'opening',start:a.time,end:b,src:a.src});
+ const b=await page.locator('.opening-film').evaluate(v=>v.currentTime);assert(b>a.time+.3);assert(a.src.includes('/opening/mobile-hq.mp4'),a.src);result.checks.push({scene:'opening',start:a.time,end:b,src:a.src});
  await page.evaluate(()=>window.__platform.seek(.5));
  await page.waitForFunction(()=>{const v=document.querySelector('#hero-visual .recorded-scene');return v?.readyState>=2&&!v.seeking;},null,{timeout:30000}).catch(async()=>{console.log(await page.evaluate(()=>[...document.querySelectorAll('video')].map(v=>({src:v.currentSrc,time:v.currentTime,ready:v.readyState,parent:v.parentElement.id}))));throw Error('cargo did not load');});
  const cdp=await page.context().newCDPSession(page);await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:330,y:650}]});await page.waitForTimeout(120);await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:330,y:590}]});await page.waitForTimeout(120);await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});

@@ -4,9 +4,13 @@
 // that timing; older 10-second exports retain their original slower playback.
 // While someone keeps scrolling, beat-scroll.js speeds the playing film up (setRate, owner 10-26: "I am scrolling and it
 // doesnt speed up the quote animation or the solo trailer ... I need it to smoothly scroll past it"), up to MAX_RATE.
+// Scrolling back (owner 11-20: "scrolling up on the website on laptop isnt that great"): a browser cannot play a
+// video backwards, and seeking frame by frame showed 7-13 pictures a second. A film may therefore carry its own
+// frames a second time in reverse order after its end (timeline json `rewind`). A reverse segment
+// ({reverse:true,rewindStart}) is ordinary playback of that second half; only the time <-> progress mapping flips.
 import {waitPlayable} from './playthrough.js?v=3';
 const OPENING_SECONDS=14;
-const MAX_RATE=4;
+const MAX_RATE=8;
 const playRate=(base,boost)=>Math.round(Math.min(MAX_RATE,base*boost)*1e4)/1e4;
 export function installScenePlayback({getActive,readProgress,writeProgress,setPaused,reduced}){
  const buttons=[...document.querySelectorAll('.motion-button')];
@@ -17,11 +21,19 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
  // setRate: the stepper's flywheel (owner 10-25: react to the scroll at once, faster for a faster scroll, then settle
  // to the part's own pace) multiplies the part's base rate (the arrival's OPENING_RATE, else 1).
  let baseRate=1,rateBoost=1;
+ const rewindBroken=new WeakSet();
+ // Direction of the playback that is starting or running, so a rewind that is still loading is not started again.
+ let direction=1;
  // Phones that refuse autoplay (iOS Low Power Mode, data saver, "never auto-play") keep the poster
  // and show the hero's tap-to-play pill: body[data-autoplay-blocked] drives that CSS.
  const touchFirst=matchMedia('(hover:none) and (pointer:coarse)');
  function markBlocked(value){clearTimeout(blockTimer);blockTimer=0;if((document.body.dataset.autoplayBlocked==='true')===value)return;if(value)document.body.dataset.autoplayBlocked='true';else delete document.body.dataset.autoplayBlocked;lastUI='';sync();}
  const clamp=v=>Math.max(0,Math.min(1,v));
+ // Media time for a progress within a segment, and back. Reverse: the frame for progress `end` sits at
+ // rewindStart, the frame for `start` one segment duration later.
+ const mediaTime=(part,at)=>{const f=clamp((at-part.start)/(part.end-part.start));return part.reverse?part.rewindStart+(1-f)*part.duration:f*part.duration;};
+ const mediaFraction=part=>part.reverse?clamp(1-(part.video.currentTime-part.rewindStart)/part.duration):Math.min(.999999,clamp(part.video.currentTime/part.duration));
+ const mediaDone=part=>part.video.ended||part.video.currentTime>=(part.reverse?part.rewindStart+part.duration:part.duration);
  function sync(){
   if(owner&&getActive()!==owner){pause({capture:false});return;}
   const available=!!getActive()?.view?.preparePlayback&&!reduced.matches;
@@ -40,8 +52,7 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
   if(!owner||!segment)return;
   // Only ended advances across a segment boundary. Its final decoded frame
   // remains visible while the next segment is prepared.
-  const fraction=Math.min(.999999,clamp(segment.video.currentTime/segment.duration));
-  const p=segment.start+(segment.end-segment.start)*fraction;
+  const p=segment.start+(segment.end-segment.start)*mediaFraction(segment);
   writeProgress(owner,p);owner.view.setPlaybackProgress?.(p);
  }
  function pause({capture=true}={}){
@@ -69,22 +80,22 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
    if(signal.aborted)cancel();else check();
   });
  }
- async function begin(nextOwner,at=readProgress(nextOwner)){
-  const token=++generation;owner=nextOwner;mode='loading';error='';
+ async function begin(nextOwner,at=readProgress(nextOwner),{reverse=false}={}){
+  const token=++generation;owner=nextOwner;mode='loading';error='';direction=reverse?-1:1;
   abort?.abort();abort=new AbortController();const signal=abort.signal;
   setPaused(false);sync();
   try{
-   const next=await owner.view.preparePlayback({progress:at,signal});
+   const next=await owner.view.preparePlayback({progress:at,signal,reverse});
    if(token!==generation)return;
-   if(!next?.video||!(next.duration>0))throw new Error('Animation is not ready. Press Play to retry.');
-   segment=next;const progress=clamp((at-next.start)/(next.end-next.start));
+   if(!next?.video||!(next.duration>0)||!!next.reverse!==reverse)throw new Error('Animation is not ready. Press Play to retry.');
+   segment=next;
    next.video.muted=next.video.defaultMuted=true;next.video.playsInline=true;
    // Promote only the requested film; later chapters retain their lazy loading.
    if(next.video.preload!=='auto'){
     next.video.preload='auto';
     if(next.video.readyState<2)next.video.load();
    }
-   await waitForMedia(next.video,progress*next.duration,signal);
+   await waitForMedia(next.video,mediaTime(next,at),signal);
    if(token!==generation)return;
    next.video.dataset.timelinePlaying='true';
    // Keep the approved 14-second arrival; decoded time keeps captions and
@@ -93,8 +104,10 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
    next.video.playbackRate=playRate(baseRate,rateBoost);
    // The opening starts as soon as the browser can play it. Scrolled chapters
    // retain their short buffering allowance before playback.
-   const until=stopAt!==null?clamp((stopAt-next.start)/(next.end-next.start))*next.duration:next.duration;
-   if(autoplayEnd===null)await waitPlayable(next.video,{rate:playRate(baseRate,rateBoost),until,maxWait:1200,signal});
+   const until=mediaTime(next,stopAt!==null?stopAt:reverse?next.start:next.end);
+   // The buffering allowance is judged at no more than double speed: a scroll's
+   // boost lasts a moment, and waiting for 8x of download would swallow the flick.
+   if(autoplayEnd===null)await waitPlayable(next.video,{rate:Math.min(2*baseRate,playRate(baseRate,rateBoost)),until,maxWait:1200,signal});
    if(token!==generation)return;
    await next.video.play();
    if(token!==generation){if(segment?.video!==next.video)next.video.pause();return;}
@@ -102,13 +115,23 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
   }catch(cause){
    if(token!==generation)return;
    const wasAutoplay=autoplayEnd!==null;
+   // A reversed copy that will not start is not an error the visitor must see:
+   // scrolling back falls back to frame-by-frame seeking for this film.
+   if(reverse){pause();if(cause.name!=='AbortError'){rewindBroken.add(nextOwner);console.warn('Scrolling back by seeking: the reversed copy did not start.',cause.message);sync();}return;}
    pause();if(cause.name!=='AbortError'){error=cause.message;if(cause.name==='NotAllowedError'||(wasAutoplay&&touchFirst.matches))markBlocked(true);sync();}
   }
  }
  function tick(){
   frame=0;if(mode!=='playing'||!segment)return;
   if(getActive()!==owner||document.hidden){pause({capture:getActive()===owner});return;}
-  if(segment.video.ended||segment.video.currentTime>=segment.duration){
+  if(segment.reverse&&mediaDone(segment)){
+   // Rewound to the start of this film. An earlier film of the same chapter continues the rewind.
+   const nextOwner=owner,start=segment.start;
+   delete segment.video.dataset.timelinePlaying;segment.video.pause();segment=null;mode='loading';writeProgress(nextOwner,start);nextOwner.view.setPlaybackProgress?.(start);
+   if(start>1e-6&&(stopAt===null||stopAt<start-1e-4))begin(nextOwner,start,{reverse:true});else pause({capture:false});
+   return;
+  }
+  if(mediaDone(segment)){
    const nextOwner=owner,end=segment.end,terminal=segment.terminal===true,finishIntro=autoplayEnd!==null&&end>=autoplayEnd;
    // Freeze old media before preparing the next segment.
    const settled=finishIntro?end-1e-6:end;
@@ -119,8 +142,8 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
   const problem=segment.video.error?'Animation playback failed. Press Play to retry.':segment.video.paused?'Animation stopped. Press Play to resume.':'';
   if(problem){pause({capture:false});error=problem;sync();return;}
   if(stopAt!==null){
-   const fraction=Math.min(.999999,clamp(segment.video.currentTime/segment.duration)),at=segment.start+(segment.end-segment.start)*fraction;
-   if(at>=stopAt-1e-4){const target=stopAt,nextOwner=owner;writeProgress(nextOwner,target);nextOwner.view.setPlaybackProgress?.(target);pause({capture:false});return;}
+   const at=segment.start+(segment.end-segment.start)*mediaFraction(segment);
+   if(segment.reverse?at<=stopAt+1e-4:at>=stopAt-1e-4){const target=stopAt,nextOwner=owner;writeProgress(nextOwner,target);nextOwner.view.setPlaybackProgress?.(target);pause({capture:false});return;}
   }
   position();frame=requestAnimationFrame(tick);
  }
@@ -159,9 +182,23 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
   const at=readProgress(next);if(!(target>at+1e-4))return false;
   if(mode!=='paused')pause({capture:false});
   completedOwner=null;autoplayEnd=null;stopAt=target;begin(next,at);return true;
+ },canRewind(){
+  // True when the active film carries its reversed copy, so scrolling back can play instead of seeking.
+  const next=getActive();return !reduced.matches&&!!next?.view?.canRewind?.()&&!rewindBroken.has(next);
+ },rewindTo(target){
+  // Play the active chapter's film backwards from where it is to `target`, then pause there.
+  const next=getActive();if(!next?.view?.canRewind?.()||rewindBroken.has(next)||reduced.matches)return false;
+  const at=readProgress(next);if(!(target<at-1e-4))return false;
+  if(mode!=='paused')pause();
+  completedOwner=null;autoplayEnd=null;stopAt=target;begin(next,at,{reverse:true});return true;
+ },retarget(target){
+  // continuous-scroll.js: another notch back while a rewind is starting or running moves its stop further back
+  // without restarting it (a restart would seek into the reversed copy again).
+  if(mode==='paused'||direction>0||stopAt===null||getActive()!==owner)return false;
+  stopAt=Math.max(0,target);return true;
  },extendTo(target){
   // beat-scroll.js: still scrolling as the film nears its stop, so it runs on to a later stop without pausing.
-  if(mode==='paused')return false;
+  if(mode==='paused'||segment?.reverse)return false;
   const limit=stopAt??autoplayEnd;
   if(limit===null||target<=limit)return false;
   autoplayEnd=null;stopAt=target;return true;
@@ -173,5 +210,5 @@ export function installScenePlayback({getActive,readProgress,writeProgress,setPa
   // A phone still not playing 3 s after the attempt gets the pill while the media keeps loading.
   if(touchFirst.matches)blockTimer=setTimeout(()=>{blockTimer=0;if(mode!=='playing')markBlocked(true);},3000);
   return true;
- },inspect:()=>({mode,error,section:owner?.track.id,time:segment?.video.currentTime,blocked:document.body.dataset.autoplayBlocked==='true'})};
+ },inspect:()=>({mode,error,section:owner?.track.id,time:segment?.video.currentTime,reverse:mode!=='paused'&&direction<0,blocked:document.body.dataset.autoplayBlocked==='true'})};
 }

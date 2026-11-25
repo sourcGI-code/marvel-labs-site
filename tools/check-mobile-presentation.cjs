@@ -19,7 +19,7 @@ async function check(name,type,options){let browser;try{
    await p.goto(base+'/?qa=portrait#inside',{waitUntil:'domcontentloaded'});
    await p.waitForFunction(()=>document.querySelector('#inside .recorded-scene')?.style.width);
    row.h264=await p.evaluate(()=>document.createElement('video').canPlayType('video/mp4; codecs="avc1.640028"'));
-   for(const chapter of ['operator','dropoff','equipment','vision','rtk','quote','work']){
+   for(const chapter of ['equipment','vision','rtk','quote','work','operator','dropoff']){   // owner 11-21: job first, drop-off last
     const button=p.locator(`[data-display-target="${chapter}"]`);
     if(await button.count())await button.click();
     await p.waitForTimeout(900);

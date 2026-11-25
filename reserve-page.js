@@ -4,7 +4,7 @@ if (sec) start(sec);
 
 function start(sec) {
   const SPEC = {
-    '20': {width: '8.5 ft', factory: '6 ft 2½ in', cargo: '13 ft 9½ in', buy: '$49,999'},
+    '20': {width: '8.5 ft', factory: '6 ft 2½ in', cargo: '13 ft 9½ in', buy: '$49,999'},   // owner 11-24: the price shows on the Buy card only (not on the size cards)
     '16': {width: '8.5 ft', factory: '6 ft 2½ in', cargo: '9 ft 9½ in', buy: '$44,999'}
   };
   const form = sec.querySelector('.rv-rail'), sizes = [...form.querySelectorAll('input[name="size"]')];
@@ -34,7 +34,7 @@ function start(sec) {
   }
   function summary() {
     const s = size(), buy = plan() === 'buy';
-    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? SPEC[s].buy + ' purchase price' : '$0 lease · 25% operator profit share'} · $100 refundable deposit`;
+    form.querySelector('.rv-summary').textContent = `${s} ft · ${buy ? 'Buy' : 'Lease'} · ${buy ? (SPEC[s].buy ? SPEC[s].buy + ' purchase price · ' : '') : '$0 lease · 25% operator profit share · '}$100 refundable deposit`;
   }
 
   // Only a deliberate radio choice changes the reservation and its preview.

@@ -84,24 +84,22 @@ test('initial reservation HTML agrees with live checkout without requiring JavaS
   }
 });
 
-test('model pages describe distinct products and link to a separate selected reservation',async()=>{
-  const descriptions=[];
+test('old model pages send visitors to the reservation page with that size and keep campaign tags',async()=>{
+  // Owner 2026-11-20: "I just entirely want the reserve.html to be there".
   for(const size of ['16','20']) {
-    const doc=await documentFor(`trailer-${size}.html`);
-    descriptions.push(doc.querySelector('meta[name="description"]').content);
-    assert.equal(doc.querySelector('form'),null);
+    const html=await read(`trailer-${size}.html`),doc=await documentFor(`trailer-${size}.html`);
+    assert.equal(doc.querySelector('meta[http-equiv="refresh"]').content,`0;url=reserve.html?size=${size}`);
+    assert.match(html,new RegExp(`location\\.replace\\('reserve\\.html\\?size=${size}'\\+\\(location\\.search`),'campaign tags must survive the redirect');
+    assert.match(doc.querySelector('meta[name="robots"]').content,/noindex/);
+    assert.equal(doc.querySelector('link[rel="canonical"]').href,'https://marvellabs.shop/reserve.html');
     assert.ok(doc.querySelector(`a[href="reserve.html?size=${size}"]`));
-    assert.equal(doc.querySelector('link[rel="canonical"]').href,`https://marvellabs.shop/trailer-${size}.html`);
-    const graph=JSON.parse(doc.querySelector('script[type="application/ld+json"]').textContent)['@graph'];
-    const product=graph.find(x=>x['@type']==='Product');
-    assert.equal(product.model,`${size} ft`);
-    assert.equal(product.offers,undefined,'a deposit cannot be represented as the trailer sale price');
-    assert.match(doc.body.textContent,/GVWR/);
-    assert.match(doc.body.textContent,/(?:Lease\s*(?:is\s*)?\$0|\$0\s+lease)/i);
-    assert.ok(doc.querySelector('meta[property="og:image"]'));
-    assert.ok(doc.querySelector('meta[name="twitter:card"]'));
   }
-  assert.notEqual(...descriptions);
+  for(const file of ['index.html','media.html','specifications.html','about.html','contact.html','technology.html','validation.html','partners.html','reservation-help.html','reserve.html']) {
+    assert.doesNotMatch(await read(file),/href="trailer-(?:16|20)\.html/,`${file} still links to a removed model page`);
+  }
+  for(const file of ['sitemap.xml','llms.txt'])assert.doesNotMatch(await read(file),/trailer-(?:16|20)\.html/,file);
+  const home=await documentFor('index.html');
+  for(const size of ['16','20'])assert.ok(home.querySelector(`#sizes a.offer-button[href="reserve.html?size=${size}"]`),`homepage ${size} ft button opens the reservation`);
 });
 
 test('legacy local policies redirect to the current authoritative Shopify policies',async()=>{
@@ -132,13 +130,31 @@ test('all size and plan deep links select the intended live form and review',asy
   }
 });
 
+test('a 4K-capable desktop gets the 3840x2160 AV1 film; small screens, phones, other browsers and slow links do not',()=>{
+  const desktop={base:'assets/x',kind:'desktop',videoFile:'desktop.mp4',liteVideoFile:'desktop-lite.mp4',video4kFile:'desktop-4k.mp4',video4kCodec:'av01.0.12M.08'};
+  const mobile={base:'assets/x',kind:'mobile',videoFile:'mobile.mp4',liteVideoFile:'mobile-lite.mp4'};
+  const env=(width,dpr,answer)=>({screen:{width},devicePixelRatio:dpr,document:{createElement:()=>({canPlayType:()=>answer})}});
+  const fast={effectiveType:'4g',downlink:10},page='https://marvellabs.shop/';
+  assert.equal(selectVideoFile(desktop,'desktop',fast,page,env(1440,2,'probably')),'desktop-4k.mp4');
+  assert.equal(selectVideoFile(desktop,'desktop',fast,page,env(1920,1,'probably')),'desktop.mp4');
+  assert.equal(selectVideoFile(desktop,'desktop',fast,page,env(2560,1,'')),'desktop.mp4');
+  assert.equal(selectVideoFile(desktop,'desktop',fast,page,env(2560,1,'maybe')),'desktop.mp4');
+  assert.equal(selectVideoFile(desktop,'desktop',{effectiveType:'3g'},page,env(2560,2,'probably')),'desktop-lite.mp4');
+  assert.equal(selectVideoFile(mobile,'mobile',fast,page,env(430,3,'probably')),'mobile.mp4');
+  assert.equal(selectVideoFile({...desktop,video4kFile:undefined},'desktop',fast,page,env(2560,2,'probably')),'desktop.mp4');
+});
+
 test('media selects a lighter complete video on slow connections and stills for Data Saver',async()=>{
   const manifest=JSON.parse(await read('film-sources-hqworld4.json'));
   for(const key of ['field','fieldMobile']) {
     const source=manifest[key];
     assert.equal(selectVideoFile(source,source.kind,{effectiveType:'4g',downlink:10}),`${source.kind}.mp4`);
     assert.equal(selectVideoFile(source,source.kind,{effectiveType:'3g'}),`${source.kind}-lite.mp4`);
-    for(const file of [source.videoFile,source.liteVideoFile])await access(new URL(`${source.mediaBase || source.base}/${file}`,root));
+    const localPreview='http://127.0.0.1:8768/', connection={effectiveType:'4g',downlink:1.55};
+    assert.equal(selectVideoFile(source,source.kind,connection,localPreview),`${source.kind}.mp4`);
+    assert.equal(selectVideoFile(source,source.kind,{effectiveType:'3g'},localPreview),`${source.kind}-lite.mp4`);
+    assert.equal(selectVideoFile({...source,mediaBase:'https://cdn.example.com/film'},source.kind,connection,localPreview),`${source.kind}-lite.mp4`);
+    for(const file of [source.videoFile,source.liteVideoFile,source.video4kFile].filter(Boolean))await access(new URL(`${source.mediaBase || source.base}/${file}`,root));
   }
   assert.equal(isStillOnly(false,{saveData:true}),true);
   assert.equal(isStillOnly(true,{}),true);
@@ -190,7 +206,7 @@ test('cargo loading waits for its chapter while explicit playback and fallback r
 });
 
 test('zero-dollar lease stays separate from the reservation and operating costs',async()=>{
-  for(const file of ['index.html','reserve.html','trailer-16.html','trailer-20.html','reservation-help.html']) {
+  for(const file of ['index.html','reserve.html','reservation-help.html']) {
     const doc=await documentFor(file),text=doc.body.textContent;
     assert.match(text,/(?:Lease\s*(?:is\s*)?\$0|\$0\s+lease)/i,file);
     assert.match(text,/\$100/,file);

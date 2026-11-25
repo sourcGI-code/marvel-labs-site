@@ -124,11 +124,30 @@ body[data-experience=official]{--opening-mix:100%}
 #vision-overlay{position:absolute;inset:0;z-index:2;pointer-events:none;color:var(--accent)}
 #vision-overlay[hidden],#vision-summary[hidden]{display:none}
 .vision-geometry,.vision-labels{position:absolute;inset:0;width:100%;height:100%;overflow:hidden}
-.vision-box{fill:none;stroke:currentColor;stroke-width:.9;opacity:.6}
-.vision-area{fill:currentColor;fill-opacity:.07;stroke:currentColor;stroke-width:.8;stroke-opacity:.65}
-.vision-connector{fill:none;stroke:currentColor;stroke-width:.65;opacity:.6}
+/* Drawn over real footage (11-20): strong enough to read on grass, roofs and concrete, with a dark edge behind every line. */
+.vision-geometry g[data-feature]{filter:drop-shadow(0 0 1.2px rgba(0,0,0,.85))}
+.vision-box{fill:none;stroke:currentColor;stroke-width:1.5;opacity:.95}
+.vision-area{fill:currentColor;fill-opacity:.14;stroke:currentColor;stroke-width:1.4;stroke-opacity:.95}
+.vision-connector{fill:none;stroke:currentColor;stroke-width:.9;opacity:.85}
 .vision-geometry [data-context=true] .vision-box{stroke-dasharray:3 4;opacity:.35}
-.vision-geometry [data-active=true] .vision-box{stroke-width:1.4;opacity:1}
+.vision-geometry [data-active=true] .vision-box{stroke-width:2.1;opacity:1}
+/* The cameras' boxes in every other shot with houses in view (11-20): a frame and a small tag on each house. */
+#scan-overlay{position:absolute;inset:0;z-index:2;pointer-events:none;color:var(--accent)}#scan-overlay[hidden]{display:none}
+.scan-geometry,.scan-tags{position:absolute;inset:0;width:100%;height:100%;overflow:hidden}
+.scan-frame{fill:none;stroke:currentColor;stroke-width:1.8;stroke-dasharray:14 5;filter:drop-shadow(0 0 1.2px rgba(0,0,0,.85))}
+.scan-tag{position:absolute;left:0;top:0;display:flex;gap:6px;align-items:baseline;padding:3px 6px;border-left:1px solid currentColor;background:color-mix(in srgb,var(--bg) 88%,transparent);font:9px/1.4 ui-monospace,monospace;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+.scan-tag[hidden]{display:none}.scan-tag b{font-weight:400;opacity:.7}.scan-tag i{font-style:normal;color:var(--ink);opacity:.85}
+#scan-overlay[data-compact=true] .scan-tag{font-size:6.5px;padding:2px 4px;gap:4px}#scan-overlay[data-compact=true] .scan-tag span{display:none}
+/* A film whose rig stands on the left of the yard shots puts the scope table on the right of a wide screen. */
+@media (min-width:761px) and (min-height:541px){#vision-summary[data-side=right]{left:auto!important;right:var(--gutter)!important;margin-left:0!important}}
+/* Every property in view (11-20): the frame around each house, and one row of sizes per property. */
+.vision-geometry [data-frame=true] rect.vision-box{stroke-width:1.8;stroke-dasharray:14 5}
+.vision-table{width:100%;border-collapse:collapse;margin:12px 0;border-top:1px solid var(--line)}.vision-table[hidden]{display:none}
+.vision-table th,.vision-table td{padding:7px 0 7px 6px;border-bottom:1px solid var(--line);text-align:right;font:9px/1.3 ui-monospace,monospace;font-weight:400;color:var(--accent);white-space:nowrap}
+.vision-table thead th{font-size:7.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);vertical-align:bottom}
+.vision-table thead th span{display:block;margin-top:1px;font-size:7px;line-height:1.2;text-transform:none;letter-spacing:0;opacity:.8}
+.vision-table tbody th{text-align:left;padding-left:0;font-family:inherit;font-size:10px;color:var(--ink)}
+.vision-table tbody th b{font:8px ui-monospace,monospace;font-weight:400;color:var(--accent);opacity:.75;margin-right:6px}
 .vision-label{position:absolute;display:grid;grid-template-columns:21px 1fr;padding:4px 6px;border-left:1px solid currentColor;background:color-mix(in srgb,var(--bg) 88%,transparent);font:9px/1.3 ui-monospace,monospace;letter-spacing:.015em;color:var(--accent)}
 .vision-label[hidden]{display:none}.vision-label b{font-size:8px;font-weight:400;opacity:.65;grid-row:1/3}
 .vision-label strong{font-size:9px;font-weight:400;text-transform:uppercase}.vision-label span{color:var(--ink);font-size:9px;margin-top:3px}.vision-label span:empty{display:none}

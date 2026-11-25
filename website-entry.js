@@ -5,7 +5,7 @@ installDeferredSectionImages();
 // Keep the interactive entry points out of that mode: no hidden scenes,
 // huge scroll spacers, video autoplay or blank embedded-app loading state.
 if (!document.documentElement.hasAttribute('data-snapshot')) {
-  import('./atlas-hqworld4.js?v=scroll-playback-20261119').then(() => {
+  import('./atlas-hqworld4.js?v=distance3-20261125').then(() => {
     // The initial scene and its scroll position are set before revealing content.
     requestAnimationFrame(() => { delete document.documentElement.dataset.siteLoading; });
   }).catch(error => {
@@ -24,7 +24,7 @@ if (!document.documentElement.hasAttribute('data-snapshot')) {
   });
   import('./crew-app-interactive.js?v=phone-playback-20261109').catch(console.warn);
   import('./crew-page-chat.js?v=analytics-20261119').catch(console.warn);
-  import('./editor-runtime.js?v=showcase-quality-v1').catch(console.warn);
+  import('./editor-runtime.js?v=workday-hd-20261122').catch(console.warn);
 } else {
   document.querySelectorAll('img').forEach(img => img.loading = 'eager');
   const menu = document.querySelector('#mobile-menu');

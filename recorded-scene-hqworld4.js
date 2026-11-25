@@ -1,9 +1,24 @@
-import {selectVideoFile,isStillOnly} from './video-delivery.js?v=20261108';
+import {selectVideoFile,isStillOnly} from './video-delivery.js?v=frozenfix-20261124';
 // Recorded once by scripts/record-site-films.py. Visitors decode video;
 // no geometry, texture uploads, shader compilation or WebGL context is needed.
-import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=opening-hq-20261116';
+import {loadFilmSources,sceneFilmSource,introFilmKind} from './film-sources-hqworld4.js?v=workday-hd-20261122';
 import {filmFraming,placeFilm} from './film-framing-hqworld4.js?v=scene-recovery-20261109b';
 const clamp=v=>Math.max(0,Math.min(1,v));
+// Yard outlines found on the film itself (timeline vision.track, qa-tools yard_scope.py): one reference frame, and for
+// every third frame of the aerial yard shots the homography that carries the reference GROUND to that frame, the boxes
+// of the things that stand on it (trees, shrubs, mailbox post), the point on the trailer roof, and the outline of the
+// trailer and pickup in front of the turf. Between samples everything is interpolated, never across a cut; a frame
+// outside the tracked shots has no outlines at all.
+function yardTrack(track,frame){
+ const index=track.segments.findIndex(s=>frame>=s.start-.5&&frame<=s.end+.5);if(index<0)return null;
+ const seg=track.segments[index],f=Math.max(seg.start,Math.min(seg.end,frame));let i=0;while(i<seg.frames.length-2&&seg.frames[i+1]<=f)i++;
+ const j=Math.min(i+1,seg.frames.length-1),span=seg.frames[j]-seg.frames[i],k=span?(f-seg.frames[i])/span:0;
+ const mix=(a,b)=>a.map((v,n)=>v+(b[n]-v)*k),H=mix(seg.H[i],seg.H[j]);
+ return {ground:v=>{const w=H[6]*v.x+H[7]*v.y+1;return {...v,x:(H[0]*v.x+H[1]*v.y+H[2])/w,y:(H[3]*v.x+H[4]*v.y+H[5])/w};},
+  box:id=>{const b=track.boxes[id]?.[index];if(!b)return null;const [x,y,width,height]=mix(b[i],b[j]);return {x,y,width,height};},
+  origin:()=>{const [x,y]=mix(seg.origin[i],seg.origin[j]);return {x,y};},cover:seg.cover[k<.5?i:j]};
+}
+const boundsOf=points=>{let x0=Infinity,y0=Infinity,x1=-Infinity,y1=-Infinity;for(const v of points){if(v.x<x0)x0=v.x;if(v.y<y0)y0=v.y;if(v.x>x1)x1=v.x;if(v.y>y1)y1=v.y;}return {x:x0,y:y0,width:x1-x0,height:y1-y0};};
 // 10-30 owner: the drive-by auto quote must "act like live camera recognition": the box draws itself, the measurements
 // count up, the estimate comes last. Each house gets a scan clock that is a pure function of the film frame (scrubbing
 // back undraws it): it starts when the house's box is first well framed, houses are read one at a time in route order,
@@ -57,7 +72,9 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  still.className='recorded-scene recorded-still';still.alt='';still.setAttribute('aria-hidden','true');
  host.append(video,still);canvas.style.visibility='hidden';
  let metadata,kind='',wanted=0,enabled=true,visible=true,shown=false,failed=false,loading=0,frame=0,lastSeek=0,networkRetries=0,retryTimer;
- let mediaURL='',generation=0,controller,stillFile='',pendingStill='',lastPresentedTime=0;
+ let visionBase=null,visionOf=null;   // the timeline's vision block without its (large) track, split once per timeline
+ let mediaURL='',generation=0,controller,stillFile='',pendingStill='',lastPresentedTime=0,rewindRest=0,restTimer=0,phonePush;
+ const REWIND_REST_MS=450,PHONE_PUSH_HOLD=1.4,PHONE_PUSH_END=3.3;   // seconds of the two-trailer film
  // Cover fit + optional push-in (film-framing.js). The video and still are placed with the same transform the
  // overlays are projected with, so labels, callouts and leaders stay on their objects at any aspect ratio.
  let framing=filmFraming('','',null),frameWindow=null,placed='',lastPlace=null;
@@ -104,7 +121,18 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   // Contained framing already measures its window below the page copy.
   // Adding the header offset again would push the film into its controls.
   const viewportTop=fullField&&viewportFraming.fit!=='contain'?Math.max(0,(document.querySelector('.masthead')?.getBoundingClientRect().bottom||0)-host.getBoundingClientRect().top):0;
-  const f=placeFilm(w,Math.max(1,h-viewportTop),metadata.width,metadata.height,viewportFraming,time,window);f.dy+=viewportTop;lastPlace=f;
+  const f=placeFilm(w,Math.max(1,h-viewportTop),metadata.width,metadata.height,viewportFraming,time,window);f.dy+=viewportTop;
+  // Upright phones (mobile-layout.css --phone-trailer-zoom): the opening film ends enlarged and drawn from its
+  // left edge so the trailer sits in the middle. This film starts with that same trailer in that same place and
+  // eases back to plain cover while its camera pulls away and brings the trailer to the centre by itself.
+  if(name==='cargo'&&phonePortrait&&pin&&!f.media&&viewportFraming.fit!=='contain'){
+   phonePush??=parseFloat(getComputedStyle(pin).getPropertyValue('--phone-trailer-zoom'))||1;
+   if(phonePush>1&&time<PHONE_PUSH_END){
+    const x=clamp((time-PHONE_PUSH_HOLD)/(PHONE_PUSH_END-PHONE_PUSH_HOLD)),k=1-x*x*(3-2*x),zoom=1+(phonePush-1)*k,scale=f.cover*zoom;
+    f.zoom=zoom;f.scale=scale;f.dx=(w-metadata.width*scale)/2*(1-k);f.dy=(h-metadata.height*scale)/2;
+   }
+  }
+  lastPlace=f;
   if(fullField)pin.style.setProperty('--workday-film-top',`${viewportTop}px`);
   if(phonePortrait&&pin&&viewportFraming.fit==='contain')pin.style.setProperty('--mobile-film-bottom',`${f.dy+metadata.height*f.scale}px`);
   const key=[w,h,f.cover,f.zoom,f.dx,f.dy].map(v=>v.toFixed(3)).join();
@@ -122,12 +150,17 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
  }
  function unplace(){placed='';lastPlace=null;host.classList.remove('film-contained');for(const el of [video,still])for(const k of ['left','top','right','bottom','width','height','transformOrigin','transform'])el.style[k]='';}
  const changed=()=>onChange();
- const matches=()=>metadata&&Math.abs(video.currentTime-targetTime())<.075;
+ const matches=()=>metadata&&Math.abs(filmTime(video.currentTime)-targetTime())<.075;
  const playbackDuration=()=>metadata?Math.min(maxSeconds,(metadata.playbackDuration??metadata.duration)-1/metadata.fps):0;
  // Map the visible cut back to the original sample timeline, including a
  // shorter editorial endpoint within an already trimmed movie.
  const sourceProgress=()=>metadata?wanted*playbackDuration()*metadata.fps/(metadata.frames-1):0;
  const targetTime=()=>metadata?Math.min(wanted*playbackDuration(),Math.max(0,video.duration-.001)):0;
+ // A film may store its frames a second time in reverse order after its end (timeline `rewind`), which
+ // scene-playback.js plays when the visitor scrolls back. A time in that half shows the frame of this
+ // film time. At rest the ordinary seek below returns to the full-quality frame of the film itself.
+ const rewind=()=>metadata?.rewind?.start>0&&video.duration>=metadata.rewind.start*2-.5?metadata.rewind:null;
+ const filmTime=t=>{const r=rewind();return r&&t>=r.start-1e-4?Math.max(0,r.start-1/metadata.fps-(t-r.start)):t;};
  const usingStill=()=>isStillOnly(reduced.matches,navigator.connection)||failed;
  const presentingStill=()=>usingStill()||(!shown&&!!stillFile);
  const hasPresentation=()=>shown||!!stillFile;
@@ -138,16 +171,24 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   frame=0;if(!metadata||!enabled||!video.paused||video.dataset.timelinePlaying)return;
   if(usingStill()){loadStill();return;}
   // A decoded chapter image remains visible while a video is blocked or loading.
-  if(name==='field'&&!shown)loadStill();
+  if((name==='field'||name==='cargo')&&!shown)loadStill();   // 11-24: cargo too (a still every 2 s of its film)
   if(video.readyState<1||video.seeking)return;
   const target=targetTime();
-  if(video.readyState>=2&&Math.abs(video.currentTime-target)<1/(metadata.fps*2)){if(!shown){shown=true;updateVisibility();changed();}return;}
-  const now=performance.now();if(now-lastSeek<1000/30){requestSeek();return;}
+  if(video.readyState>=2&&Math.abs(video.currentTime-target)<1/(metadata.fps*2)){rewindRest=0;if(!shown){shown=true;updateVisibility();changed();}return;}
+  const now=performance.now();
+  // Stopped on a frame of the reversed copy. Hold it for a moment, so more scrolling back
+  // resumes at once without a seek, then return to the film's own full-quality frame.
+  if(rewind()&&video.currentTime>=metadata.rewind.start-1e-4&&video.readyState>=2&&Math.abs(filmTime(video.currentTime)-target)<.06){
+   rewindRest||=now;
+   if(now-rewindRest<REWIND_REST_MS){clearTimeout(restTimer);restTimer=setTimeout(requestSeek,REWIND_REST_MS-(now-rewindRest)+12);return;}
+  }
+  rewindRest=0;
+  if(now-lastSeek<1000/30){requestSeek();return;}
   let seekable=false;
   for(let i=0;i<video.seekable.length;i++)if(target>=video.seekable.start(i)&&target<=video.seekable.end(i)+.04)seekable=true;
   // Seeking an unbuffered frame lets the browser request the needed byte range.
   if(!seekable&&video.networkState===video.NETWORK_NO_SOURCE)return;
-  lastSeek=now;lastPresentedTime=video.currentTime;video.currentTime=target||.001;
+  lastSeek=now;lastPresentedTime=filmTime(video.currentTime);video.currentTime=target||.001;
  }
  async function loadStill(){
   const chapter=chapterStill();if(!chapter||chapter.file===stillFile||chapter.file===pendingStill)return;
@@ -174,7 +215,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   video.removeAttribute('poster');video.pause();
   if(isStillOnly(reduced.matches,navigator.connection))video.removeAttribute('src');else video.src=mediaURL;
   video.load();
-  try{const response=await fetch(`${base}.json?v=${revision}`,{signal:controller.signal});if(!response.ok)throw Error('Film timeline unavailable');const data=await response.json();if(current!==generation)return;metadata=data;routeScan=routeScanSchedule(data);framing=filmFraming(filmSource.base,kind,data);capFraming();loadStill();requestSeek();changed();}
+  try{const response=await fetch(`${base}.json?v=${revision}`,{signal:controller.signal});if(!response.ok)throw Error('Film timeline unavailable');const data=await response.json();if(current!==generation)return;metadata=data;video.dataset.filmDuration=String(data.playbackDuration??data.duration);routeScan=routeScanSchedule(data);framing=filmFraming(filmSource.base,kind,data);capFraming();loadStill();requestSeek();changed();}
   catch(error){if(current===generation&&error.name!=='AbortError'){failed=true;changed();}}
   finally{loading--;}
  }
@@ -202,7 +243,7 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   // A pending scrub retains the last decoded camera; its sought frame changes both
   // film and host framing together on seeked. Other scene clocks stay unchanged.
   const decodedScene=(name==='cargo'||name==='field')&&shown&&!usingStill();
-  if(decodedScene&&!video.seeking)lastPresentedTime=video.currentTime;
+  if(decodedScene&&!video.seeking)lastPresentedTime=filmTime(video.currentTime);
   const sampleP=presentingStill()?(chapterStill()?.p??originalP):decodedScene?
    clamp(lastPresentedTime*metadata.fps/(metadata.frames-1)):originalP;
   const samples=metadata.samples,frameIndex=sampleP*(metadata.frames-1)/3,index=Math.min(samples.length-2,Math.floor(frameIndex));
@@ -215,14 +256,41 @@ export async function createRecordedScene(canvas,{name,onChange=()=>{},maxSecond
   if(state.annotation)state.annotation=point(state.annotation);
   if(state.route?.properties)state.route.properties=state.route.properties.map(v=>{const q=point(v);if(v.box)q.box={x0:v.box.x0*scale+dx,y0:v.box.y0*scale+dy,x1:v.box.x1*scale+dx,y1:v.box.y1*scale+dy};const sc=routeScan[v.id];if(sc)q.scan={...sc,t:clamp((sampleP-sc.start)/(sc.end-sc.start))};return q;})   // 10-29: house boxes (auto-quote); 10-30: scan clock t per house, a pure function of the film frame
   const workflowP=state.workflowP??sampleP;
+  // A film whose picture does not come from the 3D scene (vision.overlay:false) keeps the
+  // measured-scope rows for the quote panel but draws no outlines over the footage.
+  // Outlines detected on the film itself carry vision.track (yardTrack above): they are drawn
+  // only on the frames of the tracked shots and move with the camera.
   if(metadata.vision){
    const full=metadata.vision,classification=clamp((workflowP-.205)/.065),measuring=clamp((workflowP-.275)/.05);
    const count=workflowP<.205?0:Math.min(full.total,Math.floor(classification*full.total)+1);
-   state.vision={...full,visible:workflowP>=.20&&workflowP<.46&&!state.route?.active,mix:1,count,classification,measuring,measured:measuring>=1,stage:workflowP>=.34?'localize':measuring>0?'measure':'classify',activeId:full.observations[Math.min(count-1,full.total-1)]?.id,origin:point(full.origin),observations:full.observations.slice(0,count).map(o=>({...o,box:{...point(o.box),width:o.box.width*scale,height:o.box.height*scale},polygons:o.polygons?.map(poly=>poly.map(point))}))};
+   if(visionOf!==full){const {track,source,...rest}=full;visionBase=rest;visionOf=full;}
+   const follow=full.track?yardTrack(full.track,sampleP*(metadata.frames-1)):null;
+   const yardShown=full.overlay!==false&&(!full.track||!!follow)&&workflowP>=.20&&workflowP<.46&&!state.route?.active;
+   const onGround=follow?v=>point(follow.ground(v)):point,sized=b=>({...point(b),width:b.width*scale,height:b.height*scale});
+   const observe=o=>{
+    const polygons=o.polygons?.map(poly=>poly.map(onGround)),parts=follow&&o.boxes?o.boxes.map(id=>sized(follow.box(id))):o.parts?.map(sized);
+    const tracked=follow&&o.follow?follow.box(o.follow):null;
+    const box=tracked?sized(tracked):follow&&polygons?.length?boundsOf(polygons.flat()):follow&&parts?.length?boundsOf(parts.flatMap(b=>[b,{x:b.x+b.width,y:b.y+b.height}])):sized(o.box);
+    return {...o,box,polygons,parts,anchor:o.anchor?onGround(o.anchor):undefined};
+   };
+   const cover=yardShown&&follow?follow.cover.map(flat=>{const poly=[];for(let n=0;n<flat.length;n+=2)poly.push(point({x:flat[n],y:flat[n+1]}));return poly;}):[];
+   state.vision={...visionBase,visible:yardShown,mix:1,count,classification,measuring,measured:measuring>=1,stage:workflowP>=.34?'localize':measuring>0?'measure':'classify',activeId:full.observations[Math.min(count-1,full.total-1)]?.id,origin:point(follow?follow.origin():full.origin),cover,film:{x:dx,y:dy,width:metadata.width*scale,height:metadata.height*scale},observations:yardShown?full.observations.slice(0,count).map(observe):[]};
    state.yardReveal=1;
+  }
+  // Every other shot with houses in view (timeline scan, qa-tools yard_houses.py): a frame around each house the cameras
+  // pass, followed sample to sample. Never together with the measured scope of the aerial shots.
+  if(metadata.scan){
+   const frame=sampleP*(metadata.frames-1),shot=metadata.scan.shots.find(s=>frame>=s.start-.5&&frame<=s.end+.5);let houses=[];
+   if(shot&&!state.vision?.visible){
+    const f=Math.max(shot.start,Math.min(shot.end,frame));let i=0;while(i<shot.frames.length-2&&shot.frames[i+1]<=f)i++;
+    const j=Math.min(i+1,shot.frames.length-1),span=shot.frames[j]-shot.frames[i],k=span?(f-shot.frames[i])/span:0;
+    houses=shot.houses.map((series,n)=>{const a=series[i],b=series[j]||a;if(!a)return null;const [x,y,width,height]=a.map((v,c)=>v+(b[c]-v)*k),q=point({x,y});
+     return {n,age:(f-shot.frames[series.findIndex(Boolean)])/metadata.fps,box:{x:q.x,y:q.y,width:width*scale,height:height*scale}};}).filter(Boolean);
+   }
+   state.scan={visible:houses.length>0,houses,film:{x:dx,y:dy,width:metadata.width*scale,height:metadata.height*scale}};
   }
   return {...state,p:wanted,workflowP,sourceProgress:sampleP,playback:presentingStill()?'still':'recorded',videoTime:video.currentTime,presentationTime:sampleP*(metadata.frames-1)/metadata.fps,videoTarget:targetTime(),videoReady:shown,loading:!hasPresentation(),frameReused:true,webglFrames:0};
  }
  await source();
- return {draw,async retry(){if(failed||video.error){kind='';await source();}return !failed;},resize(){placed='';source();requestSeek();},setFrameWindow(rect){frameWindow=rect||null;},get framing(){return lastPlace;},setPalette(){},setActive(value){enabled=value;if(value)requestSeek();else video.pause();},setVisible(value){visible=value;updateVisibility();},get ready(){return hasPresentation();},get atTarget(){return hasPresentation()&&(presentingStill()?stillFile===chapterStill()?.file:!video.seeking&&matches());},get failed(){return failed;},get duration(){return playbackDuration();},inspect:()=>({playback:presentingStill()?'still':'recorded',kind,zoom:lastPlace?.zoom,ready:hasPresentation(),failed,loading:!!loading,videoTime:video.currentTime,videoTarget:targetTime()}),video};
+ return {draw,async retry(){if(failed||video.error){kind='';await source();}return !failed;},resize(){placed='';phonePush=undefined;source();requestSeek();},setFrameWindow(rect){frameWindow=rect||null;},get framing(){return lastPlace;},setPalette(){},setActive(value){enabled=value;if(value)requestSeek();else video.pause();},setVisible(value){visible=value;updateVisibility();},get ready(){return hasPresentation();},get atTarget(){return hasPresentation()&&(presentingStill()?stillFile===chapterStill()?.file:!video.seeking&&matches());},get failed(){return failed;},get duration(){return playbackDuration();},get rewind(){const r=rewind();return r?{start:r.start}:null;},inspect:()=>({playback:presentingStill()?'still':'recorded',kind,zoom:lastPlace?.zoom,ready:hasPresentation(),failed,loading:!!loading,videoTime:video.currentTime,videoTarget:targetTime()}),video};
 }

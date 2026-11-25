@@ -120,7 +120,7 @@ test('reservation funnel records review and validated checkout handoff, never a 
   }finally{Object.assign(globalThis,previous);f.win.close();}
 });
 test('production markup contains one analytics entry and preserves masking for dynamic chat',async()=>{
-  for(const name of ['index.html','reserve.html','trailer-16.html','trailer-20.html','contact.html']){
+  for(const name of ['index.html','reserve.html','contact.html']){
     const html=await readFile(new URL('../'+name,import.meta.url),'utf8');
     assert.equal((html.match(/src="site-analytics\.js\?/g)||[]).length,1);
   }

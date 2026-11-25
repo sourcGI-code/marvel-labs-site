@@ -4,8 +4,6 @@ Marvel Labs Inc. develops autonomous microfactories. https://marvellabs.shop/ is
 
 ## Authoritative public information
 - [Physical AI and microfactory technology explained](https://marvellabs.shop/technology.html)
-- [16 ft model](https://marvellabs.shop/trailer-16.html)
-- [20 ft model](https://marvellabs.shop/trailer-20.html)
 - [Operating requirements and pending specifications](https://marvellabs.shop/specifications.html)
 - [Development and validation status](https://marvellabs.shop/validation.html)
 - [Company and support](https://marvellabs.shop/about.html)

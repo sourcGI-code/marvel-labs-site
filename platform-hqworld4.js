@@ -1,8 +1,8 @@
 import {createFleetLabelMotion} from './fleet-label-motion.js?v=2-nodip';
 import {DELIVERY_END,cargoProgress} from './intro-timing.js?v=1';
-import {createRecordedScene} from './recorded-scene-hqworld4.js?v=opening-hq-20261116';
-import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.js?v=opening-hq-20261116';
-import {loadFilmSources} from './film-sources-hqworld4.js?v=opening-hq-20261116';
+import {createRecordedScene} from './recorded-scene-hqworld4.js?v=frozenfix-20261124';
+import {createOpeningFilm,filmPose,filmDuration} from './opening-film-hqworld4.js?v=frozenfix-20261124';
+import {loadFilmSources} from './film-sources-hqworld4.js?v=workday-hd-20261122';
 import {createArrivalReveal} from './arrival-reveal.js?v=6';
 import {createScrollMotion} from './scroll-motion.js';
 import {setAnimatedTitle,revealDetails} from './editorial-motion.js?v=stable-slides-v1';
@@ -61,6 +61,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
   if(recorded){liveReady=recorded.ready;if(recorded.failed&&!liveReady){liveError=true;$('platform-status').textContent='The trailer film could not load. Refresh to try again.';}}
   const continuation=p>.25+1e-6,t=cargoProgress(p),pose=filmPose(clamp(p/.25));
   if(!auto)film.seek(p/.25);
+  if(!continuation&&!film.ready)film.ladder?.(p/.25);
   // Keep the approved opening visible at the arrival chapter's exact stop.
   // Switch only once delivery advances and its requested frame is decoded.
   if(recorded){recorded.setFrameWindow?.(measureWindow());recorded.draw(t);}
@@ -74,7 +75,7 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
   // visitor enters its chapter or explicitly starts it. A failed opening
   // keeps its poster instead of downloading another large movie as fallback.
   if(active&&(continuation||reduced.matches))ensureLive();
-  const openingError=!continuation&&film.failed;
+  const openingError=!continuation&&film.failed&&!film.hasLadder;   // 11-24: with the stills ladder the intro still moves: no error banner
   $('platform-status').hidden=!openingError&&!liveError&&(!continuation||liveReady);
   if(openingError)$('platform-status').textContent='The opening film could not load. Use Play to retry.';
   if(!liveError&&!liveReady&&continuation)$('platform-status').textContent='Loading the trailer film';
@@ -149,17 +150,24 @@ export async function createPlatform(canvas,{readProgress,writeProgress,isActive
  document.addEventListener('visibilitychange',()=>{if(document.hidden)stop();});
  addEventListener('resize',()=>{windowKey='';opening?.resize(false);recorded?.resize();const resume=auto;if(film.resize()&&resume){stop();start();}request();});
  function palette(){const name=document.documentElement.dataset.palette;opening?.setPalette(name,false);cargo?.setPalette(colors[name]||colors.charcoal);request();}
- const api={async preparePlayback({progress=readProgress(),signal}={}){
+ const api={async preparePlayback({progress=readProgress(),signal,reverse=false}={}){
   stop();
   // The final scroll interval holds the delivery frame. Play there replays the intro.
-  if(progress>=DELIVERY_END-1e-6){progress=0;writeProgress(0);}
+  if(!reverse&&progress>=DELIVERY_END-1e-6){progress=0;writeProgress(0);}
   pinPlayback(progress);
-  if(p<.25){film.retry();film.seek(p/.25);draw();return {video:film.video,start:0,end:.25,duration:film.duration||filmDuration};}
+  // Scrolling back plays each film's reversed copy (scene-playback.js); at the hand-off frame the
+  // rewind continues in the opening film. Without a copy the caller seeks frame by frame instead.
+  if(reverse?p<=.25+1e-6:p<.25){
+   const rewind=reverse?film.rewind:null;if(reverse&&!rewind)return null;
+   film.retry();film.seek(Math.min(1,p/.25));draw();
+   return {video:film.video,start:0,end:.25,duration:film.duration||filmDuration,...(rewind?{reverse:true,rewindStart:rewind.start}:{})};
+  }
   await ensureLive();if(!recorded)return null;
   await recorded.retry();if(signal?.aborted)return null;liveError=recorded.failed;
+  const rewind=reverse?recorded.rewind:null;if(reverse&&!rewind)return null;
   recorded.draw(cargoProgress(p));draw();
-  return {video:recorded.video,start:.25,end:DELIVERY_END,duration:recorded.duration,terminal:true};
- },setPlaybackProgress:pinPlayback,setProgress(){request();},setActive(value){const entering=value&&!active;if(entering)p=motion.snap(readProgress());active=value;film.setActive(value);recorded?.setActive(value);if(!active){stop();arrivalReveal.clear();document.body.style.setProperty('--opening-mix','0%');}request();if(entering&&!openedOnce&&p<.01)start();},setPaused(value){const wasPaused=paused;paused=value;if(value)stop();else if(wasPaused)start();request();},setPalette:palette,inspect:()=>({...state,playback:livePreview?'live':'recorded',webgl:livePreview,ready:liveReady,liveReady,liveLoading:!!livePromise&&!liveReady&&!liveError,p,targetProgress:readProgress(),cargoProgress:state.p,auto,arrivalQuiet:arrivalReveal.quiet,continuation:p>.25+1e-6,...cargo?.inspect(),film:{ready:film.ready,failed:film.failed,playing:film.playing,time:film.time,kind:film.kind,opacity:Number(film.video.style.opacity)}})};
+  return {video:recorded.video,start:.25,end:DELIVERY_END,duration:recorded.duration,terminal:true,...(rewind?{reverse:true,rewindStart:rewind.start}:{})};
+ },canRewind:()=>p>.25+1e-6?!!recorded?.rewind:!!film.rewind,setPlaybackProgress:pinPlayback,setProgress(){request();},setActive(value){const entering=value&&!active;if(entering)p=motion.snap(readProgress());active=value;film.setActive(value);recorded?.setActive(value);if(!active){stop();arrivalReveal.clear();document.body.style.setProperty('--opening-mix','0%');}request();if(entering&&!openedOnce&&p<.01)start();},setPaused(value){const wasPaused=paused;paused=value;if(value)stop();else if(wasPaused)start();request();},setPalette:palette,inspect:()=>({...state,playback:livePreview?'live':'recorded',webgl:livePreview,ready:liveReady,liveReady,liveLoading:!!livePromise&&!liveReady&&!liveError,p,targetProgress:readProgress(),cargoProgress:state.p,auto,arrivalQuiet:arrivalReveal.quiet,continuation:p>.25+1e-6,...cargo?.inspect(),film:{ready:film.ready,failed:film.failed,playing:film.playing,time:film.time,kind:film.kind,opacity:Number(film.video.style.opacity)}})};
  window.__platform={state:api.inspect,seek(value){stop();p=motion.snap(clamp(value));writeProgress(p);api.setProgress(p);}};
  palette();request();
  const review=new URLSearchParams(location.search);
